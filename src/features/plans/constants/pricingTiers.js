@@ -1,0 +1,115 @@
+// Public marketing-page pricing content — transcribed 1:1 from the product
+// team's pricing sheet. Kept separate from `plans.js`'s PLANS enum (which
+// tracks a user's actual account plan) since this is presentation copy, not
+// app state.
+
+export const BRAND_PRICING_TIERS = [
+  {
+    id: 'starter',
+    name: 'Starter Pack',
+    price: 0,
+    cadence: 'per month',
+    features: [
+      'Browse creators',
+      'View rate cards',
+      'View only public prices of packages listed',
+      'Direct in-app messaging',
+      'Only accessible by one account',
+      'Can review creators after work is completed',
+      'Up to 5 campaigns tracked',
+      'Can access past campaigns',
+      'Pay the full amount upfront',
+    ],
+    limitations: ['Cannot shortlist creators', 'No email updates'],
+  },
+  {
+    id: 'business',
+    name: 'Business Plan',
+    price: 6000,
+    cadence: 'per month',
+    featured: true,
+    features: [
+      'Everything in Starter Pack',
+      'Account accessible by up to 5 people',
+      'Access to the dispute portal',
+      'Up to 15 campaigns tracked',
+      'Pay 50% upfront, 50% after approval',
+      'Email updates about creators',
+      'Can shortlist creators',
+      'Can view hidden package prices',
+    ],
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise Pack',
+    price: 15000,
+    cadence: 'per month',
+    features: [
+      'Everything in Starter Pack and Business Plan',
+      'Account accessible by up to 15 people',
+      'Up to 25 campaigns tracked',
+      'Faster response to disputes',
+    ],
+  },
+];
+
+export const CREATOR_PRICING_TIERS = [
+  {
+    id: 'starter',
+    name: 'Starter Tier',
+    price: 0,
+    cadence: 'per month',
+    features: [
+      '1 rate card',
+      'Profile display',
+      'Up to 10 packages per rate card',
+      'Public display of pricing only',
+      'Enquiry and booking',
+      'Delivery and disputes',
+      'Earnings and rate conversion',
+      'Upgrade package anytime',
+      'Transaction history',
+      'Pending balance, transaction history, earnings',
+      'Withdraw at any time',
+      'One payment method',
+      'Rate card drafts',
+    ],
+    limitations: ['No portfolio', 'Reviews unavailable', '10% transaction fee'],
+  },
+  {
+    id: 'pro',
+    name: 'Pro Tier',
+    price: 1500,
+    cadence: 'per month',
+    featured: true,
+    features: [
+      'Everything in Starter Tier',
+      'Up to 3 rate cards',
+      'Profile visits',
+      'Portfolio auto-linked to your rate card',
+      'Portfolio: areas of expertise, past brands',
+      'Up to 20 packages per rate card',
+      'Optional to display price',
+      'Reviews available',
+      'Up to 2 payment methods per rate card',
+      'Just 6% transaction fee',
+    ],
+  },
+  {
+    id: 'elite',
+    name: 'Elite Tier',
+    price: 4000,
+    cadence: 'per month',
+    features: [
+      'Everything in Starter and Pro Tier',
+      'Up to 10 rate cards',
+      'Unlimited package listing',
+      'Profile highlight',
+      'Portfolio and rate card can be separate',
+      'Manage and respond to reviews',
+      'Up to 5 payment methods per rate card',
+      'Shows a profile completeness score',
+      'Just 4% transaction fee',
+    ],
+  },
+];

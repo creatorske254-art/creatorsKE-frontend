@@ -1,0 +1,69 @@
+import { useState } from 'react';
+import { IconStar, IconStarFilled } from '@tabler/icons-react';
+
+/**
+ * StarRating
+ * @param {number}   value       - current rating (1–5)
+ * @param {function} [onChange]  - if provided, renders interactive mode
+ * @param {number}   [size]      - icon size in px (default 18)
+ * @param {boolean}  [showCount] - shows "(n)" after stars in display mode
+ * @param {number}   [count]     - review count to display
+ */
+export default function StarRating({
+  value = 0,
+  onChange,
+  size = 18,
+  showCount = false,
+  count,
+}) {
+  const [hovered, setHovered] = useState(null);
+  const interactive = typeof onChange === 'function';
+  const display = hovered ?? value;
+
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+      {[1, 2, 3, 4, 5].map((star) => {
+        const filled = star <= display;
+        return (
+          <button
+            key={star}
+            type="button"
+            onClick={interactive ? () => onChange(star) : undefined}
+            onMouseEnter={interactive ? () => setHovered(star) : undefined}
+            onMouseLeave={interactive ? () => setHovered(null) : undefined}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '1px',
+              cursor: interactive ? 'pointer' : 'default',
+              display: 'flex',
+              alignItems: 'center',
+              color: filled ? '#F5A623' : 'var(--grey-200)',
+              transition: 'color 0.1s',
+            }}
+            aria-label={interactive ? `Rate ${star} star${star !== 1 ? 's' : ''}` : undefined}
+          >
+            {filled ? (
+              <IconStarFilled size={size} />
+            ) : (
+              <IconStar size={size} />
+            )}
+          </button>
+        );
+      })}
+
+      {showCount && count !== undefined && (
+        <span
+          style={{
+            fontSize: '12px',
+            color: 'var(--grey-400)',
+            marginLeft: '4px',
+            fontFamily: 'var(--font-body)',
+          }}
+        >
+          ({count})
+        </span>
+      )}
+    </div>
+  );
+}

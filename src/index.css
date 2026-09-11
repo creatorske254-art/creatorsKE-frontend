@@ -1,0 +1,859 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Google Fonts ─────────────────────────────────────────────────────────── */
+/* Archivo (display, headings h1–h4) + Inter (body, h5/h6, everything else). */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CREATORS KE — DESIGN TOKENS
+   Source of truth: Creators KE Color Theory doc.
+
+   Rules encoded here:
+   1. Structure is neutral — every background/border/body text color comes
+      from the true achromatic grey ramp (R = G = B, zero hue).
+   2. Purple is the accent — reserved for interactive/brand moments
+      (buttons, links, active states, focus rings). Never a surface fill.
+   3. Status colors only ever communicate feedback (success/warning/error/info).
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* ─── Base (light mode) ──────────────────────────────────────────────── */
+  --white:      #FFFFFF; /* navbar, sidebar, cards */
+  --black:      #000000; /* primary text */
+
+  /* Content area sits one step darker than nav/sidebar/cards — never the
+     other way round. This relationship is mirrored (not repeated) in dark
+     mode below. */
+  --page-bg:    var(--grey-50);
+
+  /* ─── Purple scale — accent only, never used as a surface fill ─────────── */
+  --purple-50:  #EEEDFE;
+  --purple-100: #CECBF6;
+  --purple-200: #AFA9EC;
+  --purple-300: #948CE3; /* interpolated, light-mode disabled/mid accent */
+  --purple-400: #7F77DD;
+  --purple-500: #665DC7; /* interpolated, mid-scale */
+  --purple-600: #534AB7; /* default accent — buttons, links, active icons */
+  --purple-700: #463D9E; /* interpolated, between 600/800 */
+  --purple-800: #3C3489; /* hover state */
+  --purple-900: #26215C; /* active/pressed state; dark-mode active bg */
+
+  /* ─── Grey scale — true achromatic, R = G = B, zero color cast ─────────── */
+  --grey-50:  #F2F2F2; /* content area background (light mode) */
+  --grey-100: #E5E5E5; /* borders, dividers */
+  --grey-200: #CCCCCC; /* disabled borders */
+  --grey-300: #B3B3B3; /* disabled text */
+  --grey-400: #999999; /* placeholder text */
+  --grey-500: #808080; /* inactive icons */
+  --grey-600: #666666; /* secondary text */
+  --grey-700: #4D4D4D;
+  --grey-800: #262626; /* dark-mode surfaces — nav, cards, content bg base */
+  --grey-900: #1A1A1A; /* dark-mode content area background */
+
+  /* ─── Status colors — feedback only, never branding/structure ──────────── */
+  --status-success:      #10B981;
+  --status-success-bg:   #DCFCE7;
+  --status-success-text: #047857; /* darker shade for AA contrast on tint */
+
+  --status-warning:      #F59E0B;
+  --status-warning-bg:   #FEF3C7;
+  --status-warning-text: #B45309;
+
+  --status-error:        #EF4444;
+  --status-error-bg:     #FEE2E2;
+  --status-error-text:   #B91C1C;
+
+  --status-info:         #06B6D4;
+  --status-info-bg:      #CFFAFE;
+  --status-info-text:    #0E7490;
+
+  /* ─── Brand tints — decorative identity color only ──────────────────────
+     NOT structure, NOT accent, NOT status. Purpose: let a list of external
+     entities (brands, clients, companies) be visually told apart at a
+     glance — e.g. avatar initials in an enquiries/CRM list — the way a
+     calendar app tints different calendars. Never used for surfaces,
+     buttons, or feedback states; those stay neutral/purple/status per the
+     rules above. Small, fixed set — reach for --purple-* first for
+     anything brand/interactive. */
+  --tint-amber-bg:     #FAEEDA;
+  --tint-amber-border: #EF9F27;
+  --tint-amber-text:   #854F0B;
+
+  --tint-green-bg:     #DEF3E4;
+  --tint-green-border: #6FC28F;
+  --tint-green-text:   #1F7A46;
+
+  --tint-blue-bg:      #DCEAFB;
+  --tint-blue-border:  #6FA8E0;
+  --tint-blue-text:    #1D5FA8;
+
+  --tint-pink-bg:      #FBEAF0;
+  --tint-pink-border:  #E2A9BE;
+  --tint-pink-text:    #993556;
+
+  /* ─── Typography ──────────────────────────────────────────────────────── */
+  /* Family */
+  --font-display: 'Archivo', sans-serif; /* h1–h4 only — bold display type */
+  --font-body:    'Inter', sans-serif;   /* h5/h6, body, UI, buttons, inputs */
+  --font-mono:    'SF Mono', 'Fira Code', monospace;
+
+  /* Type scale — standard/balanced. Format: size / line-height / tracking. */
+  --text-h1-size: 36px; --text-h1-lh: 44px; --text-h1-tracking: -0.02em; --text-h1-weight: 700;
+  --text-h2-size: 28px; --text-h2-lh: 36px; --text-h2-tracking: -0.02em; --text-h2-weight: 700;
+  --text-h3-size: 22px; --text-h3-lh: 30px; --text-h3-tracking: -0.01em; --text-h3-weight: 700;
+  --text-h4-size: 18px; --text-h4-lh: 26px; --text-h4-tracking: -0.01em; --text-h4-weight: 700;
+  --text-h5-size: 16px; --text-h5-lh: 24px; --text-h5-tracking: 0em;     --text-h5-weight: 600; /* Inter, not Archivo */
+
+  --text-body-lg-size: 16px; --text-body-lg-lh: 24px; --text-body-lg-weight: 400;
+  --text-body-size:    14px; --text-body-lh:    20px; --text-body-weight:    400;
+  --text-body-md-weight: 500; /* medium body — buttons, form labels, same size/lh as body */
+  --text-body-sm-size:  13px; --text-body-sm-lh:  18px; --text-body-sm-weight:  400;
+
+  --text-caption-size: 11px; --text-caption-lh: 16px; --text-caption-tracking: 0.04em; --text-caption-weight: 500;
+
+  /* ─── Radius ──────────────────────────────────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-pill: 999px;
+
+  /* ─── Spacing ─────────────────────────────────────────────────────────── */
+  /* Named by pixel value rather than a strict *4 multiple — the interface
+     is hand-tuned (hairline borders pull some paddings in/out by 1px), so
+     the scale documents the values actually in use rather than forcing
+     them onto a clean grid. This was previously a "hole": the navbar and
+     sidebar had ~15 magic numbers with nothing backing them. */
+  --space-2:  2px;
+  --space-4:  4px;
+  --space-5:  5px;
+  --space-6:  6px;
+  --space-7:  7px;
+  --space-8:  8px;
+  --space-9:  9px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --space-32: 32px;
+  --space-38: 38px;
+
+  /* ─── Component sizing ───────────────────────────────────────────────── */
+  --size-icon-sm:   14px; /* inline input icons, e.g. navbar search */
+  --size-icon-md:   16px; /* icon-only buttons, e.g. notification bell */
+  --size-icon-lg:   17px; /* sidebar nav-item icons */
+  --size-icon-slot: 20px; /* fixed-width column sidebar icons sit in, for label alignment */
+  --size-avatar-sm: 32px; /* navbar avatar */
+  --size-badge:     18px; /* notification count badge, min-width == height (pill/circle) */
+  --badge-overlap:  -4px; /* pulls the notification badge onto the icon button's corner */
+
+  --navbar-height:  60px;
+  --sidebar-width:  220px;
+  --navbar-search-max-width: 360px;
+
+  /* Text sizes with no home in the h1–caption type scale — small uppercase
+     labels and badge digits sit below caption (11px). */
+  --text-micro-size: 10px; /* sidebar section labels, badge digits */
+  --text-avatar-size: 12px; /* navbar avatar initials */
+
+  /* ─── Motion ──────────────────────────────────────────────────────────── */
+  --transition-fast: 0.15s;
+
+  /* ─── Z-index ─────────────────────────────────────────────────────────── */
+  --z-navbar: 200;
+
+  /* ─── Shadows ─────────────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.12);
+
+  /* ─── shadcn/ui CSS variable mapping (light mode) ───────────────────────
+     Nav/sidebar/cards = white (lightest surface).
+     Page/content background = grey-50 (one step darker than nav/cards). */
+  --background:            var(--page-bg);
+  --foreground:             var(--black);
+  --card:                   var(--white);
+  --card-foreground:        var(--black);
+  --popover:                var(--white);
+  --popover-foreground:     var(--black);
+  --primary:                var(--purple-600);
+  --primary-foreground:     var(--white);
+  --secondary:              var(--grey-50);
+  --secondary-foreground:   var(--black);
+  --muted:                  var(--grey-50);
+  --muted-foreground:       var(--grey-600);
+  --accent:                 var(--purple-50);
+  --accent-foreground:      var(--purple-600);
+  --destructive:            var(--status-error);
+  --destructive-foreground: var(--white);
+  --border:                 var(--grey-100);
+  --input:                  var(--grey-100);
+  --ring:                   var(--purple-600);
+  --radius:                 var(--radius-md);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DARK MODE
+   Toggle by adding class="dark" to <html> (standard shadcn/Tailwind pattern).
+
+   Hierarchy rule: nav/sidebar/cards stay ONE STEP LIGHTER than the content
+   area background — mirroring light mode exactly, just inverted in
+   direction. Do not make nav/sidebar darker than the content area; that
+   breaks the mirrored hierarchy and looks inconsistent against light mode.
+   ══════════════════════════════════════════════════════════════════════════ */
+.dark {
+  /* Surfaces */
+  --white:   #262626; /* stands in for "lightest surface" in dark mode: nav, sidebar, cards */
+  --black:   #FFFFFF; /* primary text */
+  --page-bg: var(--grey-900); /* content area — darkest surface, sits behind nav/cards */
+
+  /* Purple accent shifts one step lighter for readability against dark surfaces */
+  --purple-600: #7F77DD; /* default accent in dark mode */
+  --purple-800: #948CE3; /* hover, lighter than default */
+  --purple-900: #26215C; /* used as active-state background tint, not text */
+
+  /* Status colors keep their base hues (they're already saturated enough to
+     read on dark surfaces); only their soft-fill/text pairs invert */
+  --status-success-bg:   #052E1B;
+  --status-success-text: #34D399;
+
+  --status-warning-bg:   #3A2504;
+  --status-warning-text: #FBBF24;
+
+  --status-error-bg:     #3A0A0A;
+  --status-error-text:   #F87171;
+
+  --status-info-bg:      #042C36;
+  --status-info-text:    #22D3EE;
+
+  /* Brand tints — same inversion pattern as status colors above */
+  --tint-amber-bg:     #3A2504; --tint-amber-border: #BA7517; --tint-amber-text: #FAC775;
+  --tint-green-bg:     #16240A; --tint-green-border: #639922;  --tint-green-text: #C0DD97;
+  --tint-blue-bg:      #0C2038; --tint-blue-border:  #378ADD;  --tint-blue-text:  #B5D4F4;
+  --tint-pink-bg:      #331420; --tint-pink-border:  #993556;  --tint-pink-text:  #E2A9BE;
+
+  /* shadcn/ui mapping (dark mode) */
+  --background:            var(--page-bg);
+  --foreground:             var(--black);
+  --card:                   var(--white); /* grey-800, one step lighter than content bg */
+  --card-foreground:        var(--black);
+  --popover:                var(--white);
+  --popover-foreground:     var(--black);
+  --primary:                var(--purple-600);
+  --primary-foreground:     var(--grey-900);
+  --secondary:              var(--grey-800);
+  --secondary-foreground:   var(--black);
+  --muted:                  var(--grey-800);
+  --muted-foreground:       var(--grey-300);
+  --accent:                 var(--purple-900);
+  --accent-foreground:      var(--purple-400);
+  --destructive:            var(--status-error);
+  --destructive-foreground: var(--white);
+  --border:                 #333333;
+  --input:                  #333333;
+  --ring:                   var(--purple-600);
+
+  /* Shadows are barely visible on dark surfaces — soften them */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.20);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.24);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.28);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.32);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.36);
+}
+
+/* ─── Base reset & global styles ───────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--background);
+    color: var(--foreground);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  /* h1–h4 use Archivo (display, bold). h5/h6 switch to Inter — a bold
+     display font at small sizes just reads as heavy body text, so they
+     match Inter 600 instead for better legibility. */
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+
+  h1 {
+    font-size: var(--text-h1-size);
+    line-height: var(--text-h1-lh);
+    letter-spacing: var(--text-h1-tracking);
+    font-weight: var(--text-h1-weight);
+  }
+  h2 {
+    font-size: var(--text-h2-size);
+    line-height: var(--text-h2-lh);
+    letter-spacing: var(--text-h2-tracking);
+    font-weight: var(--text-h2-weight);
+  }
+  h3 {
+    font-size: var(--text-h3-size);
+    line-height: var(--text-h3-lh);
+    letter-spacing: var(--text-h3-tracking);
+    font-weight: var(--text-h3-weight);
+  }
+  h4 {
+    font-size: var(--text-h4-size);
+    line-height: var(--text-h4-lh);
+    letter-spacing: var(--text-h4-tracking);
+    font-weight: var(--text-h4-weight);
+  }
+  h5, h6 {
+    font-family: var(--font-body);
+    font-size: var(--text-h5-size);
+    line-height: var(--text-h5-lh);
+    font-weight: var(--text-h5-weight);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button, input, select, textarea {
+    font-family: var(--font-body);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPONENT LIBRARY — Navbar / Sidebar
+   Ported 1:1 from Creatorske Component Library §05 (Navigation). Class names
+   match the library exactly (.navbar, .sidebar, .nav-link, .sidebar-link,
+   etc.) so any component-library markup can reuse these without rewriting
+   styles. Page-level layout rules (sticky positioning, scroll regions,
+   responsive breakpoints for a specific page) are NOT here — those aren't
+   shared by other components, so they live scoped to the page that needs
+   them (e.g. CreatorLayout.jsx).
+   ══════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  /* ── Buttons (subset needed by the navbar's icon button) ────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-7);
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .btn-square { padding: var(--space-9); border-radius: var(--radius-md); }
+  .btn-icon-style { background: var(--white); color: var(--grey-600); border: 0.5px solid var(--grey-200); }
+  .btn-icon-style:hover { background: var(--grey-50); color: var(--black); }
+
+  /* ── Badge (notification count) ──────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--size-badge);
+    height: var(--size-badge);
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-micro-size);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .badge-red { background: var(--status-error); color: #fff; }
+
+  /* ── Search input (navbar search) ────────────────────────────────────── */
+  .input-wrapper { position: relative; }
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--grey-400);
+    font-size: var(--size-icon-md);
+    pointer-events: none;
+  }
+  .input-icon.left { left: var(--space-12); }
+  .input-icon.right { right: var(--space-12); }
+  .search-input {
+    background: var(--white);
+    border: 0.5px solid var(--grey-200);
+    border-radius: var(--radius-pill);
+    padding: var(--space-9) var(--space-16) var(--space-9) var(--space-38);
+    font-size: var(--text-body-size);
+    font-family: var(--font-body);
+    color: var(--black);
+    outline: none;
+    width: 100%;
+    transition: all var(--transition-fast);
+  }
+  .search-input:focus {
+    border-color: var(--purple-400);
+    box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.08);
+  }
+
+  /* ── Navbar ───────────────────────────────────────────────────────────── */
+  .navbar {
+    background: var(--white);
+    border-bottom: 0.5px solid var(--grey-100);
+    height: var(--navbar-height);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-24);
+    gap: var(--space-32);
+  }
+  .navbar-logo {
+    font-family: var(--font-display);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    letter-spacing: var(--text-h4-tracking);
+    color: var(--black);
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+  .navbar-logo span { color: var(--purple-600); }
+  .navbar-links { display: flex; gap: var(--space-4); flex: 1; }
+  .nav-link {
+    font-size: var(--text-body-sm-size);
+    color: var(--grey-600);
+    padding: var(--space-6) var(--space-12);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+  }
+  .nav-link:hover { color: var(--black); background: var(--grey-50); }
+  .nav-link.active { color: var(--black); background: var(--grey-100); }
+  .navbar-actions { display: flex; align-items: center; gap: var(--space-8); flex-shrink: 0; }
+  .nav-avatar {
+    width: var(--size-avatar-sm);
+    height: var(--size-avatar-sm);
+    border-radius: 50%;
+    background: var(--purple-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-avatar-size);
+    font-weight: 600;
+    color: var(--purple-800);
+    cursor: pointer;
+    border: 1.5px solid var(--purple-200);
+  }
+
+  /* ── Sidebar ──────────────────────────────────────────────────────────── */
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--white);
+    border-right: 0.5px solid var(--grey-100);
+    padding: var(--space-20) var(--space-12);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    flex-shrink: 0;
+  }
+  .sidebar-logo {
+    font-family: var(--font-display);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    letter-spacing: var(--text-h4-tracking);
+    color: var(--black);
+    padding: var(--space-4) var(--space-8);
+    margin-bottom: var(--space-16);
+  }
+  .sidebar-logo span { color: var(--purple-600); }
+  .sidebar-section {
+    font-size: var(--text-micro-size);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    padding: var(--space-4) var(--space-8);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-4);
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-10);
+    padding: var(--space-9) var(--space-10);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-sm-size);
+    color: var(--grey-600);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .sidebar-link:hover { background: var(--grey-50); color: var(--black); }
+  .sidebar-link.active { background: var(--purple-50); color: var(--purple-800); }
+  .sidebar-link i { font-size: var(--size-icon-lg); width: var(--size-icon-slot); text-align: center; color: var(--grey-400); }
+  .sidebar-link.active i { color: var(--purple-600); }
+  .sidebar-link.disabled { cursor: not-allowed; opacity: 0.45; }
+  .sidebar-badge {
+    margin-left: auto;
+    font-size: var(--text-micro-size);
+    font-weight: 600;
+    padding: var(--space-2) var(--space-7);
+    border-radius: var(--radius-pill);
+    background: var(--purple-100);
+    color: var(--purple-800);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPONENT LIBRARY — Cards / Stat cards / Tags / Table / Buttons / Progress
+   Ported 1:1 from Creatorske Component Library §Cards, §Tags, §Table,
+   §Buttons, §Progress — class names match the library exactly so any
+   component-library markup (or DashboardPage.jsx) can reuse these without
+   rewriting styles. Rewritten to pull every value from the tokens above
+   (--white, --grey-*, --purple-*, --radius-*, --space-*, --shadow-*,
+   --status-*) instead of hardcoded hex/px, so these automatically follow
+   light/dark mode via the existing --white / --page-bg flip.
+   ══════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  /* ── Buttons (fill variants not already covered above) ──────────────── */
+  .btn-primary {
+    background: var(--black);
+    color: var(--white);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-size);
+    padding: 11px 22px;
+  }
+  .btn-primary:hover { background: var(--grey-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+  .btn-secondary {
+    background: var(--white);
+    color: var(--black);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-size);
+    padding: 10.5px var(--space-24);
+    border: 0.5px solid var(--grey-300);
+  }
+  .btn-secondary:hover { border-color: var(--black); background: var(--page-bg); }
+
+  .btn-purple {
+    background: var(--purple-600);
+    color: var(--white);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-size);
+    padding: 11px 22px;
+  }
+  .btn-purple:hover { background: var(--purple-800); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(83, 74, 183, 0.3); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--grey-600);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-size);
+    padding: 10.5px var(--space-24);
+    border: 0.5px solid var(--grey-200);
+  }
+  .btn-ghost:hover { color: var(--black); border-color: var(--grey-400); background: var(--page-bg); }
+
+  .btn-xs   { padding: var(--space-5) var(--space-12); font-size: var(--text-caption-size); border-radius: var(--radius-sm); }
+  .btn-sm   { padding: var(--space-7) var(--space-16); font-size: 12px; border-radius: var(--radius-sm); }
+  .btn-lg   { padding: 14px var(--space-32); font-size: 15px; border-radius: var(--radius-lg); }
+  .btn-full { width: 100%; }
+
+  /* ── Cards ────────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--white);
+    border: 0.5px solid var(--grey-100);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+  }
+  .card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .card-p-sm { padding: 14px; }
+  .card-p-md { padding: var(--space-20); }
+  .card-p-lg { padding: var(--space-28); }
+  .card-p-xl { padding: var(--space-32); }
+  .card-title {
+    font-family: var(--font-display);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    letter-spacing: var(--text-h4-tracking);
+    color: var(--black);
+    margin-bottom: var(--space-6);
+    line-height: var(--text-h4-lh);
+  }
+  .card-body-text { font-size: var(--text-body-sm-size); line-height: 1.65; color: var(--grey-500); }
+
+  /* ── Stat cards (dashboard KPI tiles) ────────────────────────────────── */
+  .stat-card {
+    background: var(--white);
+    border: 0.5px solid var(--grey-100);
+    border-radius: var(--radius-lg);
+    padding: var(--space-20);
+  }
+  .stat-card-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    font-size: var(--text-caption-size);
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    margin-bottom: var(--space-8);
+  }
+  .stat-card-value {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1;
+    margin-bottom: var(--space-6);
+  }
+  .stat-card-delta { font-size: 12px; display: flex; align-items: center; gap: var(--space-4); }
+  .stat-card-delta.up   { color: var(--status-success-text); }
+  .stat-card-delta.down { color: var(--status-error-text); }
+  .sdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Tags ─────────────────────────────────────────────────────────────── */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-5);
+    font-size: 12px;
+    font-weight: 500;
+    padding: var(--space-4) var(--space-10);
+    border-radius: var(--radius-pill);
+    line-height: 1;
+  }
+  .tag-default { background: var(--page-bg);          color: var(--grey-700); }
+  .tag-purple  { background: var(--purple-50);        color: var(--purple-800); }
+  .tag-success { background: var(--status-success-bg); color: var(--status-success-text); }
+  .tag-warning { background: var(--status-warning-bg); color: var(--status-warning-text); }
+  .tag-error   { background: var(--status-error-bg);   color: var(--status-error-text); }
+  .tag-info    { background: var(--status-info-bg);    color: var(--status-info-text); }
+
+  /* ── Data table ───────────────────────────────────────────────────────── */
+  .table-wrap {
+    background: var(--white);
+    border: 0.5px solid var(--grey-100);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+  .data-table { width: 100%; border-collapse: collapse; font-size: var(--text-body-sm-size); }
+  .data-table th {
+    text-align: left;
+    font-size: var(--text-micro-size);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--grey-400);
+    padding: var(--space-10) var(--space-16);
+    border-bottom: 0.5px solid var(--grey-200);
+    background: var(--page-bg);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 13px var(--space-16);
+    border-bottom: 0.5px solid var(--grey-100);
+    color: var(--grey-700);
+    vertical-align: middle;
+  }
+  .data-table tr:hover td { background: var(--page-bg); }
+  .data-table tr:last-child td { border-bottom: none; }
+
+  /* ── Progress bars ────────────────────────────────────────────────────── */
+  .progress-bar-wrap { background: var(--grey-100); border-radius: var(--radius-pill); overflow: hidden; }
+  .progress-bar-fill { background: var(--purple-600); border-radius: var(--radius-pill); transition: width 0.3s; }
+  .progress-xs { height: 4px; }
+  .progress-sm { height: 6px; }
+  .progress-md { height: 10px; }
+  .progress-lg { height: 16px; }
+
+  /* ── Danger button ─────────────────────────────────────────────────────── */
+  .btn-danger {
+    background: var(--status-error-bg);
+    color: var(--status-error-text);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-size);
+    padding: 10.5px var(--space-24);
+    border: 0.5px solid rgba(239, 68, 68, 0.3);
+  }
+  .btn-danger:hover { background: var(--status-error-bg); filter: brightness(0.94); }
+
+  .btn-disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .btn-loading { pointer-events: none; opacity: 0.7; position: relative; color: transparent !important; }
+  .btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  /* ── Avatar ───────────────────────────────────────────────────────────── */
+  .avatar {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-family: var(--font-display);
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+  .avatar-xs { width: 24px; height: 24px; font-size: 9px; }
+  .avatar-sm { width: var(--size-avatar-sm); height: var(--size-avatar-sm); font-size: var(--text-avatar-size); }
+  .avatar-md { width: 40px; height: 40px; font-size: 13px; }
+  .avatar-lg { width: 52px; height: 52px; font-size: 17px; }
+  .avatar-purple { background: var(--purple-100); color: var(--purple-800); border: 0.5px solid var(--purple-200); }
+  .avatar-grey   { background: var(--grey-100);   color: var(--grey-600); }
+  .avatar-dark   { background: var(--black);      color: var(--white); }
+  /* Brand-tint variants — decorative identity color, see --tint-* tokens */
+  .avatar-tint-amber { background: var(--tint-amber-bg); color: var(--tint-amber-text); border: 0.5px solid var(--tint-amber-border); }
+  .avatar-tint-green { background: var(--tint-green-bg); color: var(--tint-green-text); border: 0.5px solid var(--tint-green-border); }
+  .avatar-tint-blue  { background: var(--tint-blue-bg);  color: var(--tint-blue-text);  border: 0.5px solid var(--tint-blue-border); }
+  .avatar-tint-pink  { background: var(--tint-pink-bg);  color: var(--tint-pink-text);  border: 0.5px solid var(--tint-pink-border); }
+
+  /* ── Generic form input / select ──────────────────────────────────────── */
+  .input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--text-body-size);
+    color: var(--black);
+    background: var(--white);
+    border: 0.5px solid var(--grey-300);
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  .input::placeholder { color: var(--grey-300); }
+  .input:focus { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1); }
+  .input-sm { padding: var(--space-7) var(--space-12); border-radius: var(--radius-sm); font-size: var(--text-body-sm-size); }
+  .input-md { padding: var(--space-10) var(--space-16); border-radius: var(--radius-md); }
+  .select-wrapper { position: relative; }
+  .select-wrapper::after {
+    content: '\ea99';
+    font-family: 'tabler-icons';
+    position: absolute;
+    right: var(--space-12);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--grey-400);
+    font-size: var(--size-icon-sm);
+    pointer-events: none;
+  }
+  select.input { appearance: none; padding-right: 30px; cursor: pointer; }
+
+  /* ── Activity / timeline feed ─────────────────────────────────────────── */
+  .activity-row { display: flex; gap: var(--space-12); align-items: flex-start; }
+  .activity-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: var(--space-6); }
+  .activity-line { width: 0.5px; background: var(--grey-100); flex-shrink: 0; margin: 0 3.5px; }
+}
+
+/* ─── Utility layer ────────────────────────────────────────────────────────── */
+@layer utilities {
+  /* Display font shorthand */
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Skeleton shimmer — uses muted tokens so it adapts to light/dark automatically */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--muted) 25%,
+      var(--secondary) 50%,
+      var(--muted) 75%
+    );
+    background-size: 200px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: var(--radius-md);
+  }
+
+  /* Focus ring using the accent token — resolves to purple-600 (light) / purple-400 (dark) */
+  .focus-purple:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 15%, transparent);
+  }
+
+  /* Status badges — soft fill + colored text/icon, matches Creators KE badge spec */
+  .badge-success { background: var(--status-success-bg); color: var(--status-success-text); }
+  .badge-warning { background: var(--status-warning-bg); color: var(--status-warning-text); }
+  .badge-error   { background: var(--status-error-bg);   color: var(--status-error-text); }
+  .badge-info    { background: var(--status-info-bg);    color: var(--status-info-text); }
+
+  /* Body text variants — h1–h5 are handled by base element styles above;
+     these cover everything else in the type scale. */
+  .text-body-lg {
+    font-size: var(--text-body-lg-size);
+    line-height: var(--text-body-lg-lh);
+    font-weight: var(--text-body-lg-weight);
+  }
+  .text-body {
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-lh);
+    font-weight: var(--text-body-weight);
+  }
+  .text-body-md {
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-lh);
+    font-weight: var(--text-body-md-weight);
+  }
+  .text-body-sm {
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-lh);
+    font-weight: var(--text-body-sm-weight);
+  }
+  .text-caption {
+    font-size: var(--text-caption-size);
+    line-height: var(--text-caption-lh);
+    letter-spacing: var(--text-caption-tracking);
+    font-weight: var(--text-caption-weight);
+    text-transform: uppercase;
+  }
+
+  /* Scrollbar hidden but scrollable */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ─── Keyframes ────────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slide-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

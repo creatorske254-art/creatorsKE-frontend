@@ -2,10 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
-  IconArrowRight, IconStarFilled, IconPlus,
-  IconBrandInstagram, IconBrandTiktok, IconBrandLinkedin, IconBrandWhatsapp,
-  IconCamera, IconBuildingStore, IconLayoutCards, IconDeviceMobileDollar,
-  IconShieldCheck, IconLockDollar, IconRocket,
+  IconArrowRight, IconPlus, IconBrandInstagram, IconBrandTiktok, IconBrandLinkedin, IconBrandWhatsapp, IconCamera, IconBuildingStore, IconLayoutCards, IconDeviceMobileDollar, IconShieldCheck, IconLockDollar, IconRocket,
 } from '@tabler/icons-react';
 
 /*
@@ -83,12 +80,6 @@ const SOCIAL_LINKS = [
   { key: 'linkedin', Icon: IconBrandLinkedin, href: 'https://www.linkedin.com/company/creatorske', label: 'Creatorske on LinkedIn' },
 ];
 
-const CREATORS = [
-  { initials: 'AO', name: 'Amara Osei', handle: '@amaracreates · Lifestyle', followers: '48K', eng: '4.8%', rating: '4.9', avail: 'available', gradient: 'linear-gradient(135deg,#6B5FF4,#1E1480)', delay: 0 },
-  { initials: 'JK', name: 'James Kiema', handle: '@jkiema · Tech', followers: '120K', eng: '4.1%', rating: '4.9', avail: 'limited', gradient: 'linear-gradient(135deg,#0D0D0D,#333)', delay: 0.1 },
-  { initials: 'NW', name: 'Njeri Wanjiku', handle: '@njeriwanjiku · Fashion', followers: '22K', eng: '8.7%', rating: '4.7', avail: 'booked', gradient: 'linear-gradient(135deg,#5445E8,#2C1FB8)', delay: 0.2 },
-];
-
 /* ── Scroll reveal: sections rise in as they enter the viewport ─────────── */
 function useReveal(dep) {
   useEffect(() => {
@@ -103,44 +94,6 @@ function useReveal(dep) {
     items.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, [dep]);
-}
-
-function RcMiniCard({ initials, name, handle, followers, eng, rating, avail, gradient, delay, onEnquire }) {
-  const availMap = {
-    available: { label: 'Available now', color: 'var(--status-success)' },
-    limited: { label: 'Limited slots', color: 'var(--status-warning)' },
-    booked: { label: 'Fully booked', color: 'var(--grey-400)' },
-  };
-  const a = availMap[avail] || availMap.available;
-  return (
-    <div className="theme-fixed-light" style={{ background: 'var(--white)', border: '0.5px solid var(--grey-100)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 12px 32px rgba(0,0,0,0.25)', animation: `floatUp 0.6s cubic-bezier(.16,1,.3,1) ${delay}s both` }}>
-      <div style={{ padding: 'var(--space-16) var(--space-16) var(--space-12)', borderBottom: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
-        <div style={{ width: 36, height: 36, borderRadius: '50%', background: gradient, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600, color: '#fff', flexShrink: 0 }}>{initials}</div>
-        <div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--black)' }}>{name}</div>
-          <div style={{ fontSize: 11, color: 'var(--grey-400)' }}>{handle}</div>
-        </div>
-      </div>
-      <div style={{ display: 'flex', borderBottom: '0.5px solid var(--grey-100)' }}>
-        {[['Followers', followers], ['Eng.', eng], ['Rating', rating]].map(([lbl, val], i) => (
-          <div key={lbl} style={{ flex: 1, padding: 'var(--space-8) var(--space-12)', textAlign: 'center', borderRight: i < 2 ? '0.5px solid var(--grey-100)' : 'none' }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: 'var(--black)', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-              {val}{lbl === 'Rating' && <IconStarFilled className="icon-xs" style={{ color: 'var(--black)' }} aria-hidden="true" />}
-            </div>
-            <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{lbl}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ padding: 'var(--space-12) var(--space-16)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)', fontSize: 11, color: 'var(--grey-500)' }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: a.color, display: 'inline-block' }} />{a.label}
-        </div>
-        <button type="button" onClick={onEnquire} style={{ fontSize: 11, fontWeight: 600, color: 'var(--purple-600)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)', background: 'none', border: 'none', fontFamily: 'inherit', padding: 0 }}>
-          Enquire <IconArrowRight className="icon-xs" aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  );
 }
 
 function RoleSwitch({ role, onChange, dark }) {
@@ -241,13 +194,12 @@ export default function HomePage() {
         .hp-streak-2 { -webkit-mask:linear-gradient(90deg, transparent 11%, #000 25%, rgba(0,0,0,.55) 41%, rgba(0,0,0,.13) 67%, #000 78%, transparent 97%); mask:linear-gradient(90deg, transparent 11%, #000 25%, rgba(0,0,0,.55) 41%, rgba(0,0,0,.13) 67%, #000 78%, transparent 97%); }
         .hp-streak-3 { -webkit-mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); }
         .hp-hero__dots { position:absolute; inset:0; opacity:.15; background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.5) 1px, transparent 0); background-size:20px 20px; }
-        .hp-hero__grid { position:relative; z-index:1; display:grid; grid-template-columns:1.1fr .9fr; gap:var(--space-48); align-items:center; padding:var(--space-80) var(--gutter-public); min-height:calc(100vh - 60px); }
+        .hp-hero__grid { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:var(--space-80) var(--gutter-public); min-height:calc(100vh - 60px); }
         .hp-hero__eyebrow { display:inline-flex; align-items:center; gap:var(--space-8); font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:var(--space-20); }
         .hp-hero__eyebrow .dot { width:6px; height:6px; border-radius:50%; background:var(--purple-400); box-shadow:0 0 10px var(--purple-400); }
-        .hp-hero h1 { font-family:var(--font-display); font-size:clamp(36px,4.6vw,60px); line-height:1.05; letter-spacing:-.025em; color:#fff; margin:0 0 var(--space-20); text-wrap:balance; }
-        .hp-hero__sub { font-size:16px; line-height:1.75; color:rgba(255,255,255,.72); max-width:460px; margin-bottom:var(--space-32); }
-        .hp-hero__cards { display:flex; flex-direction:column; gap:var(--space-12); width:100%; max-width:320px; margin-left:auto; }
-        .hp-hero__proof { margin-top:var(--space-40); padding-top:var(--space-24); border-top:0.5px solid rgba(255,255,255,.12); display:flex; align-items:center; gap:var(--space-16); font-size:13px; color:rgba(255,255,255,.55); }
+        .hp-hero h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,64px); line-height:1.05; letter-spacing:-.025em; color:#fff; margin:0 auto var(--space-20); max-width:820px; text-wrap:balance; }
+        .hp-hero__sub { font-size:17px; line-height:1.75; color:rgba(255,255,255,.72); max-width:560px; margin:0 auto var(--space-32); }
+        .hp-hero__proof { margin-top:var(--space-40); padding-top:var(--space-24); border-top:0.5px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; gap:var(--space-16); font-size:13px; color:rgba(255,255,255,.55); }
 
         /* sections */
         .hp-section { padding:var(--space-96) var(--gutter-public); }
@@ -297,8 +249,7 @@ export default function HomePage() {
         .reduce-motion .hp-reveal { opacity:1; transform:none; transition:none; }
 
         @media(max-width:900px){
-          .hp-hero__grid { grid-template-columns:1fr; min-height:0; padding:var(--space-64) var(--gutter-public); }
-          .hp-hero__cards { display:none; }
+          .hp-hero__grid { min-height:0; padding:var(--space-64) var(--gutter-public); }
           .hp-navbar-links { display:none !important; }
           .hp-steps, .hp-features { grid-template-columns:1fr; }
           .hp-section { padding:var(--space-64) var(--gutter-public); }
@@ -330,13 +281,13 @@ export default function HomePage() {
           <div className="hp-hero__dots" />
         </div>
         <div className="hp-hero__grid">
-          <div>
+          <div style={{ width: '100%', maxWidth: 820 }}>
             <div style={{ marginBottom: 'var(--space-24)' }}><RoleSwitch role={role} onChange={setRole} dark /></div>
             <div key={role} className="page-enter">
               <div className="hp-hero__eyebrow"><span className="dot" />{c.eyebrow}</div>
               <h1>{c.headline}</h1>
               <p className="hp-hero__sub">{c.sub}</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-12)', flexWrap: 'wrap' }}>
                 <button className="hp-btn-primary on-dark" onClick={() => navigate(c.primary.to)}>{c.primary.label} <IconArrowRight className="icon-sm nudge" aria-hidden="true" /></button>
                 <button className="hp-btn-ghost lg on-dark" onClick={() => navigate(c.secondary.to)}>{c.secondary.label}</button>
               </div>
@@ -349,13 +300,6 @@ export default function HomePage() {
               </div>
               <span>{role === 'brand' ? <>Trusted by brands booking <strong style={{ color: '#fff' }}>2,400+</strong> verified creators</> : <>Joined by <strong style={{ color: '#fff' }}>2,400+</strong> creators across East Africa</>}</span>
             </div>
-          </div>
-          <div className="hp-hero__cards">
-            {CREATORS.map((cr, i) => (
-              <div key={cr.initials} style={{ marginLeft: i === 1 ? 'var(--space-24)' : i === 2 ? 'var(--space-12)' : 0 }}>
-                <RcMiniCard {...cr} onEnquire={() => navigate('/c/amara?enquire=1')} />
-              </div>
-            ))}
           </div>
         </div>
       </section>

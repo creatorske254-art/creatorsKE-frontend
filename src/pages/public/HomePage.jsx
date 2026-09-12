@@ -324,9 +324,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <div style={{ textAlign: 'center', marginTop: 'var(--space-40)' }} className="hp-reveal">
-            <button className="hp-btn-purple" onClick={() => navigate(c.primary.to)}>{c.primary.label} <IconArrowRight className="icon-sm" aria-hidden="true" /></button>
-          </div>
         </div>
       </section>
 

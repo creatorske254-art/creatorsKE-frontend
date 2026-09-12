@@ -75,6 +75,16 @@ export function ThemeProvider({ children }) {
     applyAccent(accent);
   }, [accent]);
 
+  // Display preferences from Settings > Appearance (reduce motion, compact
+  // tables) are plain <html> classes; restore them on boot so they survive
+  // a reload, the same way theme and accent do.
+  useEffect(() => {
+    try {
+      document.documentElement.classList.toggle('reduce-motion', localStorage.getItem('creatorske_reduce_motion') === '1');
+      document.documentElement.classList.toggle('density-compact', localStorage.getItem('creatorske_compact') === '1');
+    } catch { /* storage unavailable */ }
+  }, []);
+
   const setTheme = useCallback((next) => {
     setThemeState(next);
     try { localStorage.setItem(THEME_KEY, next); } catch { /* storage unavailable */ }

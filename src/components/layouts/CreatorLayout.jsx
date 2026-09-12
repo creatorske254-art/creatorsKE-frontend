@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
-import { getInitials } from '@/lib/utils';
 import NavbarSearch from './NavbarSearch';
+import NavAvatar from './NavAvatar';
+import PageTransition from './PageTransition';
 import { IconBell, IconIdBadge, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconSettings, IconUserCircle, IconWallet, IconX } from '@tabler/icons-react';
 
 
@@ -147,10 +148,6 @@ export default function CreatorLayout() {
   const [notifOpen, setNotifOpen] = useState(false);
   const navigate = useNavigate();
 
-  const initials = getInitials(
-    user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
-  );
-
   return (
     <>
       <style>{DASHBOARD_SHELL_STYLES}</style>
@@ -197,14 +194,14 @@ export default function CreatorLayout() {
               )}
               {notifOpen && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 260 }}>
-                  <div className="card" style={{ boxShadow: 'var(--shadow-lg)' }}>
+                  <div className="card menu-appear" style={{ boxShadow: 'var(--shadow-lg)' }}>
                     <NotificationList onClose={() => setNotifOpen(false)} />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="nav-avatar" title="Account">{initials}</div>
+            <NavAvatar />
           </div>
         </nav>
 
@@ -268,7 +265,7 @@ export default function CreatorLayout() {
           </aside>
 
           <main className="dashboard-shell__main">
-            <Outlet />
+            <PageTransition />
           </main>
         </div>
       </div>

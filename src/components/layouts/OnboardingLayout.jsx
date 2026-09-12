@@ -1,7 +1,7 @@
-import { Outlet } from 'react-router-dom'
+import PageTransition from './PageTransition'
 
 // Intentionally minimal - OnboardingPage/PlanSelectionPage build their own
 // full-page layout inline.
 export default function OnboardingLayout() {
-  return <Outlet />
+  return <PageTransition />
 }

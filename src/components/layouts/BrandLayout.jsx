@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
 import { useEnquiries } from '@/features/enquiry';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
-import { getInitials } from '@/lib/utils';
 import NavbarSearch from './NavbarSearch';
+import NavAvatar from './NavAvatar';
+import PageTransition from './PageTransition';
 import { IconBell, IconBookmark, IconClockHour4, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconReceipt2, IconReportMoney, IconRocket, IconSettings, IconWorldSearch, IconX } from '@tabler/icons-react';
 
 
@@ -163,10 +164,6 @@ export default function BrandLayout() {
   const { pipelineCounts } = useEnquiries();
   const { unreadCount } = useNotifications();
 
-  const initials = getInitials(
-    user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
-  );
-
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
 
@@ -218,14 +215,14 @@ export default function BrandLayout() {
               )}
               {notifOpen && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 260 }}>
-                  <div className="card" style={{ boxShadow: 'var(--shadow-lg)' }}>
+                  <div className="card menu-appear" style={{ boxShadow: 'var(--shadow-lg)' }}>
                     <NotificationList onClose={() => setNotifOpen(false)} />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="nav-avatar">{initials}</div>
+            <NavAvatar />
           </div>
         </nav>
 
@@ -315,7 +312,7 @@ export default function BrandLayout() {
 
           {/* ── Page content ──────────────────────────────── */}
           <main className="brand-layout__main">
-            <Outlet />
+            <PageTransition />
           </main>
         </div>
       </div>

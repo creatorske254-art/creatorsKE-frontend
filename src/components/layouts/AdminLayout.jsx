@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useDisputes } from '@/features/admin/hooks/useDisputes';
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
 import { useAdmin } from '@/features/admin/hooks/useAdmin';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
-import { getInitials } from '@/lib/utils';
 import NavbarSearch from './NavbarSearch';
+import NavAvatar from './NavAvatar';
+import PageTransition from './PageTransition';
 import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSettings, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
 
 
@@ -181,10 +182,6 @@ export default function AdminLayout() {
   const [notifOpen, setNotifOpen] = useState(false);
   const navigate = useNavigate();
 
-  const initials = getInitials(
-    user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
-  );
-
   function handleLogout() {
     logout();
   }
@@ -233,14 +230,14 @@ export default function AdminLayout() {
               )}
               {notifOpen && (
                 <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 260 }}>
-                  <div className="card" style={{ boxShadow: 'var(--shadow-lg)' }}>
+                  <div className="card menu-appear" style={{ boxShadow: 'var(--shadow-lg)' }}>
                     <NotificationList onClose={() => setNotifOpen(false)} />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="nav-avatar">{initials}</div>
+            <NavAvatar />
           </div>
         </nav>
 
@@ -329,7 +326,7 @@ export default function AdminLayout() {
 
           {/* ── Page content ──────────────────────────────── */}
           <main className="admin-layout__main">
-            <Outlet />
+            <PageTransition />
           </main>
         </div>
       </div>

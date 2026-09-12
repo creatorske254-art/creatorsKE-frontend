@@ -635,6 +635,8 @@
   .nav-link.active { color: var(--black); background: var(--grey-100); }
   .navbar-actions { display: flex; align-items: center; gap: var(--space-8); flex-shrink: 0; }
   .nav-avatar {
+    overflow: hidden; text-decoration: none; cursor: pointer; flex-shrink: 0;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
     width: var(--size-avatar-sm);
     height: var(--size-avatar-sm);
     border-radius: 50%;
@@ -647,7 +649,10 @@
     color: var(--purple-800);
     cursor: pointer;
     border: 1.5px solid var(--purple-200);
-  }
+  }  .nav-avatar:hover { box-shadow: 0 0 0 3px var(--purple-50); }
+  .nav-avatar:active { transform: scale(0.96); }
+  .nav-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 
   /* ── Sidebar ──────────────────────────────────────────────────────────── */
   .sidebar {
@@ -1448,6 +1453,31 @@
   .danger-zone-banner { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-error-text); line-height: 1.6; }
   .warning-banner { background: var(--status-warning-bg); border: 0.5px solid rgba(245,158,11,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-warning-text); line-height: 1.6; }
   .success-banner { background: var(--status-success-bg); border: 0.5px solid rgba(16,185,129,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-success-text); display: flex; align-items: center; gap: var(--space-8); }
+
+/* ─── Motion ──────────────────────────────────────────────────────────────
+   Nothing on screen appears abruptly. Pages rise in, modals scale in,
+   menus and dropdowns drop in, folded cards unfold. Every one of these is
+   short (120-240ms), eases out, and is switched off for people who asked
+   for reduced motion (OS setting or Settings > Appearance > Display). */
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes unfold { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+.page-enter { animation: page-in 0.24s ease-out both; min-height: 100%; }
+.ui-modal-backdrop { animation: fade-in 0.16s ease-out both; }
+.ui-modal { animation: pop-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.collapsible-card__body { animation: unfold 0.18s ease-out both; }
+.menu-appear { animation: select-in 0.12s ease-out both; }
+.chart-frame__body > * { animation: fade-in 0.2s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .ui-modal-backdrop, .ui-modal, .collapsible-card__body, .menu-appear, .chart-frame__body > *, .select-popover, .menu-popover, .navbar-search__sheet { animation: none !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
+.reduce-motion .page-enter, .reduce-motion .ui-modal-backdrop, .reduce-motion .ui-modal, .reduce-motion .collapsible-card__body, .reduce-motion .menu-appear, .reduce-motion .chart-frame__body > *, .reduce-motion .select-popover, .reduce-motion .menu-popover, .reduce-motion .navbar-search__sheet { animation: none !important; }
+.density-compact .data-table td { padding-top: var(--space-8); padding-bottom: var(--space-8); }
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after { transition-duration: 0.01ms !important; }
 
 /* ─── Utility layer ────────────────────────────────────────────────────────── */
 @layer utilities {

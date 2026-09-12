@@ -491,7 +491,7 @@ export default function BrandDashboardPage() {
   }, [funnelFallback.isDemo, enquiries.pipelineCounts, rawShortlist.length, campaigns]);
 
   return (
-    <div style={{ fontFamily: FONT_BODY, background: C.grey50, minHeight: "100%", color: C.black }}>
+    <div style={{ fontFamily: FONT_BODY, color: C.black }}>
       <style>{`
         .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--space-16)}
         .col-3{grid-column:span 3}

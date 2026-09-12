@@ -8,7 +8,8 @@ import {
   IconArrowLeft, IconArrowRight, IconUpload, IconMapPin, IconBrandInstagram, IconBrandYoutube, IconBrandTiktok,
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
   IconBuilding, IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
-  IconEye, IconEyeOff, IconPencil, IconPlus, IconChevronDown, IconLayoutDashboard
+  IconEye, IconEyeOff, IconPencil, IconPlus, IconChevronDown, IconLayoutDashboard,
+  IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading
 } from "@tabler/icons-react";
 
 /* design tokens (scoped)
@@ -581,7 +582,7 @@ export default function RateCardBuilderPage() {
                     <div className="g2">
                       <div className="field">
                         <label className="label req">Display name</label>
-                        <input className="inp" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} />
+                        <div className="inp-wrap"><span className="inp-icon l"><IconUser size={14} /></span><input className="inp inp-icon-l" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} /></div>
                       </div>
                       <div className="field">
                         <label className="label req">Handle</label>
@@ -612,7 +613,7 @@ export default function RateCardBuilderPage() {
                   <div className="g3">
                     <div className="field">
                       <label className="label">Total followers</label>
-                      <input className="inp" value={profile.followers} onChange={(e) => setProfile({ ...profile, followers: e.target.value })} />
+                      <div className="inp-wrap"><span className="inp-icon l"><IconUsers size={14} /></span><input className="inp inp-icon-l" value={profile.followers} onChange={(e) => setProfile({ ...profile, followers: e.target.value })} /></div>
                     </div>
                     <div className="field">
                       <label className="label">Avg engagement</label>
@@ -623,7 +624,7 @@ export default function RateCardBuilderPage() {
                     </div>
                     <div className="field">
                       <label className="label">Monthly reach</label>
-                      <input className="inp" value={profile.reach} onChange={(e) => setProfile({ ...profile, reach: e.target.value })} />
+                      <div className="inp-wrap"><span className="inp-icon l"><IconEye size={14} /></span><input className="inp inp-icon-l" value={profile.reach} onChange={(e) => setProfile({ ...profile, reach: e.target.value })} /></div>
                     </div>
                   </div>
                 </div>
@@ -678,7 +679,7 @@ export default function RateCardBuilderPage() {
                         <div className="g2">
                           <div className="field">
                             <label className="label req">Package name</label>
-                            <input className="inp" value={pkg.name} onChange={(e) => updatePackage(pkg.id, "name", e.target.value)} />
+                            <div className="inp-wrap"><span className="inp-icon l"><IconPackage size={14} /></span><input className="inp inp-icon-l" value={pkg.name} onChange={(e) => updatePackage(pkg.id, "name", e.target.value)} /></div>
                           </div>
                           <div className="field">
                             <label className="label req">Price (KES)</label>
@@ -690,7 +691,7 @@ export default function RateCardBuilderPage() {
                         </div>
                         <div className="field">
                           <label className="label">Description</label>
-                          <input className="inp" value={pkg.desc} onChange={(e) => updatePackage(pkg.id, "desc", e.target.value)} />
+                          <div className="inp-wrap"><span className="inp-icon l"><IconAlignLeft size={14} /></span><input className="inp inp-icon-l" value={pkg.desc} onChange={(e) => updatePackage(pkg.id, "desc", e.target.value)} /></div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <button className={`toggle${pkg.feat ? " on" : ""}`} onClick={() => updatePackage(pkg.id, "feat", !pkg.feat)} />
@@ -740,7 +741,7 @@ export default function RateCardBuilderPage() {
                   </div>
                   <div className="field">
                     <label className="label">Business name on M-Pesa</label>
-                    <input className="inp" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} />
+                    <div className="inp-wrap"><span className="inp-icon l"><IconBuildingStore size={14} /></span><input className="inp inp-icon-l" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} /></div>
                     <p className="hint">Displayed to clients when they pay</p>
                   </div>
                 </div>
@@ -781,9 +782,9 @@ export default function RateCardBuilderPage() {
                           <span className="chev"><IconChevronDown size={13} /></span>
                         </div>
                       </div>
-                      <div className="field"><label className="label">Account number</label><input className="inp" placeholder="e.g. 0123456789" /></div>
+                      <div className="field"><label className="label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" /></div></div>
                     </div>
-                    <div className="field"><label className="label">Account name</label><input className="inp" placeholder="e.g. Amara Osei" /></div>
+                    <div className="field"><label className="label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" /></div></div>
                   </div>
                 )}
               </div>
@@ -819,7 +820,7 @@ export default function RateCardBuilderPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     <div className="field">
                       <label className="label">Headline</label>
-                      <input className="inp" value={headline} onChange={(e) => setHeadline(e.target.value)} />
+                      <div className="inp-wrap"><span className="inp-icon l"><IconHeading size={14} /></span><input className="inp inp-icon-l" value={headline} onChange={(e) => setHeadline(e.target.value)} /></div>
                       <p className="hint">Appears at the top of your published card</p>
                     </div>
                     <div className="field">

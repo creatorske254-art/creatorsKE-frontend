@@ -475,6 +475,11 @@
   }
   .input-icon.left { left: var(--space-12); }
   .input-icon.right { right: var(--space-12); }
+  /* Matching input padding so a leading/trailing icon never sits on the text.
+     Works for both the tabler webfont <i> and @tabler/icons-react <svg>. */
+  .input-icon-left  { padding-left: 38px !important; }
+  .input-icon-right { padding-right: 38px !important; }
+  .input-wrapper > svg.input-icon { width: 15px; height: 15px; }
   .search-input {
     background: var(--white);
     border: 0.5px solid var(--grey-200);
@@ -904,6 +909,13 @@
     pointer-events: none;
   }
   select.input { appearance: none; padding-right: 30px; cursor: pointer; }
+
+  /* ── Field hints ──────────────────────────────────────────────────────── */
+  /* Shared helper-text style under inputs. `.error` was used in a dozen
+     components but never defined, so validation messages rendered grey. */
+  .field-hint { display: block; font-size: 12px; color: var(--grey-400); line-height: 1.5; }
+  .field-hint.error { color: var(--status-error-text); }
+  .field-hint.success { color: var(--status-success-text); }
 
   /* ── Activity / timeline feed ─────────────────────────────────────────── */
   .activity-row { display: flex; gap: var(--space-12); align-items: flex-start; }

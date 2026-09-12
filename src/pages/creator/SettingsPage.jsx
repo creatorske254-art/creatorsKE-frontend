@@ -89,7 +89,7 @@ const css = `
     color: var(--grey-600);
   }
   .field-required::after { content: ' *'; color: var(--status-error); }
-  .field-hint { font-size: 12px; color: var(--grey-400); line-height: 1.5; margin-top: var(--space-2); }
+  .field-hint { margin-top: var(--space-2); } /* base styling + icon come from index.css */
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
   .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
 
@@ -331,11 +331,11 @@ function ProfileTab() {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">First name</label>
-              <input className="input input-md" defaultValue="Amara" />
+              <div className="input-wrapper"><i className="ti ti-user input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Amara" /></div>
             </div>
             <div className="field">
               <label className="field-label field-required">Last name</label>
-              <input className="input input-md" defaultValue="Osei" />
+              <div className="input-wrapper"><i className="ti ti-user input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Osei" /></div>
             </div>
           </div>
 
@@ -613,6 +613,8 @@ const PAY_PROVIDERS = {
   },
 };
 
+// Leading icon inside each dynamic input, keyed by what the field collects.
+const FIELD_ICON = { phone: "ti-device-mobile", till: "ti-hash", email: "ti-mail", bank: "ti-building-bank", account: "ti-hash", holder: "ti-user" };
 function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
   const provider = providerKey ? PAY_PROVIDERS[providerKey] : null;
   const [values, setValues] = useState({});
@@ -630,13 +632,16 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
         {provider.fields.map((f) => (
           <div className="field" key={f.key}>
             <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
-            <input
-              className="input input-md"
-              type={f.type ?? "text"}
-              placeholder={f.placeholder}
-              value={values[f.key] ?? ""}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-            />
+            <div className="input-wrapper">
+              <i className={`ti ${FIELD_ICON[f.key] ?? "ti-pencil"} input-icon left`} aria-hidden="true" />
+              <input
+                className="input input-md input-icon-left"
+                type={f.type ?? "text"}
+                placeholder={f.placeholder}
+                value={values[f.key] ?? ""}
+                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -948,11 +953,11 @@ function AccountTab() {
           <div className="field-row">
             <div className="field">
               <label className="field-label">New password</label>
-              <input className="input input-md" type="password" placeholder="At least 8 characters" />
+              <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="At least 8 characters" /></div>
             </div>
             <div className="field">
               <label className="field-label">Confirm new password</label>
-              <input className="input input-md" type="password" placeholder="Re-enter your password" />
+              <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="Re-enter your password" /></div>
             </div>
           </div>
         </div>
@@ -1117,14 +1122,17 @@ function TwoFactorDialog({ open, onClose, onEnabled }) {
         </div>
       </div>
       <label className="field-label" style={{ display: "block", marginBottom: 6 }}>6-digit code</label>
-      <input
-        className="input input-md"
-        value={code}
-        onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-        placeholder="000000"
-        inputMode="numeric"
-        style={{ marginBottom: 18, fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
-      />
+      <div className="input-wrapper" style={{ marginBottom: 18 }}>
+        <i className="ti ti-shield-lock input-icon left" aria-hidden="true" />
+        <input
+          className="input input-md input-icon-left"
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+          placeholder="000000"
+          inputMode="numeric"
+          style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
+        />
+      </div>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
         <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
         <button

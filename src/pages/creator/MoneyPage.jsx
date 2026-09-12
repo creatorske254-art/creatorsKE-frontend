@@ -74,13 +74,13 @@ function AddPaymentMethodModal({ open, onClose, onAdd }) {
       {type === 'bank' && (
         <div style={{ marginBottom: 14 }}>
           <label className="field-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, color: 'var(--grey-600)' }}>Bank name</label>
-          <input className="input input-md" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. Equity Bank" style={{ width: '100%' }} />
+          <div className="input-wrapper"><i className="ti ti-building-bank input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. Equity Bank" style={{ width: '100%' }} /></div>
         </div>
       )}
 
       <div style={{ marginBottom: 16 }}>
         <label className="field-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, color: 'var(--grey-600)' }}>{selected.field}</label>
-        <input className="input input-md" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder={selected.placeholder} style={{ width: '100%' }} />
+        <div className="input-wrapper"><i className={`ti ${selected.icon} input-icon left`} aria-hidden="true" /><input className="input input-md input-icon-left" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder={selected.placeholder} style={{ width: '100%' }} /></div>
       </div>
 
       <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--grey-600)', marginBottom: 20, cursor: 'pointer' }}>

@@ -81,7 +81,7 @@ const css = `
     color: var(--grey-600);
   }
   .field-required::after { content: ' *'; color: var(--status-error); }
-  .field-hint { font-size: 12px; color: var(--grey-400); line-height: 1.5; margin-top: var(--space-2); }
+  .field-hint { margin-top: var(--space-2); } /* base styling + icon come from index.css */
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
   .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
 
@@ -323,7 +323,7 @@ function ProfileTab({ form, setForm, onDirty }) {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Company name</label>
-              <input className="input input-md" value={form.companyName} onChange={upd("companyName")} placeholder="e.g. Nairobi Brew Co." />
+              <div className="input-wrapper"><i className="ti ti-building-store input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.companyName} onChange={upd("companyName")} placeholder="e.g. Nairobi Brew Co." /></div>
             </div>
             <div className="field">
               <label className="field-label field-required">Industry</label>
@@ -361,11 +361,11 @@ function ProfileTab({ form, setForm, onDirty }) {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Contact name</label>
-              <input className="input input-md" value={form.contactName} onChange={upd("contactName")} placeholder="e.g. Amara Osei" />
+              <div className="input-wrapper"><i className="ti ti-user input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.contactName} onChange={upd("contactName")} placeholder="e.g. Amara Osei" /></div>
             </div>
             <div className="field">
               <label className="field-label">Job title</label>
-              <input className="input input-md" value={form.jobTitle} onChange={upd("jobTitle")} placeholder="e.g. Marketing Manager" />
+              <div className="input-wrapper"><i className="ti ti-briefcase input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.jobTitle} onChange={upd("jobTitle")} placeholder="e.g. Marketing Manager" /></div>
             </div>
           </div>
           <div className="field-row">
@@ -458,6 +458,8 @@ const PAYMENT_METHODS = [
   },
 ];
 
+// Leading icon inside each dynamic input, keyed by what the field collects.
+const FIELD_ICON = { phone: "ti-device-mobile", till: "ti-hash", email: "ti-mail", bank: "ti-building-bank", account: "ti-hash", holder: "ti-user" };
 function ConnectMethodModal({ method, onClose, onConnect }) {
   const [values, setValues] = useState({});
   if (!method) return null;
@@ -473,12 +475,15 @@ function ConnectMethodModal({ method, onClose, onConnect }) {
         {method.fields.map((f) => (
           <div className="field" key={f.key}>
             <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
-            <input
-              className="input input-md"
-              placeholder={f.placeholder}
-              value={values[f.key] ?? ""}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-            />
+            <div className="input-wrapper">
+              <i className={`ti ${FIELD_ICON[f.key] ?? "ti-pencil"} input-icon left`} aria-hidden="true" />
+              <input
+                className="input input-md input-icon-left"
+                placeholder={f.placeholder}
+                value={values[f.key] ?? ""}
+                onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -738,16 +743,16 @@ function SecurityTab({ onDirty }) {
             <div className="settings-stack" style={{ gap: 12 }}>
               <div className="field">
                 <label className="field-label field-required">Current password</label>
-                <input className="input input-md" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="••••••••" />
+                <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="••••••••" /></div>
               </div>
               <div className="field-row">
                 <div className="field">
                   <label className="field-label field-required">New password</label>
-                  <input className="input input-md" type="password" value={pwForm.next} onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))} placeholder="At least 8 characters" />
+                  <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.next} onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))} placeholder="At least 8 characters" /></div>
                 </div>
                 <div className="field">
                   <label className="field-label field-required">Confirm new password</label>
-                  <input className="input input-md" type="password" value={pwForm.confirm} onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))} placeholder="Re-enter your new password" />
+                  <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.confirm} onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))} placeholder="Re-enter your new password" /></div>
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>

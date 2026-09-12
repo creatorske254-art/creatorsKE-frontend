@@ -108,7 +108,7 @@ function RequestResetForm() {
                 style={{ ...inputStyle(errors.email), paddingLeft: '40px' }}
               />
             </div>
-            {errors.email && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.email.message}</span>}
+            {errors.email && <span className="field-hint error">{errors.email.message}</span>}
           </div>
         </div>
 
@@ -229,7 +229,7 @@ function SetNewPasswordForm({ token }) {
               </button>
             </div>
             {errors.password
-              ? <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.password.message}</span>
+              ? <span className="field-hint error">{errors.password.message}</span>
               : <span style={{ fontSize: '12px', color: 'var(--grey-400)' }}>Must contain a number and a capital letter</span>
             }
           </div>
@@ -249,7 +249,7 @@ function SetNewPasswordForm({ token }) {
                 {showConfirm ? <IconEyeOff size={15} /> : <IconEye size={15} />}
               </button>
             </div>
-            {errors.confirmPassword && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.confirmPassword.message}</span>}
+            {errors.confirmPassword && <span className="field-hint error">{errors.confirmPassword.message}</span>}
           </div>
         </div>
 

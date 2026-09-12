@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { IconEye, IconEyeOff, IconLoader2 } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconLoader2, IconMail, IconLock } from '@tabler/icons-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROLE_HOME, POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
@@ -118,11 +118,6 @@ export default function LoginPage() {
           padding: '40px 36px 36px',
           boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
-          {/* Logo */}
-          <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', textDecoration: 'none', display: 'inline-block', marginBottom: '28px' }}>
-            Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
-          </Link>
-
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--black)', marginBottom: '6px' }}>
             Welcome back
           </h1>
@@ -140,24 +135,28 @@ export default function LoginPage() {
               {/* Email */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
-                <input
-                  type="email"
-                  placeholder="you@email.com"
-                  {...register('email')}
-                  style={inputStyle(errors.email)}
-                />
-                {errors.email && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.email.message}</span>}
+                <div className="input-wrapper">
+                  <IconMail className="input-icon left" aria-hidden="true" />
+                  <input
+                    type="email"
+                    placeholder="you@email.com"
+                    {...register('email')}
+                    style={{ ...inputStyle(errors.email), paddingLeft: '38px' }}
+                  />
+                </div>
+                {errors.email && <span className="field-hint error">{errors.email.message}</span>}
               </div>
 
               {/* Password */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <label style={labelStyle}>Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
-                <div style={{ position: 'relative' }}>
+                <div className="input-wrapper">
+                  <IconLock className="input-icon left" aria-hidden="true" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     {...register('password')}
-                    style={{ ...inputStyle(errors.password), paddingRight: '42px' }}
+                    style={{ ...inputStyle(errors.password), paddingLeft: '38px', paddingRight: '42px' }}
                   />
                   <button
                     type="button"
@@ -167,7 +166,7 @@ export default function LoginPage() {
                     {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
                   </button>
                 </div>
-                {errors.password && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.password.message}</span>}
+                {errors.password && <span className="field-hint error">{errors.password.message}</span>}
                 <Link to="/reset-password" style={{ fontSize: '12px', color: 'var(--purple-600)', fontWeight: 500, textAlign: 'right', textDecoration: 'none', marginTop: '-4px' }}>
                   Forgot password?
                 </Link>

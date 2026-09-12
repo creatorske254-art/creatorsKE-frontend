@@ -238,15 +238,18 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
       <label style={{ display: 'block', fontSize: 12, color: 'var(--grey-600)', marginBottom: 6 }}>
         Phone number
       </label>
-      <input
-        className="input input-md"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        placeholder="+254 7XX XXX XXX"
-        inputMode="tel"
-        disabled={isSubmitting}
-        style={{ width: '100%', marginBottom: 8 }}
-      />
+      <div className="input-wrapper" style={{ marginBottom: 8 }}>
+        <i className="ti ti-device-mobile input-icon left" aria-hidden="true" />
+        <input
+          className="input input-md input-icon-left"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="+254 7XX XXX XXX"
+          inputMode="tel"
+          disabled={isSubmitting}
+          style={{ width: '100%' }}
+        />
+      </div>
       <p style={{ fontSize: 12, color: 'var(--grey-400)', lineHeight: 1.6, marginBottom: 20 }}>
         You'll get a prompt on this number to authorise the payment. Your 7-day trial starts today.
         you can cancel from Settings before it ends and you won't be charged.

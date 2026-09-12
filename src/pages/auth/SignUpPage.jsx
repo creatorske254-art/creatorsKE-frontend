@@ -12,6 +12,9 @@ import {
   IconEye,
   IconEyeOff,
   IconLoader2,
+  IconUser,
+  IconMail,
+  IconLock,
 } from '@tabler/icons-react';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROLES } from '@/features/auth/constants/roles';
@@ -263,37 +266,37 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
           <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <label style={labelStyle}>First name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <input type="text" placeholder="e.g. Amara" {...register('firstName')} style={inputStyle(errors.firstName)} />
-              {errors.firstName && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.firstName.message}</span>}
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Amara" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: '38px' }} /></div>
+              {errors.firstName && <span className="field-hint error">{errors.firstName.message}</span>}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <label style={labelStyle}>Last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <input type="text" placeholder="e.g. Osei" {...register('lastName')} style={inputStyle(errors.lastName)} />
-              {errors.lastName && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.lastName.message}</span>}
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Osei" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: '38px' }} /></div>
+              {errors.lastName && <span className="field-hint error">{errors.lastName.message}</span>}
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <input type="email" placeholder="you@email.com" {...register('email')} style={inputStyle(errors.email)} />
-            {errors.email && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.email.message}</span>}
+            <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@email.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: '38px' }} /></div>
+            {errors.email && <span className="field-hint error">{errors.email.message}</span>}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <div style={{ position: 'relative' }}>
+            <div className="input-wrapper"><IconLock className="input-icon left" aria-hidden="true" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="At least 8 characters"
                 {...register('password', { onChange: (e) => setPwValue(e.target.value) })}
-                style={{ ...inputStyle(errors.password), paddingRight: '42px' }}
+                style={{ ...inputStyle(errors.password), paddingLeft: '38px', paddingRight: '42px' }}
               />
               <button type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
               </button>
             </div>
             <PasswordStrengthBars score={getPwStrength(pwValue)} />
-            {errors.password && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.password.message}</span>}
+            {errors.password && <span className="field-hint error">{errors.password.message}</span>}
           </div>
         </div>
 
@@ -368,27 +371,27 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Company name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <input type="text" placeholder="e.g. Acme Kenya Ltd" {...register('companyName')} style={inputStyle(errors.companyName)} />
-            {errors.companyName && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.companyName.message}</span>}
+            <div className="input-wrapper"><IconBuildingStore className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Acme Kenya Ltd" {...register('companyName')} style={{ ...inputStyle(errors.companyName), paddingLeft: '38px' }} /></div>
+            {errors.companyName && <span className="field-hint error">{errors.companyName.message}</span>}
           </div>
 
           <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <label style={labelStyle}>Contact first name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <input type="text" placeholder="e.g. Jane" {...register('firstName')} style={inputStyle(errors.firstName)} />
-              {errors.firstName && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.firstName.message}</span>}
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Jane" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: '38px' }} /></div>
+              {errors.firstName && <span className="field-hint error">{errors.firstName.message}</span>}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <label style={labelStyle}>Contact last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <input type="text" placeholder="e.g. Kariuki" {...register('lastName')} style={inputStyle(errors.lastName)} />
-              {errors.lastName && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.lastName.message}</span>}
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Kariuki" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: '38px' }} /></div>
+              {errors.lastName && <span className="field-hint error">{errors.lastName.message}</span>}
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Business email <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <input type="email" placeholder="you@company.com" {...register('email')} style={inputStyle(errors.email)} />
-            {errors.email && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.email.message}</span>}
+            <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@company.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: '38px' }} /></div>
+            {errors.email && <span className="field-hint error">{errors.email.message}</span>}
             <span style={{ fontSize: '12px', color: 'var(--grey-400)', lineHeight: 1.5 }}>
               Use your company email domain. Free email services like Gmail are not accepted.
             </span>
@@ -396,19 +399,19 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={labelStyle}>Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <div style={{ position: 'relative' }}>
+            <div className="input-wrapper"><IconLock className="input-icon left" aria-hidden="true" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="At least 8 characters"
                 {...register('password', { onChange: (e) => setPwValue(e.target.value) })}
-                style={{ ...inputStyle(errors.password), paddingRight: '42px' }}
+                style={{ ...inputStyle(errors.password), paddingLeft: '38px', paddingRight: '42px' }}
               />
               <button type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
               </button>
             </div>
             <PasswordStrengthBars score={getPwStrength(pwValue)} />
-            {errors.password && <span style={{ fontSize: '12px', color: 'var(--status-error-text)' }}>{errors.password.message}</span>}
+            {errors.password && <span className="field-hint error">{errors.password.message}</span>}
           </div>
         </div>
 
@@ -502,13 +505,6 @@ export default function SignUpPage() {
           padding: '40px 36px 36px',
           boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
-          <Link
-            to="/"
-            style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', textDecoration: 'none', display: 'inline-block', marginBottom: '28px' }}
-          >
-            Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
-          </Link>
-
           {step === 1 && <StepChooseType onContinue={handleContinue} />}
           {step === 2 && role === ROLES.CREATOR && <CreatorSignUpForm onBack={handleBack} loading={loading} setLoading={setLoading} />}
           {step === 2 && role === ROLES.BRAND   && <BrandSignUpForm   onBack={handleBack} loading={loading} setLoading={setLoading} />}

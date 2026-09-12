@@ -473,10 +473,10 @@ export default function PortfolioBuilderPage() {
             {/* 2. Identity */}
             <SectionCard icon="ti-id-badge" title="Identity">
               <Field label="Full name" required>
-                <input className="inp" placeholder="e.g. Amara Osei" {...register('name')} />
+                <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-user" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" {...register('name')} /></div>
               </Field>
               <Field label="Role / tagline">
-                <input className="inp" placeholder="e.g. Lifestyle & travel creator" {...register('role')} />
+                <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-briefcase" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. Lifestyle & travel creator" {...register('role')} /></div>
               </Field>
               <Field label="Location label">
                 <div className="inp-wrap">
@@ -518,7 +518,7 @@ export default function PortfolioBuilderPage() {
                   </div>
                 </Field>
                 <Field label="Avg. views/video">
-                  <input className="inp" placeholder="e.g. 6,400" {...register('socialStats.ttAvgViews')} />
+                  <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-eye" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 6,400" {...register('socialStats.ttAvgViews')} /></div>
                 </Field>
               </div>
               <div className="pb-g2">
@@ -529,7 +529,7 @@ export default function PortfolioBuilderPage() {
                   </div>
                 </Field>
                 <Field label="Core audience age">
-                  <input className="inp" placeholder="e.g. 18-30" {...register('socialStats.audienceAge')} />
+                  <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-users" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 18-30" {...register('socialStats.audienceAge')} /></div>
                 </Field>
               </div>
             </SectionCard>

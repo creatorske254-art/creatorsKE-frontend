@@ -1,6 +1,8 @@
 import { useFieldArray } from 'react-hook-form';
 import EmptyState from '@/components/shared/EmptyState';
 import { IconDeviceMobile, IconPercentage, IconPlus, IconTrash } from '@tabler/icons-react';
+import Select from '@/components/ui/Select';
+import { Controller } from 'react-hook-form';
 
 const PLATFORMS = [
   { value: 'instagram', label: 'Instagram' },
@@ -75,16 +77,22 @@ export function SocialStatsForm({ control, register, errors }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)', alignItems: 'end' }}>
               <div className="field">
                 <label className="field-label field-required">Platform</label>
-                <div className="select-wrapper">
-                  <select
-                    {...register(`socialStats.${index}.platform`, { required: 'Select a platform' })}
-                    className={`input input-md ${e.platform ? 'input-error' : ''}`}
-                  >
-                    <option value="">Select platform</option>
-                    {PLATFORMS.map((p) => (
-                      <option key={p.value} value={p.value}>{p.label}</option>
-                    ))}
-                  </select>
+                <div>
+                  <Controller
+                    control={control}
+                    name={`socialStats.${index}.platform`}
+                    rules={{ required: 'Select a platform' }}
+                    render={({ field }) => (
+                      <Select
+                        aria-label="Platform"
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
+                        options={PLATFORMS}
+                        placeholder="Select platform"
+                        className={e.platform ? 'input-error' : ''}
+                      />
+                    )}
+                  />
                 </div>
                 {e.platform && <span className="field-hint error">{e.platform.message}</span>}
               </div>

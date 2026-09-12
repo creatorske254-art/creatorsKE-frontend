@@ -23,4 +23,9 @@ export const brandService = {
   listInvoices: (params) => api.get('/brands/invoices', { params }).then((r) => r.data),
   getInvoicePdfUrl: (id) => `${api.defaults.baseURL}/brands/invoices/${id}/pdf`,
   listTransactions: (params) => api.get('/brands/transactions', { params }).then((r) => r.data),
+
+  // Team members on a brand account - specified in BACKEND_API_SPEC.md, not yet built.
+  listTeam: () => api.get('/brands/team').then((r) => r.data),
+  inviteTeamMember: (email, role) => api.post('/brands/team/invite', { email, role }).then((r) => r.data),
+  removeTeamMember: (id) => api.delete(`/brands/team/${id}`).then((r) => r.data),
 };

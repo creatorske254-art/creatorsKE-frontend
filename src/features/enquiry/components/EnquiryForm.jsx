@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCreateEnquiry } from '../hooks/useEnquiries';
 import { formatCurrency } from '@/lib/utils';
+import Select from '@/components/ui/Select';
 
 const LABEL_STYLE = {
   display: 'block',
@@ -33,18 +34,13 @@ export default function EnquiryForm({ creatorId, packages = [], initialPackageId
       {packages.length > 0 && (
         <div>
           <label style={LABEL_STYLE}>Package</label>
-          <select
-            className="input input-md"
+          <Select
+            aria-label="Package"
             value={packageId}
-            onChange={(e) => setPackageId(e.target.value)}
-          >
-            {packages.map((pkg) => (
-              <option key={pkg.id} value={pkg.id}>
-                {pkg.name}
-                {pkg.price ? ` · ${formatCurrency(pkg.price)}` : ''}
-              </option>
-            ))}
-          </select>
+            onChange={setPackageId}
+            options={packages.map((pkg) => ({ value: pkg.id, label: pkg.name, hint: pkg.price ? formatCurrency(pkg.price) : undefined }))}
+            placeholder="Choose a package"
+          />
         </div>
       )}
 

@@ -31,4 +31,10 @@ export const adminService = {
   getReengagement: () => api.get('/admin/re-engagement').then((r) => r.data),
   sendReengagement: (segmentId, options) =>
     api.post('/admin/re-engagement/send', { segmentId, ...options }).then((r) => r.data),
+
+  // Admin settings page - platform rules and the admin roster.
+  getSettings: () => api.get('/admin/settings').then((r) => r.data),
+  updateSettings: (rules) => api.put('/admin/settings', rules).then((r) => r.data),
+  listTeam: () => api.get('/admin/team').then((r) => r.data),
+  removeAdmin: (id) => api.delete(`/admin/team/${id}`).then((r) => r.data),
 };

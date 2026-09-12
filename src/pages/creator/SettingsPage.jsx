@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
@@ -8,273 +8,26 @@ import { useImageUpload } from '@/lib/useImageUpload';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import Modal from '@/components/ui/Modal';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
-import { useTheme } from '@/context/ThemeContext';
+import { SettingsShell, Toggle, ToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard } from '@/components/settings';
 import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
-import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandWhatsapp, IconBrandYoutube, IconBuildingBank, IconCheck, IconCreditCard, IconDeviceLaptop, IconDeviceMobile, IconEyeOff, IconHash, IconLock, IconMail, IconMapPin, IconMoon, IconPalette, IconPencil, IconQrcode, IconShieldCheck, IconShieldLock, IconSun, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
-
-// Page-scoped styles
-// Every value below reads from the global index.css tokens (--purple-*,
-// --grey-*, --status-*, --radius-*, --space-*, --text-*, --shadow-*).
-// Nothing here redefines a token or a color; index.css is the single
-// source of truth, this file only adds the handful of component patterns
-// index.css doesn't already ship (tabs, toggle, field labels, bento grid,
-// notification/payment rows, danger zone, save bar). Everything else
-// (.card, .btn-*, .input, .tag, .avatar, .stat-card…) is used as-is from
-// the global stylesheet.
-const css = `
-  /* This page sits inside the dashboard's content area, which already
-     supplies var(--page-bg). No background here, and no min-height/100vh
-     this is a nested panel, not a standalone page. It fills the content
-     area edge to edge; the dashboard shell owns the outer gutter. */
-  .settings-page {
-    font-family: var(--font-body);
-    color: var(--black);
-    font-size: var(--text-body-size);
-    line-height: 1.6;
-  }
-
-  /* Header */
-  .settings-header { margin-bottom: var(--space-24); }
-
-  /* Tabs (pill track, per component library §Navigation) */
-  .settings-tabs {
-    display: flex;
-    gap: var(--space-2);
-    background: var(--white);
-    border: 0.5px solid var(--grey-100);
-    box-shadow: var(--shadow-xs);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    margin-bottom: var(--space-24);
-    width: fit-content;
-    max-width: 100%;
-    overflow-x: auto;
-  }
-  .settings-tab {
-    display: flex;
-    align-items: center;
-    gap: var(--space-8);
-    padding: var(--space-8) var(--space-16);
-    border-radius: var(--radius-md);
-    border: none;
-    background: none;
-    font-family: var(--font-body);
-    font-size: var(--text-body-sm-size);
-    font-weight: 500;
-    color: var(--grey-500);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    white-space: nowrap;
-  }
-  .settings-tab:hover { color: var(--black); background: var(--page-bg); }
-  .settings-tab.active { background: var(--purple-600); color: var(--white); }
-  .settings-tab.active:hover { background: var(--purple-600); color: var(--white); }
-
-  /* Bento grid utilities */
-  /* Content fills the full width of the content area, no max-width cap,
-     and reflows into single column once it can't fit two/three/four up. */
-  .bento-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-16); align-items: start; }
-  .bento-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-16); align-items: start; }
-  .bento-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-16); align-items: start; }
-  .bento-span-2 { grid-column: span 2; }
-  .settings-stack { display: flex; flex-direction: column; gap: var(--space-16); }
-
-  /* Field */
-  .field { display: flex; flex-direction: column; gap: var(--space-8); }
-  .field-hint { margin-top: var(--space-2); } /* base styling + icon come from index.css */
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
-  .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
-
-  /* index.css positions the icon glyph (.input-icon / .left / .right) but
-     doesn't yet ship the matching input padding, added here so the icon
-     never overlaps typed text. */
-  .input-icon-left { padding-left: var(--space-40) !important; }
-  .input-icon-right { padding-right: var(--space-40) !important; }
-  .textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
-
-  /* This page packs in far more fields than a typical form, so the default
-     .input border (meant for a single isolated field) reads as a grid of
-     boxes when repeated dozens of times. Swap resting-state emphasis from
-     border to a faint fill, and let the border do its job only on focus,
-     surface shading over stacked outlines, per standard "too many borders"
-     UI guidance. */
-  .settings-page .input,
-  .settings-page .select-wrapper select {
-    border-color: var(--grey-100) !important;
-    background: var(--page-bg) !important;
-    transition: all var(--transition-fast);
-  }
-  .settings-page .input:hover,
-  .settings-page .select-wrapper select:hover {
-    border-color: var(--grey-200) !important;
-  }
-  .settings-page .input:focus,
-  .settings-page .select-wrapper select:focus {
-    border-color: var(--purple-600) !important;
-    background: var(--white) !important;
-  }
-
-  /* Toggle switch (per component library §Forms) */
-  .settings-toggle {
-    width: 44px;
-    height: 24px;
-    border-radius: var(--radius-pill);
-    background: var(--grey-200);
-    position: relative;
-    cursor: pointer;
-    transition: background var(--transition-fast);
-    flex-shrink: 0;
-    border: none;
-    padding: 0;
-  }
-  .settings-toggle.on { background: var(--purple-600); }
-  .settings-toggle::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--white);
-    box-shadow: var(--shadow-xs);
-    transition: transform var(--transition-fast);
-  }
-  .settings-toggle.on::after { transform: translateX(20px); }
-
-  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
-  .toggle-row-text .toggle-row-label { font-size: var(--text-body-sm-size); font-weight: 500; }
-
-  /* Notification row */
-  .notif-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-16); padding: var(--space-12) 0; }
-  .notif-row:not(:last-child) { border-bottom: 0.5px solid var(--grey-100); }
-  .notif-row-label { font-size: var(--text-body-sm-size); font-weight: 500; }
-  .notif-row-desc { font-size: 12px; color: var(--grey-400); margin-top: var(--space-2); }
-
-  /* Payment method row */
-  .pay-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-12);
-    padding: var(--space-12) var(--space-16);
-    border: 0.5px solid transparent;
-    border-radius: var(--radius-lg);
-    background: var(--page-bg);
-    transition: all var(--transition-fast);
-  }
-  .pay-row.connected { background: var(--white); border-color: var(--grey-100); box-shadow: var(--shadow-xs); }
-  .pay-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: var(--text-h4-size); flex-shrink: 0; }
-  .pay-info { flex: 1; min-width: 0; }
-  .pay-name { font-size: var(--text-body-sm-size); font-weight: 500; }
-  .pay-desc { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-2); }
-
-  /* Selectable option card (theme / layout pickers) */
-  .option-card {
-    padding: var(--space-12);
-    border: 0.5px solid transparent;
-    border-radius: var(--radius-lg);
-    background: var(--page-bg);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-8);
-  }
-  .option-card:hover { background: var(--grey-100); }
-  .option-card.selected { border-color: var(--black); background: var(--white); box-shadow: var(--shadow-xs); }
-  .option-card-label { font-size: var(--text-body-sm-size); }
-  .option-card.selected .option-card-label { font-weight: 600; }
-
-  /* Accent swatches */
-  .accent-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all var(--transition-fast); flex-shrink: 0; }
-  .accent-swatch.selected { border-color: var(--black); box-shadow: 0 0 0 2px var(--white) inset; }
-
-  /* Danger zone */
-  .danger-zone { border: 0.5px solid rgba(239,68,68,0.15); background: var(--status-error-bg); border-radius: var(--radius-xl); padding: var(--space-20); }
-  .danger-zone-title { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--status-error-text); margin-bottom: var(--space-4); }
-  .danger-zone-desc { font-size: 12.5px; color: var(--status-error-text); opacity: 0.85; margin-bottom: var(--space-16); }
-
-  /* Save bar: floats above the bottom edge with its own card surface,
-     instead of bleeding flush into the content above and the viewport
-     below. The gap above is what makes it read as a separate, persistent
-     control rather than the last item in the stack. */
-  .settings-savebar {
-    background: var(--white);
-    border: 0.5px solid var(--grey-100);
-    border-radius: var(--radius-xl);
-    padding: var(--space-12) var(--space-20);
-    position: sticky;
-    bottom: var(--space-16);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-8);
-    margin-top: var(--space-24);
-    box-shadow: var(--shadow-md);
-  }
-  .settings-savebar-hint { font-size: 12px; color: var(--grey-400); }
-
-  /* Responsive */
-  @media (max-width: 900px) {
-    .bento-4 { grid-template-columns: repeat(2, 1fr); }
-    .bento-3 { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 640px) {
-    .bento-2, .bento-3, .bento-4 { grid-template-columns: 1fr; }
-    .bento-span-2 { grid-column: span 1; }
-    .field-row { grid-template-columns: 1fr; }
-    .settings-tabs { width: 100%; }
-  }
-`;
+import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandWhatsapp, IconBrandYoutube, IconBuildingBank, IconCreditCard, IconDeviceMobile, IconEyeOff, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
+import Select from '@/components/ui/Select';
 
 const TABS = [
   { id: "profile", label: "Profile", icon: IconUser },
-  { id: "notifications", label: "Notifications", icon: IconBell },
-  { id: "payments", label: "Payments", icon: IconWallet },
-  { id: "appearance", label: "Appearance", icon: IconPalette },
   { id: "account", label: "Account", icon: IconShieldLock },
+  { id: "notifications", label: "Notifications", icon: IconBell },
+  { id: "payouts", label: "Payouts", icon: IconWallet },
+  { id: "appearance", label: "Appearance", icon: IconPalette },
+  { id: "privacy", label: "Privacy & data", icon: IconLockAccess },
 ];
-
-const ACCENT_COLORS = [
-  { hex: "#534AB7", label: "Purple" },
-  { hex: "#0D0D0C", label: "Ink" },
-  { hex: "#0F6E56", label: "Forest" },
-  { hex: "#854F0B", label: "Amber" },
-  { hex: "#185FA5", label: "Ocean" },
-  { hex: "#993556", label: "Rose" },
-  { hex: "#993C1D", label: "Rust" },
-];
-
-// Sub-components
-
-function Toggle({ on, onChange }) {
-  return (
-    <button
-      className={`settings-toggle${on ? " on" : ""}`}
-      onClick={() => onChange(!on)}
-      aria-pressed={on}
-    />
-  );
-}
-
-function ToggleRow({ label, desc, on, onChange }) {
-  return (
-    <div className="toggle-row">
-      <div className="toggle-row-text">
-        <div className="toggle-row-label">{label}</div>
-        {desc && <p className="field-hint">{desc}</p>}
-      </div>
-      <Toggle on={on} onChange={onChange} />
-    </div>
-  );
-}
 
 // Tab panels
 
 function ProfileTab() {
   const [saved, setSaved] = useState(false);
+  const [category, setCategory] = useState('Lifestyle & Travel');
+  const [primaryPlatform, setPrimaryPlatform] = useState('Instagram');
 
   function handleSave() {
     setSaved(true);
@@ -367,14 +120,8 @@ function ProfileTab() {
             </div>
             <div className="field">
               <label className="field-label">Category</label>
-              <div className="select-wrapper">
-                <select className="input input-md">
-                  <option>Lifestyle & Travel</option>
-                  <option>Fashion & Beauty</option>
-                  <option>Food & Wellness</option>
-                  <option>Tech & Gaming</option>
-                  <option>Finance & Business</option>
-                </select>
+              <div>
+                <Select aria-label="Category" value={category} onChange={setCategory} options={["Lifestyle & Travel", "Fashion & Beauty", "Food & Wellness", "Tech & Gaming", "Finance & Business"].map((o) => ({ value: o, label: o }))} />
               </div>
             </div>
           </div>
@@ -399,13 +146,8 @@ function ProfileTab() {
           </div>
           <div className="stat-card">
             <div className="stat-card-label">Primary platform</div>
-            <div className="select-wrapper" style={{ marginTop: 'var(--space-8)' }}>
-              <select className="input input-sm">
-                <option>Instagram</option>
-                <option>TikTok</option>
-                <option>YouTube</option>
-                <option>Twitter / X</option>
-              </select>
+            <div style={{ marginTop: 'var(--space-8)' }}>
+              <Select size="sm" aria-label="Primary platform" value={primaryPlatform} onChange={setPrimaryPlatform} options={["Instagram", "TikTok", "YouTube", "Twitter / X"].map((o) => ({ value: o, label: o }))} />
             </div>
           </div>
         </div>
@@ -645,6 +387,8 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
 
 function PaymentsTab() {
   const [connected, setConnected] = useState({});
+  const [defaultMethod, setDefaultMethod] = useState('');
+  const [currency, setCurrency] = useState('KES');
   const [connecting, setConnecting] = useState(null); // provider key
   const [autoWithdraw, setAutoWithdraw] = useState(true);
   const [disconnecting, setDisconnecting] = useState(null);
@@ -722,16 +466,8 @@ function PaymentsTab() {
           <div className="field-row">
             <div className="field">
               <label className="field-label">Default payout method</label>
-              <div className="select-wrapper">
-                <select className="input input-md" disabled={Object.keys(connected).length === 0}>
-                  {Object.keys(connected).length === 0 ? (
-                    <option>No methods connected yet</option>
-                  ) : (
-                    Object.keys(connected).map((key) => (
-                      <option key={key}>{PAY_PROVIDERS[key].name}</option>
-                    ))
-                  )}
-                </select>
+              <div>
+                <Select aria-label="Default payout method" disabled={Object.keys(connected).length === 0} placeholder="No methods connected yet" value={defaultMethod} onChange={setDefaultMethod} options={Object.keys(connected).map((key) => ({ value: key, label: PAY_PROVIDERS[key].name }))} />
               </div>
               {Object.keys(connected).length === 0 && (
                 <p className="field-hint">Connect a payment method above to choose a default.</p>
@@ -739,12 +475,8 @@ function PaymentsTab() {
             </div>
             <div className="field">
               <label className="field-label">Payout currency</label>
-              <div className="select-wrapper">
-                <select className="input input-md">
-                  <option>KES – Kenyan Shilling</option>
-                  <option>USD – US Dollar</option>
-                  <option>EUR – Euro</option>
-                </select>
+              <div>
+                <Select aria-label="Payout currency" value={currency} onChange={setCurrency} options={[{ value: 'KES', label: 'KES', hint: 'Kenyan Shilling' }, { value: 'USD', label: 'USD', hint: 'US Dollar' }, { value: 'EUR', label: 'EUR', hint: 'Euro' }]} />
               </div>
             </div>
           </div>
@@ -761,100 +493,39 @@ function PaymentsTab() {
 }
 
 function AppearanceTab() {
-  // Real, persisted preferences - ThemeContext applies these to <html>, so
-  // they take effect instantly across every page and survive a reload.
-  const { theme, setTheme, accent, setAccent } = useTheme();
+  // Theme and accent are applied instantly by ThemeContext and persisted;
+  // the rate card layout is creator-only.
   const [layout, setLayout] = useState(() => {
     try { return localStorage.getItem('creatorske_card_layout') ?? 'Classic'; } catch { return 'Classic'; }
   });
-  const [saved, setSaved] = useState(false);
-
   function handleLayout(next) {
     setLayout(next);
     try { localStorage.setItem('creatorske_card_layout', next); } catch { /* storage unavailable */ }
-  }
-
-  function handleSave() {
-    setSaved(true);
-    toast.success('Appearance preferences saved.');
-    setTimeout(() => setSaved(false), 2000);
+    toast.success(`${next} layout applied to your rate card.`);
   }
 
   return (
     <div className="settings-stack">
-      <CollapsibleCard title="Interface theme" collapsible={false}>
-        <div className="bento-3" style={{ marginTop: 'var(--space-16)' }}>
-          {["light", "dark", "system"].map((t) => (
-            <button
-              key={t}
-              onClick={() => setTheme(t)}
-              className={`option-card${theme === t ? " selected" : ""}`}
-              style={{ padding: "var(--space-16) var(--space-8)" }}
-            >
-              {t === "light" ? <IconSun className="icon-md" aria-hidden="true" /> : t === "dark" ? <IconMoon className="icon-md" aria-hidden="true" /> : <IconDeviceLaptop className="icon-md" aria-hidden="true" />}
-              <span className="option-card-label">{t.charAt(0).toUpperCase() + t.slice(1)}</span>
+      <ThemeCard />
+      <div className="bento-2">
+        <AccentCard hint="Applied to buttons, highlights, and your rate card theme." />
+        <DisplayCard />
+      </div>
+      <CollapsibleCard title="Rate card layout" collapsible={false}>
+        <div style={{ display: "flex", gap: 'var(--space-12)', marginTop: 'var(--space-16)', maxWidth: 420 }}>
+          {["Classic", "Minimal"].map((option) => (
+            <button key={option} type="button" onClick={() => handleLayout(option)} aria-pressed={layout === option} className={`option-card${layout === option ? " selected" : ""}`} style={{ flex: 1, alignItems: "stretch", cursor: "pointer" }}>
+              <div style={{ height: 52, background: "var(--white)", border: "0.5px solid var(--grey-100)", borderRadius: 6, padding: 'var(--space-8)', display: "flex", flexDirection: "column", gap: 'var(--space-4)' }}>
+                <div style={{ height: 5, background: "var(--purple-50)", borderRadius: 2, width: "60%" }} />
+                <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2 }} />
+                <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2, width: option === "Minimal" ? "45%" : "75%" }} />
+                {option === "Classic" && <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2, width: "50%" }} />}
+              </div>
+              <span className="option-card-label" style={{ textAlign: "center", width: "100%" }}>{option}</span>
             </button>
           ))}
         </div>
       </CollapsibleCard>
-
-      <div className="bento-2">
-        <CollapsibleCard title="Accent colour" collapsible={false}>
-          <p className="field-hint" style={{ marginBottom: 'var(--space-16)' }}>Applied to buttons, highlights, and your rate card theme.</p>
-          <div style={{ display: "flex", gap: 'var(--space-12)', flexWrap: "wrap" }}>
-            {ACCENT_COLORS.map(({ hex, label }) => (
-              <div key={hex} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 'var(--space-4)' }}>
-                <button
-                  type="button"
-                  className={`accent-swatch${accent === hex ? " selected" : ""}`}
-                  style={{ background: hex, border: "none", padding: 0, cursor: "pointer" }}
-                  onClick={() => setAccent(hex)}
-                  title={label}
-                  aria-label={`Use ${label} accent`}
-                  aria-pressed={accent === hex}
-                />
-                <span style={{ fontSize: 10, color: "var(--grey-400)" }}>{label}</span>
-              </div>
-            ))}
-          </div>
-        </CollapsibleCard>
-
-        <CollapsibleCard title="Rate card layout" collapsible={false}>
-          <div style={{ display: "flex", gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-            {["Classic", "Minimal"].map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => handleLayout(option)}
-                aria-pressed={layout === option}
-                className={`option-card${layout === option ? " selected" : ""}`}
-                style={{ flex: 1, alignItems: "stretch", cursor: "pointer" }}
-              >
-                <div
-                  style={{
-                    height: 52,
-                    background: "var(--white)",
-                    border: "0.5px solid var(--grey-100)",
-                    borderRadius: 6,
-                    padding: 'var(--space-8)',
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 'var(--space-4)',
-                  }}
-                >
-                  <div style={{ height: 5, background: "var(--purple-50)", borderRadius: 2, width: "60%" }} />
-                  <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2 }} />
-                  <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2, width: "75%" }} />
-                  <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2, width: "50%" }} />
-                </div>
-                <span className="option-card-label" style={{ textAlign: "center", width: "100%" }}>{option}</span>
-              </button>
-            ))}
-          </div>
-        </CollapsibleCard>
-      </div>
-
-      <SaveBar saved={saved} onSave={handleSave} />
     </div>
   );
 }
@@ -862,22 +533,11 @@ function AppearanceTab() {
 function AccountTab() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [saved, setSaved] = useState(false);
   const [confirmUnpublish, setConfirmUnpublish] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [unpublishing, setUnpublishing] = useState(false);
-  const [twoFAOpen, setTwoFAOpen] = useState(false);
-  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
-  const [showInDirectory, setShowInDirectory] = useState(true);
-  const [shareAnalytics, setShareAnalytics] = useState(false);
-
   const { rateCards, unpublishAll, isUnpublishingAll } = useUnpublishAllRateCards();
-
-  function handleSave() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  }
 
   async function handleUnpublishAll() {
     setConfirmUnpublish(false);
@@ -906,93 +566,21 @@ function AccountTab() {
 
   return (
     <div className="settings-stack">
-      <CollapsibleCard title="Login details">
-        <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-          <div className="field">
-            <label className="field-label field-required">Email address</label>
-            <div className="input-wrapper">
-              <IconMail className="icon-sm input-icon left" aria-hidden="true" />
-              <input className="input input-md input-icon-left" type="email" defaultValue="amara@example.com" />
-            </div>
-          </div>
-          <div className="field-divider" />
-          <div className="field">
-            <label className="field-label">Current password</label>
-            <div className="input-wrapper">
-              <IconLock className="icon-sm input-icon left" aria-hidden="true" />
-              <input className="input input-md input-icon-left" type="password" placeholder="••••••••" />
-            </div>
-          </div>
-          <div className="field-row">
-            <div className="field">
-              <label className="field-label">New password</label>
-              <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="At least 8 characters" /></div>
-            </div>
-            <div className="field">
-              <label className="field-label">Confirm new password</label>
-              <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="Re-enter your password" /></div>
-            </div>
-          </div>
-        </div>
-      </CollapsibleCard>
-
+      <LoginDetailsCard collapsible={false} />
       <div className="bento-2">
-        <CollapsibleCard title="Two-factor authentication" collapsible={false}>
-          <div style={{ marginTop: 'var(--space-16)' }}>
-            <ToggleRow
-              label="Enable 2FA"
-              desc="Protect your account with an authenticator app"
-              on={twoFAEnabled}
-              onChange={setTwoFAEnabled}
-            />
-          </div>
-          <div style={{ marginTop: 'var(--space-12)' }}>
-            <button className="btn btn-ghost btn-sm" onClick={() => setTwoFAOpen(true)}>
-              <IconShieldCheck className="icon-sm" aria-hidden="true" />
-              Set up authenticator
-            </button>
-          </div>
-        </CollapsibleCard>
-
-        <CollapsibleCard title="Privacy" collapsible={false}>
-          <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-            <ToggleRow
-              label="Show profile in Creatorske directory"
-              desc="Let brands find you via the platform search"
-              on={showInDirectory}
-              onChange={setShowInDirectory}
-            />
-            <div className="field-divider" />
-            <ToggleRow
-              label="Share anonymised analytics with Creatorske"
-              desc="Helps us improve the platform, no personal data shared"
-              on={shareAnalytics}
-              onChange={setShareAnalytics}
-            />
-          </div>
-        </CollapsibleCard>
+        <TwoFactorCard />
+        <SessionsCard />
       </div>
+      <LanguageRegionCard />
 
-      <div className="danger-zone">
-        <div className="danger-zone-title">Danger zone</div>
-        <div className="danger-zone-desc">
-          These actions are permanent and cannot be undone.
-        </div>
-        <div style={{ display: "flex", gap: 'var(--space-8)', flexWrap: "wrap" }}>
-          <button
-            className={`btn btn-danger btn-sm${unpublishing || isUnpublishingAll ? " btn-loading" : ""}`}
-            disabled={unpublishing || isUnpublishingAll}
-            onClick={() => setConfirmUnpublish(true)}
-          >
-            <IconEyeOff className="icon-xs" aria-hidden="true" />
-            Unpublish all cards
-          </button>
-          <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
-            <IconTrash className="icon-xs" aria-hidden="true" />
-            Delete account
-          </button>
-        </div>
-      </div>
+      <DangerZone>
+        <button className={`btn btn-danger btn-sm${unpublishing || isUnpublishingAll ? " btn-loading" : ""}`} disabled={unpublishing || isUnpublishingAll} onClick={() => setConfirmUnpublish(true)}>
+          <IconEyeOff className="icon-xs" aria-hidden="true" />Unpublish all cards
+        </button>
+        <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
+          <IconTrash className="icon-xs" aria-hidden="true" />Delete account
+        </button>
+      </DangerZone>
 
       <ConfirmDialog
         open={confirmUnpublish}
@@ -1003,21 +591,49 @@ function AccountTab() {
         onConfirm={handleUnpublishAll}
         onCancel={() => setConfirmUnpublish(false)}
       />
+      <DeleteAccountDialog open={confirmDelete} deleting={deleting} onConfirm={handleConfirmDelete} onCancel={() => setConfirmDelete(false)} />
+    </div>
+  );
+}
 
-      <DeleteAccountDialog
-        open={confirmDelete}
-        deleting={deleting}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setConfirmDelete(false)}
-      />
+function PrivacyTab() {
+  const [showInDirectory, setShowInDirectory] = useState(true);
+  const [showEarnings, setShowEarnings] = useState(false);
+  const [shareAnalytics, setShareAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(true);
+  const [saved, setSaved] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const set = (fn) => (v) => { fn(v); setDirty(true); };
 
-      <TwoFactorDialog
-        open={twoFAOpen}
-        onClose={() => setTwoFAOpen(false)}
-        onEnabled={() => { setTwoFAEnabled(true); setTwoFAOpen(false); }}
-      />
+  function handleSave() {
+    setSaved(true); setDirty(false);
+    toast.success('Privacy preferences saved.');
+    setTimeout(() => setSaved(false), 2000);
+  }
 
-      <SaveBar saved={saved} onSave={handleSave} />
+  return (
+    <div className="settings-stack">
+      <div className="bento-2">
+        <CollapsibleCard title="Visibility" collapsible={false}>
+          <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
+            <ToggleRow label="Show my profile in the directory" desc="Brands can find you through search and filters. Off = only people with your link can see your card." on={showInDirectory} onChange={set(setShowInDirectory)} />
+            <div className="field-divider" />
+            <ToggleRow label="Show booking count on my rate card" desc="Displays how many campaigns you've completed on Creatorske." on={showEarnings} onChange={set(setShowEarnings)} />
+          </div>
+        </CollapsibleCard>
+        <CollapsibleCard title="Data use" collapsible={false}>
+          <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
+            <ToggleRow label="Share anonymised analytics" desc="Helps us improve the platform. No personal data is shared." on={shareAnalytics} onChange={set(setShareAnalytics)} />
+            <div className="field-divider" />
+            <ToggleRow label="Product news and tips" desc="Occasional emails about new features and how creators use them." on={marketing} onChange={set(setMarketing)} />
+          </div>
+        </CollapsibleCard>
+      </div>
+      <div className="bento-2">
+        <DataExportCard />
+        <LegalCard />
+      </div>
+      <SaveBar dirty={dirty} saved={saved} onSave={handleSave} />
     </div>
   );
 }
@@ -1058,156 +674,17 @@ function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
   );
 }
 
-/**
- * Authenticator-app setup. The backend has no 2FA enrolment endpoint yet, so
- * this walks the real steps and says plainly that the final step is pending
- * rather than silently flipping a switch that protects nothing.
- */
-function TwoFactorDialog({ open, onClose, onEnabled }) {
-  const [code, setCode] = useState("");
-
-  return (
-    <Modal open={open} onClose={onClose} title="Set up authenticator app" size="sm">
-      <ol style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.75, paddingLeft: 'var(--space-20)', marginBottom: 'var(--space-16)' }}>
-        <li>Install an authenticator app (Google Authenticator, Authy, 1Password).</li>
-        <li>Scan the QR code below, or enter the setup key manually.</li>
-        <li>Enter the 6-digit code the app shows to finish.</li>
-      </ol>
-      <div style={{
-        display: "flex", alignItems: "center", gap: 'var(--space-16)', padding: 'var(--space-16)',
-        background: "var(--page-bg)", border: "0.5px solid var(--grey-100)",
-        borderRadius: "var(--radius-lg)", marginBottom: 'var(--space-16)',
-      }}>
-        <div style={{
-          width: 92, height: 92, borderRadius: "var(--radius-md)", background: "var(--white)",
-          border: "0.5px solid var(--grey-200)", display: "flex", alignItems: "center",
-          justifyContent: "center", color: "var(--grey-300)", flexShrink: 0,
-        }}>
-          <IconQrcode className="icon-xl" aria-hidden="true" />
-        </div>
-        <div style={{ minWidth: 0 }}>
-          <div className="field-label" style={{ marginBottom: 'var(--space-4)' }}>Setup key</div>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: "var(--grey-600)", wordBreak: "break-all" }}>
-            Available once 2FA enrolment ships
-          </div>
-        </div>
-      </div>
-      <label className="field-label" style={{ display: "block", marginBottom: 'var(--space-8)' }}>6-digit code</label>
-      <div className="input-wrapper" style={{ marginBottom: 'var(--space-20)' }}>
-        <IconShieldLock className="icon-sm input-icon left" aria-hidden="true" />
-        <input
-          className="input input-md input-icon-left"
-          value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          placeholder="000000"
-          inputMode="numeric"
-          style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
-        />
-      </div>
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
-        <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
-        <button
-          className="btn btn-primary btn-sm"
-          disabled={code.length !== 6}
-          onClick={() => {
-            toast.info("Two-factor enrolment needs backend support, so your code wasn't verified.");
-            onEnabled();
-          }}
-        >
-          Verify &amp; enable
-        </button>
-      </div>
-    </Modal>
-  );
-}
-
-// Lets the SaveBar (rendered deep inside each tab) trigger a tab remount,
-// which is what makes "Discard" actually revert the fields.
-const SettingsActionsContext = createContext({ discard: () => {} });
-
-function SaveBar({ saved, onSave }) {
-  // Discard genuinely reverts: it remounts the active tab, so every field
-  // returns to the values it had on load rather than the button doing nothing.
-  const { discard } = useContext(SettingsActionsContext);
-  const [confirmDiscard, setConfirmDiscard] = useState(false);
-
-  return (
-    <div className="settings-savebar">
-      <span className="settings-savebar-hint">
-        {saved ? (
-          <span style={{ color: "var(--status-success-text)", display: "flex", alignItems: "center", gap: 'var(--space-4)' }}>
-            <IconCheck className="icon-sm" aria-hidden="true" />
-            Changes saved
-          </span>
-        ) : (
-          "Unsaved changes"
-        )}
-      </span>
-      <div style={{ display: "flex", gap: 'var(--space-8)' }}>
-        <button className="btn btn-ghost" onClick={() => setConfirmDiscard(true)}>Discard</button>
-        <button className="btn btn-primary" onClick={onSave}>
-          <IconCheck className="icon-sm" aria-hidden="true" />
-          Save changes
-        </button>
-      </div>
-
-      <ConfirmDialog
-        open={confirmDiscard}
-        variant="danger"
-        title="Discard your changes?"
-        message="Any edits you've made on this tab since it loaded will be reverted. This can't be undone."
-        confirmLabel="Discard changes"
-        onConfirm={() => { setConfirmDiscard(false); discard(); toast.success("Changes discarded."); }}
-        onCancel={() => setConfirmDiscard(false)}
-      />
-    </div>
-  );
-}
-
 // Main component
 
 export default function SettingsPage() {
   usePageMeta('Settings', 'Manage your Creatorske account, profile, and payment settings.');
-  const [activeTab, setActiveTab] = useState("profile");
-  // Bumping this remounts the active tab, resetting its fields - that's what
-  // the SaveBar's Discard button does.
-  const [formEpoch, setFormEpoch] = useState(0);
-  const discard = () => setFormEpoch((n) => n + 1);
-
   const panels = {
-    profile: <ProfileTab />,
-    notifications: <NotificationsTab />,
-    payments: <PaymentsTab />,
-    appearance: <AppearanceTab />,
-    account: <AccountTab />,
+    profile: () => <ProfileTab />,
+    account: () => <AccountTab />,
+    notifications: () => <NotificationsTab />,
+    payouts: () => <PaymentsTab />,
+    appearance: () => <AppearanceTab />,
+    privacy: () => <PrivacyTab />,
   };
-
-  return (
-    <>
-      <style>{css}</style>
-      <div className="settings-page">
-        <div className="settings-header">
-          <h3 className="page-title">Settings</h3>
-          <p className="page-subtitle">Manage your profile, payments, and account preferences.</p>
-        </div>
-
-        <div className="settings-tabs">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              className={`settings-tab${activeTab === tab.id ? " active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <tab.icon className="icon-md" aria-hidden="true" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <SettingsActionsContext.Provider value={{ discard }}>
-          <div key={`${activeTab}-${formEpoch}`}>{panels[activeTab]}</div>
-        </SettingsActionsContext.Provider>
-      </div>
-    </>
-  );
+  return <SettingsShell subtitle="Your profile, sign-in, notifications, payouts and preferences." tabs={TABS} panels={panels} />;
 }

@@ -7,7 +7,7 @@ import { useAdmin } from '@/features/admin/hooks/useAdmin';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
-import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSearch, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
+import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSearch, IconSettings, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
 
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -182,6 +182,12 @@ const SIDEBAR_SECTIONS = [
       { to: '/admin/escrow',            label: 'Escrow cases',      icon: IconLockDollar },
       { to: '/admin/deletion-requests', label: 'Deletion requests', icon: IconUserMinus },
       { to: '/admin/re-engagement',     label: 'Re-engagement',     icon: IconMailForward },
+    ],
+  },
+  {
+    label: 'Account',
+    items: [
+      { to: '/admin/settings', label: 'Settings', icon: IconSettings },
     ],
   },
 ];

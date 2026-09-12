@@ -43,6 +43,22 @@ Every row below is wired in the frontend already: a service method, a TanStack h
 | GET | `/admin/re-engagement` | Segments + send history | `{ segments: [{ id, label, description, count, lastSentAt }], history: [{ id, segment, sentAt, recipients, opened, clicked, reactivated }], abandonedByStep: [{ label, value }] }` - segment ids used: `abandoned_drafts`, `never_published`, `inactive_30d`, `no_enquiry_reply` | `admin/ReEngagementPage.jsx` |
 | POST | `/admin/re-engagement/send` | Queue an email to a segment | `{ segmentId, subject, preview }` -> `{ queued: n }` | `admin/ReEngagementPage.jsx` |
 
+## Settings pages (added with the shared settings shell)
+
+| Method | Path | Purpose | Response shape the page reads | Consumer |
+|---|---|---|---|---|
+| GET | `/brands/team` | Members of a brand account | `{ members: [{ id, name, email, role: owner\|admin\|member\|finance, status: active\|invited }] }` | brand Settings > Team |
+| POST | `/brands/team/invite` | Invite a teammate | `{ email, role }` -> member row with `status: 'invited'` | brand Settings > Team |
+| DELETE | `/brands/team/:id` | Remove a member or withdraw an invite | 204 | brand Settings > Team |
+| GET | `/admin/team` | Admin roster | `{ members: [{ id, name, email, role: owner\|moderator\|finance\|support, status }] }` | admin Settings > Team |
+| DELETE | `/admin/team/:id` | Remove an admin | 204 | admin Settings > Team |
+| GET | `/admin/settings` | Platform rules | `{ platformFeePct, escrowReleaseDays, disputeWindowDays, deletionGraceDays, draftAbandonDays, inactiveDays, enquiryReplyHours, maintenance, maintenanceMessage }` | admin Settings > Platform |
+| PUT | `/admin/settings` | Update platform rules (super admin only) | same object | admin Settings > Platform |
+| GET | `/users/sessions` | Where the account is signed in | `{ sessions: [{ id, device, location, lastActiveAt, current }] }` | every Settings > Account |
+| DELETE | `/users/sessions/:id` / `/users/sessions/others` | Sign out a device / all other devices | 204 | every Settings > Account |
+| PATCH | `/users/preferences` | Language, timezone, week start, privacy toggles, marketing consent | `{ language, timezone, weekStart, showInDirectory, shareAnalytics, marketing, ... }` | every Settings > Account / Privacy & data |
+| POST | `/users/export` | Request a data export (emailed link) | `{ requestedAt }` | Settings > Privacy & data |
+
 ## Response-shape confirmations needed (endpoints exist, shape doesn't)
 
 - **`GET /brands/campaigns/:id`** — does the response include `deliverables`, `revisionPolicy`, `usageRights`, `deliveredFiles`, `enquiryId`? `CampaignDetailPage.jsx` currently merges live fields over placeholder data as a fallback until this is confirmed.

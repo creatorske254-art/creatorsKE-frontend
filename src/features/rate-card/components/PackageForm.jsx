@@ -1,6 +1,8 @@
 import { useFieldArray } from 'react-hook-form';
 import { cn } from '@/lib/utils';
 import { IconAlertCircle, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
+import Select from '@/components/ui/Select';
+import { Controller } from 'react-hook-form';
 
 /**
  * PackageForm
@@ -129,17 +131,25 @@ export default function PackageForm({ index, register, control, errors, onRemove
       {/* ── Revision policy ─────────────────────────────────────────────── */}
       <div className="field">
         <label className="field-label">Revisions included</label>
-        <div className="select-wrapper">
-          <select
-            className="input input-md"
-            {...register(`packages.${index}.revisions`)}
-          >
-            <option value="0">No revisions</option>
-            <option value="1">1 revision</option>
-            <option value="2">2 revisions</option>
-            <option value="3">3 revisions</option>
-            <option value="unlimited">Unlimited</option>
-          </select>
+        <div>
+          <Controller
+            control={control}
+            name={`packages.${index}.revisions`}
+            render={({ field }) => (
+              <Select
+                aria-label="Revisions"
+                value={String(field.value ?? '0')}
+                onChange={field.onChange}
+                options={[
+                  { value: '0', label: 'No revisions' },
+                  { value: '1', label: '1 revision' },
+                  { value: '2', label: '2 revisions' },
+                  { value: '3', label: '3 revisions' },
+                  { value: 'unlimited', label: 'Unlimited' },
+                ]}
+              />
+            )}
+          />
         </div>
       </div>
 

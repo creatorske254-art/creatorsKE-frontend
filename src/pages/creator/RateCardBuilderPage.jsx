@@ -8,9 +8,10 @@ import {
   IconArrowLeft, IconArrowRight, IconUpload, IconMapPin, IconBrandInstagram, IconBrandYoutube, IconBrandTiktok,
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
   IconBuilding, IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
-  IconEye, IconEyeOff, IconPencil, IconPlus, IconChevronDown, IconLayoutDashboard,
+  IconEye, IconEyeOff, IconPencil, IconPlus, IconLayoutDashboard,
   IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading
 } from "@tabler/icons-react";
+import Select from '@/components/ui/Select';
 
 /* design tokens (scoped)
    These are intentionally kept as local custom-property *names* (--txt-primary,
@@ -409,7 +410,8 @@ export default function RateCardBuilderPage() {
   // edit card (step 4)
   const [headline, setHeadline] = useState("Amara Osei · Lifestyle & Travel Creator");
   const [pitch, setPitch] = useState("East Africa's go-to creator for authentic brand stories.");
-  const [leadTime, setLeadTime] = useState("3–5 business days");
+  const [leadTime, setLeadTime] = useState("3-5 business days");
+  const [bankName, setBankName] = useState("");
   const [availability, setAvailability] = useState("Open for collabs");
   const [usageNote, setUsageNote] = useState("Usage rights for digital channels included for 6 months from delivery date.");
   const [revisionPolicy, setRevisionPolicy] = useState("1 round of revisions included");
@@ -630,12 +632,7 @@ export default function RateCardBuilderPage() {
                   <div className="g2">
                     <div className="field">
                       <label className="field-label field-required">Primary niche</label>
-                      <div className="sel-wrap">
-                        <select className="inp" value={profile.niche} onChange={(e) => setProfile({ ...profile, niche: e.target.value })}>
-                          {["Lifestyle", "Travel", "Fashion & Beauty", "Tech", "Food & Beverage", "Fitness & Health", "Finance", "Gaming", "Education"].map((o) => <option key={o}>{o}</option>)}
-                        </select>
-                        <span className="chev"><IconChevronDown className="icon-sm" /></span>
-                      </div>
+                      <Select className="inp" aria-label="Primary niche" value={profile.niche} onChange={(v) => setProfile({ ...profile, niche: v })} options={["Lifestyle", "Travel", "Fashion & Beauty", "Tech", "Food & Beverage", "Fitness & Health", "Finance", "Gaming", "Education"].map((o) => ({ value: o, label: o }))} />
                     </div>
                     <div className="field">
                       <label className="field-label">Content languages</label>
@@ -770,13 +767,7 @@ export default function RateCardBuilderPage() {
                     <div className="g2">
                       <div className="field">
                         <label className="field-label">Bank name</label>
-                        <div className="sel-wrap">
-                          <select className="inp" defaultValue="">
-                            <option value="" disabled>Select bank</option>
-                            {["Equity Bank", "KCB Bank", "Co-operative Bank", "NCBA", "Stanbic Bank", "Other"].map((b) => <option key={b}>{b}</option>)}
-                          </select>
-                          <span className="chev"><IconChevronDown className="icon-sm" /></span>
-                        </div>
+                        <Select className="inp" aria-label="Bank" value={bankName} onChange={setBankName} placeholder="Select bank" options={["Equity Bank", "KCB Bank", "Co-operative Bank", "NCBA", "Stanbic Bank", "Other"].map((b) => ({ value: b, label: b }))} />
                       </div>
                       <div className="field"><label className="field-label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" /></div></div>
                     </div>
@@ -826,21 +817,11 @@ export default function RateCardBuilderPage() {
                     <div className="g2">
                       <div className="field">
                         <label className="field-label">Booking lead time</label>
-                        <div className="sel-wrap">
-                          <select className="inp" value={leadTime} onChange={(e) => setLeadTime(e.target.value)}>
-                            {["3–5 business days", "1 week", "2 weeks", "1 month"].map((o) => <option key={o}>{o}</option>)}
-                          </select>
-                          <span className="chev"><IconChevronDown className="icon-sm" /></span>
-                        </div>
+                        <Select className="inp" aria-label="Lead time" value={leadTime} onChange={setLeadTime} options={["3-5 business days", "1 week", "2 weeks", "1 month"].map((o) => ({ value: o, label: o }))} />
                       </div>
                       <div className="field">
                         <label className="field-label">Availability</label>
-                        <div className="sel-wrap">
-                          <select className="inp" value={availability} onChange={(e) => setAvailability(e.target.value)}>
-                            {["Open for collabs", "Limited slots", "Fully booked"].map((o) => <option key={o}>{o}</option>)}
-                          </select>
-                          <span className="chev"><IconChevronDown className="icon-sm" /></span>
-                        </div>
+                        <Select className="inp" aria-label="Availability" value={availability} onChange={setAvailability} options={["Open for collabs", "Limited slots", "Fully booked"].map((o) => ({ value: o, label: o }))} />
                       </div>
                     </div>
                   </div>
@@ -910,12 +891,7 @@ export default function RateCardBuilderPage() {
                     </div>
                     <div className="field">
                       <label className="field-label">Revision policy</label>
-                      <div className="sel-wrap">
-                        <select className="inp" value={revisionPolicy} onChange={(e) => setRevisionPolicy(e.target.value)}>
-                          {["1 round of revisions included", "2 rounds included", "No revisions", "Unlimited revisions"].map((o) => <option key={o}>{o}</option>)}
-                        </select>
-                        <span className="chev"><IconChevronDown className="icon-sm" /></span>
-                      </div>
+                      <Select className="inp" aria-label="Revision policy" value={revisionPolicy} onChange={setRevisionPolicy} options={["1 round of revisions included", "2 rounds included", "No revisions", "Unlimited revisions"].map((o) => ({ value: o, label: o }))} />
                     </div>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
                       <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Show KES pricing on card</div><p className="hint">Uncheck to show &ldquo;Price on request&rdquo; instead</p></div>

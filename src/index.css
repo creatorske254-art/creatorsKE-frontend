@@ -368,6 +368,15 @@
     box-sizing: border-box;
   }
 
+  /* Focus rings. The browser's default is a black rounded outline that
+     appears on links and buttons - after a keyboard Tab, and in some
+     browsers after a click. Mouse users never see a ring; keyboard users
+     get one brand ring everywhere instead of the UA's. */
+  :focus { outline: none; }
+  :focus-visible { outline: 2px solid var(--purple-400); outline-offset: 2px; }
+  .sidebar-link:focus-visible, .nav-link:focus-visible, .tab:focus-visible, .settings-tab:focus-visible { outline-offset: -2px; }
+  .input:focus-visible, .select-trigger:focus-visible { outline: none; }
+
   /* Reserve the scrollbar's width whether or not it's showing, so content
      doesn't jump sideways when a page grows past the viewport, a modal
      opens, or a tab's content changes length. Applied to the document and
@@ -1088,21 +1097,57 @@
   .input:focus { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1); }
   .input-sm { padding: var(--space-8) var(--space-12); border-radius: var(--radius-sm); font-size: var(--text-body-sm-size); }
   .input-md { padding: var(--space-12) var(--space-16); border-radius: var(--radius-md); }
-  .select-wrapper { position: relative; }
-  .select-wrapper::after {
-    content: '';
-    position: absolute;
-    right: var(--space-12);
-    top: 50%;
-    width: var(--icon-sm);
-    height: var(--icon-sm);
-    transform: translateY(-50%);
-    background: var(--grey-400);
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E") center / contain no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E") center / contain no-repeat;
-    pointer-events: none;
+  /* ── Dropdowns (components/ui/Select) ─────────────────────────────────
+     Every dropdown in the app is the Select component: a trigger that
+     wears .input, and a listbox we draw ourselves, so the open menu looks
+     the same in every browser and in dark mode. Native <select> is not
+     used anywhere. The same popover/option rules style action menus
+     (.menu-popover / .menu-item) so "pick one" and "do one" menus match. */
+  .select-trigger {
+    display: inline-flex; align-items: center; gap: var(--space-8);
+    width: 100%; text-align: left; cursor: pointer;
+    font-family: var(--font-body); color: var(--black);
   }
-  select.input { appearance: none; padding-right: var(--space-32); cursor: pointer; }
+  .select-trigger[data-placeholder] .select-trigger__value { color: var(--grey-400); }
+  .select-trigger__value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .select-trigger__chevron { color: var(--grey-400); transition: transform var(--transition-fast); }
+  .select-trigger[aria-expanded="true"] .select-trigger__chevron { transform: rotate(180deg); }
+  .select-trigger[aria-expanded="true"].input { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1); }
+  .select-trigger:disabled { opacity: 0.55; cursor: not-allowed; }
+  /* Filter-chip variant: pill, compact, used in filter rows. */
+  .select-trigger--pill {
+    width: auto; padding: var(--space-8) var(--space-12); border-radius: var(--radius-pill);
+    border: 0.5px solid var(--grey-200); background: var(--white); font-size: var(--text-body-sm-size);
+    transition: all var(--transition-fast);
+  }
+  .select-trigger--pill:hover { border-color: var(--grey-400); }
+  .select-trigger--pill[aria-expanded="true"] { border-color: var(--purple-400); background: var(--purple-50); color: var(--purple-800); }
+
+  .select-popover, .menu-popover {
+    margin: 0; padding: var(--space-4); list-style: none;
+    background: var(--white); border: 0.5px solid var(--grey-200); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); z-index: 1200; max-height: 280px; overflow-y: auto; min-width: 160px;
+    animation: select-in .12s ease-out;
+  }
+  @keyframes select-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .select-option, .menu-item {
+    display: flex; align-items: center; gap: var(--space-8); width: 100%;
+    padding: var(--space-8) var(--space-12); border-radius: var(--radius-md); border: none; background: none;
+    font-family: var(--font-body); font-size: var(--text-body-sm-size); color: var(--black); text-align: left;
+    cursor: pointer; transition: background var(--transition-fast);
+  }
+  .select-option.is-active, .menu-item:hover, .menu-item:focus-visible { background: var(--page-bg); outline: none; }
+  .select-option.is-selected .select-option__label { font-weight: 500; color: var(--purple-700); }
+  .select-option.is-disabled { color: var(--grey-300); cursor: not-allowed; }
+  .select-option__body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .select-option__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .select-option__hint, .menu-item__hint { font-size: 11.5px; color: var(--grey-400); margin-left: auto; padding-left: var(--space-12); white-space: nowrap; }
+  .select-option__hint { margin-left: 0; padding-left: 0; white-space: normal; }
+  .select-option__check { color: var(--purple-600); flex-shrink: 0; }
+  .menu-item--danger { color: var(--status-error-text); }
+  .menu-item--danger:hover { background: var(--status-error-bg); }
+  .menu-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-4) 0; }
+  .menu-popover { min-width: 220px; }
 
   /* ── Field hints ──────────────────────────────────────────────────────── */
   /* Shared helper-text style under inputs. `.error` was used in a dozen
@@ -1125,6 +1170,262 @@
   .tab:hover { color: var(--black); }
   .tab.active { background: var(--purple-50); color: var(--purple-800); }
 }
+
+
+/* ─── Settings pages (creator, brand, admin) ─────────────────────────────
+   One sheet for the three settings pages; the shared shell and cards live
+   in src/components/settings. Everything reads from the tokens above. */
+  /* This page sits inside the dashboard's content area, which already
+     supplies var(--page-bg). No background here, and no min-height/100vh
+     this is a nested panel, not a standalone page. It fills the content
+     area edge to edge; the dashboard shell owns the outer gutter. */
+  .settings-page {
+    font-family: var(--font-body);
+    color: var(--black);
+    font-size: var(--text-body-size);
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .settings-header { margin-bottom: var(--space-24); }
+
+  /* Tabs (pill track, per component library §Navigation) */
+  .settings-tabs {
+    display: flex;
+    gap: var(--space-2);
+    background: var(--white);
+    border: 0.5px solid var(--grey-100);
+    box-shadow: var(--shadow-xs);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-24);
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .settings-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-md);
+    border: none;
+    background: none;
+    font-family: var(--font-body);
+    font-size: var(--text-body-sm-size);
+    font-weight: 500;
+    color: var(--grey-500);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+  }
+  .settings-tab:hover { color: var(--black); background: var(--page-bg); }
+  .settings-tab.active { background: var(--purple-600); color: var(--white); }
+  .settings-tab.active:hover { background: var(--purple-600); color: var(--white); }
+
+  /* Bento grid utilities */
+  /* Content fills the full width of the content area, no max-width cap,
+     and reflows into single column once it can't fit two/three/four up. */
+  .bento-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-16); align-items: start; }
+  .bento-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-16); align-items: start; }
+  .bento-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-16); align-items: start; }
+  .bento-span-2 { grid-column: span 2; }
+  .settings-stack { display: flex; flex-direction: column; gap: var(--space-16); }
+
+  /* Field */
+  .field { display: flex; flex-direction: column; gap: var(--space-8); }
+  .settings-page .field-hint { margin-top: var(--space-2); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
+  .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
+
+  .textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  /* This page packs in far more fields than a typical form, so the default
+     .input border (meant for a single isolated field) reads as a grid of
+     boxes when repeated dozens of times. Swap resting-state emphasis from
+     border to a faint fill, and let the border do its job only on focus,
+     surface shading over stacked outlines, per standard "too many borders"
+     UI guidance. */
+  .settings-page .input,
+  .settings-page .select-wrapper select {
+    border-color: var(--grey-100) !important;
+    background: var(--page-bg) !important;
+    transition: all var(--transition-fast);
+  }
+  .settings-page .input:hover,
+  .settings-page .select-wrapper select:hover {
+    border-color: var(--grey-200) !important;
+  }
+  .settings-page .input:focus,
+  .settings-page .select-wrapper select:focus {
+    border-color: var(--purple-600) !important;
+    background: var(--white) !important;
+  }
+
+  /* Toggle switch (per component library §Forms) */
+  .settings-toggle {
+    width: 44px;
+    height: 24px;
+    border-radius: var(--radius-pill);
+    background: var(--grey-200);
+    position: relative;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    flex-shrink: 0;
+    border: none;
+    padding: 0;
+  }
+  .settings-toggle.on { background: var(--purple-600); }
+  .settings-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: var(--shadow-xs);
+    transition: transform var(--transition-fast);
+  }
+  .settings-toggle.on::after { transform: translateX(20px); }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
+  .toggle-row-text .toggle-row-label { font-size: var(--text-body-sm-size); font-weight: 500; }
+
+  /* Notification row */
+  .notif-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-16); padding: var(--space-12) 0; }
+  .notif-row:not(:last-child) { border-bottom: 0.5px solid var(--grey-100); }
+  .notif-row-label { font-size: var(--text-body-sm-size); font-weight: 500; }
+  .notif-row-desc { font-size: 12px; color: var(--grey-400); margin-top: var(--space-2); }
+
+  /* Payment method row */
+  .pay-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    padding: var(--space-12) var(--space-16);
+    border: 0.5px solid transparent;
+    border-radius: var(--radius-lg);
+    background: var(--page-bg);
+    transition: all var(--transition-fast);
+  }
+  .pay-row.connected { background: var(--white); border-color: var(--grey-100); box-shadow: var(--shadow-xs); }
+  .pay-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: var(--text-h4-size); flex-shrink: 0; }
+  .pay-info { flex: 1; min-width: 0; }
+  .pay-name { font-size: var(--text-body-sm-size); font-weight: 500; }
+  .pay-desc { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-2); }
+
+  /* Selectable option card (theme / layout pickers) */
+  .option-card {
+    padding: var(--space-12);
+    border: 0.5px solid transparent;
+    border-radius: var(--radius-lg);
+    background: var(--page-bg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+  }
+  .option-card:hover { background: var(--grey-100); }
+  .option-card.selected { border-color: var(--black); background: var(--white); box-shadow: var(--shadow-xs); }
+  .option-card-label { font-size: var(--text-body-sm-size); }
+  .option-card.selected .option-card-label { font-weight: 600; }
+
+  /* Accent swatches */
+  .accent-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all var(--transition-fast); flex-shrink: 0; }
+  .accent-swatch.selected { border-color: var(--black); box-shadow: 0 0 0 2px var(--white) inset; }
+
+  /* Danger zone */
+  .danger-zone { border: 0.5px solid rgba(239,68,68,0.15); background: var(--status-error-bg); border-radius: var(--radius-xl); padding: var(--space-20); }
+  .danger-zone-title { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--status-error-text); margin-bottom: var(--space-4); }
+  .danger-zone-desc { font-size: 12.5px; color: var(--status-error-text); opacity: 0.85; margin-bottom: var(--space-16); }
+
+  /* Save bar: floats above the bottom edge with its own card surface,
+     instead of bleeding flush into the content above and the viewport
+     below. The gap above is what makes it read as a separate, persistent
+     control rather than the last item in the stack. */
+  .settings-savebar {
+    background: var(--white);
+    border: 0.5px solid var(--grey-100);
+    border-radius: var(--radius-xl);
+    padding: var(--space-12) var(--space-20);
+    position: sticky;
+    bottom: var(--space-16);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-top: var(--space-24);
+    box-shadow: var(--shadow-md);
+  }
+  .settings-savebar-hint { font-size: 12px; color: var(--grey-400); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .bento-4 { grid-template-columns: repeat(2, 1fr); }
+    .bento-3 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .bento-2, .bento-3, .bento-4 { grid-template-columns: 1fr; }
+    .bento-span-2 { grid-column: span 1; }
+    .field-row { grid-template-columns: 1fr; }
+    .settings-tabs { width: 100%; }
+  }
+
+  /* Escrow / info callout */
+  .info-callout {
+    background: var(--page-bg);
+    border: 0.5px solid var(--grey-100);
+    border-radius: var(--radius-xl);
+    padding: var(--space-16);
+    display: flex;
+    gap: var(--space-12);
+    align-items: flex-start;
+  }
+  .info-callout > svg { color: var(--purple-600); margin-top: var(--space-2); }
+  .info-callout-title { font-size: var(--text-body-sm-size); font-weight: 500; margin-bottom: var(--space-4); }
+  .info-callout-desc { font-size: 12.5px; color: var(--grey-500); margin: 0; line-height: 1.6; }
+
+  /* Session row */
+  .session-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-12) 0; }
+  .session-row:not(:last-child) { border-bottom: 0.5px solid var(--grey-100); }
+  .session-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--page-bg); display: flex; align-items: center; justify-content: center; color: var(--grey-500); flex-shrink: 0; }
+  .session-device { font-size: var(--text-body-sm-size); font-weight: 500; display: flex; align-items: center; gap: var(--space-8); }
+  .session-meta { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-2); }
+
+  /* Legal link row */
+  .legal-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-12) var(--space-16);
+    background: var(--page-bg);
+    border-radius: var(--radius-md);
+    font-size: var(--text-body-sm-size);
+    font-weight: 500;
+    color: var(--black);
+  }
+  .legal-row svg { color: var(--grey-400); }
+
+  /* Danger zone */
+  .danger-zone { border: 0.5px solid rgba(239,68,68,0.15); background: var(--status-error-bg); border-radius: var(--radius-xl); padding: var(--space-20); }
+  .danger-zone-title { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--status-error-text); margin-bottom: var(--space-4); }
+  .danger-zone-desc { font-size: 12.5px; color: var(--status-error-text); opacity: 0.85; margin-bottom: var(--space-16); line-height: 1.6; }
+  .danger-zone-banner { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-error-text); line-height: 1.6; }
+  .warning-banner { background: var(--status-warning-bg); border: 0.5px solid rgba(245,158,11,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-warning-text); line-height: 1.6; }
+  .success-banner { background: var(--status-success-bg); border: 0.5px solid rgba(16,185,129,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-success-text); display: flex; align-items: center; gap: var(--space-8); }
+
+  /* Danger zone */
+  .danger-zone { border: 0.5px solid rgba(239,68,68,0.15); background: var(--status-error-bg); border-radius: var(--radius-xl); padding: var(--space-20); }
+  .danger-zone-title { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--status-error-text); margin-bottom: var(--space-4); }
+  .danger-zone-desc { font-size: 12.5px; color: var(--status-error-text); opacity: 0.85; margin-bottom: var(--space-16); line-height: 1.6; }
+  .danger-zone-banner { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-error-text); line-height: 1.6; }
+  .warning-banner { background: var(--status-warning-bg); border: 0.5px solid rgba(245,158,11,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-warning-text); line-height: 1.6; }
+  .success-banner { background: var(--status-success-bg); border: 0.5px solid rgba(16,185,129,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-success-text); display: flex; align-items: center; gap: var(--space-8); }
 
 /* ─── Utility layer ────────────────────────────────────────────────────────── */
 @layer utilities {

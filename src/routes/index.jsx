@@ -57,6 +57,7 @@ import AdminReviewsPage   from '@/pages/admin/ReviewsPage'
 import AdminEscrowPage    from '@/pages/admin/EscrowPage'
 import AdminDeletionRequestsPage from '@/pages/admin/DeletionRequestsPage'
 import AdminReEngagementPage from '@/pages/admin/ReEngagementPage'
+import AdminSettingsPage from '@/pages/admin/SettingsPage'
 
 // ─────────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
@@ -159,6 +160,7 @@ const router = createBrowserRouter([
           { path: 'admin/escrow',       element: <AdminEscrowPage /> },
           { path: 'admin/deletion-requests', element: <AdminDeletionRequestsPage /> },
           { path: 'admin/re-engagement', element: <AdminReEngagementPage /> },
+          { path: 'admin/settings',     element: <AdminSettingsPage /> },
         ],
       },
     ],

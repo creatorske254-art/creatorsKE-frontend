@@ -8,223 +8,28 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/features/auth/services/auth.service';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
+import { brandService } from '@/features/brand-dashboard/services/brand.service';
+import { SettingsShell, ToggleRow as SharedToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, TeamCard } from '@/components/settings';
 import { useImageUpload } from '@/lib/useImageUpload';
-import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCheck, IconCircleCheck, IconCreditCard, IconDeviceDesktop, IconDeviceMobile, IconExternalLink, IconHash, IconLock, IconMail, IconMapPin, IconPencil, IconPhone, IconShieldCheck, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUserCircle, IconWorld } from '@tabler/icons-react';
+import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCircleCheck, IconCreditCard, IconDeviceMobile, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconPhone, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
+import Select from '@/components/ui/Select';
 
-// Page-scoped styles
-// Every value below reads from the global index.css tokens (--purple-*,
-// --grey-*, --status-*, --radius-*, --space-*, --text-*, --shadow-*).
-// Nothing here redefines a token or a color; index.css is the single
-// source of truth. This file only adds the handful of component patterns
-// index.css doesn't already ship (tabs, toggle, field labels, payment row,
-// option row, danger zone, save bar), the exact same set the creator
-// settings page defines, reused here so both pages feel like one product.
-// Everything else (.card, .btn-*, .input, .tag, .avatar…) is used as-is
-// from the global stylesheet.
-const css = `
-  /* This page sits inside the dashboard's content area, which already
-     supplies var(--page-bg). No background here, and no min-height/100vh
-     this is a nested panel, not a standalone page. */
-  .settings-page {
-    font-family: var(--font-body);
-    color: var(--black);
-    font-size: var(--text-body-size);
-    line-height: 1.6;
-  }
-
-  /* Header */
-  .settings-header { margin-bottom: var(--space-24); }
-
-  /* Tabs (pill track, per component library §Navigation) */
-  .settings-tabs {
-    display: flex;
-    gap: var(--space-2);
-    background: var(--white);
-    border: 0.5px solid var(--grey-100);
-    box-shadow: var(--shadow-xs);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    margin-bottom: var(--space-24);
-    width: fit-content;
-    max-width: 100%;
-    overflow-x: auto;
-  }
-  .settings-tab {
-    display: flex;
-    align-items: center;
-    gap: var(--space-8);
-    padding: var(--space-8) var(--space-16);
-    border-radius: var(--radius-md);
-    border: none;
-    background: none;
-    font-family: var(--font-body);
-    font-size: var(--text-body-sm-size);
-    font-weight: 500;
-    color: var(--grey-500);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    white-space: nowrap;
-  }
-  .settings-tab:hover { color: var(--black); background: var(--page-bg); }
-  .settings-tab.active { background: var(--purple-600); color: var(--white); }
-  .settings-tab.active:hover { background: var(--purple-600); color: var(--white); }
-
-  .settings-stack { display: flex; flex-direction: column; gap: var(--space-16); }
-
-  /* Field */
-  .field { display: flex; flex-direction: column; gap: var(--space-8); }
-  .field-hint { margin-top: var(--space-2); } /* base styling + icon come from index.css */
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
-  .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
-
-  .input-icon-left { padding-left: var(--space-40) !important; }
-  .input-icon-right { padding-right: var(--space-40) !important; }
-  .textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
-
-  /* Same "too many borders" fix as the creator settings page: resting-state
-     emphasis moves from border to a faint fill, border does its job on focus. */
-  .settings-page .input,
-  .settings-page .select-wrapper select {
-    border-color: var(--grey-100) !important;
-    background: var(--page-bg) !important;
-    transition: all var(--transition-fast);
-  }
-  .settings-page .input:hover,
-  .settings-page .select-wrapper select:hover {
-    border-color: var(--grey-200) !important;
-  }
-  .settings-page .input:focus,
-  .settings-page .select-wrapper select:focus {
-    border-color: var(--purple-600) !important;
-    background: var(--white) !important;
-  }
-
-  /* Toggle switch (per component library §Forms) */
-  .settings-toggle {
-    width: 44px;
-    height: 24px;
-    border-radius: var(--radius-pill);
-    background: var(--grey-200);
-    position: relative;
-    cursor: pointer;
-    transition: background var(--transition-fast);
-    flex-shrink: 0;
-    border: none;
-    padding: 0;
-  }
-  .settings-toggle.on { background: var(--purple-600); }
-  .settings-toggle::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--white);
-    box-shadow: var(--shadow-xs);
-    transition: transform var(--transition-fast);
-  }
-  .settings-toggle.on::after { transform: translateX(20px); }
-
-  .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); }
-  .toggle-row-text .toggle-row-label { font-size: var(--text-body-sm-size); font-weight: 500; }
-
-  /* Notification row */
-  .notif-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-16); padding: var(--space-12) 0; }
-  .notif-row:not(:last-child) { border-bottom: 0.5px solid var(--grey-100); }
-
-  /* Payment method row */
-  .pay-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-12);
-    padding: var(--space-16);
-    border: 0.5px solid var(--grey-100);
-    border-radius: var(--radius-xl);
-    background: var(--white);
-    transition: all var(--transition-fast);
-  }
-  .pay-row.connected { background: var(--purple-50); border-color: var(--purple-200); }
-  .pay-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .pay-info { flex: 1; min-width: 0; }
-  .pay-name { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--black); }
-  .pay-desc { font-size: 12px; color: var(--grey-400); margin-top: var(--space-2); }
-
-  /* Escrow / info callout */
-  .info-callout {
-    background: var(--page-bg);
-    border: 0.5px solid var(--grey-100);
-    border-radius: var(--radius-xl);
-    padding: var(--space-16);
-    display: flex;
-    gap: var(--space-12);
-    align-items: flex-start;
-  }
-  .info-callout > svg { color: var(--purple-600); margin-top: var(--space-2); }
-  .info-callout-title { font-size: var(--text-body-sm-size); font-weight: 500; margin-bottom: var(--space-4); }
-  .info-callout-desc { font-size: 12.5px; color: var(--grey-500); margin: 0; line-height: 1.6; }
-
-  /* Session row */
-  .session-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-12) 0; }
-  .session-row:not(:last-child) { border-bottom: 0.5px solid var(--grey-100); }
-  .session-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--page-bg); display: flex; align-items: center; justify-content: center; color: var(--grey-500); flex-shrink: 0; }
-  .session-device { font-size: var(--text-body-sm-size); font-weight: 500; display: flex; align-items: center; gap: var(--space-8); }
-  .session-meta { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-2); }
-
-  /* Legal link row */
-  .legal-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-12) var(--space-16);
-    background: var(--page-bg);
-    border-radius: var(--radius-md);
-    font-size: var(--text-body-sm-size);
-    font-weight: 500;
-    color: var(--black);
-  }
-  .legal-row svg { color: var(--grey-400); }
-
-  /* Danger zone */
-  .danger-zone { border: 0.5px solid rgba(239,68,68,0.15); background: var(--status-error-bg); border-radius: var(--radius-xl); padding: var(--space-20); }
-  .danger-zone-title { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--status-error-text); margin-bottom: var(--space-4); }
-  .danger-zone-desc { font-size: 12.5px; color: var(--status-error-text); opacity: 0.85; margin-bottom: var(--space-16); line-height: 1.6; }
-  .danger-zone-banner { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-error-text); line-height: 1.6; }
-  .warning-banner { background: var(--status-warning-bg); border: 0.5px solid rgba(245,158,11,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-warning-text); line-height: 1.6; }
-  .success-banner { background: var(--status-success-bg); border: 0.5px solid rgba(16,185,129,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-success-text); display: flex; align-items: center; gap: var(--space-8); }
-
-  /* Save bar, floats above the bottom edge with its own card surface */
-  .settings-savebar {
-    position: sticky;
-    bottom: 0;
-    margin-top: var(--space-24);
-    background: var(--white);
-    border: 0.5px solid var(--grey-100);
-    box-shadow: var(--shadow-md);
-    border-radius: var(--radius-lg);
-    padding: var(--space-12) var(--space-20);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-12);
-  }
-  .settings-savebar-hint { font-size: var(--text-body-sm-size); color: var(--grey-500); }
-
-  /* Responsive - same breakpoint as the creator settings page */
-  @media (max-width: 640px) {
-    .field-row { grid-template-columns: 1fr; }
-    .settings-tabs { width: 100%; }
-  }
-`;
-
-// Nav tabs
+// Nav tabs - same order as every other role's settings (see SettingsShell).
 const TABS = [
-  { id: "profile", label: "Company profile", icon: IconBuilding },
-  { id: "payments", label: "Payment methods", icon: IconCreditCard },
+  { id: "profile", label: "Company", icon: IconBuilding },
+  { id: "account", label: "Account", icon: IconShieldLock },
   { id: "notifications", label: "Notifications", icon: IconBell },
-  { id: "security", label: "Security", icon: IconShieldLock },
-  { id: "account", label: "Account", icon: IconUserCircle },
+  { id: "billing", label: "Billing", icon: IconCreditCard },
+  { id: "team", label: "Team", icon: IconUsers },
+  { id: "appearance", label: "Appearance", icon: IconPalette },
+  { id: "privacy", label: "Privacy & data", icon: IconLockAccess },
+];
+
+const TEAM_ROLES = [
+  { id: 'owner', label: 'Owner', hint: 'Full access, billing, can delete the account' },
+  { id: 'admin', label: 'Admin', hint: 'Manage campaigns, team and settings' },
+  { id: 'member', label: 'Member', hint: 'Shortlist, enquire and run campaigns' },
+  { id: 'finance', label: 'Finance', hint: 'Invoices, transactions and payment methods only' },
 ];
 
 // Shared bits
@@ -240,19 +45,6 @@ function ToggleRow({ label, hint, on, onChange }) {
         onClick={onChange}
         aria-pressed={on}
       />
-    </div>
-  );
-}
-
-function SaveBar({ dirty, saving, onSave }) {
-  if (!dirty) return null;
-  return (
-    <div className="settings-savebar">
-      <span className="settings-savebar-hint">You have unsaved changes</span>
-      <button className={`btn btn-primary${saving ? " btn-loading" : ""}`} onClick={onSave} disabled={saving}>
-        <IconCheck className="icon-sm" aria-hidden="true" />
-        Save changes
-      </button>
     </div>
   );
 }
@@ -317,12 +109,8 @@ function ProfileTab({ form, setForm, onDirty }) {
             </div>
             <div className="field">
               <label className="field-label field-required">Industry</label>
-              <div className="select-wrapper">
-                <select className="input input-md" value={form.industry} onChange={upd("industry")}>
-                  {industryOptions.map((o) => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
+              <div>
+                <Select id="brand-industry" value={form.industry} onChange={(v) => upd("industry")({ target: { value: v } })} options={industryOptions} />
               </div>
             </div>
           </div>
@@ -674,127 +462,7 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
   );
 }
 
-// Security tab
-function SecurityTab({ onDirty }) {
-  const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
-  const [pwSaving, setPwSaving] = useState(false);
-  const [pwSaved, setPwSaved] = useState(false);
-
-  function handlePwSave() {
-    setPwSaving(true);
-    setTimeout(() => {
-      setPwSaving(false);
-      setPwSaved(true);
-      setPwForm({ current: "", next: "", confirm: "" });
-    }, 1200);
-  }
-
-  const [sessions, setSessions] = useState([
-    { device: "Chrome · macOS", location: "Nairobi, KE", time: "Now", current: true },
-    { device: "Safari · iPhone 15", location: "Nairobi, KE", time: "2 hours ago", current: false },
-    { device: "Chrome · Windows", location: "Nairobi, KE", time: "3 days ago", current: false },
-  ]);
-  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
-
-  function handleSignOutSession(device) {
-    setSessions((prev) => prev.filter((s) => s.device !== device));
-    toast.success(`Signed out of ${device}.`);
-  }
-
-  function handleSignOutOthers() {
-    setSessions((prev) => prev.filter((s) => s.current));
-    toast.success("Signed out of all other sessions.");
-  }
-
-  function handleToggle2FA() {
-    setTwoFAEnabled((v) => !v);
-    onDirty();
-    toast.success(twoFAEnabled ? "Two-factor authentication disabled." : "Two-factor authentication enabled.");
-  }
-
-  return (
-    <div className="settings-stack">
-      {/* Change password */}
-      <CollapsibleCard title="Change password">
-        <div style={{ marginTop: 'var(--space-16)' }}>
-          {pwSaved ? (
-            <div className="success-banner">
-              <IconCheck className="icon-sm" aria-hidden="true" />
-              Password updated successfully
-            </div>
-          ) : (
-            <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
-              <div className="field">
-                <label className="field-label field-required">Current password</label>
-                <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="••••••••" /></div>
-              </div>
-              <div className="field-row">
-                <div className="field">
-                  <label className="field-label field-required">New password</label>
-                  <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.next} onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))} placeholder="At least 8 characters" /></div>
-                </div>
-                <div className="field">
-                  <label className="field-label field-required">Confirm new password</label>
-                  <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.confirm} onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))} placeholder="Re-enter your new password" /></div>
-                </div>
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button className={`btn btn-primary${pwSaving ? " btn-loading" : ""}`} onClick={handlePwSave} disabled={pwSaving}>
-                  Update password
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </CollapsibleCard>
-
-      {/* Two-factor */}
-      <CollapsibleCard
-        title="Two-factor authentication" collapsible={false}
-        right={<span className={`tag ${twoFAEnabled ? "tag-success" : "tag-warning"}`}>{twoFAEnabled ? "Enabled" : "Not enabled"}</span>}
-      >
-        <span className="field-hint">Add an extra layer of protection using an authenticator app or SMS code.</span>
-        <div style={{ marginTop: 'var(--space-16)' }}>
-          <button className="btn btn-secondary btn-sm" onClick={handleToggle2FA}>
-            <IconShieldCheck className="icon-sm" aria-hidden="true" />
-            {twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}
-          </button>
-        </div>
-      </CollapsibleCard>
-
-      {/* Active sessions */}
-      <CollapsibleCard title="Active sessions">
-        <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-8)' }}>
-          Devices where your account is currently signed in.
-        </p>
-        <div>
-          {sessions.map((s) => (
-            <div key={s.device} className="session-row">
-              <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
-                <div className="session-icon">
-                  <IconDeviceDesktop className="icon-sm" aria-hidden="true" />
-                </div>
-                <div>
-                  <div className="session-device">
-                    {s.device}
-                    {s.current && <span className="tag tag-purple">This device</span>}
-                  </div>
-                  <div className="session-meta">{s.location} · {s.time}</div>
-                </div>
-              </div>
-              {!s.current && <button className="btn btn-ghost btn-sm" onClick={() => handleSignOutSession(s.device)}>Sign out</button>}
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 'var(--space-12)' }}>
-          <button className="btn btn-ghost btn-sm" onClick={handleSignOutOthers} disabled={sessions.length <= 1}>Sign out of all other sessions</button>
-        </div>
-      </CollapsibleCard>
-    </div>
-  );
-}
-
-// Account tab
+// Account tab - sign-in, security, region, and the one destructive action.
 function AccountTab() {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -816,9 +484,29 @@ function AccountTab() {
 
   return (
     <div className="settings-stack">
-      {/* Plan */}
-      <CollapsibleCard title="Your plan" collapsible={false}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
+      <LoginDetailsCard collapsible={false} />
+      <div className="bento-2">
+        <TwoFactorCard />
+        <SessionsCard />
+      </div>
+      <LanguageRegionCard />
+      <DangerZone title="Delete account" description="Permanently removes your company profile, campaign history and all data. Blocked while any campaign is still active.">
+        <button className="btn btn-danger btn-sm" onClick={() => setDeleteOpen(true)}>
+          <IconTrash className="icon-xs" aria-hidden="true" />Request account deletion
+        </button>
+      </DangerZone>
+      <DeleteBrandAccountModal open={deleteOpen} activeBookings={activeCampaignCount} deleting={deleting} onClose={() => setDeleteOpen(false)} onConfirm={handleConfirmDelete} />
+    </div>
+  );
+}
+
+// Billing tab - the plan, what pays for it, and how invoices behave.
+function BillingTab({ prefs, setPrefs, onDirty }) {
+  const navigate = useNavigate();
+  return (
+    <div className="settings-stack">
+      <CollapsibleCard title="Your plan" collapsible={false} right={<span className="tag tag-success">Active</span>}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-16)', marginTop: 'var(--space-16)', flexWrap: 'wrap' }}>
           <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
             <div className="avatar avatar-md avatar-purple" style={{ borderRadius: "var(--radius-md)" }}>
               <IconStar className="icon-md" aria-hidden="true" />
@@ -828,41 +516,98 @@ function AccountTab() {
               <span className="field-hint">Unlimited enquiries · shortlisting · campaign management</span>
             </div>
           </div>
-          <span className="tag tag-purple">Active</span>
+          <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
+            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/pricing')}>Change plan</button>
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/brand/billing')}>Invoices &amp; charges</button>
+          </div>
         </div>
       </CollapsibleCard>
+      <PaymentsTab prefs={prefs} setPrefs={setPrefs} onDirty={onDirty} />
+    </div>
+  );
+}
 
-      {/* Legal */}
-      <CollapsibleCard title="Legal" collapsible={false}>
-        <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-          {[{ label: "Terms of Service", href: "/terms" }, { label: "Privacy Policy", href: "/privacy" }].map((l) => (
-            <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="legal-row">
-              {l.label}
-              <IconExternalLink className="icon-sm" aria-hidden="true" />
-            </a>
-          ))}
-        </div>
-      </CollapsibleCard>
-
-      {/* Danger zone */}
-      <div className="danger-zone">
-        <div className="danger-zone-title">Delete account</div>
-        <div className="danger-zone-desc">
-          Permanently remove your company profile, campaign history, and all data. This cannot be undone.
-        </div>
-        <button className="btn btn-danger" onClick={() => setDeleteOpen(true)}>
-          <IconTrash className="icon-sm" aria-hidden="true" />
-          Request account deletion
-        </button>
-      </div>
-
-      <DeleteBrandAccountModal
-        open={deleteOpen}
-        activeBookings={activeCampaignCount}
-        deleting={deleting}
-        onClose={() => setDeleteOpen(false)}
-        onConfirm={handleConfirmDelete}
+// Team tab
+function TeamTab() {
+  const { user } = useAuth();
+  const [inviting, setInviting] = useState(false);
+  const members = [
+    { id: 'me', name: user?.contactName ?? user?.firstName ?? 'You', email: user?.email ?? '', role: 'owner', status: 'active' },
+  ];
+  function invite(email, role) {
+    setInviting(true);
+    brandService.inviteTeamMember(email, role)
+      .then(() => toast.success(`Invitation sent to ${email}.`))
+      .catch(() => toast.error("Team invites aren't available yet. It needs backend support."))
+      .finally(() => setInviting(false));
+  }
+  return (
+    <div className="settings-stack">
+      <TeamCard
+        members={members}
+        roles={TEAM_ROLES}
+        onInvite={invite}
+        onRemove={(id) => brandService.removeTeamMember(id).catch(() => {})}
+        inviting={inviting}
+        description="Everyone here signs in with their own email and password. Roles decide what they can change."
       />
+      <div className="info-callout">
+        <IconUsers className="icon-md" aria-hidden="true" />
+        <div>
+          <div className="info-callout-title">Who should be on the team?</div>
+          <p className="info-callout-desc">Add whoever books creators (Member), whoever approves spend (Admin) and whoever reconciles invoices (Finance). Actions in campaigns and billing are logged with the person who made them.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Appearance tab
+function AppearanceTab() {
+  return (
+    <div className="settings-stack">
+      <ThemeCard />
+      <div className="bento-2">
+        <AccentCard />
+        <DisplayCard />
+      </div>
+    </div>
+  );
+}
+
+// Privacy & data tab
+function PrivacyTab() {
+  const [showToCreators, setShowToCreators] = useState(true);
+  const [showLogo, setShowLogo] = useState(true);
+  const [shareAnalytics, setShareAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(true);
+  const [dirty, setDirty] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const set = (fn) => (v) => { fn(v); setDirty(true); };
+  function handleSave() { setSaved(true); setDirty(false); toast.success('Privacy preferences saved.'); setTimeout(() => setSaved(false), 2000); }
+  return (
+    <div className="settings-stack">
+      <div className="bento-2">
+        <CollapsibleCard title="Visibility to creators" collapsible={false}>
+          <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
+            <SharedToggleRow label="Show company name on enquiries" desc="Off = creators see 'A verified brand' until you book." on={showToCreators} onChange={set(setShowToCreators)} />
+            <div className="field-divider" />
+            <SharedToggleRow label="Show our logo on completed campaigns" desc="Creators may list your campaign in their portfolio with your logo." on={showLogo} onChange={set(setShowLogo)} />
+          </div>
+        </CollapsibleCard>
+        <CollapsibleCard title="Data use" collapsible={false}>
+          <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
+            <SharedToggleRow label="Share anonymised analytics" desc="Helps us improve the platform. No personal or company data is shared." on={shareAnalytics} onChange={set(setShareAnalytics)} />
+            <div className="field-divider" />
+            <SharedToggleRow label="Product news and case studies" desc="Occasional emails about new features and campaigns that worked." on={marketing} onChange={set(setMarketing)} />
+          </div>
+        </CollapsibleCard>
+      </div>
+      <div className="bento-2">
+        <DataExportCard description="Download your company profile, campaigns, messages, invoices and transactions as a ZIP of JSON and CSV files. We email you a link within 24 hours." />
+        <LegalCard />
+      </div>
+      <SaveBar dirty={dirty} saved={saved} onSave={handleSave} />
     </div>
   );
 }
@@ -925,11 +670,9 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
 // Main component
 export default function BrandSettingsPage() {
   usePageMeta('Settings', 'Manage your Creatorske brand account and billing settings.');
-  const [activeTab, setActiveTab] = useState("profile");
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const { updateProfile } = useBrandDashboard();
-
   const [form, setForm] = useState({
     companyName: "Nairobi Brew Co.",
     industry: "food",
@@ -941,13 +684,11 @@ export default function BrandSettingsPage() {
     phone: "+254 722 456 789",
     location: "Nairobi, Kenya",
   });
-
   const [prefs, setPrefs] = useState({
     autoInvoice: true,
     deposit: false,
     payReminder: true,
   });
-
   const [notifPrefs, setNotifPrefs] = useState({
     enquiryAccepted: true,
     deliveryMarked: true,
@@ -960,7 +701,6 @@ export default function BrandSettingsPage() {
     enquiryExpiry: true,
     digest: false,
   });
-
   function onDirty() { setDirty(true); }
 
   // Real PUT /brands/profile via useBrandDashboard's mutation (which owns the
@@ -989,40 +729,16 @@ export default function BrandSettingsPage() {
     );
   }
 
+  const bar = <SaveBar dirty={dirty} saving={saving} onSave={handleSave} />;
   const panels = {
-    profile: <ProfileTab form={form} setForm={setForm} onDirty={onDirty} />,
-    payments: <PaymentsTab prefs={prefs} setPrefs={setPrefs} onDirty={onDirty} />,
-    notifications: <NotificationsTab notifPrefs={notifPrefs} setNotifPrefs={setNotifPrefs} onDirty={onDirty} />,
-    security: <SecurityTab onDirty={onDirty} />,
-    account: <AccountTab />,
+    profile: () => <><ProfileTab form={form} setForm={setForm} onDirty={onDirty} />{bar}</>,
+    account: () => <AccountTab />,
+    notifications: () => <><NotificationsTab notifPrefs={notifPrefs} setNotifPrefs={setNotifPrefs} onDirty={onDirty} />{bar}</>,
+    billing: () => <><BillingTab prefs={prefs} setPrefs={setPrefs} onDirty={onDirty} />{bar}</>,
+    team: () => <TeamTab />,
+    appearance: () => <AppearanceTab />,
+    privacy: () => <PrivacyTab />,
   };
 
-  return (
-    <>
-      <style>{css}</style>
-      <div className="settings-page">
-        <div className="settings-header">
-          <h3 className="page-title">Settings</h3>
-          <p className="page-subtitle">Manage your company profile, payments, and account preferences.</p>
-        </div>
-
-        <div className="settings-tabs">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              className={`settings-tab${activeTab === tab.id ? " active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <tab.icon className="icon-md" aria-hidden="true" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {panels[activeTab]}
-
-        <SaveBar dirty={dirty} saving={saving} onSave={handleSave} />
-      </div>
-    </>
-  );
+  return <SettingsShell subtitle="Your company, sign-in, notifications, billing, team and preferences." tabs={TABS} panels={panels} />;
 }

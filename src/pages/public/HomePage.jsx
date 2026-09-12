@@ -276,7 +276,7 @@ export default function HomePage() {
         .hp-feature__icon { width:44px; height:44px; border-radius:12px; background:var(--purple-50); border:0.5px solid var(--purple-100); display:flex; align-items:center; justify-content:center; color:var(--purple-500); margin-bottom:var(--space-16); }
 
         /* faq */
-        .hp-faq { max-width:760px; margin:0 auto; border-top:0.5px solid var(--grey-100); }
+        .hp-faq { border-top:0.5px solid var(--grey-100); }
         .hp-faq__item { border-bottom:0.5px solid var(--grey-100); }
         .hp-faq__q { width:100%; background:none; border:none; color:var(--black); display:flex; align-items:center; justify-content:space-between; gap:var(--space-16); padding:var(--space-20) var(--space-8); text-align:left; font-family:var(--font-body); font-size:15.5px; font-weight:600; cursor:pointer; }
         .hp-faq__q svg { color:var(--grey-400); transition:transform .25s, color .25s; flex-shrink:0; }

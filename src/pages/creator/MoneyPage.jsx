@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { usePageMeta } from '@/lib/usePageMeta'
 
 /*
@@ -40,11 +42,35 @@ const PAYMENT_METHODS = [
 
 export default function MoneyPage() {
   usePageMeta('Money', 'View your earnings, transaction history, and payout options on Creatorske.');
+  const navigate = useNavigate()
   const [period, setPeriod] = useState('3m')
   const [withdrawOpen, setWithdrawOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [withdrawState, setWithdrawState] = useState('idle') // idle | loading | done
   const [amount, setAmount] = useState('84,000')
+  const [paymentMethods, setPaymentMethods] = useState(PAYMENT_METHODS)
+
+  function handleSetPrimary(name) {
+    setPaymentMethods((prev) => prev.map((m) => ({ ...m, primary: m.name === name })))
+    toast.success(`${name} set as your primary payout method.`)
+  }
+
+  function handleAddPaymentMethod() {
+    toast.info('Adding new payment methods is coming soon.')
+  }
+
+  function handleExportCsv() {
+    const header = ['Date', 'Description', 'Amount']
+    const rows = FULL_HISTORY.map((t) => [t.date, `${t.name} - ${t.sub}`, t.amount])
+    const csv = [header, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'creatorske-transactions.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   // Pull in the Tabler Icons webfont the design relies on for every <i class="ti ti-*">
   useEffect(() => {
@@ -278,7 +304,7 @@ export default function MoneyPage() {
             <div className="card card-p-md s-5">
               <p className="card-title" style={{ fontSize: 15, marginBottom: 14 }}>Payment methods</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {PAYMENT_METHODS.map((m) => (
+                {paymentMethods.map((m) => (
                   <div
                     key={m.name}
                     style={{
@@ -300,11 +326,11 @@ export default function MoneyPage() {
                         <span className="sdot" style={{ background: 'var(--status-success)', width: 5, height: 5 }}></span>Primary
                       </span>
                     ) : (
-                      <button className="btn btn-ghost btn-xs">Set primary</button>
+                      <button className="btn btn-ghost btn-xs" onClick={() => handleSetPrimary(m.name)}>Set primary</button>
                     )}
                   </div>
                 ))}
-                <button className="btn btn-secondary btn-full btn-sm" style={{ marginTop: 2 }}>
+                <button className="btn btn-secondary btn-full btn-sm" style={{ marginTop: 2 }} onClick={handleAddPaymentMethod}>
                   <i className="ti ti-plus" style={{ fontSize: 13 }}></i>Add payment method
                 </button>
               </div>
@@ -338,8 +364,8 @@ export default function MoneyPage() {
                 <div className="progress-bar-fill progress-sm" style={{ width: '60%' }}></div>
               </div>
               <div style={{ display: 'flex', gap: 7, marginTop: 12 }}>
-                <button className="btn btn-secondary btn-sm">Manage plan</button>
-                <button className="btn btn-ghost btn-sm">View invoices</button>
+                <button className="btn btn-secondary btn-sm" onClick={() => navigate('/pricing')}>Manage plan</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOpen(true)}>View invoices</button>
               </div>
             </div>
 
@@ -460,7 +486,7 @@ export default function MoneyPage() {
             </div>
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setHistoryOpen(false)}>Close</button>
-              <button className="btn btn-secondary">
+              <button className="btn btn-secondary" onClick={handleExportCsv}>
                 <i className="ti ti-download" style={{ fontSize: 13 }}></i>Export CSV
               </button>
             </div>

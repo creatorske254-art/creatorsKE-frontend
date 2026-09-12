@@ -1,4 +1,5 @@
 import { useFieldArray } from 'react-hook-form';
+import EmptyState from '@/components/shared/EmptyState';
 
 const PLATFORMS = [
   { value: 'instagram', label: 'Instagram' },
@@ -51,14 +52,13 @@ export function SocialStatsForm({ control, register, errors }) {
       </div>
 
       {fields.length === 0 && (
-        <div
-          className="card card-dashed card-p-lg"
-          style={{ textAlign: 'center', cursor: 'default' }}
-        >
-          <i className="ti ti-device-mobile" style={{ fontSize: 28, color: 'var(--grey-300)', display: 'block', marginBottom: 8 }} />
-          <p style={{ fontSize: 13, color: 'var(--grey-400)' }}>
-            No platforms added yet. Click "Add platform" to get started.
-          </p>
+        <div className="card card-dashed">
+          <EmptyState
+            size="sm"
+            icon={<i className="ti ti-device-mobile" aria-hidden="true" />}
+            title="No platforms added yet"
+            description="Click 'Add platform' to get started."
+          />
         </div>
       )}
 
@@ -150,7 +150,7 @@ export function SocialStatsForm({ control, register, errors }) {
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 type="button"
-                className="btn btn-destructive btn-xs"
+                className="btn btn-danger btn-xs"
                 onClick={() => remove(index)}
               >
                 <i className="ti ti-trash" style={{ fontSize: 12 }} />

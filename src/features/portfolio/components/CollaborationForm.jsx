@@ -1,4 +1,5 @@
 import { useFieldArray } from 'react-hook-form';
+import EmptyState from '@/components/shared/EmptyState';
 
 const EMPTY_COLLAB = {
   brandName: '',
@@ -36,14 +37,13 @@ export function CollaborationForm({ control, register, errors }) {
       </div>
 
       {fields.length === 0 && (
-        <div
-          className="card card-dashed card-p-lg"
-          style={{ textAlign: 'center', cursor: 'default' }}
-        >
-          <i className="ti ti-building-store" style={{ fontSize: 28, color: 'var(--grey-300)', display: 'block', marginBottom: 8 }} />
-          <p style={{ fontSize: 13, color: 'var(--grey-400)' }}>
-            No past collaborations added yet. These are optional but help brands say yes faster.
-          </p>
+        <div className="card card-dashed">
+          <EmptyState
+            size="sm"
+            icon={<i className="ti ti-building-store" aria-hidden="true" />}
+            title="No collaborations added yet"
+            description="These are optional but help brands say yes faster."
+          />
         </div>
       )}
 

@@ -7,8 +7,36 @@ import {
   IconMoodSmile, IconPlane, IconBulb, IconTrendingUp, IconPhone, IconMail,
   IconEdit,
 } from '@tabler/icons-react';
+import { toast } from 'sonner';
 import api from '@/lib/api';
 import { usePageMeta } from '@/lib/usePageMeta';
+
+function openWhatsApp(phone) {
+  const digits = (phone || '').replace(/\D/g, '');
+  if (!digits) {
+    toast.error("This creator hasn't added a WhatsApp number yet.");
+    return;
+  }
+  window.open(`https://wa.me/${digits}`, '_blank', 'noopener,noreferrer');
+}
+
+async function sharePortfolio(name) {
+  const url = window.location.href;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${name} — Portfolio`, url });
+    } catch {
+      // user cancelled the native share sheet — nothing to do
+    }
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard.');
+  } catch {
+    toast.error('Could not copy link.');
+  }
+}
 
 const PLATFORM_ICONS = {
   Instagram: IconBrandInstagram,
@@ -85,7 +113,7 @@ function SectionSkeleton({ rows = 3 }) {
   return (
     <div className="space-y-3">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-4 bg-[var(--grey-100)] rounded animate-pulse" style={{ width: `${70 + (i % 3) * 10}%` }} />
+        <div key={i} className="skeleton h-4" style={{ width: `${70 + (i % 3) * 10}%` }} />
       ))}
     </div>
   );
@@ -161,11 +189,11 @@ export default function PortfolioPage() {
       {isLoading ? (
         <div className="max-w-[1000px] w-full mx-auto px-8 py-16">
           <div className="flex items-start gap-5">
-            <div className="w-[260px] h-[220px] rounded-[24px] bg-[var(--grey-100)] animate-pulse flex-shrink-0" />
+            <div className="skeleton w-[260px] h-[220px]" style={{ borderRadius: 24 }} />
             <div className="flex-1 space-y-3">
-              <div className="h-8 bg-[var(--grey-100)] rounded animate-pulse w-2/3" />
-              <div className="h-4 bg-[var(--grey-100)] rounded animate-pulse w-1/3" />
-              <div className="h-14 bg-[var(--grey-100)] rounded animate-pulse w-full" />
+              <div className="skeleton h-8 w-2/3" />
+              <div className="skeleton h-4 w-1/3" />
+              <div className="skeleton h-14 w-full" />
             </div>
           </div>
         </div>
@@ -194,10 +222,16 @@ export default function PortfolioPage() {
                     >
                       <IconCurrencyDollar size={15} /> View rate card
                     </Link>
-                    <button className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]">
+                    <button
+                      onClick={() => openWhatsApp(contact.phone)}
+                      className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
+                    >
                       <IconBrandWhatsapp size={15} /> WhatsApp me
                     </button>
-                    <button className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]">
+                    <button
+                      onClick={() => sharePortfolio(creator.displayName)}
+                      className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
+                    >
                       <IconShare size={14} /> Share
                     </button>
                   </div>
@@ -420,7 +454,10 @@ export default function PortfolioPage() {
                   >
                     <IconCurrencyDollar size={15} /> View rate card
                   </Link>
-                  <button className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-white">
+                  <button
+                    onClick={() => openWhatsApp(contact.phone)}
+                    className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-white"
+                  >
                     <IconBrandWhatsapp size={15} /> WhatsApp me
                   </button>
                 </div>
@@ -434,9 +471,9 @@ export default function PortfolioPage() {
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">Creatorske<span className="text-[var(--purple-500)]">.</span></div>
         <div>© 2026 Creatorske. All rights reserved.</div>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-[var(--black)]">Privacy</a>
-          <a href="#" className="hover:text-[var(--black)]">Terms</a>
-          <a href="#" className="hover:text-[var(--black)]">Support</a>
+          <Link to="/privacy" className="hover:text-[var(--black)]">Privacy</Link>
+          <Link to="/terms" className="hover:text-[var(--black)]">Terms</Link>
+          <a href="mailto:support@creatorske.com" className="hover:text-[var(--black)]">Support</a>
         </div>
       </footer>
     </div>

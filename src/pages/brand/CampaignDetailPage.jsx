@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import {
   IconArrowLeft,
   IconCheck,
@@ -233,6 +234,38 @@ export default function CampaignDetailPage() {
   const platformFee = useMemo(() => Math.round(base.price * 0.1), [base.price])
   const netPayout = base.price - platformFee
 
+  function handleDownloadInvoice() {
+    const lines = [
+      'CREATORSKE — PAYMENT RECEIPT',
+      '',
+      `Campaign: ${base.package}`,
+      `Creator: ${base.creator} (${base.handle})`,
+      `Platform: ${base.platform}`,
+      '',
+      `Amount: KES ${base.price.toLocaleString()}`,
+      `Platform fee (10%): KES ${platformFee.toLocaleString()}`,
+      `Net payout to creator: KES ${netPayout.toLocaleString()}`,
+      '',
+      `Paid via: ${base.paymentMethod}`,
+      `Paid on: ${base.paidOn}`,
+      `Invoice ref: ${base.id}`,
+    ].join('\n')
+    const blob = new Blob([lines], { type: 'text/plain;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `creatorske-invoice-${base.id}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  // ASSUMPTION: no file-storage endpoint is documented — deliveredFiles are
+  // mock filenames with no real content anywhere, so there's nothing to
+  // download. Toast is honest about that rather than faking a file.
+  function handleDownloadFile(name) {
+    toast.info(`${name} will be downloadable once file storage is connected.`)
+  }
+
   const handleApprove = () => {
     setApproving(true)
     setTimeout(() => {
@@ -315,7 +348,11 @@ export default function CampaignDetailPage() {
                       <IconFileText size={14} style={{ color: 'var(--grey-400)' }} />
                       <span style={{ flex: 1 }}>{f.name}</span>
                       <span style={{ color: 'var(--grey-400)' }}>{f.size}</span>
-                      <IconDownload size={14} style={{ color: 'var(--grey-400)', cursor: 'pointer' }} />
+                      <IconDownload
+                        size={14}
+                        style={{ color: 'var(--grey-400)', cursor: 'pointer' }}
+                        onClick={() => handleDownloadFile(f.name)}
+                      />
                     </div>
                   ))}
                 </div>
@@ -440,7 +477,7 @@ export default function CampaignDetailPage() {
                 <div className="row-between"><span>Paid via</span><span>{base.paymentMethod}</span></div>
                 <div className="row-between"><span>Paid on</span><span>{base.paidOn}</span></div>
               </div>
-              <button className="btn btn-ghost btn-sm btn-full">
+              <button className="btn btn-ghost btn-sm btn-full" onClick={handleDownloadInvoice}>
                 <IconDownload size={13} />
                 Download invoice
               </button>

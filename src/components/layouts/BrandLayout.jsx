@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
 import { useEnquiries } from '@/features/enquiry';
 import { useNotifications } from '@/context/NotificationContext';
+import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
 
 // Injects Tabler Icons webfont once — same pattern as CreatorLayout.
@@ -110,6 +111,11 @@ const LAYOUT_STYLES = `
 
 .brand-layout__menu-btn {
   display: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 .brand-layout__backdrop {
@@ -204,6 +210,7 @@ export default function BrandLayout() {
 
   const [searchValue, setSearchValue] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   function handleSearchSubmit(e) {
     e.preventDefault();
@@ -230,7 +237,7 @@ export default function BrandLayout() {
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setDrawerOpen((v) => !v)}
           >
-            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
+            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: '22px' }} aria-hidden="true" />
           </button>
 
           <NavLink to="/brand/dashboard" className="navbar-logo">
@@ -253,7 +260,13 @@ export default function BrandLayout() {
 
           <div className="navbar-actions">
             <div style={{ position: 'relative' }}>
-              <button type="button" className="btn btn-square btn-icon-style" aria-label="Notifications">
+              <button
+                type="button"
+                className="btn btn-square btn-icon-style"
+                aria-label="Notifications"
+                aria-expanded={notifOpen}
+                onClick={() => setNotifOpen((v) => !v)}
+              >
                 <i className="ti ti-bell" style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
               </button>
               {unreadCount > 0 && (
@@ -264,11 +277,25 @@ export default function BrandLayout() {
                   {unreadCount}
                 </span>
               )}
+              {notifOpen && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 260 }}>
+                  <div className="card" style={{ boxShadow: 'var(--shadow-lg)' }}>
+                    <NotificationList onClose={() => setNotifOpen(false)} />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="nav-avatar">{initials}</div>
           </div>
         </nav>
+
+        {notifOpen && (
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 255 }}
+            onClick={() => setNotifOpen(false)}
+          />
+        )}
 
         {drawerOpen && (
           <div className="brand-layout__backdrop" onClick={() => setDrawerOpen(false)} />

@@ -3,6 +3,8 @@ import { IconPaperclip, IconSend } from '@tabler/icons-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
 import { formatRelativeDate } from '@/lib/utils';
+import Skeleton from '@/components/ui/Skeleton';
+import EmptyState from '@/components/shared/EmptyState';
 
 const THREAD_CSS = `
   .message-thread { display: flex; flex-direction: column; gap: var(--space-12); }
@@ -43,7 +45,6 @@ const THREAD_CSS = `
     margin-top: var(--space-6);
     text-decoration: underline;
   }
-  .message-thread-empty { text-align: center; padding: var(--space-24) var(--space-16); color: var(--grey-400); font-size: 13px; }
   .message-thread-composer { display: flex; gap: var(--space-8); }
 `;
 
@@ -96,9 +97,18 @@ export default function MessageThread({ threadId }) {
 
       <div className="message-thread-list" ref={listRef}>
         {isLoading ? (
-          <div className="message-thread-empty">Loading messages…</div>
+          <>
+            <div className="message-thread-row theirs"><Skeleton width={160} height={36} style={{ borderRadius: 'var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)' }} /></div>
+            <div className="message-thread-row mine"><Skeleton width={120} height={30} style={{ borderRadius: 'var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg)' }} /></div>
+            <div className="message-thread-row theirs"><Skeleton width={190} height={44} style={{ borderRadius: 'var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)' }} /></div>
+          </>
         ) : messages.length === 0 ? (
-          <div className="message-thread-empty">No messages yet — say hello.</div>
+          <EmptyState
+            size="sm"
+            icon={<i className="ti ti-message-circle" aria-hidden="true" />}
+            title="No messages yet"
+            description="Say hello to get the conversation started."
+          />
         ) : (
           messages.map((m, i) => {
             // ASSUMPTION: message shape/field names aren't documented.

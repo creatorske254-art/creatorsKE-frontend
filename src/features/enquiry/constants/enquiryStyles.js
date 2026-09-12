@@ -51,6 +51,4 @@ export const ENQUIRY_CSS = `
   .enq-meta-val { font-weight: 500; color: var(--black); }
 
   .enq-actions { display: flex; flex-direction: column; gap: var(--space-8); }
-
-  .enq-empty { text-align: center; padding: var(--space-32) var(--space-16); color: var(--grey-400); font-size: 13px; }
 `;

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Spinner from '../../../components/ui/Spinner';
+import Skeleton from '@/components/ui/Skeleton';
 
 /**
  * CardHealthIndicator
@@ -12,8 +12,12 @@ import Spinner from '../../../components/ui/Spinner';
 export default function CardHealthIndicator({ cardHealth, loading, error }) {
   if (loading) {
     return (
-      <div className="card-health card-health--loading">
-        <Spinner size="sm" />
+      <div className="card-health card-health--loading" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <Skeleton circle width={84} height={84} />
+        <div style={{ flex: 1 }}>
+          <Skeleton width="90%" height={13} style={{ marginBottom: 8 }} />
+          <Skeleton width="60%" height={13} />
+        </div>
       </div>
     );
   }

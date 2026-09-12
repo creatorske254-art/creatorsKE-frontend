@@ -47,6 +47,7 @@ export function useEnquiries() {
     pipelineCounts,
     isLoading: query.isLoading,
     error: query.error,
+    refetch: query.refetch,
     accept: acceptMutation.mutate,
     decline: declineMutation.mutate,
   };

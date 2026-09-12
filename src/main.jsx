@@ -7,8 +7,24 @@ import { Toaster } from 'sonner'
 import { AuthProvider } from '@/context/AuthContext'
 import { NotificationProvider } from '@/context/NotificationContext'
 import AppRouter from '@/routes/index'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import OfflinePage from '@/pages/error/OfflinePage'
+import { useOnlineStatus } from '@/lib/useOnlineStatus'
 
 import '@/index.css'
+
+// Shows OfflinePage as a full-screen takeover in front of the whole app the
+// moment the browser loses connectivity, and clears itself the moment it's
+// restored — the app underneath keeps whatever state it had.
+function OnlineGate({ children }) {
+  const isOnline = useOnlineStatus()
+  return (
+    <>
+      {children}
+      {!isOnline && <OfflinePage />}
+    </>
+  )
+}
 
 // ─── TanStack Query client ─────────────────────────────────────────────────
 const queryClient = new QueryClient({
@@ -27,30 +43,35 @@ const queryClient = new QueryClient({
 // ─── Root ──────────────────────────────────────────────────────────────────
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <OnlineGate>
 
-      {/* Auth must wrap everything — contexts below it may read auth state */}
-      <AuthProvider>
-        <NotificationProvider>
+          {/* Auth must wrap everything — contexts below it may read auth state */}
+          <AuthProvider>
+            <NotificationProvider>
 
-          {/* Single Toaster instance — all features call toast() from sonner */}
-          <Toaster
-            position="top-right"
-            duration={4000}
-            richColors
-            closeButton
-          />
+              {/* Single Toaster instance — all features call toast() from sonner */}
+              <Toaster
+                position="top-right"
+                duration={4000}
+                richColors
+                closeButton
+              />
 
-          <AppRouter />
+              <AppRouter />
 
-        </NotificationProvider>
-      </AuthProvider>
+            </NotificationProvider>
+          </AuthProvider>
 
-      {/* Dev tools — the package already no-ops itself outside dev via
-          process.env.NODE_ENV, but gate it explicitly too so it's never
-          ambiguous whether a "dev thing" can reach production. */}
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+        </OnlineGate>
 
-    </QueryClientProvider>
+        {/* Dev tools — the package already no-ops itself outside dev via
+            process.env.NODE_ENV, but gate it explicitly too so it's never
+            ambiguous whether a "dev thing" can reach production. */}
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 )

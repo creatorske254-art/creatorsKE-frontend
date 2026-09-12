@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { usePageMeta } from '@/lib/usePageMeta'
+import EmptyState from '@/components/shared/EmptyState'
 
 // Mock data: wire up to admin.service.js (list/review/suspend/restore)
 const ACCOUNTS = [
@@ -153,18 +154,6 @@ export default function AccountsPage() {
       <style>{`
         .acc-page *{box-sizing:border-box}
         .acc-page{
-          --white:#FFFFFF;--off-white:#F8F7FF;--black:#0D0D0D;--page-bg:#F2F1F8;
-          --purple-50:#F0EEFF;--purple-100:#DDD9FD;--purple-200:#BAB3FA;--purple-300:#9187F7;
-          --purple-500:#5445E8;--purple-600:#3D2FD6;--purple-700:#2C1FB8;
-          --grey-50:#F5F5F5;--grey-100:#EBEBEB;--grey-200:#D6D6D6;--grey-300:#B8B8B8;
-          --grey-400:#919191;--grey-500:#6E6E6E;--grey-600:#4A4A4A;--grey-700:#333333;--grey-800:#1F1F1F;
-          --status-success:#00B96B;--status-success-bg:#E6F9F1;--status-success-text:#006B3D;
-          --status-warning:#F5A623;--status-warning-bg:#FEF6E7;--status-warning-text:#7A4A00;
-          --status-error:#FF4B4B;--status-error-bg:#FFF0F0;--status-error-text:#8B0000;
-          --status-info:#4393F5;--status-info-bg:#EEF5FF;--status-info-text:#1A3F80;
-          --font-display:'Gill Sans MT','Gill Sans',Calibri,sans-serif;--font-body:'Inter',sans-serif;
-          --radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-xl:16px;--radius-pill:999px;
-          --shadow-xs:0 1px 2px rgba(0,0,0,0.05);--shadow-md:0 4px 16px rgba(0,0,0,0.08);--shadow-lg:0 8px 32px rgba(0,0,0,0.10);
           font-family:var(--font-body);color:var(--black);
         }
         .acc-page .section-eyebrow{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--purple-500);font-weight:600;margin-bottom:4px}
@@ -205,7 +194,6 @@ export default function AccountsPage() {
         .acc-page .btn-danger:hover{background:#e23c3c}
         .acc-page .btn-ghost{background:transparent;color:var(--grey-600);font-size:12px;padding:6.5px 14px;border:0.5px solid var(--grey-200)}
         .acc-page .btn-ghost:hover{color:var(--black);border-color:var(--grey-400)}
-        .acc-page .card{background:var(--white);border:0.5px solid var(--grey-100);border-radius:var(--radius-lg)}
         .acc-page .card-header{padding:16px 20px;border-bottom:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between}
         .acc-page .card-header-title{font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--black)}
         .acc-page .card-body{padding:20px}
@@ -216,8 +204,6 @@ export default function AccountsPage() {
         .acc-page .detail-row:last-child{border-bottom:none}
         .acc-page .detail-label{color:var(--grey-400)}
         .acc-page .detail-value{color:var(--black);font-weight:500;text-align:right}
-        .acc-page .empty-state{text-align:center;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:8px}
-        .acc-page .empty-icon{width:46px;height:46px;border-radius:var(--radius-lg);background:var(--grey-50);border:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--grey-400)}
         .acc-page .modal-overlay{position:fixed;inset:0;background:rgba(13,13,13,0.4);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
         .acc-page .modal{background:var(--white);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);width:100%;max-width:420px;overflow:hidden}
         .acc-page .split-grid{display:grid;gap:20px;align-items:start}
@@ -309,11 +295,12 @@ export default function AccountsPage() {
             </table>
 
             {filtered.length === 0 && (
-              <div className="empty-state">
-                <div className="empty-icon"><i className="ti ti-users" /></div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600 }}>No accounts found</div>
-                <div style={{ fontSize: 12.5, color: 'var(--grey-500)', maxWidth: 240 }}>Try a different search term or switch tabs.</div>
-              </div>
+              <EmptyState
+                size="sm"
+                icon={<i className="ti ti-users" aria-hidden="true" />}
+                title="No accounts found"
+                description="Try a different search term or switch tabs."
+              />
             )}
           </div>
 

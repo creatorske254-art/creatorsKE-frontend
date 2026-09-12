@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 
 // ─── CSS-in-JS tokens matching auth.html design system ──────────────────────
@@ -7,23 +7,10 @@ const css = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
   @import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
 
-  :root {
-    --white: #FFFFFF; --off-white: #F8F7FF; --black: #0D0D0D; --page-bg: #F2F1F8;
-    --purple-50: #F0EEFF; --purple-100: #DDD9FD; --purple-200: #BAB3FA;
-    --purple-300: #9187F7; --purple-400: #6B5FF4; --purple-500: #5445E8;
-    --purple-600: #3D2FD6; --purple-700: #2C1FB8; --purple-800: #1E1480;
-    --grey-50: #F5F5F5; --grey-100: #EBEBEB; --grey-200: #D6D6D6;
-    --grey-300: #B8B8B8; --grey-400: #919191; --grey-500: #6E6E6E;
-    --grey-600: #4A4A4A; --grey-700: #333333; --grey-800: #1F1F1F;
-    --status-success: #00B96B; --status-error: #FF4B4B;
-    --font-display: 'Gill Sans MT', 'Gill Sans', Calibri, sans-serif;
-    --font-body: 'Inter', sans-serif;
-    --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,.06); --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+  .ob-page {
     --ease-out: cubic-bezier(.16,1,.3,1);
+    min-height: 100vh; display: flex; flex-direction: column; background: var(--page-bg); font-family: var(--font-body); animation: obFadeUp .25s var(--ease-out) both;
   }
-
-  .ob-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--page-bg); font-family: var(--font-body); animation: obFadeUp .25s var(--ease-out) both; }
   @keyframes obFadeUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
 
   .ob-navbar {
@@ -116,29 +103,11 @@ const css = `
   .pw-bar.strong { background: var(--status-success); }
   .pw-hint { font-size: 11px; margin-top: 4px; color: var(--grey-400); }
 
-  /* Buttons */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    border: none; cursor: pointer; font-family: var(--font-body); font-weight: 500;
-    transition: all .15s; white-space: nowrap; line-height: 1; text-decoration: none; border-radius: var(--radius-md);
-  }
-  .btn-primary { background: var(--black); color: var(--white); font-size: 14px; padding: 11px 22px; }
-  .btn-primary:hover { background: var(--grey-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-  .btn-purple { background: var(--purple-600); color: var(--white); font-size: 14px; padding: 11px 22px; }
-  .btn-purple:hover { background: var(--purple-700); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(84,69,232,.3); }
-  .btn-ghost { background: transparent; color: var(--grey-600); font-size: 14px; padding: 10.5px 22px; border: 0.5px solid var(--grey-200); }
-  .btn-ghost:hover { color: var(--black); border-color: var(--grey-400); background: var(--grey-50); }
-  .btn-sm { padding: 7px 16px; font-size: 13px; }
-  .btn-lg { padding: 14px 32px; font-size: 15px; }
-  .btn-full { width: 100%; justify-content: center; }
-  .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
-  .btn-loading::after {
-    content: ''; position: absolute; width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,.3); border-top-color: white;
-    border-radius: 50%; animation: spin .7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg) } }
-  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+  /* Buttons — .btn/.btn-primary/.btn-purple/.btn-ghost/.btn-sm/.btn-lg/.btn-full/
+     .btn-loading all come from the shared index.css button system. Only the
+     disabled-state dimming has no canonical equivalent, so it stays here,
+     scoped to this page to avoid leaking onto buttons elsewhere. */
+  .ob-page .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
   .ob-terms { font-size: 11px; color: var(--grey-400); text-align: center; margin-top: 12px; line-height: 1.6; }
   .ob-terms a { color: var(--grey-600); text-decoration: underline; cursor: pointer; }
@@ -260,7 +229,7 @@ function ChooseType({ onSelect, accountType, onContinue, onLoginClick }) {
   )
 }
 
-function CreatorSignup({ onBack, onSubmit, loading }) {
+function CreatorSignup({ onBack, onSubmit, loading, onLoginClick }) {
   const [fname, setFname] = useState('')
   const [lname, setLname] = useState('')
   const [email, setEmail] = useState('')
@@ -323,16 +292,16 @@ function CreatorSignup({ onBack, onSubmit, loading }) {
           </button>
         </div>
         <div className="ob-terms">
-          By signing up you agree to our <a>Terms of Service</a> and <a>Privacy Policy</a>.
+          By signing up you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</Link> and <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
         </div>
-        <div className="ob-footer-text">Already have an account? <a>Log in</a></div>
+        <div className="ob-footer-text">Already have an account? <a onClick={onLoginClick}>Log in</a></div>
         <a className="ob-back-link" onClick={onBack}>← Change account type</a>
       </div>
     </div>
   )
 }
 
-function BrandSignup({ onBack, onSubmit, loading }) {
+function BrandSignup({ onBack, onSubmit, loading, onLoginClick }) {
   const [company, setCompany] = useState('')
   const [fname, setFname] = useState('')
   const [lname, setLname] = useState('')
@@ -401,9 +370,9 @@ function BrandSignup({ onBack, onSubmit, loading }) {
           </button>
         </div>
         <div className="ob-terms">
-          By signing up you agree to our <a>Terms of Service</a> and <a>Privacy Policy</a>.
+          By signing up you agree to our <Link to="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</Link> and <Link to="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
         </div>
-        <div className="ob-footer-text">Already have an account? <a>Log in</a></div>
+        <div className="ob-footer-text">Already have an account? <a onClick={onLoginClick}>Log in</a></div>
         <a className="ob-back-link" onClick={onBack}>← Change account type</a>
       </div>
     </div>
@@ -490,6 +459,8 @@ function Toast({ message }) {
  */
 export default function OnboardingPage({ onComplete, onLoginClick }) {
   usePageMeta('Set Up Your Profile', 'Finish setting up your creator profile on Creatorske.');
+  const navigate = useNavigate()
+  const goToLogin = onLoginClick || (() => navigate('/login'))
   const [step, setStep] = useState('choose-type') // 'choose-type' | 'signup-creator' | 'signup-brand' | 'verify'
   const [accountType, setAccountType] = useState(null)
   const [userInfo, setUserInfo] = useState({})
@@ -527,11 +498,13 @@ export default function OnboardingPage({ onComplete, onLoginClick }) {
 
   const handleVerified = () => {
     if (accountType === 'brand') {
-      // Brands go straight to their dashboard — parent handles routing
-      onComplete?.('brand', null, userInfo)
+      // Brands go straight to their dashboard
+      if (onComplete) onComplete('brand', null, userInfo)
+      else navigate('/brand/dashboard')
     } else {
-      // Creators go to plan selection
-      onComplete?.('creator', null, userInfo)
+      // Creators go to plan selection next
+      if (onComplete) onComplete('creator', null, userInfo)
+      else navigate('/onboarding/plan')
     }
   }
 
@@ -541,7 +514,7 @@ export default function OnboardingPage({ onComplete, onLoginClick }) {
     <>
       {/* theme toggle omitted here — handled at app level; add ThemeToggle component if needed */}
       {(step === 'choose-type' || step === 'signup-creator' || step === 'signup-brand') && (
-        <button className="btn btn-ghost btn-sm" onClick={onLoginClick}>Log in</button>
+        <button className="btn btn-ghost btn-sm" onClick={goToLogin}>Log in</button>
       )}
     </>
   )
@@ -557,7 +530,7 @@ export default function OnboardingPage({ onComplete, onLoginClick }) {
             accountType={accountType}
             onSelect={handleTypeSelect}
             onContinue={handleTypeContinue}
-            onLoginClick={onLoginClick}
+            onLoginClick={goToLogin}
           />
         )}
 
@@ -566,6 +539,7 @@ export default function OnboardingPage({ onComplete, onLoginClick }) {
             onBack={() => setStep('choose-type')}
             onSubmit={handleCreatorSubmit}
             loading={loading}
+            onLoginClick={goToLogin}
           />
         )}
 
@@ -573,6 +547,7 @@ export default function OnboardingPage({ onComplete, onLoginClick }) {
           <BrandSignup
             onBack={() => setStep('choose-type')}
             onSubmit={handleBrandSubmit}
+            onLoginClick={goToLogin}
             loading={loading}
           />
         )}

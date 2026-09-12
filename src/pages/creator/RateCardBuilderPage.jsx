@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
   IconArrowLeft, IconArrowRight, IconUpload, IconMapPin, IconBrandInstagram, IconBrandYoutube, IconBrandTiktok,
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
   IconBuilding, IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
-  IconEye, IconPencil, IconPlus, IconChevronDown, IconLayoutDashboard
+  IconEye, IconEyeOff, IconPencil, IconPlus, IconChevronDown, IconLayoutDashboard
 } from "@tabler/icons-react";
 
 /* design tokens (scoped)
@@ -335,7 +337,9 @@ function launchConfetti() {
 ═══════════════════════════════════════════════════════════════════════ */
 export default function RateCardBuilderPage() {
   usePageMeta('Rate Card Builder', 'Build and publish your rate card on Creatorske.');
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [savingDraft, setSavingDraft] = useState(false);
 
   // profile (step 1)
   const [profile, setProfile] = useState({
@@ -403,6 +407,16 @@ export default function RateCardBuilderPage() {
     navigator.clipboard?.writeText("https://" + slug);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
+  };
+  // ASSUMPTION: this whole builder is local mock state (no rate-card.service.js
+  // call anywhere yet, see doPublish above) — matches that same fake-latency
+  // pattern rather than inventing a draft-persistence endpoint that isn't documented.
+  const handleSaveDraft = () => {
+    setSavingDraft(true);
+    setTimeout(() => {
+      setSavingDraft(false);
+      toast.success("Draft saved.");
+    }, 700);
   };
 
   const next = () => setStep((s) => Math.min(5, s + 1));
@@ -752,14 +766,21 @@ export default function RateCardBuilderPage() {
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {packages.map((pkg) => (
-                      <div key={pkg.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: pkg.feat ? "var(--accent-light)" : "var(--bg-secondary)", border: `0.5px solid ${pkg.feat ? "var(--accent-border)" : "var(--bdr-tertiary)"}`, borderRadius: "var(--r-md)" }}>
+                      <div key={pkg.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: pkg.feat ? "var(--accent-light)" : "var(--bg-secondary)", border: `0.5px solid ${pkg.feat ? "var(--accent-border)" : "var(--bdr-tertiary)"}`, borderRadius: "var(--r-md)", opacity: pkg.hidden ? 0.5 : 1 }}>
                         <span style={{ color: "var(--txt-tertiary)", display: "flex", cursor: "grab" }}><IconGripVertical size={14} /></span>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 13, fontWeight: 500 }}>{pkg.name}</div>
+                          <div style={{ fontSize: 13, fontWeight: 500 }}>{pkg.name}{pkg.hidden ? " (hidden)" : ""}</div>
                           <div style={{ fontSize: 11.5, color: "var(--txt-tertiary)" }}>KES {pkg.price}{pkg.feat ? " · Featured" : ""}</div>
                         </div>
                         {pkg.feat && <span className="tag tag-accent">Featured</span>}
-                        <button className="icon-btn icon-btn-sm"><IconEye size={13} /></button>
+                        <button
+                          type="button"
+                          className="icon-btn icon-btn-sm"
+                          title={pkg.hidden ? "Show on rate card" : "Hide from rate card"}
+                          onClick={() => updatePackage(pkg.id, "hidden", !pkg.hidden)}
+                        >
+                          {pkg.hidden ? <IconEyeOff size={13} /> : <IconEye size={13} />}
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -895,7 +916,7 @@ export default function RateCardBuilderPage() {
                 <div className="share-box">
                   <IconLink size={14} color="var(--txt-tertiary)" />
                   <span className="share-url">{slug}</span>
-                  <button className="btn btn-ghost btn-xs" onClick={copyLink}>{copied ? <><IconCheck size={11} />Copied!</> : <><IconCopy size={11} />IconCopy</>}</button>
+                  <button className="btn btn-ghost btn-xs" onClick={copyLink}>{copied ? <><IconCheck size={11} />Copied!</> : <><IconCopy size={11} />Copy</>}</button>
                 </div>
                 <div style={{ display: "flex", gap: 7, marginTop: 10 }}>
                   <button className="btn btn-ghost btn-sm" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent("Check out my rate card: https://" + slug)}`, "_blank")}>
@@ -914,8 +935,8 @@ export default function RateCardBuilderPage() {
                     <p style={{ fontSize: 13, color: "var(--txt-secondary)" }}>Your rate card is published and ready to share with brands.</p>
                   </div>
                   <div style={{ display: "flex", gap: 7, flexWrap: "wrap", justifyContent: "center" }}>
-                    <button className="btn btn-secondary btn-sm" onClick={copyLink}><IconCopy size={12} />IconCopy link</button>
-                    <button className="btn btn-ghost btn-sm"><IconLayoutDashboard size={12} />Go to dashboard</button>
+                    <button className="btn btn-secondary btn-sm" onClick={copyLink}><IconCopy size={12} />Copy link</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => navigate('/creator/dashboard')}><IconLayoutDashboard size={12} />Go to dashboard</button>
                   </div>
                 </div>
               ) : (
@@ -934,9 +955,9 @@ export default function RateCardBuilderPage() {
               <button className="btn btn-ghost" onClick={back}><IconArrowLeft size={13} />Back</button>
             ) : <div />}
             <div style={{ display: "flex", gap: 7 }}>
-              {step < 5 && <button className="btn btn-ghost">Save draft</button>}
+              {step < 5 && <button className="btn btn-ghost" disabled={savingDraft} onClick={handleSaveDraft}>{savingDraft ? "Saving…" : "Save draft"}</button>}
               {step === 5 ? (
-                <button className="btn btn-ghost">Save draft</button>
+                <button className="btn btn-ghost" disabled={savingDraft} onClick={handleSaveDraft}>{savingDraft ? "Saving…" : "Save draft"}</button>
               ) : (
                 <button className="btn btn-primary" onClick={next}>Save &amp; continue<IconArrowRight size={13} /></button>
               )}

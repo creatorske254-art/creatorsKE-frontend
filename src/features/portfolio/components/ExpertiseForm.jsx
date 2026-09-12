@@ -1,4 +1,5 @@
 import { useFieldArray } from 'react-hook-form';
+import EmptyState from '@/components/shared/EmptyState';
 
 const MAX_EXPERTISE = 4;
 
@@ -34,14 +35,13 @@ export function ExpertiseForm({ control, register, errors }) {
       </div>
 
       {fields.length === 0 && (
-        <div
-          className="card card-dashed card-p-lg"
-          style={{ textAlign: 'center', cursor: 'default' }}
-        >
-          <i className="ti ti-award" style={{ fontSize: 28, color: 'var(--grey-300)', display: 'block', marginBottom: 8 }} />
-          <p style={{ fontSize: 13, color: 'var(--grey-400)' }}>
-            Add at least one expertise area to complete your portfolio.
-          </p>
+        <div className="card card-dashed">
+          <EmptyState
+            size="sm"
+            icon={<i className="ti ti-award" aria-hidden="true" />}
+            title="No expertise added yet"
+            description="Add at least one expertise area to complete your portfolio."
+          />
         </div>
       )}
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 
 // Page-scoped styles
@@ -259,8 +260,18 @@ function SaveBar({ dirty, saving, onSave }) {
 
 // Profile tab
 function ProfileTab({ form, setForm, onDirty }) {
+  const [logoUrl, setLogoUrl] = useState(null);
+
   function upd(key) {
     return (e) => { setForm((f) => ({ ...f, [key]: e.target.value })); onDirty(); };
+  }
+
+  function handleLogoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { setLogoUrl(ev.target.result); onDirty(); };
+    reader.readAsDataURL(file);
   }
 
   const industryOptions = [
@@ -282,14 +293,19 @@ function ProfileTab({ form, setForm, onDirty }) {
       <div className="card card-p-lg">
         <span className="card-title">Company logo</span>
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 14 }}>
-          <div className="avatar avatar-lg avatar-purple">
-            {form.companyName ? form.companyName.slice(0, 2).toUpperCase() : "NB"}
-          </div>
+          {logoUrl ? (
+            <img src={logoUrl} alt="Company logo" className="avatar avatar-lg" style={{ objectFit: "cover" }} />
+          ) : (
+            <div className="avatar avatar-lg avatar-purple">
+              {form.companyName ? form.companyName.slice(0, 2).toUpperCase() : "NB"}
+            </div>
+          )}
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <button className="btn btn-ghost btn-sm">
+            <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer", width: "fit-content" }}>
               <i className="ti ti-upload" style={{ fontSize: 12 }} />
               Upload logo
-            </button>
+              <input type="file" accept="image/*" onChange={handleLogoChange} style={{ display: "none" }} />
+            </label>
             <span className="field-hint">PNG or SVG · max 2 MB · shown on invoices and scope confirmations</span>
           </div>
         </div>
@@ -400,40 +416,48 @@ function ProfileTab({ form, setForm, onDirty }) {
 }
 
 // Payments tab
+const PAYMENT_METHODS = [
+  {
+    id: "mpesa",
+    name: "M-Pesa",
+    sub: "Safaricom mobile money · STK push at checkout",
+    iconBg: "#00A651",
+    icon: "ti-device-mobile",
+    connected: true,
+    detail: "+254 712 345 678",
+  },
+  {
+    id: "airtel",
+    name: "Airtel Money",
+    sub: "Airtel mobile money · wallet-to-wallet",
+    iconBg: "#E40000",
+    icon: "ti-device-mobile",
+    connected: false,
+  },
+  {
+    id: "bank",
+    name: "Bank transfer",
+    sub: "Local & international wire · 1–2 day clearing",
+    iconBg: "var(--grey-100)",
+    iconColor: "var(--grey-600)",
+    icon: "ti-building-bank",
+    connected: false,
+  },
+];
+
 function PaymentsTab({ prefs, setPrefs, onDirty }) {
+  const [methods, setMethods] = useState(PAYMENT_METHODS);
+
   function toggle(key) {
     setPrefs((p) => ({ ...p, [key]: !p[key] }));
     onDirty();
   }
 
-  const methods = [
-    {
-      id: "mpesa",
-      name: "M-Pesa",
-      sub: "Safaricom mobile money · STK push at checkout",
-      iconBg: "#00A651",
-      icon: "ti-device-mobile",
-      connected: true,
-      detail: "+254 712 345 678",
-    },
-    {
-      id: "airtel",
-      name: "Airtel Money",
-      sub: "Airtel mobile money · wallet-to-wallet",
-      iconBg: "#E40000",
-      icon: "ti-device-mobile",
-      connected: false,
-    },
-    {
-      id: "bank",
-      name: "Bank transfer",
-      sub: "Local & international wire · 1–2 day clearing",
-      iconBg: "var(--grey-100)",
-      iconColor: "var(--grey-600)",
-      icon: "ti-building-bank",
-      connected: false,
-    },
-  ];
+  function handleConnect(id, name) {
+    setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, connected: true } : m)));
+    onDirty();
+    toast.success(`${name} connected.`);
+  }
 
   return (
     <div className="settings-stack">
@@ -459,7 +483,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
                   Connected · {m.detail}
                 </span>
               ) : (
-                <button className="btn btn-ghost btn-sm">Connect</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => handleConnect(m.id, m.name)}>Connect</button>
               )}
             </div>
           ))}
@@ -595,11 +619,28 @@ function SecurityTab({ onDirty }) {
     }, 1200);
   }
 
-  const sessions = [
+  const [sessions, setSessions] = useState([
     { device: "Chrome · macOS", location: "Nairobi, KE", time: "Now", current: true },
     { device: "Safari · iPhone 15", location: "Nairobi, KE", time: "2 hours ago", current: false },
     { device: "Chrome · Windows", location: "Nairobi, KE", time: "3 days ago", current: false },
-  ];
+  ]);
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+
+  function handleSignOutSession(device) {
+    setSessions((prev) => prev.filter((s) => s.device !== device));
+    toast.success(`Signed out of ${device}.`);
+  }
+
+  function handleSignOutOthers() {
+    setSessions((prev) => prev.filter((s) => s.current));
+    toast.success("Signed out of all other sessions.");
+  }
+
+  function handleToggle2FA() {
+    setTwoFAEnabled((v) => !v);
+    onDirty();
+    toast.success(twoFAEnabled ? "Two-factor authentication disabled." : "Two-factor authentication enabled.");
+  }
 
   return (
     <div className="settings-stack">
@@ -645,12 +686,12 @@ function SecurityTab({ onDirty }) {
             <span className="card-title" style={{ marginBottom: 3, display: "block" }}>Two-factor authentication</span>
             <span className="field-hint">Add an extra layer of protection using an authenticator app or SMS code.</span>
           </div>
-          <span className="tag tag-warning">Not enabled</span>
+          <span className={`tag ${twoFAEnabled ? "tag-success" : "tag-warning"}`}>{twoFAEnabled ? "Enabled" : "Not enabled"}</span>
         </div>
         <div style={{ marginTop: 14 }}>
-          <button className="btn btn-secondary btn-sm">
+          <button className="btn btn-secondary btn-sm" onClick={handleToggle2FA}>
             <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
-            Enable 2FA
+            {twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}
           </button>
         </div>
       </div>
@@ -676,12 +717,12 @@ function SecurityTab({ onDirty }) {
                   <div className="session-meta">{s.location} · {s.time}</div>
                 </div>
               </div>
-              {!s.current && <button className="btn btn-ghost btn-sm">Sign out</button>}
+              {!s.current && <button className="btn btn-ghost btn-sm" onClick={() => handleSignOutSession(s.device)}>Sign out</button>}
             </div>
           ))}
         </div>
         <div style={{ marginTop: 12 }}>
-          <button className="btn btn-ghost btn-sm">Sign out of all other sessions</button>
+          <button className="btn btn-ghost btn-sm" onClick={handleSignOutOthers} disabled={sessions.length <= 1}>Sign out of all other sessions</button>
         </div>
       </div>
     </div>
@@ -715,8 +756,8 @@ function AccountTab() {
       <div className="card card-p-lg">
         <span className="card-title">Legal</span>
         <div className="settings-stack" style={{ gap: 10, marginTop: 14 }}>
-          {[{ label: "Terms of Service", href: "#" }, { label: "Privacy Policy", href: "#" }].map((l) => (
-            <a key={l.label} href={l.href} className="legal-row">
+          {[{ label: "Terms of Service", href: "/terms" }, { label: "Privacy Policy", href: "/privacy" }].map((l) => (
+            <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="legal-row">
               {l.label}
               <i className="ti ti-external-link" />
             </a>

@@ -147,8 +147,8 @@ export default function HomePage() {
     ],
     Company: [
       { label: 'Support',         action: () => {} },
-      { label: 'Privacy policy',  action: () => {} },
-      { label: 'Terms of service',action: () => {} },
+      { label: 'Privacy policy',  action: () => navigate('/privacy') },
+      { label: 'Terms of service',action: () => navigate('/terms')   },
     ],
   };
 
@@ -342,12 +342,16 @@ export default function HomePage() {
         <div className="footer-bottom-inner" style={{ padding: '20px 80px', borderTop: '0.5px solid var(--grey-800)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
           <div style={{ fontSize: 12, color: 'var(--grey-600)' }}>© 2026 Creatorske Ltd. Nairobi, Kenya.</div>
           <div style={{ display: 'flex', gap: 20 }}>
-            {['Privacy policy', 'Terms of service'].map(l => (
-              <span key={l} style={{ fontSize: 12, color: 'var(--grey-600)', cursor: 'pointer', transition: 'color .15s' }}
+            {[
+              { label: 'Privacy policy', path: '/privacy' },
+              { label: 'Terms of service', path: '/terms' },
+            ].map(l => (
+              <span key={l.label} onClick={() => navigate(l.path)}
+                style={{ fontSize: 12, color: 'var(--grey-600)', cursor: 'pointer', transition: 'color .15s' }}
                 onMouseEnter={e => e.currentTarget.style.color = 'var(--grey-300)'}
                 onMouseLeave={e => e.currentTarget.style.color = 'var(--grey-600)'}
               >
-                {l}
+                {l.label}
               </span>
             ))}
           </div>

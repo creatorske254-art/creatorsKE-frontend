@@ -129,7 +129,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
             {a.label}
           </div>
           <button
-            onClick={() => onEnquire(creator.name)}
+            onClick={() => onEnquire(creator)}
             style={{ padding: '6px 14px', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 500, background: 'var(--purple-600)', color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--purple-700)'}
             onMouseLeave={e => e.currentTarget.style.background = 'var(--purple-600)'}
@@ -255,7 +255,7 @@ export default function ShortlistPage() {
     });
   }, [showToast]);
 
-  const handleEnquire = (name) => showToast(`Enquiry sent to ${name}`);
+  const handleEnquire = (creator) => navigate(`/c/${creator.handle.replace('@', '')}?enquire=1`);
 
   const clearFilters = () => { setQuery(''); setNiche('All'); setAvailableOnly(false); };
 

@@ -7,7 +7,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import Spinner from '../../../components/ui/Spinner';
+import Skeleton from '@/components/ui/Skeleton';
+import EmptyState from '@/components/shared/EmptyState';
 
 const PERIOD_LABELS = { '7d': '7 days', '30d': '30 days', '90d': '90 days' };
 
@@ -94,13 +95,15 @@ export default function EarningsChart({
 
       <div className="earnings-chart__body">
         {loading ? (
-          <div className="earnings-chart__loading">
-            <Spinner />
-          </div>
+          <Skeleton width="100%" height={220} />
         ) : error ? (
           <p className="earnings-chart__error">{error}</p>
         ) : data.length === 0 ? (
-          <p className="earnings-chart__empty">No earnings recorded for this period yet.</p>
+          <EmptyState
+            icon={<i className="ti ti-chart-area-line" aria-hidden="true" />}
+            title="No earnings yet"
+            description={`No earnings recorded for the last ${PERIOD_LABELS[period]}.`}
+          />
         ) : (
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>

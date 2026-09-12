@@ -2,6 +2,8 @@ import { IconCheck, IconX } from '@tabler/icons-react';
 import { STATUS, STATUS_META } from '../constants/enquiry';
 import { formatCurrency, formatDate, getInitials } from '@/lib/utils';
 import { MessageThread } from '@/features/messaging';
+import Skeleton from '@/components/ui/Skeleton';
+import EmptyState from '@/components/shared/EmptyState';
 
 /**
  * Enquiry detail panel — package/message summary, accept/decline (creator
@@ -21,7 +23,18 @@ export default function EnquiryDetail({
   if (isLoading) {
     return (
       <div className="card card-p-md enq-detail">
-        <div className="enq-empty">Loading…</div>
+        <div className="enq-detail-head">
+          <Skeleton circle width={48} height={48} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <Skeleton width="50%" height={15} style={{ marginBottom: 6 }} />
+            <Skeleton width="70%" height={12} />
+          </div>
+        </div>
+        <div className="enq-pkg">
+          <Skeleton width="40%" height={11} style={{ marginBottom: 8 }} />
+          <Skeleton width="80%" height={16} />
+        </div>
+        <Skeleton width="100%" height={60} style={{ marginTop: 16 }} />
       </div>
     );
   }
@@ -29,7 +42,11 @@ export default function EnquiryDetail({
   if (!enquiry) {
     return (
       <div className="card card-p-md enq-detail">
-        <div className="enq-empty">Select an enquiry to see details.</div>
+        <EmptyState
+          icon={<i className="ti ti-mail-opened" aria-hidden="true" />}
+          title="No enquiry selected"
+          description="Select an enquiry to see details."
+        />
       </div>
     );
   }

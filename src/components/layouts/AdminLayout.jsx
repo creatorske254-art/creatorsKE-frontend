@@ -5,6 +5,7 @@ import { useDisputes } from '@/features/admin/hooks/useDisputes';
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
 import { useAdmin } from '@/features/admin/hooks/useAdmin';
 import { useNotifications } from '@/context/NotificationContext';
+import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
 
 // Injects Tabler Icons webfont once — same pattern as CreatorLayout / BrandLayout.
@@ -108,6 +109,11 @@ const LAYOUT_STYLES = `
 
 .admin-layout__menu-btn {
   display: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 .admin-layout__backdrop {
@@ -210,6 +216,7 @@ export default function AdminLayout() {
 
   const badgeCounts = { openDisputeCount, flaggedAccountCount, flaggedReviewCount };
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   const initials = getInitials(
     user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
@@ -232,7 +239,7 @@ export default function AdminLayout() {
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setDrawerOpen((v) => !v)}
           >
-            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
+            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: '22px' }} aria-hidden="true" />
           </button>
 
           <NavLink to="/admin" className="navbar-logo">
@@ -253,7 +260,13 @@ export default function AdminLayout() {
 
           <div className="navbar-actions">
             <div style={{ position: 'relative' }}>
-              <button type="button" className="btn btn-square btn-icon-style" aria-label="Notifications">
+              <button
+                type="button"
+                className="btn btn-square btn-icon-style"
+                aria-label="Notifications"
+                aria-expanded={notifOpen}
+                onClick={() => setNotifOpen((v) => !v)}
+              >
                 <i className="ti ti-bell" style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
               </button>
               {unreadCount > 0 && (
@@ -264,11 +277,25 @@ export default function AdminLayout() {
                   {unreadCount}
                 </span>
               )}
+              {notifOpen && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 260 }}>
+                  <div className="card" style={{ boxShadow: 'var(--shadow-lg)' }}>
+                    <NotificationList onClose={() => setNotifOpen(false)} />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="nav-avatar">{initials}</div>
           </div>
         </nav>
+
+        {notifOpen && (
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 255 }}
+            onClick={() => setNotifOpen(false)}
+          />
+        )}
 
         {drawerOpen && (
           <div className="admin-layout__backdrop" onClick={() => setDrawerOpen(false)} />

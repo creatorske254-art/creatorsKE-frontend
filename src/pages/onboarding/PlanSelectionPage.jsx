@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 
 // ─── CSS-in-JS tokens (shared subset matching auth.html) ─────────────────────
@@ -6,24 +7,10 @@ const css = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
   @import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
 
-  :root {
-    --white: #FFFFFF; --black: #0D0D0D; --page-bg: #F2F1F8;
-    --purple-50: #F0EEFF; --purple-100: #DDD9FD; --purple-200: #BAB3FA;
-    --purple-300: #9187F7; --purple-400: #6B5FF4; --purple-500: #5445E8;
-    --purple-600: #3D2FD6; --purple-700: #2C1FB8; --purple-800: #1E1480;
-    --grey-50: #F5F5F5; --grey-100: #EBEBEB; --grey-200: #D6D6D6;
-    --grey-300: #B8B8B8; --grey-400: #919191; --grey-500: #6E6E6E;
-    --grey-600: #4A4A4A; --grey-700: #333333; --grey-800: #1F1F1F;
-    --status-success: #00B96B; --status-success-text: #006B3D;
-    --font-display: 'Gill Sans MT', 'Gill Sans', Calibri, sans-serif;
-    --font-body: 'Inter', sans-serif;
-    --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px; --radius-2xl: 24px; --radius-pill: 999px;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,.06); --shadow-md: 0 4px 16px rgba(0,0,0,.08);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,.10); --shadow-xl: 0 16px 48px rgba(0,0,0,.12);
+  .ps-page {
     --ease-out: cubic-bezier(.16,1,.3,1);
+    min-height: 100vh; display: flex; flex-direction: column; background: var(--page-bg); font-family: var(--font-body); animation: psFadeUp .25s var(--ease-out) both;
   }
-
-  .ps-page { min-height: 100vh; display: flex; flex-direction: column; background: var(--page-bg); font-family: var(--font-body); animation: psFadeUp .25s var(--ease-out) both; }
   @keyframes psFadeUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
 
   .ps-navbar {
@@ -106,24 +93,10 @@ const css = `
   .ps-starter-note a { color: var(--purple-600); font-weight: 500; cursor: pointer; text-decoration: none; }
   .ps-starter-note a:hover { text-decoration: underline; }
 
-  /* CTA button */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-    border: none; cursor: pointer; font-family: var(--font-body); font-weight: 500;
-    transition: all .15s; white-space: nowrap; line-height: 1; text-decoration: none; border-radius: var(--radius-md);
-  }
-  .btn-purple { background: var(--purple-600); color: var(--white); font-size: 14px; padding: 11px 22px; }
-  .btn-purple:hover { background: var(--purple-700); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(84,69,232,.3); }
-  .btn-lg { padding: 14px 32px; font-size: 15px; }
-  .btn-full { width: 100%; justify-content: center; }
-  .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
-  .btn-loading::after {
-    content: ''; position: absolute; width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,.3); border-top-color: white;
-    border-radius: 50%; animation: spin .7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg) } }
-  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+  /* CTA button — .btn/.btn-purple/.btn-lg/.btn-full/.btn-loading come from
+     the shared index.css button system. Only the disabled-state dimming has
+     no canonical equivalent, so it stays here, scoped to this page. */
+  .ps-page .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
   /* Rate card mini preview */
   .rc-mini {
@@ -362,6 +335,7 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
  */
 export default function PlanSelectionPage({ firstName, onComplete }) {
   usePageMeta('Choose Your Plan', 'Pick the Creatorske plan that fits you — start free, upgrade anytime.');
+  const navigate = useNavigate()
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState('select') // 'select' | 'complete'
@@ -385,14 +359,15 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
   }
 
   const handleStartBuilding = () => {
-    onComplete?.(confirmedPlan)
+    if (onComplete) onComplete(confirmedPlan)
+    else navigate('/creator/rate-card')
   }
 
   return (
     <>
       <style>{css}</style>
       <div className="ps-page">
-        <Navbar onLogoClick={() => {}} />
+        <Navbar onLogoClick={() => navigate('/')} />
 
         {step === 'select' && (
           <div className="ps-shell">

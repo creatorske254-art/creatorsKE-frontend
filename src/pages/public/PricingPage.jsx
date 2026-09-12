@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { IconCheck, IconMinus, IconArrowRight } from '@tabler/icons-react';
 import { BRAND_PRICING_TIERS, CREATOR_PRICING_TIERS } from '@/features/plans/constants/pricingTiers';
@@ -16,7 +16,7 @@ function PricingCard({ tier }) {
 
   return (
     <div
-      className={`rounded-[16px] p-6 flex flex-col transition-all ${
+      className={`h-full rounded-[16px] p-6 flex flex-col transition-all ${
         tier.featured
           ? 'bg-[var(--purple-50)] border-[1.5px] border-[var(--purple-300)] shadow-[var(--shadow-md)]'
           : 'bg-white border border-[0.5px] border-[var(--grey-100)]'
@@ -134,7 +134,7 @@ export default function PricingPage() {
 
       {/* Pricing grid */}
       <div className="max-w-[1080px] w-full mx-auto px-8 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
           {active.tiers.map((tier) => (
             <PricingCard key={tier.id} tier={tier} />
           ))}
@@ -152,8 +152,8 @@ export default function PricingPage() {
         </div>
         <div>© 2026 Creatorske. All rights reserved.</div>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-[var(--black)]">Privacy</a>
-          <a href="#" className="hover:text-[var(--black)]">Terms</a>
+          <Link to="/privacy" className="hover:text-[var(--black)]">Privacy</Link>
+          <Link to="/terms" className="hover:text-[var(--black)]">Terms</Link>
         </div>
       </footer>
     </div>

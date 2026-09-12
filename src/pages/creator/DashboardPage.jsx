@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCreatorDashboard } from '../../features/creator-dashboard/hooks/useCreatorDashboard';
 import { usePageMeta } from '@/lib/usePageMeta';
+import Skeleton from '@/components/ui/Skeleton';
 
 /*
    Layout: Bento grid.
@@ -87,6 +88,7 @@ const BENTO_CSS = `
 
 export default function DashboardPage() {
   usePageMeta('Creator Dashboard', 'Track your earnings, enquiries, and rate card performance on Creatorske.');
+  const navigate = useNavigate();
   const {
     stats,
     statsLoading,
@@ -137,7 +139,7 @@ export default function DashboardPage() {
           <div>
             <div className="stat-card-label"><i className="ti ti-cash" style={{ fontSize: 14 }} /> Earned (KES)</div>
             <div className="stat-card-value" style={{ fontSize: 44 }}>
-              {statsLoading ? '…' : `${Math.round((stats?.earningsTotal ?? 84000) / 1000)}K`}
+              {statsLoading ? <Skeleton width={90} height={38} /> : `${Math.round((stats?.earningsTotal ?? 84000) / 1000)}K`}
             </div>
             <div className="stat-card-delta up">
               <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+22% vs last month
@@ -149,7 +151,7 @@ export default function DashboardPage() {
         {/* Secondary stats */}
         <div className="bento-views stat-card">
           <div className="stat-card-label"><i className="ti ti-eye" style={{ fontSize: 14 }} /> Card views</div>
-          <div className="stat-card-value">{statsLoading ? '…' : (stats?.profileViews ?? 1248).toLocaleString('en-KE')}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : (stats?.profileViews ?? 1248).toLocaleString('en-KE')}</div>
           <div className="stat-card-delta up">
             <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+18% this month
           </div>
@@ -157,7 +159,7 @@ export default function DashboardPage() {
 
         <div className="bento-enq stat-card">
           <div className="stat-card-label"><i className="ti ti-inbox" style={{ fontSize: 14 }} /> Enquiries</div>
-          <div className="stat-card-value">{statsLoading ? '…' : (stats?.enquiries?.total ?? 12)}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : (stats?.enquiries?.total ?? 12)}</div>
           <div className="stat-card-delta up">
             <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+4 this week
           </div>
@@ -165,7 +167,7 @@ export default function DashboardPage() {
 
         <div className="bento-conv stat-card">
           <div className="stat-card-label"><i className="ti ti-star" style={{ fontSize: 14 }} /> Conversion</div>
-          <div className="stat-card-value">{statsLoading ? '…' : `${stats?.cardCtr ?? 3.4}%`}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={50} height={24} /> : `${stats?.cardCtr ?? 3.4}%`}</div>
           <div className="stat-card-delta down">
             <i className="ti ti-trending-down" style={{ fontSize: 14 }} />-0.2% vs last month
           </div>
@@ -186,14 +188,19 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {statsLoading ? (
-                <tr>
-                  <td colSpan={3} style={{ textAlign: 'center', color: 'var(--grey-400)' }}>Loading…</td>
+              {statsLoading ? [0, 1, 2].map((i) => (
+                <tr key={i}>
+                  <td>
+                    <Skeleton width="70%" height={13} style={{ marginBottom: 5 }} />
+                    <Skeleton width="40%" height={11} />
+                  </td>
+                  <td><Skeleton width="80%" height={13} /></td>
+                  <td><Skeleton width={60} height={20} style={{ borderRadius: 'var(--radius-pill)' }} /></td>
                 </tr>
-              ) : rows.map((row, i) => {
+              )) : rows.map((row, i) => {
                 const tag = STATUS_TAG[row.status] ?? STATUS_TAG.completed;
                 return (
-                  <tr key={i} style={{ cursor: 'pointer' }}>
+                  <tr key={i} style={{ cursor: 'pointer' }} onClick={() => navigate('/creator/enquiries')}>
                     <td>
                       <div style={{ fontWeight: 500, color: 'var(--black)' }}>{row.brand}</div>
                       <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{row.ago}</div>
@@ -230,7 +237,17 @@ export default function DashboardPage() {
           <div className="card card-p-md">
             <p className="card-title" style={{ fontSize: 15, marginBottom: 14 }}>Rate card health</p>
             {healthLoading ? (
-              <p style={{ fontSize: 13, color: 'var(--grey-400)' }}>Loading…</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {[0, 1, 2].map((i) => (
+                  <div key={i}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                      <Skeleton width={110} height={12} />
+                      <Skeleton width={28} height={12} />
+                    </div>
+                    <Skeleton width="100%" height={6} style={{ borderRadius: 'var(--radius-pill)' }} />
+                  </div>
+                ))}
+              </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div>

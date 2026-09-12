@@ -9,67 +9,67 @@ export default {
     extend: {
       // ─── Colors ────────────────────────────────────────────────────────────
       colors: {
-        // Base
+        // Base — black/page-bg match src/index.css's --black/--page-bg
         white:      '#FFFFFF',
         'off-white':'#F8F7FF',
-        black:      '#0D0D0D',
+        black:      '#000000',
         'near-black':'#111111',
-        'page-bg':  '#F2F1F8',
+        'page-bg':  '#F2F2F2',
 
-        // Purple scale (brand primary)
+        // Purple scale (brand primary) — matches src/index.css's --purple-*
         purple: {
-          50:  '#F0EEFF',
-          100: '#DDD9FD',
-          200: '#BAB3FA',
-          300: '#9187F7',
-          400: '#6B5FF4',
-          500: '#5445E8',   // ← primary brand color
-          600: '#3D2FD6',
-          700: '#2C1FB8',
-          800: '#1E1480',
-          900: '#110B52',
+          50:  '#EEEDFE',
+          100: '#CECBF6',
+          200: '#AFA9EC',
+          300: '#948CE3',
+          400: '#7F77DD',
+          500: '#665DC7',
+          600: '#534AB7',   // ← primary brand color
+          700: '#463D9E',
+          800: '#3C3489',
+          900: '#26215C',
         },
 
-        // Grey scale
+        // Grey scale — matches src/index.css's --grey-*
         grey: {
-          50:  '#F5F5F5',
-          100: '#EBEBEB',
-          200: '#D6D6D6',
-          300: '#B8B8B8',
-          400: '#919191',
-          500: '#6E6E6E',
-          600: '#4A4A4A',
-          700: '#333333',
-          800: '#1F1F1F',
-          900: '#0D0D0D',
+          50:  '#F2F2F2',
+          100: '#E5E5E5',
+          200: '#CCCCCC',
+          300: '#B3B3B3',
+          400: '#999999',
+          500: '#808080',
+          600: '#666666',
+          700: '#4D4D4D',
+          800: '#262626',
+          900: '#1A1A1A',
         },
 
-        // Status colors
+        // Status colors — matches src/index.css's --status-*
         success: {
-          DEFAULT: '#00B96B',
-          bg:      '#E6F9F1',
-          text:    '#006B3D',
+          DEFAULT: '#10B981',
+          bg:      '#DCFCE7',
+          text:    '#047857',
         },
         warning: {
-          DEFAULT: '#F5A623',
-          bg:      '#FEF6E7',
-          text:    '#7A4A00',
+          DEFAULT: '#F59E0B',
+          bg:      '#FEF3C7',
+          text:    '#B45309',
         },
         error: {
-          DEFAULT: '#FF4B4B',
-          bg:      '#FFF0F0',
-          text:    '#8B0000',
+          DEFAULT: '#EF4444',
+          bg:      '#FEE2E2',
+          text:    '#B91C1C',
         },
         info: {
-          DEFAULT: '#4393F5',
-          bg:      '#EEF5FF',
-          text:    '#1A3F80',
+          DEFAULT: '#06B6D4',
+          bg:      '#CFFAFE',
+          text:    '#0E7490',
         },
       },
 
       // ─── Typography ────────────────────────────────────────────────────────
       fontFamily: {
-        display: ['Gill Sans MT', 'Gill Sans', 'Calibri', 'sans-serif'],
+        display: ['Archivo', 'sans-serif'],
         body:    ['Inter', 'sans-serif'],
         mono:    ['SF Mono', 'Fira Code', 'monospace'],
       },

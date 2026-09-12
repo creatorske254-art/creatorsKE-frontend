@@ -2,35 +2,21 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { IconFlame, IconClock, IconCheck, IconWallet, IconEye, IconScale, IconMessageCircle, IconBriefcase } from '@tabler/icons-react'
+import EmptyState from '@/components/shared/EmptyState'
 
 // TODO: swap mock data for features/brand-dashboard/hooks/useBrandDashboard.js
 // const { campaigns, isLoading } = useBrandDashboard()
 
 // This page uses the shared design tokens and component classes from the
 // Creatorske stylesheet (index.css) wherever they exist there: .card,
-// .stat-card, .tag*, .btn*, .avatar*. A handful of components shown in the
-// Creatorske Component Library (.tabs/.tab, .card-dark, .card-footer,
-// .empty-state) are documented there but aren't actually shipped in
-// index.css yet, so this page defines them itself below, copied 1:1 from
-// the component library's own CSS (same property values, same tokens) and
-// scoped under .campaigns-page. That keeps this page visually true to the
-// library without depending on index.css being updated first.
+// .stat-card, .tag*, .btn*, .avatar*, .tabs/.tab, .empty-state (the latter
+// two used to live scoped here before being centralized into index.css).
+// .card-dark/.card-footer are still genuinely page-specific, so they stay.
 
 const PAGE_STYLES = `
-/* Ported 1:1 from the Creatorske Component Library */
-.campaigns-page .tabs{display:inline-flex;background:var(--white);border:0.5px solid var(--grey-100);border-radius:var(--radius-lg);padding:4px;gap:2px}
-.campaigns-page .tab{margin:0;padding:8px 16px;border-radius:var(--radius-md);font-size:13px;font-weight:500;color:var(--grey-500);cursor:pointer;transition:all .15s;border:none;background:none;font-family:var(--font-body);white-space:nowrap}
-.campaigns-page .tab:hover{color:var(--black)}
-.campaigns-page .tab.active{background:var(--purple-50);color:var(--purple-800)}
-
 .campaigns-page .card-dark{background:var(--black);border-radius:var(--radius-lg);color:var(--white)}
 
 .campaigns-page .card-footer{margin-top:16px;padding-top:14px;border-top:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between;gap:8px}
-
-.campaigns-page .empty-state{text-align:center;padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.campaigns-page .empty-icon{width:56px;height:56px;border-radius:var(--radius-xl);background:var(--grey-50);border:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:center;color:var(--grey-400);margin-bottom:4px}
-.campaigns-page .empty-title{font-family:var(--font-display);font-size:var(--text-h4-size);font-weight:var(--text-h4-weight);color:var(--black)}
-.campaigns-page .empty-desc{font-size:13px;color:var(--grey-500);max-width:280px;line-height:1.65}
 
 /* Page-specific layout: bento grid for the top stats row only */
 .campaigns-page .bento-stats{
@@ -318,17 +304,17 @@ export default function CampaignsPage() {
           ))}
         </div>
       ) : (
-        <div className="card empty-state">
-          <div className="empty-icon">
-            <IconBriefcase size={22} />
-          </div>
-          <div>
-            <div className="empty-title">No campaigns match your filters</div>
-            <p className="empty-desc">Try a different status filter or clear your search.</p>
-          </div>
-          <button className="btn btn-secondary btn-sm" onClick={clearFilters}>
-            Clear filters
-          </button>
+        <div className="card">
+          <EmptyState
+            icon={<IconBriefcase size={22} />}
+            title="No campaigns match your filters"
+            description="Try a different status filter or clear your search."
+            action={
+              <button className="btn btn-secondary btn-sm" onClick={clearFilters}>
+                Clear filters
+              </button>
+            }
+          />
         </div>
       )}
     </div>

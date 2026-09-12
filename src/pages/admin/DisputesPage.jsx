@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { usePageMeta } from '@/lib/usePageMeta'
+import EmptyState from '@/components/shared/EmptyState'
 
 // Mock data: wire up to admin.service.js (listDisputes/getCase/submitDecision)
 const DISPUTES = [
@@ -184,18 +185,6 @@ export default function DisputesPage() {
       <style>{`
         .dsp-page *{box-sizing:border-box}
         .dsp-page{
-          --white:#FFFFFF;--black:#0D0D0D;
-          --purple-50:#F0EEFF;--purple-100:#DDD9FD;--purple-200:#BAB3FA;--purple-300:#9187F7;
-          --purple-500:#5445E8;--purple-600:#3D2FD6;--purple-700:#2C1FB8;
-          --grey-50:#F5F5F5;--grey-100:#EBEBEB;--grey-200:#D6D6D6;--grey-300:#B8B8B8;
-          --grey-400:#919191;--grey-500:#6E6E6E;--grey-600:#4A4A4A;--grey-700:#333333;--grey-800:#1F1F1F;
-          --status-success:#00B96B;--status-success-bg:#E6F9F1;--status-success-text:#006B3D;
-          --status-warning:#F5A623;--status-warning-bg:#FEF6E7;--status-warning-text:#7A4A00;
-          --status-error:#FF4B4B;--status-error-bg:#FFF0F0;--status-error-text:#8B0000;
-          --status-info:#4393F5;--status-info-bg:#EEF5FF;--status-info-text:#1A3F80;
-          --font-display:'Gill Sans MT','Gill Sans',Calibri,sans-serif;--font-body:'Inter',sans-serif;
-          --radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-xl:16px;--radius-pill:999px;
-          --shadow-xs:0 1px 2px rgba(0,0,0,0.05);--shadow-md:0 4px 16px rgba(0,0,0,0.08);--shadow-lg:0 8px 32px rgba(0,0,0,0.10);
           font-family:var(--font-body);color:var(--black);
         }
         .dsp-page .section-title{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--black);margin-bottom:6px;letter-spacing:-0.01em}
@@ -233,7 +222,6 @@ export default function DisputesPage() {
         .dsp-page .btn-primary:disabled{opacity:.4;cursor:not-allowed}
         .dsp-page .btn-ghost{background:transparent;color:var(--grey-600);font-size:12px;padding:6.5px 14px;border:0.5px solid var(--grey-200)}
         .dsp-page .btn-ghost:hover{color:var(--black);border-color:var(--grey-400)}
-        .dsp-page .card{background:var(--white);border:0.5px solid var(--grey-100);border-radius:var(--radius-lg)}
         .dsp-page .card-header{padding:16px 20px;border-bottom:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between}
         .dsp-page .card-header-title{font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--black)}
         .dsp-page .card-body{padding:20px}
@@ -256,8 +244,6 @@ export default function DisputesPage() {
         .dsp-page textarea{width:100%;border:0.5px solid var(--grey-200);border-radius:var(--radius-md);padding:10px 12px;font-size:12.5px;font-family:var(--font-body);resize:vertical;min-height:64px;outline:none;color:var(--black)}
         .dsp-page textarea:focus{border-color:var(--purple-300)}
         .dsp-page input[type=range]{width:100%;accent-color:var(--purple-500)}
-        .dsp-page .empty-state{text-align:center;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:8px}
-        .dsp-page .empty-icon{width:46px;height:46px;border-radius:var(--radius-lg);background:var(--grey-50);border:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--grey-400)}
         .dsp-page .split-grid{display:grid;gap:20px;align-items:start}
         .dsp-page .detail-col{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto}
         @media(max-width:980px){.dsp-page .split-grid{grid-template-columns:1fr !important}.dsp-page .detail-col{position:static;max-height:none}}
@@ -337,11 +323,12 @@ export default function DisputesPage() {
             </table>
 
             {filtered.length === 0 && (
-              <div className="empty-state">
-                <div className="empty-icon"><i className="ti ti-gavel" /></div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600 }}>No disputes here</div>
-                <div style={{ fontSize: 12.5, color: 'var(--grey-500)', maxWidth: 240 }}>Try a different search term or switch tabs.</div>
-              </div>
+              <EmptyState
+                size="sm"
+                icon={<i className="ti ti-gavel" aria-hidden="true" />}
+                title="No disputes here"
+                description="Try a different search term or switch tabs."
+              />
             )}
           </div>
 

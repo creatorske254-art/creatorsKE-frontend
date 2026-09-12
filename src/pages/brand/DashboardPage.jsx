@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
   IconX, IconCheck, IconStarFilled, IconStar,
   IconTrendingUp, IconTrendingDown, IconPaperclip,
-  IconSearch, IconCircleCheck,
+  IconSearch, IconCircleCheck, IconHistory,
 } from '@tabler/icons-react';
+import EmptyState from '@/components/shared/EmptyState';
 
 // ─── Design tokens (pulled directly from Creatorske Component Library v2) ───
 // Fonts   : Archivo (display / h1–h4, bold) · Inter (body, everything else)
@@ -135,20 +137,16 @@ const SHORTLISTED = [
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
   const map = {
-    "Booked":            { bg: C.purple50, color: C.purple800 },
-    "In Review":         { bg: C.warningBg, color: C.warningText },
-    "Awaiting Approval": { bg: C.infoBg, color: C.infoText },
-    "Completed":         { bg: C.successBg, color: C.successText },
-    "Cancelled":         { bg: C.errorBg, color: C.errorText },
+    "Booked":            "tag-purple",
+    "In Review":         "tag-warning",
+    "Awaiting Approval": "tag-info",
+    "Completed":         "tag-success",
+    "Cancelled":         "tag-error",
   };
-  const s = map[status] || map["Booked"];
+  const cls = map[status] || map["Booked"];
   return (
-    <span style={{
-      display: "inline-flex", alignItems: "center", gap: 5,
-      fontSize: 12, fontWeight: 500, padding: "4px 10px", borderRadius: R.pill,
-      background: s.bg, color: s.color, lineHeight: 1, whiteSpace: "nowrap",
-    }}>
-      <span style={{ width: 5, height: 5, borderRadius: "50%", background: s.color, flexShrink: 0 }} />
+    <span className={`tag ${cls}`} style={{ whiteSpace: "nowrap" }}>
+      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "currentColor", flexShrink: 0 }} />
       {status}
     </span>
   );
@@ -156,16 +154,13 @@ function StatusBadge({ status }) {
 
 function AvailBadge({ status }) {
   const map = {
-    "Open":         { bg: C.successBg, color: C.successText },
-    "Limited":      { bg: C.warningBg, color: C.warningText },
-    "Fully Booked": { bg: C.errorBg, color: C.errorText },
+    "Open":         "tag-success",
+    "Limited":      "tag-warning",
+    "Fully Booked": "tag-error",
   };
-  const s = map[status] || map["Open"];
+  const cls = map[status] || map["Open"];
   return (
-    <span style={{
-      fontSize: 10, fontWeight: 500, padding: "3px 8px", borderRadius: R.pill,
-      background: s.bg, color: s.color, lineHeight: 1,
-    }}>
+    <span className={`tag ${cls}`} style={{ fontSize: 10, padding: "3px 8px" }}>
       {status}
     </span>
   );
@@ -266,14 +261,33 @@ function CampaignRow({ c, onSelect }) {
 
 // ─── Campaign Detail Drawer ────────────────────────────────────────────────────
 function CampaignDrawer({ campaign, onClose }) {
+  const navigate = useNavigate();
   const [approveLoading, setApproveLoading] = useState(false);
   const [approved, setApproved] = useState(false);
+  const [messages, setMessages] = useState([
+    { text: "Hi! We'd love to feature your seasonal menu for the June campaign.", sender: "You", time: "Jun 15", align: "right" },
+    { text: "Sounds great, I'll start on the reel this week and send a draft for your review.", sender: campaign?.creator, time: "Jun 15", align: "left" },
+    { text: "Draft attached. Let me know if you'd like any changes!", sender: campaign?.creator, time: "Jun 18", align: "left", attachment: true },
+  ]);
+  const [reply, setReply] = useState("");
 
   if (!campaign) return null;
 
   function handleApprove() {
     setApproveLoading(true);
     setTimeout(() => { setApproveLoading(false); setApproved(true); }, 1400);
+  }
+
+  function handleSendReply() {
+    const trimmed = reply.trim();
+    if (!trimmed) return;
+    setMessages((prev) => [...prev, { text: trimmed, sender: "You", time: "Just now", align: "right" }]);
+    setReply("");
+  }
+
+  function handleRaiseDispute() {
+    onClose();
+    navigate('/brand/campaigns');
   }
 
   return (
@@ -329,11 +343,14 @@ function CampaignDrawer({ campaign, onClose }) {
               >
                 {approveLoading ? "Approving…" : "Approve delivery"}
               </button>
-              <button style={{
-                flex: 1, background: C.errorBg, color: C.errorText, border: "none",
-                borderRadius: R.md, padding: "10px 0", fontSize: 13, fontWeight: 500, cursor: "pointer",
-                fontFamily: FONT_BODY,
-              }}>
+              <button
+                onClick={handleRaiseDispute}
+                style={{
+                  flex: 1, background: C.errorBg, color: C.errorText, border: "none",
+                  borderRadius: R.md, padding: "10px 0", fontSize: 13, fontWeight: 500, cursor: "pointer",
+                  fontFamily: FONT_BODY,
+                }}
+              >
                 Raise dispute
               </button>
             </div>
@@ -349,21 +366,30 @@ function CampaignDrawer({ campaign, onClose }) {
         <div>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: C.grey400, marginBottom: 10 }}>Messages</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <MessageBubble text="Hi! We'd love to feature your seasonal menu for the June campaign." sender="You" time="Jun 15" align="right" />
-            <MessageBubble text="Sounds great, I'll start on the reel this week and send a draft for your review." sender={campaign.creator} time="Jun 15" align="left" />
-            <MessageBubble text="Draft attached. Let me know if you'd like any changes!" sender={campaign.creator} time="Jun 18" align="left" attachment />
+            {messages.map((m, i) => (
+              <MessageBubble key={i} text={m.text} sender={m.sender} time={m.time} align={m.align} attachment={m.attachment} />
+            ))}
           </div>
           <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-            <input placeholder="Reply…" style={{
-              flex: 1, background: C.grey50, border: `0.5px solid ${C.grey100}`,
-              borderRadius: R.md, padding: "9px 12px", fontSize: 13, color: C.black,
-              fontFamily: FONT_BODY, outline: "none",
-            }} />
-            <button style={{
-              background: C.black, color: C.white, border: "none",
-              borderRadius: R.md, padding: "9px 16px", fontSize: 13, fontWeight: 500, cursor: "pointer",
-              fontFamily: FONT_BODY,
-            }}>Send</button>
+            <input
+              placeholder="Reply…"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleSendReply(); }}
+              style={{
+                flex: 1, background: C.grey50, border: `0.5px solid ${C.grey100}`,
+                borderRadius: R.md, padding: "9px 12px", fontSize: 13, color: C.black,
+                fontFamily: FONT_BODY, outline: "none",
+              }}
+            />
+            <button
+              onClick={handleSendReply}
+              style={{
+                background: C.black, color: C.white, border: "none",
+                borderRadius: R.md, padding: "9px 16px", fontSize: 13, fontWeight: 500, cursor: "pointer",
+                fontFamily: FONT_BODY,
+              }}
+            >Send</button>
           </div>
         </div>
       </div>
@@ -406,6 +432,7 @@ function MessageBubble({ text, sender, time, align, attachment }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function BrandDashboardPage() {
   usePageMeta('Brand Dashboard', 'Track your campaigns, spend, and shortlisted creators on Creatorske.');
+  const navigate = useNavigate();
   const [tab, setTab] = useState("active");
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [shortlistRemoved, setShortlistRemoved] = useState([]);
@@ -443,12 +470,15 @@ export default function BrandDashboardPage() {
               Here's what's happening with your creator campaigns today.
             </div>
           </div>
-          <button style={{
-            background: C.black, color: C.white, border: "none",
-            borderRadius: R.md, padding: "11px 20px", fontSize: 13.5, fontWeight: 500,
-            cursor: "pointer", display: "flex", alignItems: "center", gap: 7,
-            fontFamily: FONT_BODY, flexShrink: 0,
-          }}>
+          <button
+            onClick={() => navigate('/directory')}
+            style={{
+              background: C.black, color: C.white, border: "none",
+              borderRadius: R.md, padding: "11px 20px", fontSize: 13.5, fontWeight: 500,
+              cursor: "pointer", display: "flex", alignItems: "center", gap: 7,
+              fontFamily: FONT_BODY, flexShrink: 0,
+            }}
+          >
             <IconSearch size={14} strokeWidth={2.5} />
             Find creators
           </button>
@@ -505,11 +535,14 @@ export default function BrandDashboardPage() {
                   </button>
                 ))}
               </div>
-              <button style={{
-                background: "transparent", border: `1px solid ${C.purple400}`,
-                borderRadius: R.md, padding: "8px 16px", fontSize: 12.5, fontWeight: 500,
-                color: C.purple600, cursor: "pointer", fontFamily: FONT_BODY,
-              }}>
+              <button
+                onClick={() => navigate('/directory')}
+                style={{
+                  background: "transparent", border: `1px solid ${C.purple400}`,
+                  borderRadius: R.md, padding: "8px 16px", fontSize: 12.5, fontWeight: 500,
+                  color: C.purple600, cursor: "pointer", fontFamily: FONT_BODY,
+                }}
+              >
                 + New campaign
               </button>
             </div>
@@ -538,9 +571,12 @@ export default function BrandDashboardPage() {
                 </table>
               </div>
             ) : (
-              <div style={{ padding: 40, textAlign: "center", color: C.grey500, fontSize: 13 }}>
-                No completed campaigns yet.
-              </div>
+              <EmptyState
+                size="sm"
+                icon={<IconHistory size={18} />}
+                title="No completed campaigns yet"
+                description="Campaigns move here once they're delivered and approved."
+              />
             )}
           </div>
 
@@ -559,7 +595,16 @@ export default function BrandDashboardPage() {
               borderRadius: R.lg, padding: 40, textAlign: "center",
             }}>
               <div style={{ fontSize: 13, color: C.grey500 }}>Your shortlist is empty.</div>
-              <div style={{ fontSize: 12, color: C.grey400, marginTop: 4 }}>Browse the creator directory to find your next collaborator.</div>
+              <div style={{ fontSize: 12, color: C.grey400, marginTop: 4, marginBottom: 12 }}>Browse the creator directory to find your next collaborator.</div>
+              <button
+                onClick={() => navigate('/directory')}
+                style={{
+                  background: C.black, color: C.white, border: "none", borderRadius: R.md,
+                  padding: "8px 16px", fontSize: 12.5, fontWeight: 500, cursor: "pointer", fontFamily: FONT_BODY,
+                }}
+              >
+                Browse directory
+              </button>
             </div>
           ) : (
             displayedShortlist.map(c => (
@@ -608,11 +653,14 @@ export default function BrandDashboardPage() {
                   </div>
 
                   <div style={{ display: "flex", gap: 8 }}>
-                    <button style={{
-                      flex: 1, background: C.black, color: C.white, border: "none",
-                      borderRadius: R.md, padding: "9px 0", fontSize: 12.5, fontWeight: 500,
-                      cursor: "pointer", fontFamily: FONT_BODY,
-                    }}>Send enquiry</button>
+                    <button
+                      onClick={() => navigate(`/c/${c.handle.replace('@', '')}?enquire=1`)}
+                      style={{
+                        flex: 1, background: C.black, color: C.white, border: "none",
+                        borderRadius: R.md, padding: "9px 0", fontSize: 12.5, fontWeight: 500,
+                        cursor: "pointer", fontFamily: FONT_BODY,
+                      }}
+                    >Send enquiry</button>
                     <button
                       onClick={() => setShortlistRemoved(r => [...r, c.id])}
                       style={{
@@ -629,11 +677,15 @@ export default function BrandDashboardPage() {
           )}
 
           {/* Browse directory CTA tile */}
-          <div className="col-4" style={{
-            background: C.white, border: `1.5px dashed ${C.grey200}`, borderRadius: R.lg,
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: 10, padding: 18, cursor: "pointer", minHeight: 200, textAlign: "center",
-          }}>
+          <div
+            className="col-4"
+            onClick={() => navigate('/directory')}
+            style={{
+              background: C.white, border: `1.5px dashed ${C.grey200}`, borderRadius: R.lg,
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              gap: 10, padding: 18, cursor: "pointer", minHeight: 200, textAlign: "center",
+            }}
+          >
             <div style={{
               width: 40, height: 40, borderRadius: "50%", background: C.purple50,
               display: "flex", alignItems: "center", justifyContent: "center",

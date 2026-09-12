@@ -329,9 +329,9 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
 
       <div style={{ fontSize: '11px', color: 'var(--grey-400)', textAlign: 'center', marginTop: '12px', lineHeight: 1.6 }}>
         By signing up you agree to our{' '}
-        <a href="#" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Terms of Service</a>
+        <Link to="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Terms of Service</Link>
         {' '}and{' '}
-        <a href="#" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Privacy Policy</a>.
+        <Link to="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Privacy Policy</Link>.
       </div>
 
       <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: '16px' }}>
@@ -457,9 +457,9 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
 
       <div style={{ fontSize: '11px', color: 'var(--grey-400)', textAlign: 'center', marginTop: '12px', lineHeight: 1.6 }}>
         By signing up you agree to our{' '}
-        <a href="#" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Terms of Service</a>
+        <Link to="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Terms of Service</Link>
         {' '}and{' '}
-        <a href="#" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Privacy Policy</a>.
+        <Link to="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Privacy Policy</Link>.
       </div>
 
       <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: '16px' }}>

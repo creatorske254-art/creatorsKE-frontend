@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
 import { useNotifications } from '@/context/NotificationContext';
+import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
 
 // The mockup loads icons via a <link> tag in <head>, not a package import —
@@ -55,6 +56,7 @@ const DASHBOARD_SHELL_STYLES = `
   position: sticky;
   top: var(--navbar-height);
   height: calc(100vh - var(--navbar-height));
+  overflow-y: auto;
 }
 
 .dashboard-shell__main {
@@ -75,6 +77,11 @@ const DASHBOARD_SHELL_STYLES = `
 
 .dashboard-shell__menu-btn {
   display: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
 .dashboard-shell__backdrop {
@@ -156,6 +163,7 @@ export default function CreatorLayout() {
   const { pipelineCounts } = useEnquiries();
   const { unreadCount } = useNotifications();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   const initials = getInitials(
     user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
@@ -172,7 +180,7 @@ export default function CreatorLayout() {
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setDrawerOpen((v) => !v)}
           >
-            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
+            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: '22px' }} aria-hidden="true" />
           </button>
 
           <NavLink to="/creator/dashboard" className="navbar-logo">
@@ -203,7 +211,13 @@ export default function CreatorLayout() {
               matches the mockup 1:1. */}
           <div className="navbar-actions">
             <div style={{ position: 'relative' }}>
-              <button type="button" className="btn btn-square btn-icon-style" aria-label="Notifications">
+              <button
+                type="button"
+                className="btn btn-square btn-icon-style"
+                aria-label="Notifications"
+                aria-expanded={notifOpen}
+                onClick={() => setNotifOpen((v) => !v)}
+              >
                 <i className="ti ti-bell" style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
               </button>
               {unreadCount > 0 && (
@@ -214,11 +228,25 @@ export default function CreatorLayout() {
                   {unreadCount}
                 </span>
               )}
+              {notifOpen && (
+                <div style={{ position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 260 }}>
+                  <div className="card" style={{ boxShadow: 'var(--shadow-lg)' }}>
+                    <NotificationList onClose={() => setNotifOpen(false)} />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="nav-avatar" title="Account">{initials}</div>
           </div>
         </nav>
+
+        {notifOpen && (
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 255 }}
+            onClick={() => setNotifOpen(false)}
+          />
+        )}
 
         {drawerOpen && (
           <div className="dashboard-shell__backdrop" onClick={() => setDrawerOpen(false)} />

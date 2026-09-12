@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useEnquiries, EnquiryCard, EnquiryDetail, EnquiryPipeline } from '@/features/enquiry'
+import { useEnquiries, EnquiryCard, EnquiryCardSkeleton, EnquiryDetail, EnquiryPipeline } from '@/features/enquiry'
 import { ENQUIRY_CSS } from '@/features/enquiry/constants/enquiryStyles'
 import { usePageMeta } from '@/lib/usePageMeta'
+import EmptyState from '@/components/shared/EmptyState'
+import ErrorState from '@/components/shared/ErrorState'
 
 /**
  * EnquiriesPage — creator side. Layout/visual language kept from the
@@ -48,7 +50,7 @@ const PAGE_CSS = `
 
 export default function EnquiriesPage() {
   usePageMeta('Enquiries', 'Manage incoming brand enquiries and bookings on Creatorske.');
-  const { enquiries, pipelineCounts, isLoading, error, accept, decline } = useEnquiries()
+  const { enquiries, pipelineCounts, isLoading, error, refetch, accept, decline } = useEnquiries()
   const [selectedId, setSelectedId] = useState(null)
 
   useEffect(() => {
@@ -85,8 +87,12 @@ export default function EnquiriesPage() {
       </div>
 
       {error ? (
-        <div className="card card-p-lg" style={{ textAlign: 'center', color: 'var(--grey-500)' }}>
-          Couldn't load your enquiries. Please try again later.
+        <div className="card">
+          <ErrorState
+            title="Couldn't load your enquiries"
+            description="Something went wrong fetching your enquiries. Please try again."
+            onRetry={refetch}
+          />
         </div>
       ) : (
         <div className="enq-bento-grid">
@@ -94,9 +100,13 @@ export default function EnquiriesPage() {
 
           <div className="enq-list-area">
             {isLoading ? (
-              <div className="enq-empty">Loading enquiries…</div>
+              [0, 1, 2].map((i) => <EnquiryCardSkeleton key={i} />)
             ) : enquiries.length === 0 ? (
-              <div className="enq-empty">No enquiries yet — they'll show up here once a brand reaches out.</div>
+              <EmptyState
+                icon={<i className="ti ti-inbox" aria-hidden="true" />}
+                title="No enquiries yet"
+                description="They'll show up here once a brand reaches out about your rate card."
+              />
             ) : (
               enquiries.map((enq) => (
                 <EnquiryCard

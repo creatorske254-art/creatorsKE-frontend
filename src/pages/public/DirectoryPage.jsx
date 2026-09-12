@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import { IconSearch, IconCheck, IconArrowRight, IconStarFilled } from '@tabler/icons-react';
+import { EmptyDirectoryState } from '@/features/directory';
 
 // ── Static creator data ────────────────────────────────────────────────────
 const CREATORS = [
@@ -28,13 +29,13 @@ const AVAIL_META = {
 };
 
 // ── Creator Card ───────────────────────────────────────────────────────────
-function CreatorCard({ creator, index, onEnquire }) {
+function CreatorCard({ creator, index, onOpen, onEnquire }) {
   const [hovered, setHovered] = useState(false);
   const a = AVAIL_META[creator.avail];
 
   return (
     <div
-      onClick={() => {}}
+      onClick={onOpen}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -98,7 +99,7 @@ function CreatorCard({ creator, index, onEnquire }) {
             {a.label}
           </div>
           <button
-            onClick={e => { e.stopPropagation(); onEnquire(creator.name); }}
+            onClick={e => { e.stopPropagation(); onEnquire(); }}
             style={{ padding: '6px 14px', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 500, background: 'var(--purple-600)', color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--purple-700)'}
             onMouseLeave={e => e.currentTarget.style.background = 'var(--purple-600)'}
@@ -111,34 +112,12 @@ function CreatorCard({ creator, index, onEnquire }) {
   );
 }
 
-// ── Toast ──────────────────────────────────────────────────────────────────
-function Toast({ message, visible }) {
-  return (
-    <div style={{
-      position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 999, pointerEvents: 'none',
-      background: 'var(--black)', color: 'var(--white)', padding: '11px 18px', borderRadius: 12, fontSize: 13,
-      fontWeight: 500, boxShadow: '0 16px 48px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', gap: 8,
-      opacity: visible ? 1 : 0, transition: 'all 0.25s', whiteSpace: 'nowrap',
-      transform: `translateX(-50%) translateY(${visible ? 0 : 10}px)`,
-    }}>
-      <IconCheck size={14} />
-      {message}
-    </div>
-  );
-}
-
 // ── Main Page ──────────────────────────────────────────────────────────────
 export default function DirectoryPage() {
   usePageMeta('Browse Creators', 'Browse verified Kenyan content creators by niche, platform, and follower size, then send an enquiry directly.');
   const navigate = useNavigate();
   const [query, setQuery]         = useState('');
   const [activeNiche, setNiche]   = useState('All');
-  const [toast, setToast]         = useState({ visible: false, message: '' });
-
-  const showToast = useCallback((msg) => {
-    setToast({ visible: true, message: msg });
-    setTimeout(() => setToast(t => ({ ...t, visible: false })), 2800);
-  }, []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
@@ -243,9 +222,7 @@ export default function DirectoryPage() {
       {/* ══ GRID BODY ═════════════════════════════════════════════════════ */}
       <div className="dir-body" style={{ flex: 1, padding: '32px 56px', background: 'var(--page-bg)' }}>
         {filtered.length === 0 ? (
-          <div style={{ color: 'var(--grey-400)', fontSize: 14, padding: '48px 0', textAlign: 'center' }}>
-            No creators found matching that search.
-          </div>
+          <EmptyDirectoryState onReset={() => { setQuery(''); setNiche('All'); }} />
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 }}>
             {filtered.map((c, i) => (
@@ -253,7 +230,8 @@ export default function DirectoryPage() {
                 key={c.handle}
                 creator={c}
                 index={i}
-                onEnquire={name => showToast(`Enquiry sent to ${name}`)}
+                onOpen={() => navigate(`/c/${c.handle.replace('@', '')}`)}
+                onEnquire={() => navigate(`/c/${c.handle.replace('@', '')}?enquire=1`)}
               />
             ))}
           </div>
@@ -275,8 +253,6 @@ export default function DirectoryPage() {
           Create your rate card <IconArrowRight size={14} />
         </button>
       </div>
-
-      <Toast message={toast.message} visible={toast.visible} />
     </div>
   );
 }

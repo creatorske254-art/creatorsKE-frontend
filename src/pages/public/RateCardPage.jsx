@@ -5,14 +5,43 @@ import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
   IconMapPin, IconCheck, IconSend, IconShare, IconLayoutGrid,
   IconBrandWhatsapp, IconShieldCheck, IconCircleCheck, IconClock,
-  IconStar, IconStarHalfFilled, IconLeaf, IconArrowRight,
+  IconStar, IconStarHalfFilled, IconLeaf, IconArrowRight, IconPackage,
 } from '@tabler/icons-react';
+import { toast } from 'sonner';
 import api from '@/lib/api';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
 import Modal from '@/components/ui/Modal';
 import { EnquiryForm } from '@/features/enquiry';
+import EmptyState from '@/components/shared/EmptyState';
+
+function openWhatsApp(phone) {
+  const digits = (phone || '').replace(/\D/g, '');
+  if (!digits) {
+    toast.error("This creator hasn't added a WhatsApp number yet.");
+    return;
+  }
+  window.open(`https://wa.me/${digits}`, '_blank', 'noopener,noreferrer');
+}
+
+async function shareRateCard(name) {
+  const url = window.location.href;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${name} — Rate Card`, url });
+    } catch {
+      // user cancelled the native share sheet — nothing to do
+    }
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard.');
+  } catch {
+    toast.error('Could not copy link.');
+  }
+}
 
 const PLATFORM_ICONS = {
   Instagram: IconBrandInstagram,
@@ -32,6 +61,7 @@ const MOCK_RATE_CARD = {
     displayName: 'Amara Osei',
     handle: 'amaracreates',
     initials: 'AO',
+    phone: '+254 143 336 171',
     location: 'Nairobi, Kenya',
     languages: 'English, Swahili',
     availability: 'available',
@@ -309,11 +339,11 @@ export default function RateCardPage() {
       {isLoading ? (
         <div className="max-w-[1000px] w-full mx-auto px-8 py-12">
           <div className="flex items-start gap-6">
-            <div className="w-20 h-20 rounded-full bg-[var(--grey-100)] animate-pulse flex-shrink-0" />
+            <div className="skeleton w-20 h-20 flex-shrink-0" style={{ borderRadius: '50%' }} />
             <div className="flex-1 space-y-3">
-              <div className="h-6 bg-[var(--grey-100)] rounded animate-pulse w-1/3" />
-              <div className="h-4 bg-[var(--grey-100)] rounded animate-pulse w-1/4" />
-              <div className="h-14 bg-[var(--grey-100)] rounded animate-pulse w-full" />
+              <div className="skeleton h-6 w-1/3" />
+              <div className="skeleton h-4 w-1/4" />
+              <div className="skeleton h-14 w-full" />
             </div>
           </div>
         </div>
@@ -364,7 +394,10 @@ export default function RateCardPage() {
                   >
                     <IconSend size={14} /> Send enquiry
                   </button>
-                  <button className="inline-flex items-center gap-1.5 px-[18px] py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]">
+                  <button
+                    onClick={() => shareRateCard(creator.displayName)}
+                    className="inline-flex items-center gap-1.5 px-[18px] py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
+                  >
                     <IconShare size={13} /> Share
                   </button>
                   <Link
@@ -432,7 +465,12 @@ export default function RateCardPage() {
               </div>
 
               {packages.length === 0 ? (
-                <p className="text-[13px] text-[var(--grey-400)]">No packages available yet.</p>
+                <EmptyState
+                  size="sm"
+                  icon={<IconPackage size={18} />}
+                  title="No packages yet"
+                  description="This creator hasn't published any packages yet — check back soon."
+                />
               ) : (
                 <div className="flex flex-col gap-3">
                   {packages.map((pkg) => (
@@ -465,7 +503,10 @@ export default function RateCardPage() {
                 >
                   <IconSend size={15} /> Send enquiry
                 </button>
-                <button className="flex items-center justify-center gap-2 w-full mt-2 px-6 py-3 rounded-[8px] bg-[#25D366] text-white text-[13px] font-medium hover:opacity-90 transition-all">
+                <button
+                  onClick={() => openWhatsApp(creator.phone)}
+                  className="flex items-center justify-center gap-2 w-full mt-2 px-6 py-3 rounded-[8px] bg-[#25D366] text-white text-[13px] font-medium hover:opacity-90 transition-all"
+                >
                   <IconBrandWhatsapp size={14} /> Chat on WhatsApp
                 </button>
 
@@ -519,9 +560,9 @@ export default function RateCardPage() {
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">Creatorske<span className="text-[var(--purple-500)]">.</span></div>
         <div>© 2026 Creatorske. All rights reserved.</div>
         <div className="flex gap-4">
-          <a href="#" className="hover:text-[var(--black)]">Privacy</a>
-          <a href="#" className="hover:text-[var(--black)]">Terms</a>
-          <a href="#" className="hover:text-[var(--black)]">Report</a>
+          <Link to="/privacy" className="hover:text-[var(--black)]">Privacy</Link>
+          <Link to="/terms" className="hover:text-[var(--black)]">Terms</Link>
+          <a href={`mailto:trust@creatorske.com?subject=${encodeURIComponent(`Report: ${creator.displayName || handle}`)}`} className="hover:text-[var(--black)]">Report</a>
         </div>
       </footer>
 

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useEnquiries, EnquiryCard, EnquiryDetail, EnquiryPipeline } from '@/features/enquiry'
+import { useEnquiries, EnquiryCard, EnquiryCardSkeleton, EnquiryDetail, EnquiryPipeline } from '@/features/enquiry'
 import { ENQUIRY_CSS } from '@/features/enquiry/constants/enquiryStyles'
 import { usePageMeta } from '@/lib/usePageMeta'
+import EmptyState from '@/components/shared/EmptyState'
+import ErrorState from '@/components/shared/ErrorState'
 
 /**
  * EnquiriesPage — brand side. Mirrors the creator page structurally
@@ -48,7 +50,7 @@ const PAGE_CSS = `
 
 export default function EnquiriesPage() {
   usePageMeta('Enquiries', 'Track enquiries you have sent to creators and chat with them on Creatorske.');
-  const { enquiries, pipelineCounts, isLoading, error } = useEnquiries()
+  const { enquiries, pipelineCounts, isLoading, error, refetch } = useEnquiries()
   const [selectedId, setSelectedId] = useState(null)
 
   useEffect(() => {
@@ -75,8 +77,12 @@ export default function EnquiriesPage() {
       </div>
 
       {error ? (
-        <div className="card card-p-lg" style={{ textAlign: 'center', color: 'var(--grey-500)' }}>
-          Couldn't load your enquiries. Please try again later.
+        <div className="card">
+          <ErrorState
+            title="Couldn't load your enquiries"
+            description="Something went wrong fetching your enquiries. Please try again."
+            onRetry={refetch}
+          />
         </div>
       ) : (
         <div className="enq-bento-grid">
@@ -84,15 +90,18 @@ export default function EnquiriesPage() {
 
           <div className="enq-list-area">
             {isLoading ? (
-              <div className="enq-empty">Loading enquiries…</div>
+              [0, 1, 2].map((i) => <EnquiryCardSkeleton key={i} />)
             ) : enquiries.length === 0 ? (
-              <div className="enq-empty">
-                You haven't sent any enquiries yet.
-                <br />
-                <Link to="/directory" className="btn btn-purple btn-sm" style={{ marginTop: 12, display: 'inline-flex' }}>
-                  Browse creators
-                </Link>
-              </div>
+              <EmptyState
+                icon={<i className="ti ti-send" aria-hidden="true" />}
+                title="No enquiries sent yet"
+                description="Browse the creator directory and send your first enquiry to start a conversation."
+                action={
+                  <Link to="/directory" className="btn btn-purple btn-sm" style={{ marginTop: 4 }}>
+                    Browse creators
+                  </Link>
+                }
+              />
             ) : (
               enquiries.map((enq) => (
                 <EnquiryCard

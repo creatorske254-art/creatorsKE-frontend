@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute'
 
 // ── Layouts ────────────────────────────────────────────────────────────────
@@ -15,6 +15,12 @@ import DirectoryPage from '@/pages/public/DirectoryPage'
 import PricingPage   from '@/pages/public/PricingPage'
 import RateCardPage  from '@/pages/public/RateCardPage'
 import PortfolioPage from '@/pages/public/PortfolioPage'
+import TermsPage     from '@/pages/public/TermsPage'
+import PrivacyPage   from '@/pages/public/PrivacyPage'
+
+// ── Error pages ───────────────────────────────────────────────────────────
+import NotFoundPage   from '@/pages/error/NotFoundPage'
+import ServerErrorPage from '@/pages/error/ServerErrorPage'
 
 // ── Auth pages ────────────────────────────────────────────────────────────
 import LoginPage         from '@/pages/auth/LoginPage'
@@ -54,18 +60,22 @@ const router = createBrowserRouter([
   // ── Public ──────────────────────────────────────────────────────────────
   {
     element: <PublicLayout />,
+    errorElement: <ServerErrorPage />,
     children: [
       { index: true,                    element: <HomePage /> },
       { path: 'directory',              element: <DirectoryPage /> },
       { path: 'pricing',                element: <PricingPage /> },
       { path: 'c/:handle',              element: <RateCardPage /> },
       { path: 'c/:handle/portfolio',    element: <PortfolioPage /> },
+      { path: 'terms',                  element: <TermsPage /> },
+      { path: 'privacy',                element: <PrivacyPage /> },
     ],
   },
 
   // ── Auth ────────────────────────────────────────────────────────────────
   {
     element: <AuthLayout />,
+    errorElement: <ServerErrorPage />,
     children: [
       { path: 'login',                  element: <LoginPage /> },
       { path: 'signup',                 element: <SignUpPage /> },
@@ -77,6 +87,7 @@ const router = createBrowserRouter([
   // ── Onboarding (creator only) ────────────────────────────────────────────
   {
     element: <ProtectedRoute requiredRole="creator" />,
+    errorElement: <ServerErrorPage />,
     children: [
       {
         element: <OnboardingLayout />,
@@ -91,6 +102,7 @@ const router = createBrowserRouter([
   // ── Creator dashboard ────────────────────────────────────────────────────
   {
     element: <ProtectedRoute requiredRole="creator" />,
+    errorElement: <ServerErrorPage />,
     children: [
       {
         element: <CreatorLayout />,
@@ -110,6 +122,7 @@ const router = createBrowserRouter([
   // ── Brand dashboard ──────────────────────────────────────────────────────
   {
     element: <ProtectedRoute requiredRole="brand" />,
+    errorElement: <ServerErrorPage />,
     children: [
       {
         element: <BrandLayout />,
@@ -128,6 +141,7 @@ const router = createBrowserRouter([
   // ── Admin ────────────────────────────────────────────────────────────────
   {
     element: <ProtectedRoute requiredRole="admin" />,
+    errorElement: <ServerErrorPage />,
     children: [
       {
         element: <AdminLayout />,
@@ -141,8 +155,8 @@ const router = createBrowserRouter([
     ],
   },
 
-  // ── Fallback ─────────────────────────────────────────────────────────────
-  { path: '*', element: <Navigate to="/" replace /> },
+  // ── Fallback (404) ───────────────────────────────────────────────────────
+  { path: '*', element: <NotFoundPage /> },
 ])
 
 export default function AppRouter() {

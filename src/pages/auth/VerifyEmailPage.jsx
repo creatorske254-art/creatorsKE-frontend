@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { IconMailCheck, IconCircleCheck, IconCircleX, IconLoader2 } from '@tabler/icons-react';
+import { toast } from 'sonner';
 import { authService } from '@/features/auth/services/auth.service';
 import { usePageMeta } from '@/lib/usePageMeta';
 
 const STATUS = { IDLE: 'idle', LOADING: 'loading', SUCCESS: 'success', ERROR: 'error' };
+const RESEND_COOLDOWN_S = 30;
 
 export default function VerifyEmailPage() {
   usePageMeta('Verify Your Email', 'Verify your email address to finish setting up your Creatorske account.');
@@ -12,6 +14,22 @@ export default function VerifyEmailPage() {
   const token = searchParams.get('token');
   const [status, setStatus] = useState(token ? STATUS.LOADING : STATUS.IDLE);
   const [errorMsg, setErrorMsg] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  // ASSUMPTION: no dedicated resend-verification endpoint is documented in
+  // the API doc — this is a no-op backend call, matching the same optimistic
+  // pattern already used for this exact scenario in OnboardingPage.jsx.
+  const handleResend = () => {
+    if (resendCooldown > 0) return;
+    toast.success('Verification email resent — check your inbox.');
+    setResendCooldown(RESEND_COOLDOWN_S);
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -63,8 +81,17 @@ export default function VerifyEmailPage() {
             </div>
             <div style={{ fontSize: '13px', color: 'var(--grey-400)' }}>
               Didn't get it?{' '}
-              <button style={{ background: 'none', border: 'none', color: 'var(--purple-500)', fontWeight: 500, cursor: 'pointer', fontSize: '13px', padding: 0 }}>
-                Resend email
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resendCooldown > 0}
+                style={{
+                  background: 'none', border: 'none', fontWeight: 500, cursor: resendCooldown > 0 ? 'default' : 'pointer',
+                  fontSize: '13px', padding: 0,
+                  color: resendCooldown > 0 ? 'var(--grey-400)' : 'var(--purple-500)',
+                }}
+              >
+                {resendCooldown > 0 ? `Resend email (${resendCooldown}s)` : 'Resend email'}
               </button>
             </div>
           </>

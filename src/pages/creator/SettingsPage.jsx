@@ -1,5 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
+import { useAuth } from '@/context/AuthContext';
+import { authService } from '@/features/auth/services/auth.service';
 
 // Page-scoped styles
 // Every value below reads from the global index.css tokens (--purple-*,
@@ -274,10 +278,19 @@ function ToggleRow({ label, desc, on, onChange }) {
 
 function ProfileTab() {
   const [saved, setSaved] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
 
   function handleSave() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  function handlePhotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setPhotoUrl(ev.target.result);
+    reader.readAsDataURL(file);
   }
 
   return (
@@ -294,12 +307,22 @@ function ProfileTab() {
 
         <div className="settings-stack">
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <div className="avatar avatar-lg avatar-purple">AO</div>
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt="Profile"
+                className="avatar avatar-lg"
+                style={{ objectFit: "cover" }}
+              />
+            ) : (
+              <div className="avatar avatar-lg avatar-purple">AO</div>
+            )}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <button className="btn btn-secondary btn-sm">
+              <label className="btn btn-secondary btn-sm" style={{ cursor: "pointer", width: "fit-content" }}>
                 <i className="ti ti-upload" style={{ fontSize: 12 }} />
                 Upload photo
-              </button>
+                <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: "none" }} />
+              </label>
               <p className="field-hint" style={{ marginTop: 0 }}>JPG or PNG · max 2 MB</p>
             </div>
           </div>
@@ -555,6 +578,7 @@ function PaymentsTab() {
     stripe: false,
     bank: false,
   });
+  const [autoWithdraw, setAutoWithdraw] = useState(true);
 
   return (
     <div className="settings-stack">
@@ -663,8 +687,8 @@ function PaymentsTab() {
           <ToggleRow
             label="Auto-withdraw earnings"
             desc="Transfer balance to M-Pesa when it hits KES 5,000"
-            on={true}
-            onChange={() => {}}
+            on={autoWithdraw}
+            onChange={setAutoWithdraw}
           />
         </div>
       </div>
@@ -762,10 +786,43 @@ function AppearanceTab() {
 }
 
 function AccountTab() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [saved, setSaved] = useState(false);
+  const [deleteStep, setDeleteStep] = useState(0); // 0 idle · 1 confirm · 2 deleting
+  const [unpublishing, setUnpublishing] = useState(false);
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [showInDirectory, setShowInDirectory] = useState(true);
+  const [shareAnalytics, setShareAnalytics] = useState(false);
+
+  function handleSetUpAuthenticator() {
+    toast.info('Authenticator app setup is coming soon.');
+  }
+
   function handleSave() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  function handleUnpublishAll() {
+    if (!window.confirm("Unpublish all your rate cards? Brands won't be able to view or book them until you republish.")) return;
+    setUnpublishing(true);
+    setTimeout(() => {
+      setUnpublishing(false);
+      toast.success("All rate cards unpublished.");
+    }, 700);
+  }
+
+  async function handleConfirmDelete() {
+    setDeleteStep(2);
+    try {
+      await authService.deleteAccount();
+    } catch {
+      // Best-effort — still sign the user out locally even if the request fails,
+      // consistent with logout()'s own best-effort pattern in AuthContext.
+    }
+    logout();
+    navigate('/');
   }
 
   return (
@@ -808,12 +865,12 @@ function AccountTab() {
             <ToggleRow
               label="Enable 2FA"
               desc="Protect your account with an authenticator app"
-              on={false}
-              onChange={() => {}}
+              on={twoFAEnabled}
+              onChange={setTwoFAEnabled}
             />
           </div>
           <div style={{ marginTop: 12 }}>
-            <button className="btn btn-ghost btn-sm">
+            <button className="btn btn-ghost btn-sm" onClick={handleSetUpAuthenticator}>
               <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
               Set up authenticator
             </button>
@@ -826,15 +883,15 @@ function AccountTab() {
             <ToggleRow
               label="Show profile in Creatorske directory"
               desc="Let brands find you via the platform search"
-              on={true}
-              onChange={() => {}}
+              on={showInDirectory}
+              onChange={setShowInDirectory}
             />
             <div className="field-divider" />
             <ToggleRow
               label="Share anonymised analytics with Creatorske"
               desc="Helps us improve the platform, no personal data shared"
-              on={false}
-              onChange={() => {}}
+              on={shareAnalytics}
+              onChange={setShareAnalytics}
             />
           </div>
         </div>
@@ -845,16 +902,34 @@ function AccountTab() {
         <div className="danger-zone-desc">
           These actions are permanent and cannot be undone.
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button className="btn btn-danger btn-sm">
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: deleteStep > 0 ? 14 : 0 }}>
+          <button className="btn btn-danger btn-sm" disabled={unpublishing} onClick={handleUnpublishAll}>
             <i className="ti ti-eye-off" style={{ fontSize: 12 }} />
-            Unpublish all cards
+            {unpublishing ? "Unpublishing…" : "Unpublish all cards"}
           </button>
-          <button className="btn btn-danger btn-sm">
-            <i className="ti ti-trash" style={{ fontSize: 12 }} />
-            Delete account
-          </button>
+          {deleteStep === 0 && (
+            <button className="btn btn-danger btn-sm" onClick={() => setDeleteStep(1)}>
+              <i className="ti ti-trash" style={{ fontSize: 12 }} />
+              Delete account
+            </button>
+          )}
         </div>
+
+        {deleteStep === 1 && (
+          <div className="settings-stack" style={{ gap: 12 }}>
+            <div style={{ fontSize: 12.5, color: "var(--status-error-text)", lineHeight: 1.6 }}>
+              This permanently deletes your creator profile, rate cards, portfolio, and booking history. This cannot be undone.
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn btn-ghost btn-sm" onClick={() => setDeleteStep(0)}>Cancel</button>
+              <button className="btn btn-danger btn-sm" onClick={handleConfirmDelete}>Yes, delete my account</button>
+            </div>
+          </div>
+        )}
+
+        {deleteStep === 2 && (
+          <div style={{ fontSize: 12.5, color: "var(--status-error-text)" }}>Deleting your account…</div>
+        )}
       </div>
 
       <SaveBar saved={saved} onSave={handleSave} />

@@ -195,8 +195,7 @@ export default function HomePage() {
         .hp-streak-3 { -webkit-mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); }
         .hp-hero__dots { position:absolute; inset:0; opacity:.15; background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.5) 1px, transparent 0); background-size:20px 20px; }
         .hp-hero__grid { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:var(--space-80) var(--gutter-public); min-height:calc(100vh - 60px); }
-        .hp-hero__eyebrow { display:inline-flex; align-items:center; gap:var(--space-8); font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:var(--space-20); }
-        .hp-hero__eyebrow .dot { width:6px; height:6px; border-radius:50%; background:var(--purple-400); box-shadow:0 0 10px var(--purple-400); }
+        .hp-hero__eyebrow { display:block; font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:var(--space-20); }
         .hp-hero h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,64px); line-height:1.05; letter-spacing:-.025em; color:#fff; margin:0 auto var(--space-20); max-width:820px; text-wrap:balance; }
         .hp-hero__sub { font-size:17px; line-height:1.75; color:rgba(255,255,255,.72); max-width:560px; margin:0 auto var(--space-32); }
         .hp-hero__proof { margin-top:var(--space-40); padding-top:var(--space-24); border-top:0.5px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; gap:var(--space-16); font-size:13px; color:rgba(255,255,255,.55); }
@@ -248,10 +247,13 @@ export default function HomePage() {
         .hp-reveal.in-view { opacity:1; transform:none; }
         .reduce-motion .hp-reveal { opacity:1; transform:none; transition:none; }
 
+        @media(max-width:700px){
+          .hp-steps, .hp-features { grid-template-columns:1fr; }
+          .hp-step__ill { max-width:420px; }
+        }
         @media(max-width:900px){
           .hp-hero__grid { min-height:0; padding:var(--space-64) var(--gutter-public); }
           .hp-navbar-links { display:none !important; }
-          .hp-steps, .hp-features { grid-template-columns:1fr; }
           .hp-section { padding:var(--space-64) var(--gutter-public); }
           .footer-top-grid { grid-template-columns:1fr 1fr !important; }
         }
@@ -284,7 +286,7 @@ export default function HomePage() {
           <div style={{ width: '100%', maxWidth: 820 }}>
             <div style={{ marginBottom: 'var(--space-24)' }}><RoleSwitch role={role} onChange={setRole} dark /></div>
             <div key={role} className="page-enter">
-              <div className="hp-hero__eyebrow"><span className="dot" />{c.eyebrow}</div>
+              <div className="hp-hero__eyebrow">{c.eyebrow}</div>
               <h1>{c.headline}</h1>
               <p className="hp-hero__sub">{c.sub}</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-12)', flexWrap: 'wrap' }}>

@@ -804,14 +804,26 @@
      scale above; pages use the role, never a raw font-size. Roles are
      element-agnostic (put them on h1/h2/p/div as semantics require).
 
-       .hero-title     28px  auth + onboarding card headings, public headers
+       .display-title  36-56px  the one marketing headline (home hero); 700
+       .hero-title     28px  auth + onboarding card headings, public + marketing section headers
        .page-title     22px  the one heading at the top of a dashboard page
        .card-title     18px  heading of a large card / panel
        .section-title  16px  heading of a section or small card, table header row
        .eyebrow        10px  uppercase micro-label above a title
        .field-label    11px  uppercase form label
        .page-subtitle  13px  grey line under a page or hero title
+       .lead           16px  intro paragraph under a display/hero title (body-lg)
        .text-hint      12px  grey helper text under a control                 */
+  .display-title {
+    font-family: var(--font-display);
+    font-size: clamp(var(--text-h1-size), 4.5vw, 56px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    font-weight: var(--text-h1-weight);
+    color: var(--black);
+    margin: 0;
+    text-wrap: balance;
+  }
   .hero-title {
     font-family: var(--font-display);
     font-size: var(--text-h2-size);
@@ -872,6 +884,13 @@
     margin: var(--space-2) 0 0;
   }
   .text-hint { font-size: 12px; line-height: 1.5; color: var(--grey-400); }
+  .lead {
+    font-size: var(--text-body-lg-size);
+    line-height: 1.7;
+    font-weight: var(--text-body-lg-weight);
+    color: var(--grey-500);
+    margin: 0;
+  }
 
   /* ── Collapsible card body ────────────────────────────────────────────── */
   /* The header supplies the gap; content that used to sit under an inline

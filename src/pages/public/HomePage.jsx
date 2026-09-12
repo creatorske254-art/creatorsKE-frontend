@@ -162,24 +162,24 @@ export default function HomePage() {
       <style>{`
         @keyframes floatUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         @keyframes arrowNudge { 0%,100% { transform:translateX(0); } 50% { transform:translateX(4px); } }
-        .hp-nav-link { font-size:13px; color:var(--grey-600); padding:var(--space-8) var(--space-12); border-radius:8px; cursor:pointer; font-weight:500; background:none; border:none; font-family:var(--font-body); transition:all .15s; }
+        .hp-nav-link { font-size:var(--text-body-sm-size); color:var(--grey-600); padding:var(--space-8) var(--space-12); border-radius:8px; cursor:pointer; font-weight:500; background:none; border:none; font-family:var(--font-body); transition:all .15s; }
         .hp-nav-link:hover { color:var(--black); background:var(--grey-50); }
-        .hp-btn-ghost { background:transparent; color:var(--grey-600); border-radius:8px; font-size:14px; padding:var(--space-8) var(--space-20); border:0.5px solid var(--grey-200); cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
+        .hp-btn-ghost { background:transparent; color:var(--grey-600); border-radius:8px; font-size:var(--text-body-size); padding:var(--space-8) var(--space-20); border:0.5px solid var(--grey-200); cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
         .hp-btn-ghost:hover { color:var(--black); border-color:var(--grey-400); background:var(--grey-50); }
-        .hp-btn-ghost.lg { padding:var(--space-12) var(--space-24); font-size:15px; }
+        .hp-btn-ghost.lg { padding:var(--space-12) var(--space-24); font-size:var(--text-body-lg-size); }
         .hp-btn-ghost.on-dark { color:rgba(255,255,255,0.85); border-color:rgba(255,255,255,0.25); }
         .hp-btn-ghost.on-dark:hover { color:#fff; border-color:rgba(255,255,255,0.6); background:rgba(255,255,255,0.08); }
-        .hp-btn-primary { background:var(--black); color:var(--white); border-radius:12px; font-size:15px; padding:var(--space-16) var(--space-32); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
+        .hp-btn-primary { background:var(--black); color:var(--white); border-radius:12px; font-size:var(--text-body-lg-size); padding:var(--space-16) var(--space-32); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
         .hp-btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,.12); }
         .hp-btn-primary.on-dark { background:#fff; color:#0D0D0D; }
         .hp-btn-primary .nudge { animation: arrowNudge 1.6s ease-in-out infinite; }
-        .hp-btn-purple { background:var(--purple-600); color:#fff; border-radius:8px; font-size:14px; padding:var(--space-12) var(--space-24); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
-        .hp-btn-purple.sm { font-size:13px; padding:var(--space-8) var(--space-16); }
+        .hp-btn-purple { background:var(--purple-600); color:#fff; border-radius:8px; font-size:var(--text-body-size); padding:var(--space-12) var(--space-24); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
+        .hp-btn-purple.sm { font-size:var(--text-body-sm-size); padding:var(--space-8) var(--space-16); }
         .hp-btn-purple:hover { background:var(--purple-700); transform:translateY(-1px); box-shadow:0 4px 16px rgba(84,69,232,.3); }
 
         /* role switch */
         .hp-role { display:inline-flex; gap:var(--space-4); padding:var(--space-4); border-radius:var(--radius-pill); background:var(--grey-50); border:0.5px solid var(--grey-100); }
-        .hp-role__btn { display:inline-flex; align-items:center; gap:var(--space-8); padding:var(--space-8) var(--space-16); border-radius:var(--radius-pill); border:none; background:none; font-family:var(--font-body); font-size:13px; font-weight:500; color:var(--grey-500); cursor:pointer; transition:all .15s; }
+        .hp-role__btn { display:inline-flex; align-items:center; gap:var(--space-8); padding:var(--space-8) var(--space-16); border-radius:var(--radius-pill); border:none; background:none; font-family:var(--font-body); font-size:var(--text-body-sm-size); font-weight:500; color:var(--grey-500); cursor:pointer; transition:all .15s; }
         .hp-role__btn.active { background:var(--white); color:var(--black); box-shadow:var(--shadow-sm); }
         .hp-role--dark { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.15); }
         .hp-role--dark .hp-role__btn { color:rgba(255,255,255,0.6); }
@@ -195,18 +195,17 @@ export default function HomePage() {
         .hp-streak-3 { -webkit-mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); }
         .hp-hero__dots { position:absolute; inset:0; opacity:.15; background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.5) 1px, transparent 0); background-size:20px 20px; }
         .hp-hero__grid { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:var(--space-80) var(--gutter-public); min-height:calc(100vh - 60px); }
-        .hp-hero__eyebrow { display:block; font-size:12px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.6); margin-bottom:var(--space-20); }
-        .hp-hero h1 { font-family:var(--font-display); font-size:clamp(36px,5vw,64px); line-height:1.05; letter-spacing:-.025em; color:#fff; margin:0 auto var(--space-20); max-width:820px; text-wrap:balance; }
-        .hp-hero__sub { font-size:17px; line-height:1.75; color:rgba(255,255,255,.72); max-width:560px; margin:0 auto var(--space-32); }
-        .hp-hero__proof { margin-top:var(--space-40); padding-top:var(--space-24); border-top:0.5px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; gap:var(--space-16); font-size:13px; color:rgba(255,255,255,.55); }
+        .hp-hero .eyebrow { display:block; color:rgba(255,255,255,.6); margin-bottom:var(--space-20); }
+        .hp-hero .display-title { color:#fff; margin:0 auto var(--space-20); max-width:820px; }
+        .hp-hero .lead { color:rgba(255,255,255,.72); max-width:560px; margin:0 auto var(--space-32); }
+        .hp-hero__proof { margin-top:var(--space-40); padding-top:var(--space-24); border-top:0.5px solid rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; gap:var(--space-16); font-size:var(--text-body-sm-size); color:rgba(255,255,255,.55); }
 
         /* sections */
         .hp-section { padding:var(--space-96) var(--gutter-public); }
         .hp-section--paper { background:var(--white); border-top:0.5px solid var(--grey-100); border-bottom:0.5px solid var(--grey-100); }
         .hp-head { text-align:center; max-width:640px; margin:0 auto var(--space-48); }
-        .hp-head .eyebrow { justify-content:center; margin-bottom:var(--space-12); }
-        .hp-head h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,36px); font-weight:600; letter-spacing:-.02em; line-height:1.15; color:var(--black); margin:0 0 var(--space-12); }
-        .hp-head p { font-size:15px; color:var(--grey-500); line-height:1.7; margin:0; }
+        .hp-head .eyebrow { display:block; margin-bottom:var(--space-12); }
+        .hp-head .hero-title { margin:0 0 var(--space-12); }
         .hp-wrap { max-width:1080px; margin:0 auto; }
 
         /* steps */
@@ -216,9 +215,8 @@ export default function HomePage() {
         .hp-step:hover .hp-step__ill { transform:translateY(-3px); }
         .hp-step__ill img { width:100%; height:100%; object-fit:cover; display:block; }
         .hp-step__body { padding:0 var(--space-4); display:flex; flex-direction:column; gap:var(--space-8); }
-        .hp-step__num { font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--purple-600); }
-        .hp-step h3 { font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--black); margin:0; }
-        .hp-step p { font-size:14px; color:var(--grey-500); line-height:1.6; margin:0; }
+        .hp-step .card-title { margin:0; }
+        .hp-step p { font-size:var(--text-body-size); color:var(--grey-500); line-height:1.65; margin:0; }
 
         /* features */
         .hp-features { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-24); }
@@ -229,17 +227,17 @@ export default function HomePage() {
         /* faq */
         .hp-faq { border-top:0.5px solid var(--grey-100); }
         .hp-faq__item { border-bottom:0.5px solid var(--grey-100); }
-        .hp-faq__q { width:100%; background:none; border:none; color:var(--black); display:flex; align-items:center; justify-content:space-between; gap:var(--space-16); padding:var(--space-20) var(--space-8); text-align:left; font-family:var(--font-body); font-size:15.5px; font-weight:600; cursor:pointer; }
+        .hp-faq__q { width:100%; background:none; border:none; color:var(--black); display:flex; align-items:center; justify-content:space-between; gap:var(--space-16); padding:var(--space-20) var(--space-8); text-align:left; cursor:pointer; }
         .hp-faq__q svg { color:var(--grey-400); transition:transform .25s, color .25s; flex-shrink:0; }
         .hp-faq__item.open .hp-faq__q svg { transform:rotate(45deg); color:var(--purple-600); }
         .hp-faq__a { max-height:0; overflow:hidden; transition:max-height .3s ease; }
         .hp-faq__item.open .hp-faq__a { max-height:320px; }
-        .hp-faq__a p { padding:0 var(--space-8) var(--space-20); color:var(--grey-600); font-size:14.5px; line-height:1.7; margin:0; }
+        .hp-faq__a p { padding:0 var(--space-8) var(--space-20); color:var(--grey-600); font-size:var(--text-body-size); line-height:1.7; margin:0; }
 
         /* closing banner */
         .hp-cta { border-radius:var(--radius-2xl); padding:var(--space-64) var(--space-32); background:linear-gradient(135deg, var(--purple-800), var(--purple-500)); color:#fff; text-align:center; display:flex; flex-direction:column; align-items:center; gap:var(--space-16); }
-        .hp-cta h2 { font-family:var(--font-display); font-size:clamp(26px,3vw,36px); font-weight:600; letter-spacing:-.02em; color:#fff; margin:0; }
-        .hp-cta p { color:rgba(255,255,255,.85); font-size:16px; max-width:480px; margin:0; line-height:1.6; }
+        .hp-cta .hero-title { color:#fff; }
+        .hp-cta .lead { color:rgba(255,255,255,.85); max-width:480px; }
         .hp-cta .hp-btn-primary { background:#fff; color:var(--purple-800); }
 
         /* reveal */
@@ -261,7 +259,7 @@ export default function HomePage() {
 
       {/* ══ NAVBAR ══════════════════════════════════════════════════════════ */}
       <nav style={{ background: 'color-mix(in srgb, var(--white) 92%, transparent)', backdropFilter: 'blur(14px)', borderBottom: '0.5px solid var(--grey-100)', height: 60, display: 'flex', alignItems: 'center', padding: '0 var(--gutter-public)', position: 'sticky', top: 0, zIndex: 100, justifyContent: 'space-between', flexShrink: 0 }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, letterSpacing: '-0.01em', cursor: 'pointer', color: 'var(--black)' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <span className="card-title" style={{ marginBottom: 0, cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
         </span>
         <div className="hp-navbar-links" style={{ display: 'flex', gap: 'var(--space-4)' }}>
@@ -286,9 +284,9 @@ export default function HomePage() {
           <div style={{ width: '100%', maxWidth: 820 }}>
             <div style={{ marginBottom: 'var(--space-24)' }}><RoleSwitch role={role} onChange={setRole} dark /></div>
             <div key={role} className="page-enter">
-              <div className="hp-hero__eyebrow">{c.eyebrow}</div>
-              <h1>{c.headline}</h1>
-              <p className="hp-hero__sub">{c.sub}</p>
+              <div className="eyebrow">{c.eyebrow}</div>
+              <h1 className="display-title">{c.headline}</h1>
+              <p className="lead">{c.sub}</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-12)', flexWrap: 'wrap' }}>
                 <button className="hp-btn-primary on-dark" onClick={() => navigate(c.primary.to)}>{c.primary.label} <IconArrowRight className="icon-sm nudge" aria-hidden="true" /></button>
                 <button className="hp-btn-ghost lg on-dark" onClick={() => navigate(c.secondary.to)}>{c.secondary.label}</button>
@@ -311,16 +309,16 @@ export default function HomePage() {
         <div className="hp-wrap">
           <div className="hp-head hp-reveal">
             <span className="eyebrow">How it works</span>
-            <h2>{c.stepsTitle}</h2>
-            <p>{role === 'brand' ? 'Three steps from a shortlist to approved, paid work.' : 'Three steps from a blank profile to money on M‑Pesa.'}</p>
+            <h2 className="hero-title">{c.stepsTitle}</h2>
+            <p className="lead">{role === 'brand' ? 'Three steps from a shortlist to approved, paid work.' : 'Three steps from a blank profile to money on M‑Pesa.'}</p>
           </div>
           <div className="hp-steps" key={`steps-${role}`}>
             {c.steps.map((s, i) => (
               <div key={s.title} className="hp-step hp-reveal">
                 <div className="hp-step__ill"><img src={IMG(s.img)} alt="" loading="lazy" /></div>
                 <div className="hp-step__body">
-                  <span className="hp-step__num">STEP 0{i + 1}</span>
-                  <h3>{s.title}</h3>
+                  <span className="eyebrow">Step 0{i + 1}</span>
+                  <h3 className="card-title">{s.title}</h3>
                   <p>{s.desc}</p>
                 </div>
               </div>
@@ -339,7 +337,7 @@ export default function HomePage() {
                 <div key={f.title} className="hp-feature hp-reveal">
                   <div className="hp-feature__icon"><Icon className="icon-lg" aria-hidden="true" /></div>
                   <div className="card-title" style={{ marginBottom: 'var(--space-8)' }}>{f.title}</div>
-                  <div style={{ fontSize: 13.5, color: 'var(--grey-500)', lineHeight: 1.65 }}>{f.desc}</div>
+                  <p style={{ fontSize: 'var(--text-body-size)', color: 'var(--grey-500)', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
                 </div>
               );
             })}
@@ -352,12 +350,12 @@ export default function HomePage() {
         <div className="hp-wrap">
           <div className="hp-head hp-reveal">
             <span className="eyebrow">FAQ</span>
-            <h2>Frequently asked questions</h2>
+            <h2 className="hero-title">Frequently asked questions</h2>
           </div>
           <div className="hp-faq hp-reveal" key={`faq-${role}`}>
             {c.faq.map((f, i) => (
               <div key={f.q} className={`hp-faq__item${openFaq === i ? ' open' : ''}`}>
-                <button type="button" className="hp-faq__q" aria-expanded={openFaq === i} aria-controls={`faq-${i}`} onClick={() => setOpenFaq(openFaq === i ? -1 : i)}>
+                <button type="button" className="hp-faq__q section-title" aria-expanded={openFaq === i} aria-controls={`faq-${i}`} onClick={() => setOpenFaq(openFaq === i ? -1 : i)}>
                   {f.q}<IconPlus className="icon-md" aria-hidden="true" />
                 </button>
                 <div className="hp-faq__a" id={`faq-${i}`}><p>{f.a}</p></div>
@@ -371,8 +369,8 @@ export default function HomePage() {
       <section className="hp-section" style={{ paddingTop: 'var(--space-64)' }}>
         <div className="hp-wrap">
           <div className="hp-cta hp-reveal" key={`cta-${role}`}>
-            <h2>{c.ctaTitle}</h2>
-            <p>{c.ctaSub}</p>
+            <h2 className="hero-title">{c.ctaTitle}</h2>
+            <p className="lead">{c.ctaSub}</p>
             <div style={{ marginTop: 'var(--space-8)' }}>
               <button className="hp-btn-primary" onClick={() => navigate(c.primary.to)}>{c.ctaLabel} <IconArrowRight className="icon-sm nudge" aria-hidden="true" /></button>
             </div>
@@ -384,12 +382,12 @@ export default function HomePage() {
       <footer className="theme-fixed-dark" style={{ background: 'var(--black)', flexShrink: 0 }}>
         <div className="footer-top-grid" style={{ padding: 'var(--space-48) var(--gutter-public) var(--space-40)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 'var(--space-40)', alignItems: 'start' }}>
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: 'var(--white)', marginBottom: 'var(--space-12)' }}>
+            <div className="page-title" style={{ color: 'var(--white)', marginBottom: 'var(--space-12)' }}>
               Creatorske<span style={{ color: 'var(--purple-400)' }}>.</span>
             </div>
-            <div style={{ fontSize: 13, color: 'var(--grey-500)', lineHeight: 1.7, maxWidth: 240, marginBottom: 'var(--space-24)' }}>
+            <p className="page-subtitle" style={{ maxWidth: 240, margin: '0 0 var(--space-24)' }}>
               Where Kenya's creators and brands build campaigns - rate cards, verified profiles and M‑Pesa escrow.
-            </div>
+            </p>
             <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
               {SOCIAL_LINKS.map(({ key, Icon, href, label }) => (
                 <a key={key} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} title={label} className="hp-social"
@@ -404,10 +402,10 @@ export default function HomePage() {
           </div>
           {Object.entries(footerLinks).map(([col, links]) => (
             <div key={col}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--grey-600)', marginBottom: 'var(--space-16)' }}>{col}</div>
+              <div className="eyebrow" style={{ color: 'var(--grey-600)', marginBottom: 'var(--space-16)' }}>{col}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
                 {links.map((l) => (
-                  <button key={l.label} type="button" onClick={l.action} style={{ fontSize: 13, color: 'var(--grey-400)', cursor: 'pointer', transition: 'color .15s', background: 'none', border: 'none', padding: 0, textAlign: 'left', fontFamily: 'inherit' }}
+                  <button key={l.label} type="button" onClick={l.action} style={{ fontSize: 'var(--text-body-sm-size)', color: 'var(--grey-400)', cursor: 'pointer', transition: 'color .15s', background: 'none', border: 'none', padding: 0, textAlign: 'left', fontFamily: 'inherit' }}
                     onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--white)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--grey-400)'; }}
                   >
@@ -419,10 +417,10 @@ export default function HomePage() {
           ))}
         </div>
         <div className="footer-bottom-inner" style={{ padding: 'var(--space-20) var(--gutter-public)', borderTop: '0.5px solid var(--grey-800)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-8)' }}>
-          <div style={{ fontSize: 12, color: 'var(--grey-600)' }}>© 2026 Creatorske Ltd. Nairobi, Kenya.</div>
+          <div className="text-hint" style={{ color: 'var(--grey-600)' }}>© 2026 Creatorske Ltd. Nairobi, Kenya.</div>
           <div style={{ display: 'flex', gap: 'var(--space-20)' }}>
             {[{ label: 'Privacy policy', path: '/privacy' }, { label: 'Terms of service', path: '/terms' }].map((l) => (
-              <button key={l.label} type="button" onClick={() => navigate(l.path)} style={{ fontSize: 12, color: 'var(--grey-600)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: 'inherit' }}>{l.label}</button>
+              <button key={l.label} type="button" onClick={() => navigate(l.path)} className="text-hint" style={{ color: 'var(--grey-600)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: 'inherit' }}>{l.label}</button>
             ))}
           </div>
         </div>

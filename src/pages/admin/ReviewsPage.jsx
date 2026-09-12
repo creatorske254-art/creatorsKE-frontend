@@ -79,7 +79,7 @@ const reviews = [
 
 function Stars({ count, size = 14 }) {
   return (
-    <span style={{ display: "inline-flex", gap: 2 }}>
+    <span style={{ display: "inline-flex", gap: 'var(--space-2)' }}>
       {[1, 2, 3, 4, 5].map((i) => (
         <i
           key={i}
@@ -94,7 +94,7 @@ function Stars({ count, size = 14 }) {
 function RatingBar({ label, count, total, value }) {
   const pct = total === 0 ? 0 : Math.round((count / total) * 100);
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)', marginBottom: 'var(--space-8)' }}>
       <span style={{ fontSize: 12, color: "var(--grey-500)", width: 10, textAlign: "right" }}>{value}</span>
       <div style={{ flex: 1, height: 6, borderRadius: "var(--radius-pill)", background: "var(--grey-100)", overflow: "hidden" }}>
         <div style={{ width: `${pct}%`, height: "100%", borderRadius: "var(--radius-pill)", background: pct > 0 ? "var(--status-warning)" : "transparent", transition: "width 0.4s ease" }} />
@@ -123,10 +123,10 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
   }
 
   return (
-    <div className="card" style={{ padding: "20px 24px", border: review.flagged ? "1.5px solid var(--status-error)" : undefined }}>
+    <div className="card" style={{ padding: "var(--space-20) var(--space-24)", border: review.flagged ? "1.5px solid var(--status-error)" : undefined }}>
       {/* Header row */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 'var(--space-16)' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
           <div
             className="avatar"
             style={{
@@ -142,23 +142,23 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
           </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: "var(--black)", lineHeight: 1.3 }}>{review.brand} → {review.creatorName}</div>
-            <div style={{ fontSize: 12, color: "var(--grey-400)", marginTop: 2 }}>{review.package}</div>
+            <div style={{ fontSize: 12, color: "var(--grey-400)", marginTop: 'var(--space-2)' }}>{review.package}</div>
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 'var(--space-8)' }}>
           <Stars count={review.stars} />
           <span style={{ fontSize: 11, color: "var(--grey-400)" }}>{review.date}</span>
         </div>
       </div>
 
       {/* Campaign tag + flagged tag */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+      <div style={{ display: "flex", gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
         <span className="tag tag-default">{review.campaign}</span>
         {review.flagged && <span className="tag tag-error"><i className="ti ti-flag-3" style={{ fontSize: 11 }} /> Flagged</span>}
       </div>
 
       {/* Review text */}
-      <p style={{ fontSize: 13.5, color: "var(--grey-700)", lineHeight: 1.65, marginTop: 12, marginBottom: 14 }}>{review.text}</p>
+      <p style={{ fontSize: 13.5, color: "var(--grey-700)", lineHeight: 1.65, marginTop: 'var(--space-12)', marginBottom: 'var(--space-16)' }}>{review.text}</p>
 
       {/* Flag reason + moderation actions */}
       {review.flagged && (
@@ -167,12 +167,12 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
             background: "var(--status-error-bg)",
             border: "0.5px solid rgba(239,68,68,0.25)",
             borderRadius: "var(--radius-md)",
-            padding: "12px 14px",
-            marginBottom: 14,
+            padding: "var(--space-12) var(--space-16)",
+            marginBottom: 'var(--space-16)',
           }}
         >
-          <div style={{ fontSize: 12.5, color: "var(--status-error-text)", lineHeight: 1.55, marginBottom: 10 }}>{review.flagReason}</div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ fontSize: 12.5, color: "var(--status-error-text)", lineHeight: 1.55, marginBottom: 'var(--space-12)' }}>{review.flagReason}</div>
+          <div style={{ display: "flex", gap: 'var(--space-8)' }}>
             <button type="button" className="btn btn-danger btn-xs" onClick={() => setConfirmRemove(true)}>Remove review</button>
             <button type="button" className="btn btn-ghost btn-xs" onClick={() => onDismiss(review.id)}>Dismiss flag</button>
           </div>
@@ -197,11 +197,11 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
             border: "0.5px solid var(--purple-100)",
             borderLeft: "3px solid var(--purple-400)",
             borderRadius: "0 var(--radius-md) var(--radius-md) 0",
-            padding: "12px 14px",
-            marginBottom: 14,
+            padding: "var(--space-12) var(--space-16)",
+            marginBottom: 'var(--space-16)',
           }}
         >
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase", color: "var(--purple-500)", marginBottom: 6 }}>Your reply</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase", color: "var(--purple-500)", marginBottom: 'var(--space-8)' }}>Your reply</div>
           <p style={{ fontSize: 13, color: "var(--grey-700)", lineHeight: 1.6 }}>{replyText}</p>
         </div>
       )}
@@ -229,16 +229,16 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
                 className="input"
                 style={{
                   height: 80,
-                  padding: "10px 12px",
+                  padding: "var(--space-12) var(--space-12)",
                   fontSize: 13,
                   background: "var(--page-bg)",
                   borderRadius: "var(--radius-md)",
                   resize: "none",
                   lineHeight: 1.5,
-                  marginBottom: 8,
+                  marginBottom: 'var(--space-8)',
                 }}
               />
-              <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ display: "flex", gap: 'var(--space-8)' }}>
                 <button type="button" className="btn btn-primary btn-xs" onClick={handleSave}>
                   Post reply
                 </button>
@@ -297,30 +297,30 @@ export default function ReviewsPage() {
     data.filter((r) => r.replied);
 
   return (
-    <div style={{ padding: 28, background: "var(--page-bg)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
+    <div style={{ padding: 'var(--space-32)', background: "var(--page-bg)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
 
       {/* Page heading */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 className="page-title" style={{ marginBottom: 4 }}>
+      <div style={{ marginBottom: 'var(--space-32)' }}>
+        <h1 className="page-title" style={{ marginBottom: 'var(--space-4)' }}>
           Flagged Reviews
         </h1>
         <p className="page-subtitle">
           Moderate reviews flagged by creators or auto-detected for policy violations across the platform.
         </p>
-        <p style={{ fontSize: 12, color: "var(--grey-400)", lineHeight: 1.6, fontStyle: 'italic', marginTop: 4 }}>
+        <p style={{ fontSize: 12, color: "var(--grey-400)", lineHeight: 1.6, fontStyle: 'italic', marginTop: 'var(--space-4)' }}>
           Demo data. A cross-creator review moderation feed endpoint doesn't exist on the backend yet (reviewService only supports listing one creator's reviews at a time). See the production-readiness plan's backend spec.
         </p>
       </div>
 
       {/* Summary row */}
-      <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr]" style={{ gap: 20, marginBottom: 28 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr]" style={{ gap: 'var(--space-20)', marginBottom: 'var(--space-32)' }}>
 
         {/* Aggregate score */}
-        <div className="card" style={{ padding: "20px 28px", display: "flex", alignItems: "center", gap: 28, minWidth: 280 }}>
+        <div className="card" style={{ padding: "var(--space-20) var(--space-32)", display: "flex", alignItems: "center", gap: 'var(--space-32)', minWidth: 280 }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 52, fontWeight: 700, color: "var(--black)", lineHeight: 1 }}>{avg}</div>
             <Stars count={Math.round(parseFloat(avg))} size={16} />
-            <div style={{ fontSize: 11, color: "var(--grey-400)", marginTop: 6 }}>{total} reviews</div>
+            <div style={{ fontSize: 11, color: "var(--grey-400)", marginTop: 'var(--space-8)' }}>{total} reviews</div>
           </div>
           <div style={{ flex: 1 }}>
             {dist.map((d) => <RatingBar key={d.value} value={d.value} count={d.count} total={total} />)}
@@ -328,14 +328,14 @@ export default function ReviewsPage() {
         </div>
 
         {/* Quick stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3" style={{ gap: 14 }}>
+        <div className="grid grid-cols-1 sm:grid-cols-3" style={{ gap: 'var(--space-16)' }}>
           {[
             { label: "Flagged", value: data.filter((r) => r.flagged).length, accent: "var(--status-error-text)" },
             { label: "5-star reviews", value: dist[0].count, accent: "var(--status-warning)" },
             { label: "Awaiting reply", value: data.filter((r) => !r.replied).length, accent: "var(--purple-500)" },
           ].map((s) => (
-            <div key={s.label} className="card" style={{ padding: "18px 20px" }}>
-              <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--grey-400)", marginBottom: 8 }}>{s.label}</div>
+            <div key={s.label} className="card" style={{ padding: "var(--space-20) var(--space-20)" }}>
+              <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--grey-400)", marginBottom: 'var(--space-8)' }}>{s.label}</div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 600, color: s.accent, lineHeight: 1 }}>{s.value}</div>
             </div>
           ))}
@@ -343,7 +343,7 @@ export default function ReviewsPage() {
       </div>
 
       {/* Filter tabs */}
-      <div className="tabs" style={{ marginBottom: 20 }}>
+      <div className="tabs" style={{ marginBottom: 'var(--space-20)' }}>
         {[
           { key: "flagged", label: `Flagged (${data.filter(r => r.flagged).length})` },
           { key: "all", label: `All (${total})` },
@@ -362,7 +362,7 @@ export default function ReviewsPage() {
       </div>
 
       {/* Review list */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-16)' }}>
         {filtered.length === 0 ? (
           <div className="card">
             <EmptyState
@@ -379,7 +379,7 @@ export default function ReviewsPage() {
       </div>
 
       {/* Footnote */}
-      <p style={{ fontSize: 11, color: "var(--grey-300)", marginTop: 24, textAlign: "center" }}>
+      <p style={{ fontSize: 11, color: "var(--grey-300)", marginTop: 'var(--space-24)', textAlign: "center" }}>
         Reviews are submitted by brands after approving a delivery. One review per completed booking. You can post one public reply per review.
       </p>
     </div>

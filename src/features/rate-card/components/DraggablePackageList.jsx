@@ -135,20 +135,20 @@ export default function DraggablePackageList({ packages = [], onChange, onEdit, 
         .draggable-list {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: var(--space-8);
         }
         .draggable-list__items {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: var(--space-8);
         }
         .draggable-list__add {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: var(--space-8);
           width: 100%;
-          padding: 18px;
+          padding: var(--space-20);
           background: var(--white);
           border: 1.5px dashed var(--grey-200);
           border-radius: var(--radius-lg);
@@ -158,7 +158,7 @@ export default function DraggablePackageList({ packages = [], onChange, onEdit, 
           font-family: var(--font-body);
           cursor: pointer;
           transition: border-color 0.15s, color 0.15s, background 0.15s;
-          margin-top: 4px;
+          margin-top: var(--space-4);
         }
         .draggable-list__add:hover {
           border-color: var(--purple-300);

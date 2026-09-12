@@ -19,25 +19,25 @@ const css = `
   .ps-navbar {
     background: color-mix(in srgb, var(--white) 92%, transparent); backdrop-filter: blur(14px);
     border-bottom: 0.5px solid var(--grey-100); height: 60px;
-    display: flex; align-items: center; padding: 0 40px;
+    display: flex; align-items: center; padding: 0 var(--gutter-public);
     position: sticky; top: 0; z-index: 100; justify-content: space-between; flex-shrink: 0;
   }
   .ps-logo { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -.01em; color: var(--black); cursor: pointer; }
   .ps-logo span { color: var(--purple-500); }
 
   /* Plan shell */
-  .ps-shell { flex: 1; background: var(--page-bg); padding: 48px 24px; }
+  .ps-shell { flex: 1; background: var(--page-bg); padding: var(--space-48) var(--gutter-public); }
   .ps-inner { max-width: 780px; margin: 0 auto; }
 
-  .ps-eyebrow { margin-bottom: 8px; }
-  .ps-title { margin-bottom: 6px; }
-  .ps-sub { margin-bottom: 36px; }
+  .ps-eyebrow { margin-bottom: var(--space-8); }
+  .ps-title { margin-bottom: var(--space-8); }
+  .ps-sub { margin-bottom: var(--space-40); }
 
   /* Plan grid */
-  .ps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+  .ps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-16); margin-bottom: var(--space-32); }
 
   .ps-card {
-    border: 1.5px solid var(--grey-200); border-radius: var(--radius-xl); padding: 24px;
+    border: 1.5px solid var(--grey-200); border-radius: var(--radius-xl); padding: var(--space-24);
     background: var(--white); cursor: pointer; transition: all .2s; position: relative;
   }
   .ps-card:hover { border-color: var(--purple-300); transform: translateY(-2px); box-shadow: var(--shadow-md); }
@@ -54,7 +54,7 @@ const css = `
   .ps-badge {
     position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
     background: var(--purple-600); color: #fff; font-size: 10px; font-weight: 700;
-    letter-spacing: .08em; text-transform: uppercase; padding: 3px 12px;
+    letter-spacing: .08em; text-transform: uppercase; padding: var(--space-4) var(--space-12);
     border-radius: var(--radius-pill); white-space: nowrap;
   }
 
@@ -72,27 +72,27 @@ const css = `
   .ps-card-business.selected .ps-check-indicator { background: var(--grey-600); border-color: var(--grey-500); }
   .ps-card-business.selected .ps-check-indicator i { color: #fff; }
 
-  .ps-plan-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--grey-400); margin-bottom: 6px; }
+  .ps-plan-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--grey-400); margin-bottom: var(--space-8); }
   .ps-card-pro .ps-plan-label { color: var(--purple-500); }
   .ps-card-business .ps-plan-label { color: var(--grey-500); }
 
-  .ps-price { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--black); letter-spacing: -.02em; line-height: 1; margin-bottom: 2px; }
+  .ps-price { font-family: var(--font-display); font-size: 26px; font-weight: 600; color: var(--black); letter-spacing: -.02em; line-height: 1; margin-bottom: var(--space-2); }
   .ps-card-pro .ps-price { color: var(--purple-800); }
   .ps-card-business .ps-price { color: var(--white); }
 
-  .ps-cadence { font-size: 12px; color: var(--grey-400); margin-bottom: 16px; }
+  .ps-cadence { font-size: 12px; color: var(--grey-400); margin-bottom: var(--space-16); }
   .ps-card-business .ps-cadence { color: var(--grey-500); }
 
-  .ps-feats { display: flex; flex-direction: column; gap: 8px; }
-  .ps-feat { font-size: 12px; color: var(--grey-600); display: flex; align-items: flex-start; gap: 7px; line-height: 1.4; }
-  .ps-feat i { color: var(--status-success); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+  .ps-feats { display: flex; flex-direction: column; gap: var(--space-8); }
+  .ps-feat { font-size: 12px; color: var(--grey-600); display: flex; align-items: flex-start; gap: var(--space-8); line-height: 1.4; }
+  .ps-feat i { color: var(--status-success); font-size: 13px; flex-shrink: 0; margin-top: var(--space-2); }
   .ps-card-pro .ps-feat { color: var(--purple-700); }
   .ps-card-pro .ps-feat i { color: var(--purple-500); }
   .ps-card-business .ps-feat { color: var(--grey-300); }
   .ps-card-business .ps-feat i { color: var(--status-success); }
 
   /* Starter note */
-  .ps-starter-note { font-size: 12px; color: var(--grey-400); text-align: center; margin-bottom: 24px; }
+  .ps-starter-note { font-size: 12px; color: var(--grey-400); text-align: center; margin-bottom: var(--space-24); }
   .ps-starter-note .ps-link-btn { color: var(--purple-600); font-weight: 500; cursor: pointer; text-decoration: none; background: none; border: none; padding: 0; font: inherit; }
   .ps-starter-note .ps-link-btn:hover { text-decoration: underline; }
 
@@ -108,7 +108,7 @@ const css = `
     animation: rcFloat .5s var(--ease-out) both;
   }
   @keyframes rcFloat { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
-  .rc-mini-top { padding: 14px 16px 10px; border-bottom: 0.5px solid var(--grey-100); display: flex; align-items: center; gap: 10px; }
+  .rc-mini-top { padding: var(--space-16) var(--space-16) var(--space-12); border-bottom: 0.5px solid var(--grey-100); display: flex; align-items: center; gap: var(--space-12); }
   .rc-mini-avatar {
     width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--white); flex-shrink: 0;
@@ -117,35 +117,34 @@ const css = `
   .rc-mini-name { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--black); }
   .rc-mini-handle { font-size: 11px; color: var(--grey-400); }
   .rc-mini-stats { display: flex; border-bottom: 0.5px solid var(--grey-100); }
-  .rc-mini-stat { flex: 1; padding: 8px 12px; text-align: center; border-right: 0.5px solid var(--grey-100); }
+  .rc-mini-stat { flex: 1; padding: var(--space-8) var(--space-12); text-align: center; border-right: 0.5px solid var(--grey-100); }
   .rc-mini-stat:last-child { border-right: none; }
   .rc-mini-num { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--black); }
-  .rc-mini-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--grey-400); margin-top: 1px; }
-  .rc-mini-footer { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
-  .rc-avail { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--grey-500); }
+  .rc-mini-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--grey-400); margin-top: var(--space-2); }
+  .rc-mini-footer { padding: var(--space-12) var(--space-16); display: flex; align-items: center; justify-content: space-between; }
+  .rc-avail { display: inline-flex; align-items: center; gap: var(--space-4); font-size: 11px; color: var(--grey-500); }
   .rc-avail-dot { width: 5px; height: 5px; border-radius: 50%; background: #639922; }
   .rc-mini-cta { font-size: 11px; font-weight: 600; color: var(--purple-600); cursor: pointer; }
 
   /* Welcome / complete screen */
   .ps-complete-shell {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-    gap: 32px; padding: 56px 24px 48px; background: var(--page-bg);
+    gap: var(--space-32); padding: var(--space-64) var(--space-24) var(--space-48); background: var(--page-bg);
   }
 
   /* Toast */
   .ps-toast-wrap { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 999; pointer-events: none; }
   .ps-toast {
-    background: var(--black); color: var(--white); padding: 11px 18px; border-radius: var(--radius-lg);
+    background: var(--black); color: var(--white); padding: var(--space-12) var(--space-20); border-radius: var(--radius-lg);
     font-size: 13px; font-weight: 500; box-shadow: var(--shadow-xl);
-    display: flex; align-items: center; gap: 8px; opacity: 0; transform: translateY(10px);
+    display: flex; align-items: center; gap: var(--space-8); opacity: 0; transform: translateY(10px);
     transition: all .25s; white-space: nowrap;
   }
   .ps-toast.show { opacity: 1; transform: translateY(0); }
 
   @media (max-width: 680px) {
     .ps-grid { grid-template-columns: 1fr; }
-    .ps-navbar { padding: 0 20px; }
-    .ps-shell { padding: 32px 16px; }
+    .ps-shell { padding: var(--space-32) var(--gutter-public); }
   }
 `
 
@@ -203,8 +202,8 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
     <Modal open onClose={isSubmitting ? () => {} : onCancel} title={`Subscribe to ${plan.label}`} size="sm">
       <div style={{
         display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
-        padding: '12px 14px', background: 'var(--purple-50)', border: '0.5px solid var(--purple-100)',
-        borderRadius: 'var(--radius-lg)', marginBottom: 18,
+        padding: 'var(--space-12) var(--space-16)', background: 'var(--purple-50)', border: '0.5px solid var(--purple-100)',
+        borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-20)',
       }}>
         <span style={{ fontSize: 13, color: 'var(--purple-700)' }}>{plan.label} plan</span>
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: 'var(--purple-800)' }}>
@@ -212,10 +211,10 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
         </span>
       </div>
 
-      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--grey-600)', marginBottom: 8 }}>
+      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--grey-600)', marginBottom: 'var(--space-8)' }}>
         Pay with
       </label>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
         {[{ key: 'mpesa', label: 'M-Pesa' }, { key: 'airtel', label: 'Airtel Money' }].map((p) => (
           <button
             key={p.key}
@@ -223,7 +222,7 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
             onClick={() => setProvider(p.key)}
             aria-pressed={provider === p.key}
             style={{
-              flex: 1, padding: '10px 8px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
+              flex: 1, padding: 'var(--space-12) var(--space-8)', borderRadius: 'var(--radius-md)', cursor: 'pointer',
               background: provider === p.key ? 'var(--purple-50)' : 'var(--white)',
               border: `1px solid ${provider === p.key ? 'var(--purple-400)' : 'var(--grey-200)'}`,
               color: provider === p.key ? 'var(--purple-700)' : 'var(--grey-600)',
@@ -235,10 +234,10 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
         ))}
       </div>
 
-      <label style={{ display: 'block', fontSize: 12, color: 'var(--grey-600)', marginBottom: 6 }}>
+      <label style={{ display: 'block', fontSize: 12, color: 'var(--grey-600)', marginBottom: 'var(--space-8)' }}>
         Phone number
       </label>
-      <div className="input-wrapper" style={{ marginBottom: 8 }}>
+      <div className="input-wrapper" style={{ marginBottom: 'var(--space-8)' }}>
         <i className="ti ti-device-mobile input-icon left" aria-hidden="true" />
         <input
           className="input input-md input-icon-left"
@@ -250,12 +249,12 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
           style={{ width: '100%' }}
         />
       </div>
-      <p style={{ fontSize: 12, color: 'var(--grey-400)', lineHeight: 1.6, marginBottom: 20 }}>
+      <p style={{ fontSize: 12, color: 'var(--grey-400)', lineHeight: 1.6, marginBottom: 'var(--space-20)' }}>
         You'll get a prompt on this number to authorise the payment. Your 7-day trial starts today.
         you can cancel from Settings before it ends and you won't be charged.
       </p>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-12)' }}>
         <button className="btn btn-ghost btn-sm" onClick={onCancel} disabled={isSubmitting}>Cancel</button>
         <button
           className={`btn btn-purple btn-sm${isSubmitting ? ' btn-loading' : ''}`}
@@ -325,8 +324,8 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
   return (
     <div className="ps-complete-shell">
       <div style={{ textAlign: 'center', maxWidth: 480 }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>🎉</div>
-        <h1 className="hero-title" style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 32, marginBottom: 'var(--space-12)' }}>🎉</div>
+        <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
           You're all set, <span>{firstName || 'there'}</span>!
         </h1>
         <p style={{ fontSize: 14, color: 'var(--grey-500)', lineHeight: 1.7 }}>
@@ -374,7 +373,7 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
         <i className="ti ti-pencil" style={{ fontSize: 15 }} /> Start building my rate card
       </button>
 
-      <p style={{ fontSize: 12, color: 'var(--grey-400)', marginTop: -16 }}>
+      <p style={{ fontSize: 12, color: 'var(--grey-400)', marginTop: 'calc(-1 * var(--space-16))' }}>
         You can always come back to this later from your dashboard.
       </p>
     </div>

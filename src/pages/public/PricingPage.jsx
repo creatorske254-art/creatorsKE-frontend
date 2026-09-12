@@ -23,14 +23,14 @@ function PricingCard({ tier }) {
       }`}
     >
       {tier.featured && (
-        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-2.5 py-1 rounded-[999px] bg-[var(--purple-500)] text-on-accent mb-3">
+        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-3 py-1 rounded-[999px] bg-[var(--purple-500)] text-on-accent mb-3">
           Most popular
         </span>
       )}
 
       <div className="text-[16px] font-semibold text-[var(--black)] mb-1">{tier.name}</div>
 
-      <div className="flex items-baseline gap-1.5 mb-1">
+      <div className="flex items-baseline gap-2 mb-1">
         <span className="font-[var(--font-display)] text-[32px] font-semibold text-[var(--black)]">
           {isFree ? 'Free' : formatCurrency(tier.price)}
         </span>
@@ -43,7 +43,7 @@ function PricingCard({ tier }) {
       <button
         type="button"
         onClick={() => navigate('/signup')}
-        className={`w-full mb-6 flex items-center justify-center gap-1.5 px-5 py-3 rounded-[8px] text-[13.5px] font-medium transition-all ${
+        className={`w-full mb-6 flex items-center justify-center gap-2 px-5 py-3 rounded-[8px] text-[13.5px] font-medium transition-all ${
           tier.featured
             ? 'bg-[var(--purple-600)] text-on-accent hover:bg-[var(--purple-700)]'
             : 'bg-[var(--black)] text-white hover:opacity-90'
@@ -52,7 +52,7 @@ function PricingCard({ tier }) {
         {isFree ? 'Get started free' : 'Get started'} <IconArrowRight size={14} />
       </button>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-3">
         {tier.features.map((f, i) => (
           <div key={i} className="flex items-start gap-2 text-[12.5px] text-[var(--grey-700)] leading-[1.5]">
             <IconCheck size={14} className="text-[var(--purple-500)] flex-shrink-0 mt-0.5" />
@@ -79,20 +79,20 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
       <style>{`
-        .pr-nav-link { font-size:13px; color:var(--grey-600); padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:500; background:none; border:none; font-family:var(--font-body); transition:all .15s; }
+        .pr-nav-link { font-size:13px; color:var(--grey-600); padding:var(--space-8) var(--space-12); border-radius:8px; cursor:pointer; font-weight:500; background:none; border:none; font-family:var(--font-body); transition:all .15s; }
         .pr-nav-link:hover { color:var(--black); background:var(--grey-50); }
         .pr-nav-link.active { color:var(--black); background:var(--grey-100); }
-        .pr-btn-ghost { background:transparent; color:var(--grey-600); border-radius:8px; font-size:13px; padding:7px 16px; border:0.5px solid var(--grey-200); cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
+        .pr-btn-ghost { background:transparent; color:var(--grey-600); border-radius:8px; font-size:13px; padding:var(--space-8) var(--space-16); border:0.5px solid var(--grey-200); cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
         .pr-btn-ghost:hover { color:var(--black); border-color:var(--grey-400); background:var(--grey-50); }
-        .pr-btn-purple { background:var(--purple-600); color:#fff; border-radius:8px; font-size:13px; padding:7px 16px; border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
+        .pr-btn-purple { background:var(--purple-600); color:#fff; border-radius:8px; font-size:13px; padding:var(--space-8) var(--space-16); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
         .pr-btn-purple:hover { background:var(--purple-700); }
-        .pr-toggle { display:inline-flex; background:var(--white); border:0.5px solid var(--grey-200); border-radius:999px; padding:4px; gap:2px; }
-        .pr-toggle-btn { border:none; background:none; padding:9px 22px; border-radius:999px; font-size:13.5px; font-weight:500; color:var(--grey-500); cursor:pointer; font-family:var(--font-body); transition:all .15s; }
+        .pr-toggle { display:inline-flex; background:var(--white); border:0.5px solid var(--grey-200); border-radius:999px; padding:var(--space-4); gap:var(--space-2); }
+        .pr-toggle-btn { border:none; background:none; padding:var(--space-8) var(--space-24); border-radius:999px; font-size:13.5px; font-weight:500; color:var(--grey-500); cursor:pointer; font-family:var(--font-body); transition:all .15s; }
         .pr-toggle-btn.active { background:var(--black); color:var(--white); }
       `}</style>
 
       {/* Nav */}
-      <nav className="h-[60px] flex items-center justify-between px-10 border-b border-[0.5px] border-[var(--grey-100)] bg-white/[0.92] backdrop-blur-md sticky top-0 z-10">
+      <nav className="h-[60px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[0.5px] border-[var(--grey-100)] bg-white/[0.92] backdrop-blur-md sticky top-0 z-10">
         <button
           type="button"
           onClick={() => navigate('/')}
@@ -111,7 +111,7 @@ export default function PricingPage() {
       </nav>
 
       {/* Hero */}
-      <div className="max-w-[720px] mx-auto text-center px-8 pt-16 pb-10">
+      <div className="max-w-[720px] mx-auto text-center px-[var(--gutter-public)] pt-16 pb-10">
         <h1 className="font-[var(--font-display)] text-[28px] sm:text-[36px] font-semibold tracking-[-0.02em] text-[var(--black)] mb-3 leading-[1.15]">
           Simple pricing, for every stage
         </h1>
@@ -133,7 +133,7 @@ export default function PricingPage() {
       </div>
 
       {/* Pricing grid */}
-      <div className="max-w-[1080px] w-full mx-auto px-8 pb-20">
+      <div className="max-w-[1080px] w-full mx-auto px-[var(--gutter-public)] pb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
           {active.tiers.map((tier) => (
             <PricingCard key={tier.id} tier={tier} />
@@ -146,7 +146,7 @@ export default function PricingPage() {
       </div>
 
       {/* Footer */}
-      <footer className="px-8 py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
+      <footer className="px-[var(--gutter-public)] py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </div>

@@ -104,7 +104,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 0 10px;
+          padding: 0 var(--space-12);
           color: var(--grey-300);
           cursor: grab;
           font-size: 18px;
@@ -122,17 +122,17 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
         }
         .pkg-card__body {
           flex: 1;
-          padding: 16px;
+          padding: var(--space-16);
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: var(--space-12);
           min-width: 0;
         }
         .pkg-card__top {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          gap: 12px;
+          gap: var(--space-12);
         }
         .pkg-card__name {
           font-family: var(--font-display);
@@ -144,7 +144,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
         .pkg-card__desc {
           font-size: 12px;
           color: var(--grey-500);
-          margin-top: 3px;
+          margin-top: var(--space-4);
           line-height: 1.5;
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -163,12 +163,12 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
           list-style: none;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: var(--space-4);
         }
         .pkg-card__deliverable {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-8);
           font-size: 12px;
           color: var(--grey-600);
         }
@@ -181,12 +181,12 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 10px;
+          padding-top: var(--space-12);
           border-top: 0.5px solid var(--grey-100);
         }
         .pkg-card__actions {
           display: flex;
-          gap: 4px;
+          gap: var(--space-4);
         }
       `}</style>
     </div>

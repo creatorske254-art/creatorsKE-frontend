@@ -63,7 +63,7 @@ export default function CreatorCard({ creator }) {
 
         {/* Niche + location */}
         <div className="flex items-center gap-2 mb-4 flex-wrap">
-          <span className="inline-flex items-center text-[11px] font-medium px-2.5 py-1 rounded-[999px] bg-[var(--purple-50)] text-[var(--purple-700)] border border-[0.5px] border-[var(--purple-200)]">
+          <span className="inline-flex items-center text-[11px] font-medium px-3 py-1 rounded-[999px] bg-[var(--purple-50)] text-[var(--purple-700)] border border-[0.5px] border-[var(--purple-200)]">
             {niche}
           </span>
           {location && (
@@ -73,7 +73,7 @@ export default function CreatorCard({ creator }) {
 
         {/* Primary platform stat */}
         {primaryPlatform && (
-          <div className="bg-[var(--grey-50)] rounded-[8px] px-3 py-2.5 flex items-center justify-between mb-3">
+          <div className="bg-[var(--grey-50)] rounded-[8px] px-3 py-3 flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 text-[12px] text-[var(--grey-600)]">
               {(() => {
                 const Icon = PLATFORM_ICONS[primaryPlatform.name];
@@ -95,7 +95,7 @@ export default function CreatorCard({ creator }) {
               return (
                 <div
                   key={p.name}
-                  className="flex items-center gap-1.5 text-[11px] text-[var(--grey-500)] bg-white border border-[0.5px] border-[var(--grey-200)] rounded-[6px] px-2 py-1"
+                  className="flex items-center gap-2 text-[11px] text-[var(--grey-500)] bg-white border border-[0.5px] border-[var(--grey-200)] rounded-[6px] px-2 py-1"
                 >
                   {Icon && <Icon size={12} />}
                   {formatNumber(p.followers)}
@@ -106,7 +106,7 @@ export default function CreatorCard({ creator }) {
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3.5 border-t border-[0.5px] border-[var(--grey-100)]">
+        <div className="flex items-center justify-between pt-4 border-t border-[0.5px] border-[var(--grey-100)]">
           <div>
             <div className="text-[10px] uppercase tracking-[0.08em] text-[var(--grey-400)] font-medium mb-0.5">
               Starting from
@@ -117,7 +117,7 @@ export default function CreatorCard({ creator }) {
           </div>
           <Link
             to={`/c/${handle}`}
-            className="inline-flex items-center justify-content gap-1.5 px-4 py-2 rounded-[8px] bg-[var(--black)] text-white text-[13px] font-medium transition-all hover:bg-[var(--grey-800)] hover:-translate-y-px hover:shadow-[var(--shadow-md)]"
+            className="inline-flex items-center justify-content gap-2 px-4 py-2 rounded-[8px] bg-[var(--black)] text-white text-[13px] font-medium transition-all hover:bg-[var(--grey-800)] hover:-translate-y-px hover:shadow-[var(--shadow-md)]"
           >
             View card
           </Link>

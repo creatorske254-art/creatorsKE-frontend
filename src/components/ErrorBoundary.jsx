@@ -34,17 +34,17 @@ export default class ErrorBoundary extends Component {
     return (
       <div style={{
         minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', padding: 32, textAlign: 'center', background: 'var(--page-bg, #F2F2F2)',
+        justifyContent: 'center', padding: 'var(--space-32)', textAlign: 'center', background: 'var(--page-bg, #F2F2F2)',
         fontFamily: 'var(--font-body, sans-serif)',
       }}>
-        <div style={{ fontFamily: 'var(--font-display, sans-serif)', fontSize: 20, fontWeight: 600, color: 'var(--black, #000)', marginBottom: 40 }}>
+        <div style={{ fontFamily: 'var(--font-display, sans-serif)', fontSize: 20, fontWeight: 600, color: 'var(--black, #000)', marginBottom: 'var(--space-40)' }}>
           Creatorske<span style={{ color: 'var(--purple-500, #665DC7)' }}>.</span>
         </div>
 
-        <h1 style={{ fontFamily: 'var(--font-display, sans-serif)', fontSize: 24, fontWeight: 600, color: 'var(--black, #000)', marginBottom: 12 }}>
+        <h1 style={{ fontFamily: 'var(--font-display, sans-serif)', fontSize: 24, fontWeight: 600, color: 'var(--black, #000)', marginBottom: 'var(--space-12)' }}>
           Something went wrong
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--grey-500, #808080)', maxWidth: 380, lineHeight: 1.7, marginBottom: 32 }}>
+        <p style={{ fontSize: 14, color: 'var(--grey-500, #808080)', maxWidth: 380, lineHeight: 1.7, marginBottom: 'var(--space-32)' }}>
           Creatorske hit an unexpected error and couldn't continue. Reloading the page usually fixes this.
         </p>
 
@@ -52,7 +52,7 @@ export default class ErrorBoundary extends Component {
           type="button"
           onClick={() => window.location.reload()}
           style={{
-            padding: '10px 20px', borderRadius: 8, background: 'var(--black, #000)', color: 'var(--white, #fff)',
+            padding: 'var(--space-12) var(--space-20)', borderRadius: 8, background: 'var(--black, #000)', color: 'var(--white, #fff)',
             fontSize: 13.5, fontWeight: 500, border: 'none', cursor: 'pointer',
           }}
         >

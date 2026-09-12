@@ -12,10 +12,10 @@ import Skeleton from '@/components/ui/Skeleton';
 export default function CardHealthIndicator({ cardHealth, loading, error }) {
   if (loading) {
     return (
-      <div className="card-health card-health--loading" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="card-health card-health--loading" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)' }}>
         <Skeleton circle width={84} height={84} />
         <div style={{ flex: 1 }}>
-          <Skeleton width="90%" height={13} style={{ marginBottom: 8 }} />
+          <Skeleton width="90%" height={13} style={{ marginBottom: 'var(--space-8)' }} />
           <Skeleton width="60%" height={13} />
         </div>
       </div>

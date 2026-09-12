@@ -57,10 +57,10 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
         style={{
           background: 'var(--purple-50)',
           borderBottom: '0.5px solid var(--purple-200)',
-          padding: '10px 20px',
+          padding: 'var(--space-12) var(--space-20)',
           display: 'flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 'var(--space-8)',
         }}
       >
         <i className="ti ti-eye" style={{ fontSize: 13, color: 'var(--purple-500)' }} />
@@ -77,9 +77,9 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
         </span>
       </div>
 
-      <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ padding: 'var(--space-24)', display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
         {/* Creator header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)' }}>
           <div
             style={{
               width: 52,
@@ -110,7 +110,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
             >
               {creatorName}
             </div>
-            <div style={{ fontSize: 13, color: 'var(--grey-400)', marginTop: 1 }}>{handle}</div>
+            <div style={{ fontSize: 13, color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{handle}</div>
           </div>
         </div>
 
@@ -118,12 +118,12 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
           <div
             style={{
               textAlign: 'center',
-              padding: '32px 0',
+              padding: 'var(--space-32) 0',
               color: 'var(--grey-300)',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 8,
+              gap: 'var(--space-8)',
             }}
           >
             <i className="ti ti-layout-cards" style={{ fontSize: 32 }} />
@@ -135,7 +135,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
         {hasStats && (
           <section>
             <SectionHeading icon="ti-chart-bar" label="Reach & Engagement" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)', marginTop: 'var(--space-12)' }}>
               {socialStats
                 .filter((s) => s.platform)
                 .map((stat, i) => (
@@ -145,10 +145,10 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                       background: 'var(--white)',
                       border: '0.5px solid var(--grey-100)',
                       borderRadius: 'var(--radius-md)',
-                      padding: '12px 16px',
+                      padding: 'var(--space-12) var(--space-16)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 12,
+                      gap: 'var(--space-12)',
                     }}
                   >
                     <i
@@ -159,13 +159,13 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--black)' }}>
                         {PLATFORM_LABELS[stat.platform] ?? stat.platform}
                         {stat.handle && (
-                          <span style={{ fontSize: 12, color: 'var(--grey-400)', marginLeft: 6 }}>
+                          <span style={{ fontSize: 12, color: 'var(--grey-400)', marginLeft: 'var(--space-8)' }}>
                             {stat.handle}
                           </span>
                         )}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 20 }}>
+                    <div style={{ display: 'flex', gap: 'var(--space-20)' }}>
                       <Metric label="Followers" value={formatNumber(stat.followers)} />
                       {stat.avgViews && <Metric label="Avg. views" value={formatNumber(stat.avgViews)} />}
                       {stat.engagementRate && (
@@ -186,8 +186,8 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                gap: 10,
-                marginTop: 12,
+                gap: 'var(--space-12)',
+                marginTop: 'var(--space-12)',
               }}
             >
               {expertise
@@ -199,7 +199,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                       background: 'var(--white)',
                       border: '0.5px solid var(--grey-100)',
                       borderRadius: 'var(--radius-md)',
-                      padding: '14px 16px',
+                      padding: 'var(--space-16) var(--space-16)',
                     }}
                   >
                     <div
@@ -207,7 +207,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                         fontSize: 13,
                         fontWeight: 600,
                         color: 'var(--black)',
-                        marginBottom: exp.description ? 4 : 0,
+                        marginBottom: exp.description ? 'var(--space-4)' : 0,
                       }}
                     >
                       {exp.area}
@@ -227,7 +227,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
         {hasCollabs && (
           <section>
             <SectionHeading icon="ti-building-store" label="Past Collaborations" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)', marginTop: 'var(--space-12)' }}>
               {collaborations
                 .filter((c) => c.brandName)
                 .map((collab, i) => (
@@ -237,7 +237,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                       background: 'var(--white)',
                       border: '0.5px solid var(--grey-100)',
                       borderRadius: 'var(--radius-md)',
-                      padding: '14px 16px',
+                      padding: 'var(--space-16) var(--space-16)',
                     }}
                   >
                     <div
@@ -245,7 +245,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                         fontSize: 13,
                         fontWeight: 600,
                         color: 'var(--black)',
-                        marginBottom: 4,
+                        marginBottom: 'var(--space-4)',
                       }}
                     >
                       {collab.brandName}
@@ -256,7 +256,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                           fontSize: 12,
                           color: 'var(--grey-500)',
                           lineHeight: 1.6,
-                          marginBottom: collab.resultMetric ? 8 : 0,
+                          marginBottom: collab.resultMetric ? 'var(--space-8)' : 0,
                         }}
                       >
                         {collab.campaignDescription}
@@ -267,12 +267,12 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 5,
+                          gap: 'var(--space-4)',
                           fontSize: 11,
                           fontWeight: 600,
                           color: 'var(--status-success-text)',
                           background: 'var(--status-success-bg)',
-                          padding: '3px 10px',
+                          padding: 'var(--space-4) var(--space-12)',
                           borderRadius: 'var(--radius-pill)',
                         }}
                       >
@@ -294,7 +294,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
 
 function SectionHeading({ icon, label }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
       <i className={`ti ${icon}`} style={{ fontSize: 14, color: 'var(--purple-400)' }} />
       <span
         style={{
@@ -325,7 +325,7 @@ function Metric({ label, value }) {
       >
         {value}
       </div>
-      <div style={{ fontSize: 10, color: 'var(--grey-400)', marginTop: 2 }}>{label}</div>
+      <div style={{ fontSize: 10, color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{label}</div>
     </div>
   );
 }

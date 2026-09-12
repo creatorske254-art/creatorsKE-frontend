@@ -61,7 +61,7 @@ const PW_LABELS = ['', 'Weak', 'Fair', 'Good', 'Strong'];
 function PasswordStrengthBars({ score }) {
   return (
     <div>
-      <div style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
+      <div style={{ display: 'flex', gap: 'var(--space-4)', marginTop: 'var(--space-8)' }}>
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
@@ -76,7 +76,7 @@ function PasswordStrengthBars({ score }) {
         ))}
       </div>
       {score > 0 && (
-        <div style={{ fontSize: '11px', marginTop: '4px', color: PW_COLORS[score] }}>
+        <div style={{ fontSize: '11px', marginTop: 'var(--space-4)', color: PW_COLORS[score] }}>
           {PW_LABELS[score]}
         </div>
       )}
@@ -94,7 +94,7 @@ const inputStyle = (hasError) => ({
   background: 'var(--white)',
   border: hasError ? '0.5px solid var(--status-error)' : '0.5px solid var(--grey-300)',
   borderRadius: 'var(--radius-md)',
-  padding: '10px 14px',
+  padding: 'var(--space-12) var(--space-16)',
   outline: 'none',
   transition: 'border-color .15s, box-shadow .15s',
 });
@@ -110,7 +110,7 @@ function Navbar({ step, onBack }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 40px',
+      padding: '0 var(--gutter-public)',
       position: 'sticky',
       top: 0,
       zIndex: 100,
@@ -119,10 +119,10 @@ function Navbar({ step, onBack }) {
       <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', textDecoration: 'none' }}>
         Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
       </Link>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
         <Link
           to="/login"
-          style={{ padding: '7px 16px', fontSize: '13px', fontWeight: 500, color: 'var(--grey-600)', border: '0.5px solid var(--grey-200)', borderRadius: 'var(--radius-md)', textDecoration: 'none', transition: 'all .15s' }}
+          style={{ padding: 'var(--space-8) var(--space-16)', fontSize: '13px', fontWeight: 500, color: 'var(--grey-600)', border: '0.5px solid var(--grey-200)', borderRadius: 'var(--radius-md)', textDecoration: 'none', transition: 'all .15s' }}
         >
           Log in
         </Link>
@@ -145,14 +145,14 @@ function StepChooseType({ onContinue }) {
 
   return (
     <>
-      <h1 className="hero-title" style={{ marginBottom: '6px' }}>
+      <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
         Join Creatorske
       </h1>
-      <p className="page-subtitle" style={{ marginBottom: '24px' }}>
+      <p className="page-subtitle" style={{ marginBottom: 'var(--space-24)' }}>
         Are you a creator or a brand? We'll tailor your setup.
       </p>
 
-      <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px' }}>
+      <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)', marginBottom: 'var(--space-24)' }}>
         {types.map(({ value, label, desc, Icon }) => {
           const active = role === value;
           return (
@@ -161,7 +161,7 @@ function StepChooseType({ onContinue }) {
               type="button"
               onClick={() => setRole(value)}
               style={{
-                padding: '18px 16px',
+                padding: 'var(--space-20) var(--space-16)',
                 borderRadius: 'var(--radius-lg)',
                 border: active ? '1.5px solid var(--purple-500)' : '1.5px solid var(--grey-200)',
                 background: active ? 'var(--purple-50)' : 'var(--white)',
@@ -171,8 +171,8 @@ function StepChooseType({ onContinue }) {
                 transition: 'all .15s',
               }}
             >
-              <Icon size={22} style={{ color: active ? 'var(--purple-600)' : 'var(--grey-500)', marginBottom: '10px' }} />
-              <div style={{ fontSize: '14px', fontWeight: 600, color: active ? 'var(--purple-700)' : 'var(--black)', marginBottom: '3px' }}>
+              <Icon size={22} style={{ color: active ? 'var(--purple-600)' : 'var(--grey-500)', marginBottom: 'var(--space-12)' }} />
+              <div style={{ fontSize: '14px', fontWeight: 600, color: active ? 'var(--purple-700)' : 'var(--black)', marginBottom: 'var(--space-4)' }}>
                 {label}
               </div>
               <div style={{ fontSize: '12px', color: active ? 'var(--purple-600)' : 'var(--grey-500)', lineHeight: 1.5 }}>
@@ -192,8 +192,8 @@ function StepChooseType({ onContinue }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '7px',
-          padding: '14px 32px',
+          gap: 'var(--space-8)',
+          padding: 'var(--space-16) var(--space-32)',
           fontSize: '15px',
           fontFamily: 'var(--font-body)',
           fontWeight: 500,
@@ -208,7 +208,7 @@ function StepChooseType({ onContinue }) {
         Continue <IconArrowRight size={14} />
       </button>
 
-      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: '20px' }}>
+      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: 'var(--space-20)' }}>
         Already have an account?{' '}
         <Link to="/login" style={{ color: 'var(--purple-600)', fontWeight: 500, textDecoration: 'none' }}>
           Log in
@@ -244,45 +244,45 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
 
   return (
     <>
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--purple-600)', marginBottom: '8px' }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--purple-600)', marginBottom: 'var(--space-8)' }}>
         Creator account
       </div>
-      <h1 className="hero-title" style={{ marginBottom: '6px' }}>
+      <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
         Create your account
       </h1>
-      <p className="page-subtitle" style={{ marginBottom: '24px' }}>
+      <p className="page-subtitle" style={{ marginBottom: 'var(--space-24)' }}>
         Build your rate card and start getting booked.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
-          <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
+          <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
               <label className="field-label">First name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Amara" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: '38px' }} /></div>
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Amara" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: 'var(--space-40)' }} /></div>
               {errors.firstName && <span className="field-hint error">{errors.firstName.message}</span>}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
               <label className="field-label">Last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Osei" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: '38px' }} /></div>
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Osei" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: 'var(--space-40)' }} /></div>
               {errors.lastName && <span className="field-hint error">{errors.lastName.message}</span>}
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@email.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: '38px' }} /></div>
+            <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@email.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: 'var(--space-40)' }} /></div>
             {errors.email && <span className="field-hint error">{errors.email.message}</span>}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconLock className="input-icon left" aria-hidden="true" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="At least 8 characters"
                 {...register('password', { onChange: (e) => setPwValue(e.target.value) })}
-                style={{ ...inputStyle(errors.password), paddingLeft: '38px', paddingRight: '42px' }}
+                style={{ ...inputStyle(errors.password), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
               <button type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
@@ -296,27 +296,27 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
         <button
           type="submit"
           disabled={loading}
-          style={{ width: '100%', padding: '14px 32px', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--purple-300)' : 'var(--purple-600)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          style={{ width: '100%', padding: 'var(--space-16) var(--space-32)', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--purple-300)' : 'var(--purple-600)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)' }}
         >
           {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
           {loading ? 'Creating account' : 'Create my account'}
         </button>
       </form>
 
-      <div style={{ fontSize: '11px', color: 'var(--grey-400)', textAlign: 'center', marginTop: '12px', lineHeight: 1.6 }}>
+      <div style={{ fontSize: '11px', color: 'var(--grey-400)', textAlign: 'center', marginTop: 'var(--space-12)', lineHeight: 1.6 }}>
         By signing up you agree to our{' '}
         <Link to="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Terms of Service</Link>
         {' '}and{' '}
         <Link to="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Privacy Policy</Link>.
       </div>
 
-      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: '16px' }}>
+      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: 'var(--space-16)' }}>
         Already have an account?{' '}
         <Link to="/login" style={{ color: 'var(--purple-600)', fontWeight: 500, textDecoration: 'none' }}>Log in</Link>
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '12px' }}>
-        <button type="button" onClick={onBack} style={{ fontSize: '12px', color: 'var(--grey-400)', background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+      <div style={{ textAlign: 'center', marginTop: 'var(--space-12)' }}>
+        <button type="button" onClick={onBack} style={{ fontSize: '12px', color: 'var(--grey-400)', background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
           <IconArrowLeft size={12} /> Change account type
         </button>
       </div>
@@ -350,54 +350,54 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
 
   return (
     <>
-      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--purple-600)', marginBottom: '8px' }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--purple-600)', marginBottom: 'var(--space-8)' }}>
         Brand account
       </div>
-      <h1 className="hero-title" style={{ marginBottom: '6px' }}>
+      <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
         Create your account
       </h1>
-      <p className="page-subtitle" style={{ marginBottom: '24px' }}>
+      <p className="page-subtitle" style={{ marginBottom: 'var(--space-24)' }}>
         Find and book creators for your next campaign.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Company name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <div className="input-wrapper"><IconBuildingStore className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Acme Kenya Ltd" {...register('companyName')} style={{ ...inputStyle(errors.companyName), paddingLeft: '38px' }} /></div>
+            <div className="input-wrapper"><IconBuildingStore className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Acme Kenya Ltd" {...register('companyName')} style={{ ...inputStyle(errors.companyName), paddingLeft: 'var(--space-40)' }} /></div>
             {errors.companyName && <span className="field-hint error">{errors.companyName.message}</span>}
           </div>
 
-          <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
               <label className="field-label">Contact first name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Jane" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: '38px' }} /></div>
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Jane" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: 'var(--space-40)' }} /></div>
               {errors.firstName && <span className="field-hint error">{errors.firstName.message}</span>}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
               <label className="field-label">Contact last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
-              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Kariuki" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: '38px' }} /></div>
+              <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Kariuki" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: 'var(--space-40)' }} /></div>
               {errors.lastName && <span className="field-hint error">{errors.lastName.message}</span>}
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Business email <span style={{ color: 'var(--status-error)' }}>*</span></label>
-            <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@company.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: '38px' }} /></div>
+            <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@company.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: 'var(--space-40)' }} /></div>
             {errors.email && <span className="field-hint error">{errors.email.message}</span>}
             <span style={{ fontSize: '12px', color: 'var(--grey-400)', lineHeight: 1.5 }}>
               Use your company email domain. Free email services like Gmail are not accepted.
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconLock className="input-icon left" aria-hidden="true" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="At least 8 characters"
                 {...register('password', { onChange: (e) => setPwValue(e.target.value) })}
-                style={{ ...inputStyle(errors.password), paddingLeft: '38px', paddingRight: '42px' }}
+                style={{ ...inputStyle(errors.password), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
               <button type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
@@ -411,27 +411,27 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
         <button
           type="submit"
           disabled={loading}
-          style={{ width: '100%', padding: '14px 32px', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--purple-300)' : 'var(--purple-600)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          style={{ width: '100%', padding: 'var(--space-16) var(--space-32)', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--purple-300)' : 'var(--purple-600)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)' }}
         >
           {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
           {loading ? 'Creating account' : 'Create brand account'}
         </button>
       </form>
 
-      <div style={{ fontSize: '11px', color: 'var(--grey-400)', textAlign: 'center', marginTop: '12px', lineHeight: 1.6 }}>
+      <div style={{ fontSize: '11px', color: 'var(--grey-400)', textAlign: 'center', marginTop: 'var(--space-12)', lineHeight: 1.6 }}>
         By signing up you agree to our{' '}
         <Link to="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Terms of Service</Link>
         {' '}and{' '}
         <Link to="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--grey-600)', textDecoration: 'underline' }}>Privacy Policy</Link>.
       </div>
 
-      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: '16px' }}>
+      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: 'var(--space-16)' }}>
         Already have an account?{' '}
         <Link to="/login" style={{ color: 'var(--purple-600)', fontWeight: 500, textDecoration: 'none' }}>Log in</Link>
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '12px' }}>
-        <button type="button" onClick={onBack} style={{ fontSize: '12px', color: 'var(--grey-400)', background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+      <div style={{ textAlign: 'center', marginTop: 'var(--space-12)' }}>
+        <button type="button" onClick={onBack} style={{ fontSize: '12px', color: 'var(--grey-400)', background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
           <IconArrowLeft size={12} /> Change account type
         </button>
       </div>
@@ -468,7 +468,7 @@ export default function SignUpPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 40px',
+        padding: '0 var(--gutter-public)',
         position: 'sticky',
         top: 0,
         zIndex: 100,
@@ -477,10 +477,10 @@ export default function SignUpPage() {
         <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', textDecoration: 'none' }}>
           Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
           <Link
             to="/login"
-            style={{ padding: '7px 16px', fontSize: '13px', fontWeight: 500, color: 'var(--grey-600)', border: '0.5px solid var(--grey-200)', borderRadius: 'var(--radius-md)', textDecoration: 'none', transition: 'all .15s' }}
+            style={{ padding: 'var(--space-8) var(--space-16)', fontSize: '13px', fontWeight: 500, color: 'var(--grey-600)', border: '0.5px solid var(--grey-200)', borderRadius: 'var(--radius-md)', textDecoration: 'none', transition: 'all .15s' }}
           >
             Log in
           </Link>
@@ -488,14 +488,14 @@ export default function SignUpPage() {
       </nav>
 
       {/* Card */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-48) var(--gutter-public)' }}>
         <div style={{
           width: '100%',
           maxWidth: '440px',
           background: 'var(--white)',
           border: '0.5px solid var(--grey-200)',
           borderRadius: 'var(--radius-xl)',
-          padding: '40px 36px 36px',
+          padding: 'var(--space-40) var(--space-40) var(--space-40)',
           boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
           {step === 1 && <StepChooseType onContinue={handleContinue} />}

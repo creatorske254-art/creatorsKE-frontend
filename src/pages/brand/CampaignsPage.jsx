@@ -17,14 +17,14 @@ import { getInitials, formatCurrency, formatDate, formatRelativeDate } from '@/l
 const PAGE_STYLES = `
 .campaigns-page .card-dark{background:var(--black);border-radius:var(--radius-lg);color:var(--white)}
 
-.campaigns-page .card-footer{margin-top:16px;padding-top:14px;border-top:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.campaigns-page .card-footer{margin-top:var(--space-16);padding-top:var(--space-16);border-top:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between;gap:var(--space-8)}
 
 /* Page-specific layout: bento grid for the top stats row only */
 .campaigns-page .bento-stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   grid-template-areas:"hero hero active active" "hero hero awaiting completed";
-  gap:16px;
+  gap:var(--space-16);
 }
 @media (max-width:900px){
   .campaigns-page .bento-stats{
@@ -110,11 +110,11 @@ function CampaignCard({ campaign, onOpen }) {
       }}
       onClick={() => onOpen(campaign.id)}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-12)' }}>
         <div className={`avatar avatar-md ${campaign.avatarClass}`}>{campaign.initials}</div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-8)', flexWrap: 'wrap' }}>
             <div>
               <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--black)' }}>{campaign.creator}</div>
               <div style={{ fontSize: 12, color: 'var(--grey-400)' }}>{campaign.handle}</div>
@@ -122,13 +122,13 @@ function CampaignCard({ campaign, onOpen }) {
             <StatusTag status={campaign.status} />
           </div>
 
-          <div className="text-body-sm" style={{ color: 'var(--grey-600)', marginTop: 8 }}>
+          <div className="text-body-sm" style={{ color: 'var(--grey-600)', marginTop: 'var(--space-8)' }}>
             {campaign.package} · {campaign.platform} · {campaign.price}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--grey-400)', marginTop: 3 }}>{campaign.deliveryDate}</div>
+          <div style={{ fontSize: 12, color: 'var(--grey-400)', marginTop: 'var(--space-4)' }}>{campaign.deliveryDate}</div>
 
           <div className="card-footer" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-8)', alignItems: 'center' }}>
               {isDelivered && (
                 <Link to={`/brand/campaigns/${campaign.id}`} className="btn btn-purple btn-sm">
                   <IconEye size={13} />
@@ -197,9 +197,9 @@ export default function CampaignsPage() {
       <style>{PAGE_STYLES}</style>
 
       {/* Page header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-24)', flexWrap: 'wrap', gap: 'var(--space-12)' }}>
         <div>
-          <h2 className="page-title" style={{ marginBottom: 2 }}>Campaigns</h2>
+          <h2 className="page-title" style={{ marginBottom: 'var(--space-2)' }}>Campaigns</h2>
           <p className="page-subtitle">
             Track every booking from in-progress to completed.
           </p>
@@ -207,7 +207,7 @@ export default function CampaignsPage() {
       </div>
 
       {/* Summary stats: bento grid, total spend as the hero tile */}
-      <div className="bento-stats" style={{ marginBottom: 20 }}>
+      <div className="bento-stats" style={{ marginBottom: 'var(--space-20)' }}>
         <div
           className="card-dark card-p-lg"
           style={{ gridArea: 'hero', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
@@ -222,7 +222,7 @@ export default function CampaignsPage() {
             <div className="stat-card-value" style={{ color: 'var(--white)' }}>
               {isLoadingCampaigns ? <Skeleton width={80} height={24} /> : formatCurrency(counts.spent)}
             </div>
-            <div className="text-body-sm" style={{ color: 'var(--purple-400)', marginTop: 4 }}>
+            <div className="text-body-sm" style={{ color: 'var(--purple-400)', marginTop: 'var(--space-4)' }}>
               Across {counts.completed} completed {counts.completed === 1 ? 'campaign' : 'campaigns'}
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function CampaignsPage() {
       </div>
 
       {/* Filter pills */}
-      <div className="tabs" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
+      <div className="tabs" style={{ marginBottom: 'var(--space-20)', flexWrap: 'wrap' }}>
         {FILTERS.map((f) => (
           <button
             key={f.key}
@@ -272,11 +272,11 @@ export default function CampaignsPage() {
           <ErrorState onRetry={refetchCampaigns} />
         </div>
       ) : isLoadingCampaigns ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
           {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={92} style={{ borderRadius: 'var(--radius-lg)' }} />)}
         </div>
       ) : filtered.length > 0 ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
           {filtered.map((c) => (
             <CampaignCard key={c.id} campaign={c} onOpen={handleOpen} />
           ))}

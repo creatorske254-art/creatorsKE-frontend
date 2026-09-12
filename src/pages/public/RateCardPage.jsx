@@ -171,7 +171,7 @@ function PackageCard({ pkg, onEnquire }) {
       }`}
     >
       {pkg.featured && (
-        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-2 py-1 rounded-[999px] bg-[var(--purple-500)] text-on-accent mb-2.5">
+        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-2 py-1 rounded-[999px] bg-[var(--purple-500)] text-on-accent mb-3">
           Most popular
         </span>
       )}
@@ -195,11 +195,11 @@ function PackageCard({ pkg, onEnquire }) {
       <p className={`text-[13px] leading-[1.6] mb-3 ${dark ? 'text-white/55' : 'text-[var(--grey-500)]'}`}>{pkg.description}</p>
 
       {pkg.deliverables?.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {pkg.deliverables.map((d, i) => (
             <span
               key={i}
-              className={`text-[11px] px-2.5 py-1 rounded-[4px] border border-[0.5px] ${
+              className={`text-[11px] px-3 py-1 rounded-[4px] border border-[0.5px] ${
                 dark
                   ? 'bg-white/[0.08] border-white/[0.12] text-white/60'
                   : pkg.featured
@@ -217,7 +217,7 @@ function PackageCard({ pkg, onEnquire }) {
         <button
           type="button"
           onClick={() => onEnquire(pkg)}
-          className={`mt-3 self-start inline-flex items-center gap-1.5 text-[12.5px] font-medium px-3 py-1.5 rounded-[8px] transition-all ${
+          className={`mt-3 self-start inline-flex items-center gap-2 text-[12.5px] font-medium px-3 py-2 rounded-[8px] transition-all ${
             dark
               ? 'bg-white/[0.1] text-white hover:bg-white/[0.16]'
               : 'bg-[var(--purple-500)] text-on-accent hover:opacity-90'
@@ -234,8 +234,8 @@ function PackageCard({ pkg, onEnquire }) {
 
 function ReviewCard({ review, canReply, onReply, isReplying }) {
   return (
-    <div className="bg-white border border-[0.5px] border-[var(--grey-100)] rounded-[12px] p-4 mb-2.5">
-      <div className="flex items-center gap-2.5 mb-2">
+    <div className="bg-white border border-[0.5px] border-[var(--grey-100)] rounded-[12px] p-4 mb-3">
+      <div className="flex items-center gap-3 mb-2">
         <div className="w-8 h-8 rounded-full bg-[var(--grey-100)] flex items-center justify-center text-[12px] font-semibold text-[var(--grey-600)] flex-shrink-0">
           {review.initials}
         </div>
@@ -344,20 +344,20 @@ export default function RateCardPage() {
     <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
 
       {/* Public nav */}
-      <nav className="h-[52px] flex items-center justify-between px-8 border-b border-[0.5px] border-[var(--grey-100)] bg-white sticky top-0 z-10">
+      <nav className="h-[52px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[0.5px] border-[var(--grey-100)] bg-white sticky top-0 z-10">
         <Link to="/" className="font-[var(--font-display)] text-[19px] font-semibold tracking-[-0.01em] text-[var(--black)]">
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </Link>
         <Link
           to="/signup"
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--black)] text-white hover:opacity-90"
+          className="inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--black)] text-white hover:opacity-90"
         >
           Create yours free
         </Link>
       </nav>
 
       {isLoading ? (
-        <div className="max-w-[1000px] w-full mx-auto px-8 py-12">
+        <div className="max-w-[1000px] w-full mx-auto px-[var(--gutter-public)] py-12">
           <div className="flex items-start gap-6">
             <div className="skeleton w-20 h-20 flex-shrink-0" style={{ borderRadius: '50%' }} />
             <div className="flex-1 space-y-3">
@@ -371,7 +371,7 @@ export default function RateCardPage() {
         <>
           {/* Hero band */}
           <div className="bg-[var(--black)] text-white pt-12 relative overflow-hidden">
-            <div className="max-w-[1000px] mx-auto px-8">
+            <div className="max-w-[1000px] mx-auto px-[var(--gutter-public)]">
               <div className="flex items-start gap-6 flex-wrap mb-8">
                 <div className="relative flex-shrink-0">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[var(--purple-400)] to-[var(--purple-800)] flex items-center justify-center text-[28px] font-semibold text-on-accent border-[2.5px] border-white/20">
@@ -386,16 +386,16 @@ export default function RateCardPage() {
                   <div className="font-[var(--font-display)] text-[28px] font-semibold tracking-[-0.02em] leading-[1.1] text-white mb-1">
                     {creator.displayName}
                   </div>
-                  <div className="text-[14px] text-white/50 mb-2.5">@{creator.handle}</div>
+                  <div className="text-[14px] text-white/50 mb-3">@{creator.handle}</div>
                   {creator.bio && (
-                    <p className="text-[14px] text-white/70 leading-[1.6] max-w-[520px] mb-3.5">{creator.bio}</p>
+                    <p className="text-[14px] text-white/70 leading-[1.6] max-w-[520px] mb-4">{creator.bio}</p>
                   )}
                   {creator.platforms?.length > 0 && (
                     <div className="flex gap-2 flex-wrap">
                       {creator.platforms.map((p) => {
                         const Icon = PLATFORM_ICONS[p.name];
                         return (
-                          <div key={p.name} className="flex items-center gap-1.5 px-3 py-1.5 rounded-[999px] bg-white/[0.08] border border-[0.5px] border-white/[0.15] text-[12px] font-medium text-white/80">
+                          <div key={p.name} className="flex items-center gap-2 px-3 py-2 rounded-[999px] bg-white/[0.08] border border-[0.5px] border-white/[0.15] text-[12px] font-medium text-white/80">
                             {Icon && <Icon size={14} />}
                             {p.name} · {formatFollowers(p.followers)}
                           </div>
@@ -410,19 +410,19 @@ export default function RateCardPage() {
                     type="button"
                     onClick={() => handleSendEnquiryClick(selectedPackage ?? packages.find((p) => p.featured) ?? packages[0])}
                     disabled={!packages.length}
-                    className="inline-flex items-center justify-center gap-1.5 px-[18px] py-[9px] rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[13px] font-medium hover:opacity-90 hover:-translate-y-px transition-all whitespace-nowrap disabled:opacity-50"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[13px] font-medium hover:opacity-90 hover:-translate-y-px transition-all whitespace-nowrap disabled:opacity-50"
                   >
                     <IconSend size={14} /> Send enquiry
                   </button>
                   <button
                     onClick={() => shareRateCard(creator.displayName)}
-                    className="inline-flex items-center gap-1.5 px-[18px] py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
+                    className="inline-flex items-center gap-2 px-5 py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
                   >
                     <IconShare size={13} /> Share
                   </button>
                   <Link
                     to={`/c/${handle}/portfolio`}
-                    className="inline-flex items-center gap-1.5 px-[18px] py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
+                    className="inline-flex items-center gap-2 px-5 py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
                   >
                     <IconLayoutGrid size={13} /> Full portfolio
                   </Link>
@@ -431,7 +431,7 @@ export default function RateCardPage() {
             </div>
 
             {/* Stats band */}
-            <div className="max-w-[1000px] mx-auto px-8 pb-0">
+            <div className="max-w-[1000px] mx-auto px-[var(--gutter-public)] pb-0">
               <div className="flex border-t border-[0.5px] border-white/10 flex-wrap">
                 {[
                   { label: 'Avg. engagement', value: stats.avgEngagement },
@@ -453,16 +453,16 @@ export default function RateCardPage() {
           </div>
 
           {/* Body */}
-          <div className="max-w-[1000px] w-full mx-auto px-8 py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start flex-1">
+          <div className="max-w-[1000px] w-full mx-auto px-[var(--gutter-public)] py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start flex-1">
 
             {/* Left column */}
             <div>
               {niches.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-4 mb-7">
+                <div className="flex flex-wrap gap-2 mt-4 mb-7">
                   {niches.map((n, i) => (
                     <span
                       key={n}
-                      className={`inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-[999px] ${
+                      className={`inline-flex items-center gap-1 text-[11px] font-medium px-3 py-1 rounded-[999px] ${
                         i === 0
                           ? 'bg-[var(--purple-50)] text-[var(--purple-700)] border border-[0.5px] border-[var(--purple-200)]'
                           : 'bg-[var(--grey-50)] text-[var(--grey-600)] border border-[0.5px] border-[var(--grey-100)]'
@@ -473,7 +473,7 @@ export default function RateCardPage() {
                     </span>
                   ))}
                   {creator.availability === 'available' && (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-[999px] bg-[#EAF7EE] text-[var(--status-success-text)] border border-[0.5px] border-[#B9E6C4]">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium px-3 py-1 rounded-[999px] bg-[#EAF7EE] text-[var(--status-success-text)] border border-[0.5px] border-[#B9E6C4]">
                       <IconCircleCheck size={11} /> Available now
                     </span>
                   )}
@@ -516,7 +516,7 @@ export default function RateCardPage() {
             </div>
 
             {/* Right: sidebar */}
-            <div className="flex flex-col gap-3.5 lg:sticky lg:top-[72px]">
+            <div className="flex flex-col gap-4 lg:sticky lg:top-[72px]">
               <div className="bg-white border border-[0.5px] border-[var(--grey-100)] rounded-[16px] p-5 shadow-[var(--shadow-md)]">
                 <div className="font-[var(--font-display)] text-[16px] font-semibold text-[var(--black)] mb-1">
                   Book {creator.displayName}
@@ -538,14 +538,14 @@ export default function RateCardPage() {
                   <IconBrandWhatsapp size={14} /> Chat on WhatsApp
                 </button>
 
-                <div className="flex items-center gap-3 mt-3.5 pt-3.5 border-t border-[0.5px] border-[var(--grey-100)]">
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[0.5px] border-[var(--grey-100)]">
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconShieldCheck size={13} className="text-[var(--status-success)]" /> Secure</span>
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconCircleCheck size={13} className="text-[var(--status-success)]" /> No spam</span>
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconClock size={13} className="text-[var(--status-success)]" /> Replies in 24hrs</span>
                 </div>
               </div>
 
-              <div className="bg-white border border-[0.5px] border-[var(--grey-100)] rounded-[16px] p-[18px]">
+              <div className="bg-white border border-[0.5px] border-[var(--grey-100)] rounded-[16px] p-5">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)] mb-3">Creator details</div>
                 {[
                   { label: 'Based in', value: creator.location },
@@ -554,7 +554,7 @@ export default function RateCardPage() {
                   { label: 'Payment', value: creator.paymentMethods },
                   { label: 'On Creatorske', value: creator.memberSince ? `Since ${creator.memberSince}` : null },
                 ].filter((row) => row.value).map((row) => (
-                  <div key={row.label} className="flex items-center justify-between py-1.5 border-b border-[0.5px] border-[var(--grey-100)] last:border-b-0">
+                  <div key={row.label} className="flex items-center justify-between py-2 border-b border-[0.5px] border-[var(--grey-100)] last:border-b-0">
                     <span className="text-[12px] text-[var(--grey-600)]">{row.label}</span>
                     <span className="text-[12px] font-medium text-[var(--black)]">{row.value}</span>
                   </div>
@@ -562,11 +562,11 @@ export default function RateCardPage() {
               </div>
 
               <div className="text-center py-3">
-                <div className="text-[11px] text-[var(--grey-400)] mb-1.5">Rate card powered by</div>
+                <div className="text-[11px] text-[var(--grey-400)] mb-2">Rate card powered by</div>
                 <div className="font-[var(--font-display)] text-[16px] text-[var(--black)]">
                   Creatorske<span className="text-[var(--purple-500)]">.</span>
                 </div>
-                <Link to="/signup" className="inline-block mt-2 text-[12px] px-4 py-1.5 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] hover:bg-[var(--grey-50)]">
+                <Link to="/signup" className="inline-block mt-2 text-[12px] px-4 py-2 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] hover:bg-[var(--grey-50)]">
                   Create yours free
                 </Link>
               </div>
@@ -584,7 +584,7 @@ export default function RateCardPage() {
         </>
       )}
 
-      <footer className="px-8 py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
+      <footer className="px-[var(--gutter-public)] py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">Creatorske<span className="text-[var(--purple-500)]">.</span></div>
         <div>© 2026 Creatorske. All rights reserved.</div>
         <div className="flex gap-4">

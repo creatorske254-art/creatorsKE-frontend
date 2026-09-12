@@ -20,7 +20,7 @@ export const ENQUIRY_CSS = `
   .enq-card-body { flex: 1; min-width: 0; }
   .enq-card-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); flex-wrap: wrap; }
   .enq-card-name { font-size: 13.5px; font-weight: 600; color: var(--black); }
-  .enq-card-service { font-size: 12px; color: var(--grey-400); margin-top: 2px; }
+  .enq-card-service { font-size: 12px; color: var(--grey-400); margin-top: var(--space-2); }
   .enq-card-time { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-4); }
 
   /* Detail panel */
@@ -34,13 +34,13 @@ export const ENQUIRY_CSS = `
     border-bottom: 0.5px solid var(--grey-100);
   }
   .enq-detail-name { font-family: var(--font-display); font-size: var(--text-h4-size); font-weight: var(--text-h4-weight); color: var(--black); }
-  .enq-detail-email { font-size: 12px; color: var(--grey-400); margin-top: 1px; }
+  .enq-detail-email { font-size: 12px; color: var(--grey-400); margin-top: var(--space-2); }
   .enq-eyebrow { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--grey-400); margin-bottom: var(--space-8); }
 
   .enq-pkg { background: var(--purple-50); border: 0.5px solid var(--purple-200); border-radius: var(--radius-lg); padding: var(--space-16); margin-bottom: var(--space-16); }
   .enq-pkg-row { display: flex; align-items: center; justify-content: space-between; }
   .enq-pkg-name { font-size: 14px; font-weight: 600; color: var(--black); }
-  .enq-pkg-sub { font-size: 11.5px; color: var(--grey-400); margin-top: 2px; }
+  .enq-pkg-sub { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-2); }
   .enq-pkg-price { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--purple-600); white-space: nowrap; flex-shrink: 0; margin-left: var(--space-12); }
 
   .enq-message-wrap { margin-bottom: var(--space-16); }

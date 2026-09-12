@@ -19,10 +19,10 @@ export function CollaborationForm({ control, register, errors }) {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 'var(--space-2)' }}>
             Brands you've worked with before. Include results where you can; numbers build trust.
           </p>
         </div>
@@ -47,14 +47,14 @@ export function CollaborationForm({ control, register, errors }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
         {fields.map((field, index) => {
           const e = errors?.collaborations?.[index] ?? {};
           return (
             <div
               key={field.id}
               className="card card-p-md"
-              style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}
             >
               {/* Header row */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

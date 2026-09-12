@@ -47,7 +47,7 @@ export default function PlanBadge({ plan = 'starter', size = 'md' }) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '5px',
+        gap: 'var(--space-4)',
         fontFamily: 'var(--font-body)',
         fontSize,
         fontWeight: 500,

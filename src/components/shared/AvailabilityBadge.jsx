@@ -43,7 +43,7 @@ export default function AvailabilityBadge({ status = 'open', size = 'md' }) {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '6px',
+        gap: 'var(--space-8)',
         fontFamily: 'var(--font-body)',
         fontSize,
         fontWeight: 500,

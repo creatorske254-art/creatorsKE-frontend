@@ -125,26 +125,33 @@
   --radius-pill: 999px;
 
   /* ─── Spacing ─────────────────────────────────────────────────────────── */
-  /* Named by pixel value rather than a strict *4 multiple - the interface
-     is hand-tuned (hairline borders pull some paddings in/out by 1px), so
-     the scale documents the values actually in use rather than forcing
-     them onto a clean grid. This was previously a "hole": the navbar and
-     sidebar had ~15 magic numbers with nothing backing them. */
+  /* A 4px grid. Every padding, margin and gap in the app is one of these
+     tokens - never a raw pixel value - so rhythm stays consistent across
+     pages built by different hands. --space-2 exists only for hairline
+     nudges (optically centring an icon against text); real spacing starts
+     at 4. */
   --space-2:  2px;
   --space-4:  4px;
-  --space-5:  5px;
-  --space-6:  6px;
-  --space-7:  7px;
   --space-8:  8px;
-  --space-9:  9px;
-  --space-10: 10px;
   --space-12: 12px;
   --space-16: 16px;
   --space-20: 20px;
   --space-24: 24px;
-  --space-28: 28px;
   --space-32: 32px;
-  --space-38: 38px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+
+  /* Semantic spacing - reach for these before a bare step. */
+  --card-pad-sm:      var(--space-16); /* compact: list rows, stat tiles, nested cards */
+  --card-pad-md:      var(--space-24); /* default card */
+  --card-pad-lg:      var(--space-32); /* roomy: hero/summary cards, settings sections */
+  --gutter-dashboard: var(--space-32); /* dashboard content pane edge */
+  --gutter-public:    var(--space-48); /* marketing/public page edge */
+  --gutter-mobile:    var(--space-16); /* both of the above under 640px, see below */
+  --input-icon-pad:   var(--space-40); /* text inset when an input has a leading/trailing icon */
 
   /* ─── Component sizing ───────────────────────────────────────────────── */
   --size-icon-sm:   14px; /* inline input icons, e.g. navbar search */
@@ -200,6 +207,16 @@
   --input:                  var(--grey-100);
   --ring:                   var(--purple-600);
   --radius:                 var(--radius-md);
+}
+
+/* Under 640px every page edge collapses to the mobile gutter. Layouts and
+   pages reference the gutter tokens, so this one rule is the whole
+   responsive story for page padding. */
+@media (max-width: 640px) {
+  :root {
+    --gutter-dashboard: var(--gutter-mobile);
+    --gutter-public: var(--gutter-mobile);
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -448,7 +465,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-7);
+    gap: var(--space-8);
     border: none;
     cursor: pointer;
     font-family: var(--font-body);
@@ -458,8 +475,8 @@
     text-decoration: none;
     line-height: 1;
   }
-  .btn-square { padding: var(--space-9); border-radius: var(--radius-md); }
-  .btn-square-sm { padding: var(--space-7); border-radius: var(--radius-md); }
+  .btn-square { padding: var(--space-8); border-radius: var(--radius-md); }
+  .btn-square-sm { padding: var(--space-8); border-radius: var(--radius-md); }
   .btn-icon-style { background: var(--white); color: var(--grey-600); border: 0.5px solid var(--grey-200); }
   .btn-icon-style:hover { background: var(--grey-50); color: var(--black); }
 
@@ -470,7 +487,7 @@
     justify-content: center;
     min-width: var(--size-badge);
     height: var(--size-badge);
-    padding: 0 var(--space-5);
+    padding: 0 var(--space-4);
     border-radius: var(--radius-pill);
     font-size: var(--text-micro-size);
     font-weight: 700;
@@ -492,14 +509,14 @@
   .input-icon.right { right: var(--space-12); }
   /* Matching input padding so a leading/trailing icon never sits on the text.
      Works for both the tabler webfont <i> and @tabler/icons-react <svg>. */
-  .input-icon-left  { padding-left: 38px !important; }
-  .input-icon-right { padding-right: 38px !important; }
+  .input-icon-left  { padding-left: var(--input-icon-pad) !important; }
+  .input-icon-right { padding-right: var(--input-icon-pad) !important; }
   .input-wrapper > svg.input-icon { width: 15px; height: 15px; }
   .search-input {
     background: var(--white);
     border: 0.5px solid var(--grey-200);
     border-radius: var(--radius-pill);
-    padding: var(--space-9) var(--space-16) var(--space-9) var(--space-38);
+    padding: var(--space-8) var(--space-16) var(--space-8) var(--space-40);
     font-size: var(--text-body-size);
     font-family: var(--font-body);
     color: var(--black);
@@ -536,7 +553,7 @@
   .nav-link {
     font-size: var(--text-body-sm-size);
     color: var(--grey-600);
-    padding: var(--space-6) var(--space-12);
+    padding: var(--space-8) var(--space-12);
     border-radius: var(--radius-md);
     text-decoration: none;
     transition: all var(--transition-fast);
@@ -594,8 +611,8 @@
   .sidebar-link {
     display: flex;
     align-items: center;
-    gap: var(--space-10);
-    padding: var(--space-9) var(--space-10);
+    gap: var(--space-12);
+    padding: var(--space-8) var(--space-12);
     border-radius: var(--radius-md);
     font-size: var(--text-body-sm-size);
     color: var(--grey-600);
@@ -617,7 +634,7 @@
     margin-left: auto;
     font-size: var(--text-micro-size);
     font-weight: 600;
-    padding: var(--space-2) var(--space-7);
+    padding: var(--space-2) var(--space-8);
     border-radius: var(--radius-pill);
     background: var(--purple-100);
     color: var(--purple-800);
@@ -641,7 +658,7 @@
     color: var(--white);
     border-radius: var(--radius-md);
     font-size: var(--text-body-size);
-    padding: 11px 22px;
+    padding: var(--space-12) var(--space-24);
   }
   .btn-primary:hover { background: var(--grey-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
@@ -650,7 +667,7 @@
     color: var(--black);
     border-radius: var(--radius-md);
     font-size: var(--text-body-size);
-    padding: 10.5px var(--space-24);
+    padding: var(--space-12) var(--space-24);
     border: 0.5px solid var(--grey-300);
   }
   .btn-secondary:hover { border-color: var(--black); background: var(--page-bg); }
@@ -660,7 +677,7 @@
     color: #fff; /* literal: purple is a fixed hue, so its label must not flip with the theme */
     border-radius: var(--radius-md);
     font-size: var(--text-body-size);
-    padding: 11px 22px;
+    padding: var(--space-12) var(--space-24);
   }
   .btn-purple:hover { background: var(--purple-800); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(83, 74, 183, 0.3); }
 
@@ -669,14 +686,14 @@
     color: var(--grey-600);
     border-radius: var(--radius-md);
     font-size: var(--text-body-size);
-    padding: 10.5px var(--space-24);
+    padding: var(--space-12) var(--space-24);
     border: 0.5px solid var(--grey-200);
   }
   .btn-ghost:hover { color: var(--black); border-color: var(--grey-400); background: var(--page-bg); }
 
-  .btn-xs   { padding: var(--space-5) var(--space-12); font-size: var(--text-caption-size); border-radius: var(--radius-sm); }
-  .btn-sm   { padding: var(--space-7) var(--space-16); font-size: 12px; border-radius: var(--radius-sm); }
-  .btn-lg   { padding: 14px var(--space-32); font-size: 15px; border-radius: var(--radius-lg); }
+  .btn-xs   { padding: var(--space-4) var(--space-12); font-size: var(--text-caption-size); border-radius: var(--radius-sm); }
+  .btn-sm   { padding: var(--space-8) var(--space-16); font-size: 12px; border-radius: var(--radius-sm); }
+  .btn-lg   { padding: var(--space-16) var(--space-32); font-size: 15px; border-radius: var(--radius-lg); }
   .btn-full { width: 100%; }
 
   /* ── Cards ────────────────────────────────────────────────────────────── */
@@ -687,10 +704,10 @@
     transition: all var(--transition-fast);
   }
   .card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-  .card-p-sm { padding: 14px; }
-  .card-p-md { padding: var(--space-20); }
-  .card-p-lg { padding: var(--space-28); }
-  .card-p-xl { padding: var(--space-32); }
+  /* Three padding tiers, no more: compact 16 / default 24 / roomy 32. */
+  .card-p-sm { padding: var(--card-pad-sm); }
+  .card-p-md { padding: var(--card-pad-md); }
+  .card-p-lg { padding: var(--card-pad-lg); }
   /* Dashed variant - "add something" / empty-slot placeholders. Referenced by
      a few forms already; this was previously undefined so it rendered as a
      plain solid .card. */
@@ -733,7 +750,7 @@
     font-weight: var(--text-h4-weight);
     letter-spacing: var(--text-h4-tracking);
     color: var(--black);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
     line-height: var(--text-h4-lh);
   }
   .section-title {
@@ -784,13 +801,13 @@
      independently drifted to a smaller variant, kept below as -sm. */
   .empty-state {
     text-align: center;
-    padding: 48px var(--space-24);
+    padding: var(--space-48) var(--space-24);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--space-12);
   }
-  .empty-state-sm { padding: 40px var(--space-24); gap: var(--space-8); }
+  .empty-state-sm { padding: var(--space-40) var(--space-24); gap: var(--space-8); }
   .empty-icon {
     width: 56px;
     height: 56px;
@@ -823,12 +840,12 @@
     background: var(--white);
     border: 0.5px solid var(--grey-100);
     border-radius: var(--radius-lg);
-    padding: var(--space-20);
+    padding: var(--card-pad-md);
   }
   .stat-card-label {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-8);
     font-size: var(--text-caption-size);
     font-weight: 500;
     letter-spacing: 0.07em;
@@ -842,7 +859,7 @@
     font-weight: 700;
     color: var(--black);
     line-height: 1;
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
   }
   .stat-card-delta { font-size: 12px; display: flex; align-items: center; gap: var(--space-4); }
   .stat-card-delta.up   { color: var(--status-success-text); }
@@ -853,10 +870,10 @@
   .tag {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-5);
+    gap: var(--space-4);
     font-size: 12px;
     font-weight: 500;
-    padding: var(--space-4) var(--space-10);
+    padding: var(--space-4) var(--space-12);
     border-radius: var(--radius-pill);
     line-height: 1;
   }
@@ -882,13 +899,13 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--grey-400);
-    padding: var(--space-10) var(--space-16);
+    padding: var(--space-12) var(--space-16);
     border-bottom: 0.5px solid var(--grey-200);
     background: var(--page-bg);
     white-space: nowrap;
   }
   .data-table td {
-    padding: 13px var(--space-16);
+    padding: var(--space-12) var(--space-16);
     border-bottom: 0.5px solid var(--grey-100);
     color: var(--grey-700);
     vertical-align: middle;
@@ -910,7 +927,7 @@
     color: var(--status-error-text);
     border-radius: var(--radius-md);
     font-size: var(--text-body-size);
-    padding: 10.5px var(--space-24);
+    padding: var(--space-12) var(--space-24);
     border: 0.5px solid rgba(239, 68, 68, 0.3);
   }
   .btn-danger:hover { background: var(--status-error-bg); filter: brightness(0.94); }
@@ -937,7 +954,7 @@
     animation: spin 0.7s linear infinite;
   }
   /* Raw (non-.btn) buttons aren't flex, so give the spinner its own gap */
-  .btn-loading:not(.btn)::before { margin-right: 7px; vertical-align: -2px; }
+  .btn-loading:not(.btn)::before { margin-right: var(--space-8); vertical-align: -2px; }
   .btn-loading > i:first-child,
   .btn-loading > svg:first-child { display: none; }
   .btn-xs.btn-loading::before, .btn-sm.btn-loading::before { width: 11px; height: 11px; }
@@ -979,8 +996,8 @@
   }
   .input::placeholder { color: var(--grey-300); }
   .input:focus { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1); }
-  .input-sm { padding: var(--space-7) var(--space-12); border-radius: var(--radius-sm); font-size: var(--text-body-sm-size); }
-  .input-md { padding: var(--space-10) var(--space-16); border-radius: var(--radius-md); }
+  .input-sm { padding: var(--space-8) var(--space-12); border-radius: var(--radius-sm); font-size: var(--text-body-sm-size); }
+  .input-md { padding: var(--space-12) var(--space-16); border-radius: var(--radius-md); }
   .select-wrapper { position: relative; }
   .select-wrapper::after {
     content: '\ea99';
@@ -993,7 +1010,7 @@
     font-size: var(--size-icon-sm);
     pointer-events: none;
   }
-  select.input { appearance: none; padding-right: 30px; cursor: pointer; }
+  select.input { appearance: none; padding-right: var(--space-32); cursor: pointer; }
 
   /* ── Field hints ──────────────────────────────────────────────────────── */
   /* Shared helper-text style under inputs. `.error` was used in a dozen
@@ -1005,14 +1022,14 @@
   /* ── Activity / timeline feed ─────────────────────────────────────────── */
   .activity-row { display: flex; gap: var(--space-12); align-items: flex-start; }
   .activity-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-  .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: var(--space-6); }
-  .activity-line { width: 0.5px; background: var(--grey-100); flex-shrink: 0; margin: 0 3.5px; }
+  .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: var(--space-8); }
+  .activity-line { width: 0.5px; background: var(--grey-100); flex-shrink: 0; margin: 0 var(--space-4); }
 
   /* ── Tabs (segmented control) ─────────────────────────────────────────── */
   /* Ported 1:1 from the Creatorske Component Library - previously copied
      locally into individual pages (e.g. CampaignsPage.jsx); centralized here. */
-  .tabs { display: inline-flex; background: var(--white); border: 0.5px solid var(--grey-100); border-radius: var(--radius-lg); padding: 4px; gap: 2px; }
-  .tab { margin: 0; padding: 8px 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--grey-500); cursor: pointer; transition: all .15s; border: none; background: none; font-family: var(--font-body); white-space: nowrap; }
+  .tabs { display: inline-flex; background: var(--white); border: 0.5px solid var(--grey-100); border-radius: var(--radius-lg); padding: var(--space-4); gap: var(--space-2); }
+  .tab { margin: 0; padding: var(--space-8) var(--space-16); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--grey-500); cursor: pointer; transition: all .15s; border: none; background: none; font-family: var(--font-body); white-space: nowrap; }
   .tab:hover { color: var(--black); }
   .tab.active { background: var(--purple-50); color: var(--purple-800); }
 }

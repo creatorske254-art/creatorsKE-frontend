@@ -93,11 +93,9 @@ export default {
         'focus-purple': '0 0 0 3px rgba(84,69,232,0.10)',
       },
 
-      // ─── Spacing extras ─────────────────────────────────────────────────────
-      spacing: {
-        '18': '72px',
-        '22': '88px',
-      },
+      // Spacing: Tailwind's default 4px scale is the app's spacing scale
+      // (p-4 = 16px = --space-16). No fractional (1.5/2.5) or arbitrary px
+      // utilities - snap to the nearest whole step instead.
 
       // ─── Border widths ──────────────────────────────────────────────────────
       borderWidth: {

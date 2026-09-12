@@ -15,8 +15,8 @@ export default function ReviewResponse({ review, canReply = false, onSubmit, isS
 
   if (review.reply) {
     return (
-      <div style={{ marginTop: 10, paddingLeft: 12, borderLeft: '2px solid var(--purple-200)' }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--purple-600)', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 5 }}>
+      <div style={{ marginTop: 'var(--space-12)', paddingLeft: 'var(--space-12)', borderLeft: '2px solid var(--purple-200)' }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--purple-600)', marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
           <IconMessageCircle size={12} /> Creator's reply
         </div>
         <p style={{ fontSize: 12.5, color: 'var(--grey-600)', lineHeight: 1.6, margin: 0 }}>{review.reply}</p>
@@ -28,23 +28,23 @@ export default function ReviewResponse({ review, canReply = false, onSubmit, isS
 
   if (!composing) {
     return (
-      <button className="btn btn-ghost btn-xs" style={{ marginTop: 8 }} onClick={() => setComposing(true)}>
+      <button className="btn btn-ghost btn-xs" style={{ marginTop: 'var(--space-8)' }} onClick={() => setComposing(true)}>
         <IconMessageCircle size={12} /> Reply
       </button>
     );
   }
 
   return (
-    <div style={{ marginTop: 10 }}>
+    <div style={{ marginTop: 'var(--space-12)' }}>
       <textarea
         className="input input-md"
         rows={2}
         placeholder="Write a public reply…"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        style={{ marginBottom: 8, resize: 'vertical' }}
+        style={{ marginBottom: 'var(--space-8)', resize: 'vertical' }}
       />
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
         <button
           className={`btn btn-purple btn-xs${isSubmitting ? ' btn-loading' : ''}`}
           disabled={!text.trim() || isSubmitting}

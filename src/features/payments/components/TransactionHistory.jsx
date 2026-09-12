@@ -35,7 +35,7 @@ export default function TransactionHistory({
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: variant === 'table' ? 16 : 0 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)', padding: variant === 'table' ? 16 : 0 }}>
         {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={36} />)}
       </div>
     );
@@ -58,10 +58,10 @@ export default function TransactionHistory({
     return (
       <div>
         {rows.map((t) => (
-          <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '12px 0', borderBottom: '0.5px solid var(--grey-100)' }}>
+          <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-12)', padding: 'var(--space-12) 0', borderBottom: '0.5px solid var(--grey-100)' }}>
             <div>
               <div style={{ fontWeight: 500, fontSize: 13 }}>{t.name}</div>
-              <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{t.sub}{t.sub ? ' · ' : ''}{t.date}</div>
+              <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{t.sub}{t.sub ? ' · ' : ''}{t.date}</div>
             </div>
             <span style={{ fontSize: 13, fontWeight: 600, color: t.positive ? 'var(--status-success-text)' : 'var(--status-error-text)', flexShrink: 0 }}>
               {t.positive ? '+' : '−'}{formatCurrency(Math.abs(t.amount))}
@@ -86,7 +86,7 @@ export default function TransactionHistory({
           <tr key={t.id}>
             <td>
               <div style={{ fontWeight: 500 }}>{t.name}</div>
-              <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{t.sub}</div>
+              <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{t.sub}</div>
             </td>
             <td style={{ fontSize: 12, color: 'var(--grey-400)' }}>{t.date}</td>
             <td style={{ textAlign: 'right' }}>

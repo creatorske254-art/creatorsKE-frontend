@@ -146,8 +146,8 @@ export default function PackageForm({ index, register, control, errors, onRemove
         .package-form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          padding: 20px;
+          gap: var(--space-16);
+          padding: var(--space-20);
           background: var(--white);
           border: 0.5px solid var(--grey-100);
           border-radius: var(--radius-lg);
@@ -156,7 +156,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 4px;
+          margin-bottom: var(--space-4);
         }
         .package-form__counter {
           font-size: 10px;
@@ -171,7 +171,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
           cursor: pointer;
           color: var(--grey-400);
           font-size: 15px;
-          padding: 4px;
+          padding: var(--space-4);
           border-radius: var(--radius-sm);
           transition: color 0.15s, background 0.15s;
         }
@@ -182,12 +182,12 @@ export default function PackageForm({ index, register, control, errors, onRemove
         .package-form__deliverables {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: var(--space-8);
         }
         .package-form__deliverable-row {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--space-8);
         }
         .package-form__deliverable-row .input {
           flex: 1;
@@ -195,7 +195,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
         .package-form__add-deliverable {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-8);
           background: none;
           border: none;
           cursor: pointer;
@@ -203,8 +203,8 @@ export default function PackageForm({ index, register, control, errors, onRemove
           font-size: 12px;
           font-weight: 500;
           font-family: var(--font-body);
-          padding: 4px 0;
-          margin-top: 2px;
+          padding: var(--space-4) 0;
+          margin-top: var(--space-2);
           transition: color 0.15s;
         }
         .package-form__add-deliverable:hover {

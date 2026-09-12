@@ -11,7 +11,7 @@ import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react';
 export default function StatCard({ label, value, delta, trend, purple = false }) {
   const base = {
     borderRadius: 'var(--radius-lg)',
-    padding: '20px',
+    padding: 'var(--space-20)',
     border: purple ? 'none' : '0.5px solid var(--grey-100)',
     background: purple ? 'var(--purple-500)' : 'var(--white)',
   };
@@ -34,7 +34,7 @@ export default function StatCard({ label, value, delta, trend, purple = false })
           letterSpacing: '0.07em',
           textTransform: 'uppercase',
           color: labelColor,
-          marginBottom: '8px',
+          marginBottom: 'var(--space-8)',
         }}
       >
         {label}
@@ -47,7 +47,7 @@ export default function StatCard({ label, value, delta, trend, purple = false })
           fontWeight: 600,
           color: valueColor,
           lineHeight: 1,
-          marginBottom: '6px',
+          marginBottom: 'var(--space-8)',
         }}
       >
         {value}
@@ -59,7 +59,7 @@ export default function StatCard({ label, value, delta, trend, purple = false })
             fontSize: '12px',
             display: 'flex',
             alignItems: 'center',
-            gap: '4px',
+            gap: 'var(--space-4)',
             color: deltaColor,
           }}
         >

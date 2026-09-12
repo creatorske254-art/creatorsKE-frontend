@@ -21,7 +21,7 @@ export default function StarRating({
   const display = hovered ?? value;
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
       {[1, 2, 3, 4, 5].map((star) => {
         const filled = star <= display;
         return (
@@ -34,7 +34,7 @@ export default function StarRating({
             style={{
               background: 'none',
               border: 'none',
-              padding: '1px',
+              padding: 'var(--space-2)',
               cursor: interactive ? 'pointer' : 'default',
               display: 'flex',
               alignItems: 'center',
@@ -57,7 +57,7 @@ export default function StarRating({
           style={{
             fontSize: '12px',
             color: 'var(--grey-400)',
-            marginLeft: '4px',
+            marginLeft: 'var(--space-4)',
             fontFamily: 'var(--font-body)',
           }}
         >

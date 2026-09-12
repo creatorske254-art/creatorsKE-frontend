@@ -14,8 +14,8 @@ export function EnquiryCardSkeleton() {
             <Skeleton width="45%" height={13} />
             <Skeleton width={54} height={18} style={{ borderRadius: 'var(--radius-pill)' }} />
           </div>
-          <Skeleton width="60%" height={12} style={{ marginTop: 6 }} />
-          <Skeleton width="30%" height={11} style={{ marginTop: 6 }} />
+          <Skeleton width="60%" height={12} style={{ marginTop: 'var(--space-8)' }} />
+          <Skeleton width="30%" height={11} style={{ marginTop: 'var(--space-8)' }} />
         </div>
       </div>
     </div>

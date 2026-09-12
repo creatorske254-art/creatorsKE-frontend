@@ -22,7 +22,7 @@ const THREAD_CSS = `
   .message-thread-bubble {
     font-size: var(--text-body-sm-size);
     line-height: 1.55;
-    padding: var(--space-10) var(--space-12);
+    padding: var(--space-12) var(--space-12);
     border-radius: var(--radius-lg);
     word-break: break-word;
   }
@@ -40,9 +40,9 @@ const THREAD_CSS = `
   .message-thread-attachment {
     display: flex;
     align-items: center;
-    gap: var(--space-5);
+    gap: var(--space-4);
     font-size: 11px;
-    margin-top: var(--space-6);
+    margin-top: var(--space-8);
     text-decoration: underline;
   }
   .message-thread-composer { display: flex; gap: var(--space-8); }

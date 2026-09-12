@@ -119,31 +119,31 @@ export default function DisputesPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-32)' }}>
       <style>{`
         .dsp-page *{box-sizing:border-box}
         .dsp-page{
           font-family:var(--font-body);color:var(--black);
         }
-        .dsp-page .tabs{display:flex;background:var(--grey-50);border-radius:var(--radius-lg);padding:4px;gap:2px;width:fit-content;flex-wrap:wrap}
-        .dsp-page .tab{padding:7px 14px;border-radius:var(--radius-md);font-size:13px;font-weight:500;color:var(--grey-500);cursor:pointer;transition:all .15s;border:none;background:none;font-family:var(--font-body);display:flex;align-items:center;gap:6px}
+        .dsp-page .tabs{display:flex;background:var(--grey-50);border-radius:var(--radius-lg);padding:var(--space-4);gap:var(--space-2);width:fit-content;flex-wrap:wrap}
+        .dsp-page .tab{padding:var(--space-8) var(--space-16);border-radius:var(--radius-md);font-size:13px;font-weight:500;color:var(--grey-500);cursor:pointer;transition:all .15s;border:none;background:none;font-family:var(--font-body);display:flex;align-items:center;gap:var(--space-8)}
         .dsp-page .tab:hover{color:var(--black)}
         .dsp-page .tab.active{background:var(--white);color:var(--black);box-shadow:var(--shadow-xs)}
-        .dsp-page .tab-count{font-size:10px;font-weight:600;padding:1px 6px;border-radius:var(--radius-pill);background:var(--grey-200);color:var(--grey-600)}
+        .dsp-page .tab-count{font-size:10px;font-weight:600;padding:var(--space-2) var(--space-8);border-radius:var(--radius-pill);background:var(--grey-200);color:var(--grey-600)}
         .dsp-page .tab.active .tab-count{background:var(--purple-100);color:var(--purple-700)}
-        .dsp-page .search-input{display:flex;align-items:center;gap:8px;background:var(--white);border:0.5px solid var(--grey-200);border-radius:var(--radius-md);padding:8px 12px;font-size:13px;width:260px}
+        .dsp-page .search-input{display:flex;align-items:center;gap:var(--space-8);background:var(--white);border:0.5px solid var(--grey-200);border-radius:var(--radius-md);padding:var(--space-8) var(--space-12);font-size:13px;width:260px}
         .dsp-page .search-input input{border:none;outline:none;font-size:13px;font-family:var(--font-body);width:100%;background:transparent;color:var(--black)}
         .dsp-page .search-input i{color:var(--grey-400);font-size:15px}
         .dsp-page .table-wrap{background:var(--white);border:0.5px solid var(--grey-100);border-radius:var(--radius-xl);overflow-x:auto}
         .dsp-page .data-table{width:100%;min-width:680px;border-collapse:collapse;font-size:13px}
         .dsp-page .data-table td, .dsp-page .data-table th{white-space:nowrap}
-        .dsp-page .data-table th{text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey-400);padding:10px 16px;border-bottom:0.5px solid var(--grey-200);background:var(--grey-50);white-space:nowrap}
-        .dsp-page .data-table td{padding:12px 16px;border-bottom:0.5px solid var(--grey-100);color:var(--grey-700);vertical-align:middle}
+        .dsp-page .data-table th{text-align:left;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey-400);padding:var(--space-12) var(--space-16);border-bottom:0.5px solid var(--grey-200);background:var(--grey-50);white-space:nowrap}
+        .dsp-page .data-table td{padding:var(--space-12) var(--space-16);border-bottom:0.5px solid var(--grey-100);color:var(--grey-700);vertical-align:middle}
         .dsp-page .data-table tr{cursor:pointer;transition:background .1s}
         .dsp-page .data-table tr:hover td{background:var(--grey-50)}
         .dsp-page .data-table tr.selected td{background:var(--purple-50)}
         .dsp-page .data-table tr:last-child td{border-bottom:none}
-        .dsp-page .tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:var(--radius-pill);line-height:1}
+        .dsp-page .tag{display:inline-flex;align-items:center;gap:var(--space-4);font-size:11px;font-weight:500;padding:var(--space-4) var(--space-8);border-radius:var(--radius-pill);line-height:1}
         .dsp-page .tag-success{background:var(--status-success-bg);color:var(--status-success-text);border:0.5px solid rgba(0,185,107,0.2)}
         .dsp-page .tag-warning{background:var(--status-warning-bg);color:var(--status-warning-text);border:0.5px solid rgba(245,166,35,0.25)}
         .dsp-page .tag-error{background:var(--status-error-bg);color:var(--status-error-text);border:0.5px solid rgba(255,75,75,0.2)}
@@ -152,39 +152,39 @@ export default function DisputesPage() {
         .dsp-page .tag-info{background:var(--status-info-bg);color:var(--status-info-text);border:0.5px solid rgba(67,147,245,0.2)}
         .dsp-page .avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-family:var(--font-display);flex-shrink:0;width:30px;height:30px;font-size:12px;background:var(--purple-100);color:var(--purple-600)}
         .dsp-page .avatar-grey{background:var(--grey-100);color:var(--grey-600)}
-        .dsp-page .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:pointer;font-family:var(--font-body);font-weight:500;transition:all .15s;white-space:nowrap;text-decoration:none;line-height:1;border-radius:var(--radius-md)}
-        .dsp-page .btn-primary{background:var(--black);color:var(--white);font-size:13px;padding:9px 16px}
+        .dsp-page .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-8);border:none;cursor:pointer;font-family:var(--font-body);font-weight:500;transition:all .15s;white-space:nowrap;text-decoration:none;line-height:1;border-radius:var(--radius-md)}
+        .dsp-page .btn-primary{background:var(--black);color:var(--white);font-size:13px;padding:var(--space-8) var(--space-16)}
         .dsp-page .btn-primary:hover{background:var(--grey-800)}
         .dsp-page .btn-primary:disabled{opacity:.4;cursor:not-allowed}
-        .dsp-page .btn-ghost{background:transparent;color:var(--grey-600);font-size:12px;padding:6.5px 14px;border:0.5px solid var(--grey-200)}
+        .dsp-page .btn-ghost{background:transparent;color:var(--grey-600);font-size:12px;padding:var(--space-8) var(--space-16);border:0.5px solid var(--grey-200)}
         .dsp-page .btn-ghost:hover{color:var(--black);border-color:var(--grey-400)}
-        .dsp-page .card-header{padding:16px 20px;border-bottom:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between}
-        .dsp-page .card-body{padding:20px}
-        .dsp-page .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--radius-md);font-size:12.5px;line-height:1.55}
+        .dsp-page .card-header{padding:var(--space-16) var(--space-20);border-bottom:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between}
+        .dsp-page .card-body{padding:var(--space-20)}
+        .dsp-page .alert{display:flex;align-items:flex-start;gap:var(--space-12);padding:var(--space-12) var(--space-16);border-radius:var(--radius-md);font-size:12.5px;line-height:1.55}
         .dsp-page .alert-warning{background:var(--status-warning-bg);color:var(--status-warning-text);border:0.5px solid rgba(245,166,35,0.2)}
         .dsp-page .alert-success{background:var(--status-success-bg);color:var(--status-success-text);border:0.5px solid rgba(0,185,107,0.2)}
-        .dsp-page .detail-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:0.5px solid var(--grey-100);font-size:12.5px}
+        .dsp-page .detail-row{display:flex;justify-content:space-between;gap:var(--space-12);padding:var(--space-8) 0;border-bottom:0.5px solid var(--grey-100);font-size:12.5px}
         .dsp-page .detail-row:last-child{border-bottom:none}
         .dsp-page .detail-label{color:var(--grey-400)}
         .dsp-page .detail-value{color:var(--black);font-weight:500;text-align:right}
-        .dsp-page .evidence-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--grey-100);font-size:12.5px}
+        .dsp-page .evidence-item{display:flex;align-items:flex-start;gap:var(--space-12);padding:var(--space-12) 0;border-bottom:0.5px solid var(--grey-100);font-size:12.5px}
         .dsp-page .evidence-item:last-child{border-bottom:none}
         .dsp-page .evidence-icon{width:30px;height:30px;border-radius:var(--radius-md);background:var(--grey-50);border:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--grey-500);flex-shrink:0}
-        .dsp-page .pill-toggle{display:flex;background:var(--grey-50);border-radius:var(--radius-lg);padding:3px;gap:2px}
-        .dsp-page .pill-option{flex:1;text-align:center;padding:8px 6px;border-radius:var(--radius-md);font-size:12px;font-weight:500;color:var(--grey-500);cursor:pointer;transition:all .15s}
+        .dsp-page .pill-toggle{display:flex;background:var(--grey-50);border-radius:var(--radius-lg);padding:var(--space-4);gap:var(--space-2)}
+        .dsp-page .pill-option{flex:1;text-align:center;padding:var(--space-8) var(--space-8);border-radius:var(--radius-md);font-size:12px;font-weight:500;color:var(--grey-500);cursor:pointer;transition:all .15s}
         .dsp-page .pill-option.active{background:var(--white);color:var(--black);box-shadow:var(--shadow-xs)}
-        .dsp-page .split-bar{height:10px;border-radius:var(--radius-pill);overflow:hidden;display:flex;background:var(--grey-100);margin:10px 0}
+        .dsp-page .split-bar{height:10px;border-radius:var(--radius-pill);overflow:hidden;display:flex;background:var(--grey-100);margin:var(--space-12) 0}
         .dsp-page .split-fill-creator{background:var(--purple-500)}
         .dsp-page .split-fill-brand{background:var(--grey-300)}
-        .dsp-page textarea{width:100%;border:0.5px solid var(--grey-200);border-radius:var(--radius-md);padding:10px 12px;font-size:12.5px;font-family:var(--font-body);resize:vertical;min-height:64px;outline:none;color:var(--black)}
+        .dsp-page textarea{width:100%;border:0.5px solid var(--grey-200);border-radius:var(--radius-md);padding:var(--space-12) var(--space-12);font-size:12.5px;font-family:var(--font-body);resize:vertical;min-height:64px;outline:none;color:var(--black)}
         .dsp-page textarea:focus{border-color:var(--purple-300)}
         .dsp-page input[type=range]{width:100%;accent-color:var(--purple-500)}
-        .dsp-page .split-grid{display:grid;gap:20px;align-items:start}
+        .dsp-page .split-grid{display:grid;gap:var(--space-20);align-items:start}
         .dsp-page .detail-col{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto}
         @media(max-width:980px){.dsp-page .split-grid{grid-template-columns:1fr !important}.dsp-page .detail-col{position:static;max-height:none}}
       `}</style>
 
-      <div className="dsp-page" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="dsp-page" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-20)' }}>
 
         {/* Header */}
         <div>
@@ -193,7 +193,7 @@ export default function DisputesPage() {
         </div>
 
         {/* Tabs + search */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-16)', flexWrap: 'wrap' }}>
           <div className="tabs">
             {TABS.map(t => (
               <button
@@ -223,7 +223,7 @@ export default function DisputesPage() {
             {isError ? (
               <ErrorState size="sm" onRetry={refetch} />
             ) : isLoading ? (
-              <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ padding: 'var(--space-16)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
                 {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={40} />)}
               </div>
             ) : (
@@ -251,7 +251,7 @@ export default function DisputesPage() {
                           <div style={{ fontSize: 11, color: 'var(--grey-400)' }}>{d.id} · {d.raisedOn}</div>
                         </td>
                         <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
                             <div className="avatar">{d.creator.name.split(' ').map(w => w[0]).slice(0, 2).join('')}</div>
                             <span style={{ fontSize: 12.5 }}>{d.creator.name}</span>
                           </div>
@@ -279,7 +279,7 @@ export default function DisputesPage() {
 
           {/* Case detail */}
           {selected && (
-            <div className="detail-col" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div className="detail-col" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
 
               <div className="card">
                 <div className="card-header">
@@ -288,11 +288,11 @@ export default function DisputesPage() {
                     <i className="ti ti-x" />
                   </button>
                 </div>
-                <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ fontWeight: 600, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
                         <span>{selected.creator.name}</span>
                         <i className="ti ti-swords" style={{ fontSize: 13, color: 'var(--grey-400)' }} />
                         <span>{selected.brand.name}</span>
@@ -304,13 +304,13 @@ export default function DisputesPage() {
 
                   {selected.status === 'evidence' && (
                     <div className="alert alert-warning">
-                      <i className="ti ti-clock" style={{ fontSize: 16, marginTop: 1 }} />
+                      <i className="ti ti-clock" style={{ fontSize: 16, marginTop: 'var(--space-2)' }} />
                       <div>Evidence submission window: <strong>{selected.evidenceDeadline}</strong>. Both parties may still submit evidence.</div>
                     </div>
                   )}
 
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 6 }}>Agreed scope</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 'var(--space-8)' }}>Agreed scope</div>
                     {selected.scope ? (
                       <>
                         <div className="detail-row"><span className="detail-label">Deliverables</span><span className="detail-value">{selected.scope.deliverables?.join(', ') ?? '-'}</span></div>
@@ -323,7 +323,7 @@ export default function DisputesPage() {
                   </div>
 
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 4 }}>Evidence submitted</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 'var(--space-4)' }}>Evidence submitted</div>
                     {selected.evidence.length === 0 ? (
                       <div style={{ fontSize: 12.5, color: 'var(--grey-400)' }}>No evidence submitted yet.</div>
                     ) : selected.evidence.map((e, i) => (
@@ -331,7 +331,7 @@ export default function DisputesPage() {
                         <div className="evidence-icon"><i className={`ti ${evidenceIcon(e.type)}`} /></div>
                         <div style={{ flex: 1 }}>
                           <div style={{ color: 'var(--black)' }}>{e.label}</div>
-                          <div style={{ fontSize: 11, color: 'var(--grey-400)', marginTop: 1, textTransform: 'capitalize' }}>From {e.from}</div>
+                          <div style={{ fontSize: 11, color: 'var(--grey-400)', marginTop: 'var(--space-2)', textTransform: 'capitalize' }}>From {e.from}</div>
                         </div>
                       </div>
                     ))}
@@ -344,12 +344,12 @@ export default function DisputesPage() {
                 <div className="card-header">
                   <div className="section-title">{selected.decision ? 'Decision issued' : 'Issue binding decision'}</div>
                 </div>
-                <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
 
                   {selected.decision ? (
                     <>
                       <div className="alert alert-success">
-                        <i className="ti ti-circle-check" style={{ fontSize: 16, marginTop: 1 }} />
+                        <i className="ti ti-circle-check" style={{ fontSize: 16, marginTop: 'var(--space-2)' }} />
                         <div><strong>{outcomeLabel(selected.decision.outcome)}</strong>, decided {selected.decision.decidedOn}</div>
                       </div>
                       <div className="split-bar">
@@ -357,8 +357,8 @@ export default function DisputesPage() {
                         <div className="split-fill-brand" style={{ width: `${100 - selected.decision.creatorShare}%` }} />
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, color: 'var(--grey-500)' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><i className="ti ti-user" style={{ fontSize: 12 }} />Creator: {selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * selected.decision.creatorShare / 100))})</span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><i className="ti ti-building-store" style={{ fontSize: 12 }} />Brand: {100 - selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * (100 - selected.decision.creatorShare) / 100))})</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-user" style={{ fontSize: 12 }} />Creator: {selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * selected.decision.creatorShare / 100))})</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-building-store" style={{ fontSize: 12 }} />Brand: {100 - selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * (100 - selected.decision.creatorShare) / 100))})</span>
                       </div>
                       <div style={{ fontSize: 12.5, color: 'var(--grey-600)', lineHeight: 1.6 }}>{selected.decision.note}</div>
                     </>
@@ -395,8 +395,8 @@ export default function DisputesPage() {
                             <div className="split-fill-brand" style={{ width: `${100 - creatorShare}%` }} />
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, color: 'var(--grey-500)' }}>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><i className="ti ti-user" style={{ fontSize: 12 }} />Creator: {creatorShare}% ({fmt(Math.round(selected.amount * creatorShare / 100))})</span>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><i className="ti ti-building-store" style={{ fontSize: 12 }} />Brand: {100 - creatorShare}% ({fmt(Math.round(selected.amount * (100 - creatorShare) / 100))})</span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-user" style={{ fontSize: 12 }} />Creator: {creatorShare}% ({fmt(Math.round(selected.amount * creatorShare / 100))})</span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-building-store" style={{ fontSize: 12 }} />Brand: {100 - creatorShare}% ({fmt(Math.round(selected.amount * (100 - creatorShare) / 100))})</span>
                           </div>
                         </div>
                       )}
@@ -410,7 +410,7 @@ export default function DisputesPage() {
                       )}
 
                       <div>
-                        <div style={{ fontSize: 11.5, color: 'var(--grey-500)', marginBottom: 6 }}>Reasoning (sent to both parties)</div>
+                        <div style={{ fontSize: 11.5, color: 'var(--grey-500)', marginBottom: 'var(--space-8)' }}>Reasoning (sent to both parties)</div>
                         <textarea
                           placeholder="Explain how the evidence supports this decision…"
                           value={note}

@@ -16,7 +16,7 @@ export default function EmptyDirectoryState({ onReset }) {
         <button
           onClick={onReset}
           className="btn btn-secondary btn-sm"
-          style={{ marginTop: 4 }}
+          style={{ marginTop: 'var(--space-4)' }}
         >
           <IconRefresh size={14} />
           Clear all filters

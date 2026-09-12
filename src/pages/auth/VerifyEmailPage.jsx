@@ -62,7 +62,7 @@ export default function VerifyEmailPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
+        padding: 'var(--space-48) var(--gutter-public)',
       }}
     >
       <div
@@ -72,23 +72,23 @@ export default function VerifyEmailPage() {
           background: 'var(--white)',
           border: '0.5px solid var(--grey-100)',
           borderRadius: 'var(--radius-2xl)',
-          padding: '40px',
+          padding: 'var(--space-40)',
           boxShadow: 'var(--shadow-lg)',
           textAlign: 'center',
         }}
       >
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '32px', textAlign: 'left' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-32)', textAlign: 'left' }}>
           Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
         </div>
 
         {/* IDLE: no token, just sent */}
         {status === STATUS.IDLE && (
           <>
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
               <IconMailCheck size={28} style={{ color: 'var(--purple-500)' }} />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Check your email</div>
-            <div className="page-subtitle" style={{ marginBottom: '28px' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Check your email</div>
+            <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
               We sent a verification link to your email address. Click it to activate your account.
             </div>
             <div style={{ fontSize: '13px', color: 'var(--grey-400)' }}>
@@ -113,8 +113,8 @@ export default function VerifyEmailPage() {
         {/* LOADING */}
         {status === STATUS.LOADING && (
           <>
-            <IconLoader2 size={36} style={{ color: 'var(--purple-400)', margin: '0 auto 16px', display: 'block', animation: 'spin 0.8s linear infinite' }} />
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Verifying</div>
+            <IconLoader2 size={36} style={{ color: 'var(--purple-400)', margin: '0 auto var(--space-16)', display: 'block', animation: 'spin 0.8s linear infinite' }} />
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Verifying</div>
             <div style={{ fontSize: '14px', color: 'var(--grey-500)' }}>Just a moment.</div>
           </>
         )}
@@ -122,11 +122,11 @@ export default function VerifyEmailPage() {
         {/* SUCCESS */}
         {status === STATUS.SUCCESS && (
           <>
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
               <IconCircleCheck size={28} style={{ color: 'var(--status-success)' }} />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Email verified</div>
-            <div className="page-subtitle" style={{ marginBottom: '28px' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Email verified</div>
+            <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
               Your account is active. You can now sign in.
             </div>
             <Link
@@ -134,7 +134,7 @@ export default function VerifyEmailPage() {
               style={{
                 display: 'inline-block',
                 width: '100%',
-                padding: '14px 32px',
+                padding: 'var(--space-16) var(--space-32)',
                 fontSize: '15px',
                 fontWeight: 500,
                 background: 'var(--black)',
@@ -152,11 +152,11 @@ export default function VerifyEmailPage() {
         {/* ERROR */}
         {status === STATUS.ERROR && (
           <>
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-error-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-error-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
               <IconCircleX size={28} style={{ color: 'var(--status-error)' }} />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Verification failed</div>
-            <div className="page-subtitle" style={{ marginBottom: '28px' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Verification failed</div>
+            <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
               {errorMsg}
             </div>
             <Link
@@ -164,7 +164,7 @@ export default function VerifyEmailPage() {
               style={{
                 display: 'inline-block',
                 width: '100%',
-                padding: '14px 32px',
+                padding: 'var(--space-16) var(--space-32)',
                 fontSize: '15px',
                 fontWeight: 500,
                 background: 'var(--black)',

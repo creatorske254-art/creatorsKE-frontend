@@ -119,17 +119,17 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
         .rc-preview {
           background: var(--page-bg);
           border-radius: var(--radius-xl);
-          padding: 20px;
+          padding: var(--space-20);
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--space-16);
           border: 0.5px solid var(--grey-200);
           min-height: 400px;
         }
         .rc-preview__badge {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
+          gap: var(--space-4);
           font-size: 10px;
           font-weight: 600;
           letter-spacing: 0.08em;
@@ -137,15 +137,15 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
           color: var(--grey-400);
           background: var(--white);
           border: 0.5px solid var(--grey-200);
-          padding: 4px 10px;
+          padding: var(--space-4) var(--space-12);
           border-radius: var(--radius-pill);
           align-self: flex-start;
         }
         .rc-preview__header {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 16px;
+          gap: var(--space-12);
+          padding: var(--space-16);
           background: var(--white);
           border-radius: var(--radius-lg);
           border: 0.5px solid var(--grey-100);
@@ -174,15 +174,15 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
         .rc-preview__handle {
           font-size: 12px;
           color: var(--grey-400);
-          margin-top: 1px;
+          margin-top: var(--space-2);
         }
         .rc-preview__avail {
           display: flex;
           align-items: center;
-          gap: 5px;
+          gap: var(--space-4);
           font-size: 11px;
           font-weight: 500;
-          padding: 5px 10px;
+          padding: var(--space-4) var(--space-12);
           border-radius: var(--radius-pill);
           flex-shrink: 0;
         }
@@ -190,7 +190,7 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
           font-size: 13px;
           color: var(--grey-600);
           line-height: 1.6;
-          padding: 12px 16px;
+          padding: var(--space-12) var(--space-16);
           background: var(--white);
           border-radius: var(--radius-lg);
           border: 0.5px solid var(--grey-100);
@@ -209,16 +209,16 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
         .rc-preview__packages {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: var(--space-12);
         }
         .rc-preview__pkg {
           background: var(--white);
           border: 0.5px solid var(--grey-100);
           border-radius: var(--radius-lg);
-          padding: 16px;
+          padding: var(--space-16);
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: var(--space-12);
           transition: box-shadow 0.15s;
         }
         .rc-preview__pkg:hover {
@@ -228,7 +228,7 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          gap: 8px;
+          gap: var(--space-8);
         }
         .rc-preview__pkg-name {
           font-family: var(--font-display);
@@ -252,20 +252,20 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
           list-style: none;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: var(--space-4);
         }
         .rc-preview__deliverables li {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-8);
           font-size: 12px;
           color: var(--grey-600);
         }
         .rc-preview__pkg-footer {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding-top: 10px;
+          gap: var(--space-8);
+          padding-top: var(--space-12);
           border-top: 0.5px solid var(--grey-100);
         }
         .rc-preview__empty {
@@ -273,8 +273,8 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 10px;
-          padding: 40px 20px;
+          gap: var(--space-12);
+          padding: var(--space-40) var(--space-20);
           background: var(--white);
           border-radius: var(--radius-lg);
           border: 0.5px solid var(--grey-100);

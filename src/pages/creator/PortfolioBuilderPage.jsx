@@ -39,8 +39,8 @@ function useTablerIcons() {
 // shared color/type/radius/space tokens (never a hardcoded hex or px value
 // that isn't already a token).
 const PORTFOLIO_BUILDER_STYLES = `
-.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: var(--space-12); }
-.field .hint { font-size: 12px; color: var(--grey-400); line-height: 1.5; margin-top: 2px; }
+.field { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-12); }
+.field .hint { font-size: 12px; color: var(--grey-400); line-height: 1.5; margin-top: var(--space-2); }
 .inp {
   width: 100%;
   font-family: var(--font-body);
@@ -50,15 +50,15 @@ const PORTFOLIO_BUILDER_STYLES = `
   border: 0.5px solid var(--grey-100);
   outline: none;
   transition: border-color .12s, background-color .12s, box-shadow .12s;
-  padding: 8.5px 12px;
+  padding: var(--space-8) var(--space-12);
   border-radius: var(--radius-md);
 }
 .inp::placeholder { color: var(--grey-400); }
 .inp:hover { border-color: var(--grey-200); }
 .inp:focus { border-color: var(--grey-300); background: var(--white); box-shadow: 0 0 0 3px var(--purple-50); }
 .inp-wrap { position: relative; }
-.inp-icon-l { padding-left: 34px !important; }
-.inp-icon-r { padding-right: 34px !important; }
+.inp-icon-l { padding-left: var(--space-32) !important; }
+.inp-icon-r { padding-right: var(--space-32) !important; }
 .inp-icon { position: absolute; top: 50%; transform: translateY(-50%); color: var(--grey-400); font-size: 14px; pointer-events: none; display: flex; }
 .inp-icon.l { left: 10px; }
 .inp-icon.r { right: 10px; }
@@ -80,22 +80,22 @@ const PORTFOLIO_BUILDER_STYLES = `
 .pb-topbar-saved { font-size: 12px; color: var(--grey-400); margin-left: var(--space-12); display: inline-flex; align-items: center; gap: var(--space-4); }
 
 .pb-split { display: grid; grid-template-columns: 1fr 400px; flex: 1; overflow: hidden; }
-.pb-form-col { overflow-y: auto; padding: var(--space-28) var(--space-32); display: flex; flex-direction: column; gap: var(--space-16); }
-.pb-preview-col { border-left: 0.5px solid var(--grey-100); overflow-y: auto; padding: var(--space-28) var(--space-24); background: var(--page-bg); }
+.pb-form-col { overflow-y: auto; padding: var(--space-32) var(--space-32); display: flex; flex-direction: column; gap: var(--space-16); }
+.pb-preview-col { border-left: 0.5px solid var(--grey-100); overflow-y: auto; padding: var(--space-32) var(--space-24); background: var(--page-bg); }
 @media (max-width: 900px) {
   .pb-split { grid-template-columns: 1fr; }
   .pb-preview-col { display: none; }
 }
 
-.pb-section-head { margin-bottom: var(--space-14); }
+.pb-section-head { margin-bottom: var(--space-16); }
 .pb-section-head.has-hint { margin-bottom: var(--space-4); }
-.pb-section-hint { margin: 0 0 var(--space-14); }
+.pb-section-hint { margin: 0 0 var(--space-16); }
 
-.pb-g2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-10); }
+.pb-g2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
 
 .pb-preview-label {
   font-size: var(--text-caption-size); font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
-  color: var(--grey-400); margin-bottom: var(--space-12); display: flex; align-items: center; gap: var(--space-5);
+  color: var(--grey-400); margin-bottom: var(--space-12); display: flex; align-items: center; gap: var(--space-4);
 }
 .pb-preview-hero { padding: var(--space-24) var(--space-20) 0; }
 .pb-preview-top { display: flex; gap: var(--space-12); align-items: center; margin-bottom: var(--space-16); }
@@ -107,10 +107,10 @@ const PORTFOLIO_BUILDER_STYLES = `
 .pb-preview-stat:last-child { border-right: none; }
 .pb-preview-stat-n { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--black); }
 .pb-preview-stat-l { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey-400); margin-top: var(--space-2); }
-.pb-preview-body { padding: var(--space-16); display: flex; flex-direction: column; gap: var(--space-14); }
-.pb-preview-section-l { font-size: 10px; font-weight: 600; color: var(--grey-400); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-7); }
+.pb-preview-body { padding: var(--space-16); display: flex; flex-direction: column; gap: var(--space-16); }
+.pb-preview-section-l { font-size: 10px; font-weight: 600; color: var(--grey-400); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-8); }
 .pb-preview-follow { display: flex; gap: var(--space-8); }
-.pb-preview-follow-item { flex: 1; background: var(--page-bg); border: 0.5px solid var(--grey-100); border-radius: var(--radius-md); padding: var(--space-10) var(--space-6); text-align: center; }
+.pb-preview-follow-item { flex: 1; background: var(--page-bg); border: 0.5px solid var(--grey-100); border-radius: var(--radius-md); padding: var(--space-12) var(--space-8); text-align: center; }
 .pb-preview-follow-n { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--black); }
 .pb-preview-follow-l { font-size: 9px; color: var(--grey-400); margin-top: var(--space-2); }
 .pb-preview-contact { border-top: 0.5px solid var(--grey-100); padding-top: var(--space-12); display: flex; flex-direction: column; gap: var(--space-8); }
@@ -243,7 +243,7 @@ function LivePreview({ values, creatorName, handle }) {
       <div className="pb-preview-body">
         <div>
           <div className="pb-preview-section-l">Niche &amp; focus</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
             {values.niches?.length > 0 ? (
               values.niches.map((n) => (
                 <span key={n} className="tag tag-purple">{n}</span>
@@ -360,7 +360,7 @@ export default function PortfolioBuilderPage() {
     return (
       <>
         <style>{PORTFOLIO_BUILDER_STYLES}</style>
-        <div style={{ padding: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ padding: 'var(--space-40)', display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
           {[1, 2, 3].map((i) => (
             <div key={i} className="skeleton" style={{ height: 80, borderRadius: 'var(--radius-lg)' }} />
           ))}
@@ -385,7 +385,7 @@ export default function PortfolioBuilderPage() {
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
           {isPublished ? (
             <button
               type="button"
@@ -416,22 +416,22 @@ export default function PortfolioBuilderPage() {
         <div className="pb-form-col">
           {/* Header + progress */}
           <div>
-            <h4 className="page-title" style={{ marginBottom: 4 }}>Build your portfolio</h4>
-            <div className="text-body-sm" style={{ color: 'var(--grey-400)', marginBottom: 14 }}>
+            <h4 className="page-title" style={{ marginBottom: 'var(--space-4)' }}>Build your portfolio</h4>
+            <div className="text-body-sm" style={{ color: 'var(--grey-400)', marginBottom: 'var(--space-16)' }}>
               This appears on your public portfolio, make it count.
             </div>
             <div className="progress-bar-wrap progress-xs">
               <div className="progress-bar-fill" style={{ width: `${progressPct}%`, height: '100%' }} />
             </div>
-            <div className="text-caption" style={{ color: 'var(--grey-400)', marginTop: 6, textTransform: 'none', letterSpacing: 'normal' }}>
+            <div className="text-caption" style={{ color: 'var(--grey-400)', marginTop: 'var(--space-8)', textTransform: 'none', letterSpacing: 'normal' }}>
               {completedCount} of 5 sections complete
             </div>
           </div>
 
-          <form onSubmit={handleSubmit(onSave)} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <form onSubmit={handleSubmit(onSave)} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
             {/* 1. Profile photo */}
             <SectionCard icon="ti-camera" title="Profile photo">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)' }}>
                 <div className="avatar avatar-lg avatar-purple" style={{ overflow: 'hidden' }}>
                   {formValues.photoUrl ? (
                     <img
@@ -443,7 +443,7 @@ export default function PortfolioBuilderPage() {
                     getInitials(formValues.name || user?.name)
                   )}
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
                   <label className={`btn btn-ghost btn-sm${photoUploading ? ' btn-loading' : ''}`} style={{ cursor: 'pointer', width: 'fit-content' }}>
                     <i className="ti ti-upload" style={{ fontSize: 12 }} aria-hidden="true" />
                     {formValues.photoUrl ? 'Change photo' : 'Upload photo'}
@@ -482,7 +482,7 @@ export default function PortfolioBuilderPage() {
 
             {/* 3. Social stats */}
             <SectionCard icon="ti-chart-bar" title="Social stats" hint="Shown on your portfolio to build trust with brands">
-              <div className="pb-g2" style={{ marginBottom: 12 }}>
+              <div className="pb-g2" style={{ marginBottom: 'var(--space-12)' }}>
                 <Field label="Instagram followers">
                   <div className="inp-wrap">
                     <span className="inp-icon l"><i className="ti ti-brand-instagram" style={{ color: '#E1306C' }} aria-hidden="true" /></span>
@@ -496,7 +496,7 @@ export default function PortfolioBuilderPage() {
                   </div>
                 </Field>
               </div>
-              <div className="pb-g2" style={{ marginBottom: 12 }}>
+              <div className="pb-g2" style={{ marginBottom: 'var(--space-12)' }}>
                 <Field label="TikTok followers">
                   <div className="inp-wrap">
                     <span className="inp-icon l"><i className="ti ti-brand-tiktok" aria-hidden="true" /></span>
@@ -526,7 +526,7 @@ export default function PortfolioBuilderPage() {
               title="Niche & focus areas"
               hint="Press Enter or tap + to add. Tap a tag to remove it."
             >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
                 {(formValues.niches ?? []).map((niche, i) => (
                   <span
                     key={niche}
@@ -539,7 +539,7 @@ export default function PortfolioBuilderPage() {
                   </span>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: 6 }}>
+              <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
                 <input
                   className="inp"
                   style={{ flex: 1 }}
@@ -570,7 +570,7 @@ export default function PortfolioBuilderPage() {
               <Field label="Instagram handle">
                 <div className="inp-wrap">
                   <span className="inp-pre">@</span>
-                  <input className="inp" style={{ paddingLeft: 20 }} placeholder="e.g. amaracreates" {...register('contact.instagramHandle')} />
+                  <input className="inp" style={{ paddingLeft: 'var(--space-20)' }} placeholder="e.g. amaracreates" {...register('contact.instagramHandle')} />
                 </div>
               </Field>
               <Field label="Email">
@@ -600,7 +600,7 @@ export default function PortfolioBuilderPage() {
               creatorName={user?.name}
               handle={user?.handle ? `@${user.handle}` : '@yourhandle'}
             />
-            <p className="hint" style={{ textAlign: 'center', marginTop: 10 }}>
+            <p className="hint" style={{ textAlign: 'center', marginTop: 'var(--space-12)' }}>
               Updates as you type
             </p>
           </div>

@@ -28,7 +28,7 @@ export default function ErrorState({
       <div className="empty-title">{title}</div>
       <div className="empty-desc">{description}</div>
       {onRetry && (
-        <button type="button" className="btn btn-secondary btn-sm" onClick={onRetry} style={{ marginTop: 4 }}>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={onRetry} style={{ marginTop: 'var(--space-4)' }}>
           Try again
         </button>
       )}

@@ -13,7 +13,7 @@ export default function MpesaPrompt({ phone, status, isPolling }) {
 
   if (isSuccess) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '24px 0', textAlign: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-24) 0', textAlign: 'center' }}>
         <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-success-text)' }}>
           <IconCheck size={24} />
         </div>
@@ -24,7 +24,7 @@ export default function MpesaPrompt({ phone, status, isPolling }) {
 
   if (isFailed) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '24px 0', textAlign: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-24) 0', textAlign: 'center' }}>
         <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-error-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-error-text)' }}>
           <IconX size={24} />
         </div>
@@ -35,7 +35,7 @@ export default function MpesaPrompt({ phone, status, isPolling }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '24px 0', textAlign: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-24) 0', textAlign: 'center' }}>
       <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-success-text)' }}>
         <IconDeviceMobile size={22} />
       </div>

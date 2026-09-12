@@ -109,7 +109,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ flex: 1, padding: 'var(--space-28)', overflowY: 'auto', minWidth: 0, width: '100%' }}>
+    <div style={{ flex: 1, padding: 'var(--space-32)', overflowY: 'auto', minWidth: 0, width: '100%' }}>
       <style>{BENTO_CSS}</style>
 
       {/* Header */}
@@ -172,7 +172,7 @@ export default function DashboardPage() {
 
         {/* Recent enquiries table */}
         <div className="bento-table table-wrap">
-          <div style={{ padding: '16px 18px', borderBottom: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: 'var(--space-16) var(--space-20)', borderBottom: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h5 className="section-title">Recent enquiries</h5>
             <Link to="/creator/enquiries" className="btn btn-ghost btn-xs">View all</Link>
           </div>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
                 {statsLoading ? [0, 1, 2].map((i) => (
                   <tr key={i}>
                     <td>
-                      <Skeleton width="70%" height={13} style={{ marginBottom: 5 }} />
+                      <Skeleton width="70%" height={13} style={{ marginBottom: 'var(--space-4)' }} />
                       <Skeleton width="40%" height={11} />
                     </td>
                     <td><Skeleton width="80%" height={13} /></td>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
                     <tr key={i} style={{ cursor: 'pointer' }} onClick={() => navigate('/creator/enquiries')}>
                       <td>
                         <div style={{ fontWeight: 500, color: 'var(--black)' }}>{row.brand}</div>
-                        <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{row.ago}</div>
+                        <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{row.ago}</div>
                       </td>
                       <td style={{ fontSize: 12 }}>{row.pkg}</td>
                       <td><span className={`tag ${tag.cls}`}>{tag.label}</span></td>
@@ -222,8 +222,8 @@ export default function DashboardPage() {
         {/* Side rail: quick actions + rate card health */}
         <div className="bento-side">
           <div className="card card-p-md">
-            <p className="section-title" style={{ marginBottom: 14 }}>Quick actions</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Quick actions</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
               <Link to="/creator/rate-card" className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }}>
                 <i className="ti ti-edit" style={{ fontSize: 14 }} />Edit rate card
               </Link>
@@ -240,12 +240,12 @@ export default function DashboardPage() {
           </div>
 
           <div className="card card-p-md">
-            <p className="section-title" style={{ marginBottom: 14 }}>Rate card health</p>
+            <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Rate card health</p>
             {healthLoading ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
                 {[0, 1, 2].map((i) => (
                   <div key={i}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
                       <Skeleton width={110} height={12} />
                       <Skeleton width={28} height={12} />
                     </div>
@@ -254,23 +254,23 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
                     <span style={{ fontSize: 12, color: 'var(--grey-600)' }}>Profile completeness</span>
                     <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--black)' }}>{profilePct}%</span>
                   </div>
                   <ProgressBar pct={profilePct} />
                 </div>
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
                     <span style={{ fontSize: 12, color: 'var(--grey-600)' }}>Packages added</span>
                     <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--black)' }}>{pkgCurrent} / {pkgMax ?? 'Unlimited'}</span>
                   </div>
                   <ProgressBar pct={pkgPct} />
                 </div>
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
                     <span style={{ fontSize: 12, color: 'var(--grey-600)' }}>Payment methods</span>
                     <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--black)' }}>{payCurrent} / {payMax}</span>
                   </div>

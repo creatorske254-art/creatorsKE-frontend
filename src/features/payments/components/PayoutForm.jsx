@@ -19,11 +19,11 @@ export default function PayoutForm({
 
   return (
     <div>
-      <p style={{ fontSize: 13, color: 'var(--grey-600)', lineHeight: 1.6, marginBottom: 16 }}>
+      <p style={{ fontSize: 13, color: 'var(--grey-600)', lineHeight: 1.6, marginBottom: 'var(--space-16)' }}>
         Confirm how much you'd like to move to your primary payment method.
       </p>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, border: '0.5px solid var(--grey-300)', borderRadius: 'var(--radius-md)', padding: '12px 14px', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)', border: '0.5px solid var(--grey-300)', borderRadius: 'var(--radius-md)', padding: 'var(--space-12) var(--space-16)', marginBottom: 'var(--space-16)' }}>
         <span style={{ color: 'var(--grey-400)', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700 }}>KES</span>
         <input
           value={amount}
@@ -33,21 +33,21 @@ export default function PayoutForm({
         />
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '11px 0', borderBottom: '0.5px solid var(--grey-100)', fontSize: 13 }}>
+      <div style={{ marginBottom: 'var(--space-16)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-12) 0', borderBottom: '0.5px solid var(--grey-100)', fontSize: 13 }}>
           <span style={{ color: 'var(--grey-500)' }}>To</span>
           <span style={{ fontWeight: 500, color: 'var(--black)' }}>
             {primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'No payment method on file'}
           </span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '11px 0', fontSize: 13 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-12) 0', fontSize: 13 }}>
           <span style={{ color: 'var(--grey-500)' }}>You'll receive</span>
           <span style={{ fontWeight: 500, color: 'var(--black)' }}>{formatCurrency(numericAmount)}</span>
         </div>
       </div>
 
       {numericAmount > availableBalance && (
-        <p style={{ fontSize: 12, color: 'var(--status-error-text)', marginBottom: 12 }}>
+        <p style={{ fontSize: 12, color: 'var(--status-error-text)', marginBottom: 'var(--space-12)' }}>
           Amount exceeds your available balance of {formatCurrency(availableBalance)}.
         </p>
       )}

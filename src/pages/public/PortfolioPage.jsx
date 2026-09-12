@@ -166,20 +166,20 @@ export default function PortfolioPage() {
     <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
 
       {/* Public nav */}
-      <nav className="h-[52px] flex items-center justify-between px-8 border-b border-[0.5px] border-[var(--grey-100)] bg-white sticky top-0 z-10">
+      <nav className="h-[52px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[0.5px] border-[var(--grey-100)] bg-white sticky top-0 z-10">
         <Link to="/" className="font-[var(--font-display)] text-[19px] font-semibold tracking-[-0.01em] text-[var(--black)]">
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </Link>
         <div className="flex items-center gap-2">
           <Link
             to={`/creator/portfolio`}
-            className="inline-flex items-center gap-1.5 text-[13px] font-medium px-4 py-2 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] hover:bg-[var(--grey-50)]"
+            className="inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] hover:bg-[var(--grey-50)]"
           >
             <IconEdit size={13} /> Edit portfolio
           </Link>
           <Link
             to={`/c/${handle}`}
-            className="inline-flex items-center gap-1.5 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent hover:opacity-90"
+            className="inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent hover:opacity-90"
           >
             <IconCurrencyDollar size={13} /> View rate card
           </Link>
@@ -187,7 +187,7 @@ export default function PortfolioPage() {
       </nav>
 
       {isLoading ? (
-        <div className="max-w-[1000px] w-full mx-auto px-8 py-16">
+        <div className="max-w-[1000px] w-full mx-auto px-[var(--gutter-public)] py-16">
           <div className="flex items-start gap-5">
             <div className="skeleton w-[260px] h-[220px]" style={{ borderRadius: 24 }} />
             <div className="flex-1 space-y-3">
@@ -201,10 +201,10 @@ export default function PortfolioPage() {
         <>
           {/* Hero */}
           <div className="py-16 relative overflow-hidden">
-            <div className="max-w-[1000px] mx-auto px-8">
+            <div className="max-w-[1000px] mx-auto px-[var(--gutter-public)]">
               <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 items-center">
                 <div>
-                  <div className="font-[var(--font-display)] text-[clamp(36px,5vw,56px)] font-semibold tracking-[-0.03em] leading-[1.05] text-[var(--black)] mb-1.5">
+                  <div className="font-[var(--font-display)] text-[clamp(36px,5vw,56px)] font-semibold tracking-[-0.03em] leading-[1.05] text-[var(--black)] mb-2">
                     {creator.displayName}
                   </div>
                   {creator.role && (
@@ -218,19 +218,19 @@ export default function PortfolioPage() {
                   <div className="flex gap-2 flex-wrap">
                     <Link
                       to={`/c/${handle}`}
-                      className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--black)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--black)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
                     >
                       <IconCurrencyDollar size={15} /> View rate card
                     </Link>
                     <button
                       onClick={() => openWhatsApp(contact.phone)}
-                      className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
                     >
                       <IconBrandWhatsapp size={15} /> WhatsApp me
                     </button>
                     <button
                       onClick={() => sharePortfolio(creator.displayName)}
-                      className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
                     >
                       <IconShare size={14} /> Share
                     </button>
@@ -250,7 +250,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* Body */}
-          <div className="max-w-[1000px] w-full mx-auto px-8 pb-20 flex-1">
+          <div className="max-w-[1000px] w-full mx-auto px-[var(--gutter-public)] pb-20 flex-1">
 
             {/* About */}
             {(about.whoIAm || about.whatIDo) && (
@@ -282,7 +282,7 @@ export default function PortfolioPage() {
                     {expertise.map((e, i) => {
                       const Icon = EXPERTISE_ICONS[i % EXPERTISE_ICONS.length];
                       return (
-                        <div key={e.title} className="flex items-start gap-3.5 p-4 rounded-[12px] hover:bg-white transition-colors group">
+                        <div key={e.title} className="flex items-start gap-4 p-4 rounded-[12px] hover:bg-white transition-colors group">
                           <div className="w-9 h-9 rounded-[8px] bg-[var(--grey-50)] group-hover:bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0 transition-colors">
                             <Icon size={16} className="text-[var(--grey-500)] group-hover:text-[var(--purple-500)] transition-colors" />
                           </div>
@@ -309,7 +309,7 @@ export default function PortfolioPage() {
                   {niches.map((n) => {
                     const Icon = NICHE_ICONS[n.name] ?? IconSparkles;
                     return (
-                      <div key={n.name} className="bg-white rounded-[16px] p-[22px] flex flex-col gap-2 hover:bg-[var(--purple-50)] transition-colors">
+                      <div key={n.name} className="bg-white rounded-[16px] p-6 flex flex-col gap-2 hover:bg-[var(--purple-50)] transition-colors">
                         <Icon size={22} className="text-[var(--purple-500)] mb-1" />
                         <div className="font-[var(--font-display)] text-[15px] font-semibold text-[var(--purple-600)]">{n.name}</div>
                         <div className="text-[12px] text-[var(--grey-600)] leading-[1.6]">{n.description}</div>
@@ -326,7 +326,7 @@ export default function PortfolioPage() {
                 <div className="font-[var(--font-display)] text-[20px] font-semibold text-[var(--black)] tracking-[-0.01em] mb-5">Why work with me</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {whyWorkWithMe.map((w) => (
-                    <div key={w.title} className="bg-white rounded-[16px] p-6 flex flex-col gap-2.5">
+                    <div key={w.title} className="bg-white rounded-[16px] p-6 flex flex-col gap-3">
                       {w.icon && <w.icon size={20} className="text-[var(--purple-500)]" />}
                       <div className="font-[var(--font-display)] text-[15px] font-semibold text-[var(--black)]">{w.title}</div>
                       <div className="text-[12px] text-[var(--grey-600)] leading-[1.65]">{w.text}</div>
@@ -346,7 +346,7 @@ export default function PortfolioPage() {
                 {isLoading ? <SectionSkeleton rows={3} /> : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {collaborations.map((c, i) => (
-                      <div key={i} className="bg-white rounded-[16px] p-[22px] flex flex-col gap-2.5">
+                      <div key={i} className="bg-white rounded-[16px] p-6 flex flex-col gap-3">
                         <div className="flex items-center gap-3">
                           <div className="w-11 h-11 rounded-[8px] bg-[var(--grey-50)] flex items-center justify-center font-[var(--font-display)] text-[13px] font-bold text-[var(--grey-600)]">
                             {c.initial ?? c.brand?.charAt(0) ?? '?'}
@@ -402,7 +402,7 @@ export default function PortfolioPage() {
             {(contact.phone || contact.instagram || contact.email) && (
               <div className="grid grid-cols-1 sm:grid-cols-3 bg-[var(--grey-50)] rounded-[16px] overflow-hidden mb-10">
                 {contact.phone && (
-                  <div className="flex items-center gap-3.5 p-5 hover:bg-[var(--purple-50)] transition-colors">
+                  <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
                     <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
                       <IconPhone size={17} className="text-[var(--purple-500)]" />
                     </div>
@@ -413,7 +413,7 @@ export default function PortfolioPage() {
                   </div>
                 )}
                 {contact.instagram && (
-                  <div className="flex items-center gap-3.5 p-5 hover:bg-[var(--purple-50)] transition-colors">
+                  <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
                     <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
                       <IconBrandInstagram size={17} className="text-[var(--purple-500)]" />
                     </div>
@@ -424,7 +424,7 @@ export default function PortfolioPage() {
                   </div>
                 )}
                 {contact.email && (
-                  <div className="flex items-center gap-3.5 p-5 hover:bg-[var(--purple-50)] transition-colors">
+                  <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
                     <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
                       <IconMail size={17} className="text-[var(--purple-500)]" />
                     </div>
@@ -441,22 +441,22 @@ export default function PortfolioPage() {
             {!isLoading && (
               <div className="bg-[var(--grey-50)] rounded-[24px] p-12 text-center">
                 <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-[var(--purple-500)] mb-3">Let's collaborate</div>
-                <div className="font-[var(--font-display)] text-[clamp(22px,3vw,32px)] font-semibold text-[var(--black)] mb-2.5 tracking-[-0.02em]">
+                <div className="font-[var(--font-display)] text-[clamp(22px,3vw,32px)] font-semibold text-[var(--black)] mb-3 tracking-[-0.02em]">
                   Let's create something amazing together
                 </div>
                 <p className="text-[14px] text-[var(--grey-600)] mb-7 max-w-[400px] mx-auto">
                   Ready to elevate your brand with authentic, strategic content? View my packages and reach out today.
                 </p>
-                <div className="flex gap-2.5 justify-center flex-wrap">
+                <div className="flex gap-3 justify-center flex-wrap">
                   <Link
                     to={`/c/${handle}`}
-                    className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] bg-[var(--black)] text-white text-[14px] font-medium hover:opacity-90"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] bg-[var(--black)] text-white text-[14px] font-medium hover:opacity-90"
                   >
                     <IconCurrencyDollar size={15} /> View rate card
                   </Link>
                   <button
                     onClick={() => openWhatsApp(contact.phone)}
-                    className="inline-flex items-center gap-1.5 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-white"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-white"
                   >
                     <IconBrandWhatsapp size={15} /> WhatsApp me
                   </button>
@@ -467,7 +467,7 @@ export default function PortfolioPage() {
         </>
       )}
 
-      <footer className="px-8 py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
+      <footer className="px-[var(--gutter-public)] py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">Creatorske<span className="text-[var(--purple-500)]">.</span></div>
         <div>© 2026 Creatorske. All rights reserved.</div>
         <div className="flex gap-4">

@@ -31,7 +31,7 @@ const resetSchema = z
 // Shared styles
 const inputStyle = (hasError) => ({
   width: '100%',
-  padding: '10px 14px',
+  padding: 'var(--space-12) var(--space-16)',
   fontFamily: 'var(--font-body)',
   fontSize: '14px',
   color: 'var(--black)',
@@ -65,11 +65,11 @@ function RequestResetForm() {
   if (sent) {
     return (
       <div style={{ textAlign: 'center' }}>
-        <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+        <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
           <IconCircleCheck size={28} style={{ color: 'var(--purple-500)' }} />
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Check your email</div>
-        <div className="page-subtitle" style={{ marginBottom: '28px' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Check your email</div>
+        <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
           If an account exists for that email, we've sent a reset link. It expires in 1 hour.
         </div>
         <Link to="/login" style={{ fontSize: '13px', color: 'var(--purple-500)', fontWeight: 500, textDecoration: 'none' }}>
@@ -81,16 +81,16 @@ function RequestResetForm() {
 
   return (
     <>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, color: 'var(--black)', marginBottom: '6px', letterSpacing: '-0.02em' }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)', letterSpacing: '-0.02em' }}>
         Reset password
       </div>
-      <div style={{ fontSize: '14px', color: 'var(--grey-500)', marginBottom: '28px', lineHeight: 1.55 }}>
+      <div style={{ fontSize: '14px', color: 'var(--grey-500)', marginBottom: 'var(--space-32)', lineHeight: 1.55 }}>
         Enter your email and we'll send you a reset link.
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Email address</label>
             <div style={{ position: 'relative' }}>
               <IconMail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
@@ -98,7 +98,7 @@ function RequestResetForm() {
                 type="email"
                 placeholder="you@email.com"
                 {...register('email')}
-                style={{ ...inputStyle(errors.email), paddingLeft: '40px' }}
+                style={{ ...inputStyle(errors.email), paddingLeft: 'var(--space-40)' }}
               />
             </div>
             {errors.email && <span className="field-hint error">{errors.email.message}</span>}
@@ -110,7 +110,7 @@ function RequestResetForm() {
           disabled={loading}
           style={{
             width: '100%',
-            padding: '14px 32px',
+            padding: 'var(--space-16) var(--space-32)',
             fontSize: '15px',
             fontFamily: 'var(--font-body)',
             fontWeight: 500,
@@ -123,7 +123,7 @@ function RequestResetForm() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
+            gap: 'var(--space-8)',
           }}
         >
           {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
@@ -131,7 +131,7 @@ function RequestResetForm() {
         </button>
       </form>
 
-      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: '20px' }}>
+      <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: 'var(--space-20)' }}>
         <Link to="/login" style={{ color: 'var(--purple-500)', fontWeight: 500, textDecoration: 'none' }}>
           Back to sign in
         </Link>
@@ -167,11 +167,11 @@ function SetNewPasswordForm({ token }) {
   if (done) {
     return (
       <div style={{ textAlign: 'center' }}>
-        <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+        <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
           <IconCircleCheck size={28} style={{ color: 'var(--status-success)' }} />
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Password updated</div>
-        <div className="page-subtitle" style={{ marginBottom: '28px' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Password updated</div>
+        <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
           Your password has been changed. You can now sign in.
         </div>
         <Link
@@ -179,7 +179,7 @@ function SetNewPasswordForm({ token }) {
           style={{
             display: 'inline-block',
             width: '100%',
-            padding: '14px 32px',
+            padding: 'var(--space-16) var(--space-32)',
             fontSize: '15px',
             fontWeight: 500,
             background: 'var(--black)',
@@ -197,17 +197,17 @@ function SetNewPasswordForm({ token }) {
 
   return (
     <>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, color: 'var(--black)', marginBottom: '6px', letterSpacing: '-0.02em' }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)', letterSpacing: '-0.02em' }}>
         New password
       </div>
-      <div style={{ fontSize: '14px', color: 'var(--grey-500)', marginBottom: '28px', lineHeight: 1.55 }}>
+      <div style={{ fontSize: '14px', color: 'var(--grey-500)', marginBottom: 'var(--space-32)', lineHeight: 1.55 }}>
         Choose a strong password for your account.
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
           {/* New password */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">New password</label>
             <div style={{ position: 'relative' }}>
               <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
@@ -215,7 +215,7 @@ function SetNewPasswordForm({ token }) {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="At least 8 characters"
                 {...register('password')}
-                style={{ ...inputStyle(errors.password), paddingLeft: '40px', paddingRight: '40px' }}
+                style={{ ...inputStyle(errors.password), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
               <button type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
@@ -228,7 +228,7 @@ function SetNewPasswordForm({ token }) {
           </div>
 
           {/* Confirm */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Confirm password</label>
             <div style={{ position: 'relative' }}>
               <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
@@ -236,7 +236,7 @@ function SetNewPasswordForm({ token }) {
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Re-enter your password"
                 {...register('confirmPassword')}
-                style={{ ...inputStyle(errors.confirmPassword), paddingLeft: '40px', paddingRight: '40px' }}
+                style={{ ...inputStyle(errors.confirmPassword), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
               <button type="button" onClick={() => setShowConfirm((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showConfirm ? <IconEyeOff size={15} /> : <IconEye size={15} />}
@@ -251,7 +251,7 @@ function SetNewPasswordForm({ token }) {
           disabled={loading}
           style={{
             width: '100%',
-            padding: '14px 32px',
+            padding: 'var(--space-16) var(--space-32)',
             fontSize: '15px',
             fontFamily: 'var(--font-body)',
             fontWeight: 500,
@@ -264,7 +264,7 @@ function SetNewPasswordForm({ token }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
+            gap: 'var(--space-8)',
           }}
         >
           {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
@@ -290,7 +290,7 @@ export default function ResetPasswordPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
+        padding: 'var(--space-48) var(--gutter-public)',
       }}
     >
       <div
@@ -300,11 +300,11 @@ export default function ResetPasswordPage() {
           background: 'var(--white)',
           border: '0.5px solid var(--grey-100)',
           borderRadius: 'var(--radius-2xl)',
-          padding: '40px',
+          padding: 'var(--space-40)',
           boxShadow: 'var(--shadow-lg)',
         }}
       >
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '28px' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-32)' }}>
           Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
         </div>
 

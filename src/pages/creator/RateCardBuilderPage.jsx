@@ -82,16 +82,16 @@ const Tokens = () => (
   }
   .rcb *{box-sizing:border-box}
   .rcb .bs{flex:1;display:flex;flex-direction:column;width:100%;min-height:100%}
-  .rcb .btop{background:var(--bg-primary);border-bottom:0.5px solid var(--bdr-tertiary);padding:var(--space-16) var(--space-28);border-radius:var(--r-xl) var(--r-xl) 0 0}
+  .rcb .btop{background:var(--bg-primary);border-bottom:0.5px solid var(--bdr-tertiary);padding:var(--space-16) var(--space-32);border-radius:var(--r-xl) var(--r-xl) 0 0}
   .rcb .btop-inner{max-width:1080px;margin:0 auto}
-  .rcb .bbody{flex:1;padding:var(--space-28) 0;width:100%;display:flex;flex-direction:column;gap:var(--space-16)}
-  .rcb .bfooter{background:var(--bg-primary);border-top:0.5px solid var(--bdr-tertiary);padding:var(--space-12) var(--space-28);position:sticky;bottom:0;z-index:100;border-radius:0 0 var(--r-xl) var(--r-xl)}
+  .rcb .bbody{flex:1;padding:var(--space-32) 0;width:100%;display:flex;flex-direction:column;gap:var(--space-16)}
+  .rcb .bfooter{background:var(--bg-primary);border-top:0.5px solid var(--bdr-tertiary);padding:var(--space-12) var(--space-32);position:sticky;bottom:0;z-index:100;border-radius:0 0 var(--r-xl) var(--r-xl)}
   .rcb .bfooter-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:var(--space-8)}
   .rcb .bsplit{display:grid;grid-template-columns:1fr 280px;gap:var(--space-24);align-items:start}
   .rcb .bento{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-16);align-items:start}
   .rcb .bento>.span2{grid-column:1 / -1}
   @media(max-width:860px){.rcb .bsplit{grid-template-columns:1fr}.rcb .rcp-preview-col{display:none}.rcb .g3,.rcb .g4{grid-template-columns:1fr 1fr}}
-  @media(max-width:600px){.rcb .bbody{padding:var(--space-16) 0}.rcb .btop{padding:14px}.rcb .bfooter{padding:var(--space-10) var(--space-12)}.rcb .g2,.rcb .g3,.rcb .g4,.rcb .bento{grid-template-columns:1fr}}
+  @media(max-width:600px){.rcb .bbody{padding:var(--space-16) 0}.rcb .btop{padding:var(--space-16)}.rcb .bfooter{padding:var(--space-12) var(--space-12)}.rcb .g2,.rcb .g3,.rcb .g4,.rcb .bento{grid-template-columns:1fr}}
 
   .rcb .stepper{display:flex;align-items:flex-start;flex-wrap:wrap}
   .rcb .st-item{display:flex;align-items:center}
@@ -100,68 +100,68 @@ const Tokens = () => (
   .rcb .st-circle.done{background:var(--txt-primary);color:var(--bg-primary)}
   .rcb .st-circle.active{background:var(--accent);color:#fff;box-shadow:0 0 0 3px var(--accent-light)}
   .rcb .st-circle.pending{background:var(--bg-primary);color:var(--txt-tertiary);border:0.5px solid var(--bdr-secondary)}
-  .rcb .st-line{width:40px;height:0.5px;background:var(--bdr-secondary);margin:0 4px;margin-top:13px}
+  .rcb .st-line{width:40px;height:0.5px;background:var(--bdr-secondary);margin:0 var(--space-4);margin-top:var(--space-12)}
   .rcb .st-line.done{background:var(--txt-primary)}
-  .rcb .st-label{font-size:10px;font-weight:500;margin-top:5px;text-align:center;white-space:nowrap;letter-spacing:.02em}
+  .rcb .st-label{font-size:10px;font-weight:500;margin-top:var(--space-4);text-align:center;white-space:nowrap;letter-spacing:.02em}
   .rcb .st-label.done{color:var(--txt-primary)}.rcb .st-label.active{color:var(--accent)}.rcb .st-label.pending{color:var(--txt-tertiary)}
 
-  .rcb .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:none;cursor:pointer;font-family:var(--f-body);font-weight:500;transition:all .12s;white-space:nowrap;line-height:1}
-  .rcb .btn-primary{background:var(--txt-primary);color:var(--bg-primary);border-radius:var(--r-md);font-size:13px;padding:9px 18px}
+  .rcb .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-4);border:none;cursor:pointer;font-family:var(--f-body);font-weight:500;transition:all .12s;white-space:nowrap;line-height:1}
+  .rcb .btn-primary{background:var(--txt-primary);color:var(--bg-primary);border-radius:var(--r-md);font-size:13px;padding:var(--space-8) var(--space-20)}
   .rcb .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
-  .rcb .btn-secondary{background:var(--bg-primary);color:var(--txt-primary);border-radius:var(--r-md);font-size:13px;padding:8.5px 18px;border:0.5px solid var(--bdr-secondary)}
+  .rcb .btn-secondary{background:var(--bg-primary);color:var(--txt-primary);border-radius:var(--r-md);font-size:13px;padding:var(--space-8) var(--space-20);border:0.5px solid var(--bdr-secondary)}
   .rcb .btn-secondary:hover{border-color:var(--bdr-primary);background:var(--bg-secondary)}
-  .rcb .btn-accent{background:var(--accent);color:#fff;border-radius:var(--r-md);font-size:13px;padding:9px 18px}
+  .rcb .btn-accent{background:var(--accent);color:#fff;border-radius:var(--r-md);font-size:13px;padding:var(--space-8) var(--space-20)}
   .rcb .btn-accent:hover{opacity:.9;transform:translateY(-1px)}
-  .rcb .btn-ghost{background:transparent;color:var(--txt-secondary);border-radius:var(--r-md);font-size:13px;padding:8.5px 18px;border:0.5px solid var(--bdr-secondary)}
+  .rcb .btn-ghost{background:transparent;color:var(--txt-secondary);border-radius:var(--r-md);font-size:13px;padding:var(--space-8) var(--space-20);border:0.5px solid var(--bdr-secondary)}
   .rcb .btn-ghost:hover{color:var(--txt-primary);border-color:var(--bdr-primary);background:var(--bg-secondary)}
-  .rcb .btn-sm{padding:5px 12px;font-size:12px}
-  .rcb .btn-xs{padding:3px 9px;font-size:11px}
+  .rcb .btn-sm{padding:var(--space-4) var(--space-12);font-size:12px}
+  .rcb .btn-xs{padding:var(--space-4) var(--space-8);font-size:11px}
   .rcb .btn-full{width:100%;justify-content:center}
   .rcb .btn:disabled{pointer-events:none;opacity:.6}
 
-  .rcb .field{display:flex;flex-direction:column;gap:5px}
+  .rcb .field{display:flex;flex-direction:column;gap:var(--space-4)}
     .rcb .hint{font-size:12px;color:var(--txt-tertiary);line-height:1.5}
-  .rcb .inp{width:100%;font-family:var(--f-body);font-size:13.5px;color:var(--txt-primary);background:var(--bg-secondary);border:0.5px solid var(--bdr-tertiary);outline:none;transition:border-color .12s,background-color .12s,box-shadow .12s;padding:8.5px 12px;border-radius:var(--r-md)}
+  .rcb .inp{width:100%;font-family:var(--f-body);font-size:13.5px;color:var(--txt-primary);background:var(--bg-secondary);border:0.5px solid var(--bdr-tertiary);outline:none;transition:border-color .12s,background-color .12s,box-shadow .12s;padding:var(--space-8) var(--space-12);border-radius:var(--r-md)}
   .rcb .inp::placeholder{color:var(--txt-tertiary)}
   .rcb .inp:hover{border-color:var(--bdr-secondary)}
   .rcb .inp:focus{border-color:var(--bdr-primary);background:var(--bg-primary);box-shadow:0 0 0 3px var(--accent-light)}
   .rcb .inp-wrap{position:relative}
-  .rcb .inp-icon-l{padding-left:34px!important}
-  .rcb .inp-icon-r{padding-right:34px!important}
+  .rcb .inp-icon-l{padding-left:var(--space-32)!important}
+  .rcb .inp-icon-r{padding-right:var(--space-32)!important}
   .rcb .inp-icon{position:absolute;top:50%;transform:translateY(-50%);color:var(--txt-tertiary);font-size:14px;pointer-events:none;display:flex}
   .rcb .inp-icon.l{left:10px}.rcb .inp-icon.r{right:10px}
   .rcb .inp-pre{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:500;color:var(--txt-tertiary);pointer-events:none;white-space:nowrap}
   .rcb .sel-wrap{position:relative}
   .rcb .sel-wrap .chev{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--txt-tertiary);pointer-events:none;display:flex}
-  .rcb select.inp{appearance:none;padding-right:30px;cursor:pointer}
+  .rcb select.inp{appearance:none;padding-right:var(--space-32);cursor:pointer}
   .rcb .ta{resize:vertical;min-height:80px;line-height:1.65;font-family:var(--f-body)}
   .rcb .toggle{width:40px;height:21px;border-radius:999px;background:var(--bdr-secondary);position:relative;cursor:pointer;transition:background .18s;flex-shrink:0;border:none}
   .rcb .toggle.on{background:var(--accent)}
   .rcb .toggle::after{content:'';position:absolute;top:2.5px;left:2.5px;width:16px;height:16px;border-radius:50%;background:white;transition:transform .18s}
   .rcb .toggle.on::after{transform:translateX(19px)}
 
-  .rcb .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .rcb .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-  .rcb .hr{height:0.5px;background:var(--bdr-tertiary);margin:4px 0}
+  .rcb .g2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-12)}
+  .rcb .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-12)}
+  .rcb .hr{height:0.5px;background:var(--bdr-tertiary);margin:var(--space-4) 0}
 
-  .rcb .tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:var(--r-md);line-height:1}
+  .rcb .tag{display:inline-flex;align-items:center;gap:var(--space-4);font-size:11px;font-weight:500;padding:var(--space-4) var(--space-8);border-radius:var(--r-md);line-height:1}
   .rcb .tag-accent{background:var(--accent-light);color:var(--accent-txt);border:0.5px solid var(--accent-border)}
   .rcb .tag-success{background:var(--bg-success);color:var(--txt-success);border:0.5px solid var(--bdr-success)}
   .rcb .tag-default{background:var(--bg-secondary);color:var(--txt-secondary);border:0.5px solid var(--bdr-tertiary)}
   .rcb .sdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
-  .rcb .alert{display:flex;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:var(--r-lg);font-size:12.5px;line-height:1.45}
-  .rcb .alert svg{flex-shrink:0;margin-top:1px}
+  .rcb .alert{display:flex;align-items:flex-start;gap:var(--space-8);padding:var(--space-12) var(--space-12);border-radius:var(--r-lg);font-size:12.5px;line-height:1.45}
+  .rcb .alert svg{flex-shrink:0;margin-top:var(--space-2)}
   .rcb .alert-body{flex:1}
-  .rcb .alert-title{font-weight:500;margin-bottom:1px;font-size:12.5px}
+  .rcb .alert-title{font-weight:500;margin-bottom:var(--space-2);font-size:12.5px}
   .rcb .alert-info{background:var(--bg-info);color:var(--txt-info);border:0.5px solid var(--bdr-info)}
 
   .rcb .card{background:var(--bg-primary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-xl);transition:border-color .12s}
-  .rcb .card-p{padding:20px}
+  .rcb .card-p{padding:var(--space-20)}
   .rcb .card-dash{background:var(--bg-primary);border:0.5px dashed var(--bdr-secondary);border-radius:var(--r-xl);cursor:pointer;transition:all .15s}
   .rcb .card-dash:hover{border-color:var(--accent);background:var(--accent-light)}
 
-  .rcb .plat-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border:0.5px solid var(--bdr-secondary);border-radius:var(--r-md);background:var(--bg-primary);cursor:pointer;font-family:var(--f-body);font-size:12.5px;font-weight:500;color:var(--txt-secondary);transition:all .12s}
+  .rcb .plat-btn{display:flex;align-items:center;gap:var(--space-8);padding:var(--space-8) var(--space-12);border:0.5px solid var(--bdr-secondary);border-radius:var(--r-md);background:var(--bg-primary);cursor:pointer;font-family:var(--f-body);font-size:12.5px;font-weight:500;color:var(--txt-secondary);transition:all .12s}
   .rcb .plat-btn:hover{border-color:var(--bdr-primary);color:var(--txt-primary)}
   .rcb .plat-btn.on{border-color:var(--accent);background:var(--accent-light);color:var(--accent-txt)}
 
@@ -171,40 +171,40 @@ const Tokens = () => (
   .rcb .av-accent{background:var(--accent-light);color:var(--accent-txt);border:0.5px solid var(--accent-border)}
 
   .rcb .rcp{background:var(--bg-primary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-xl);overflow:hidden;width:100%}
-  .rcb .rcp-top{padding:16px 16px 12px;border-bottom:0.5px solid var(--bdr-tertiary)}
-  .rcb .rcp-name{font-family:var(--f-head);font-size:16px;font-weight:600;color:var(--txt-primary);margin:8px 0 2px;letter-spacing:-.01em;line-height:1.2}
+  .rcb .rcp-top{padding:var(--space-16) var(--space-16) var(--space-12);border-bottom:0.5px solid var(--bdr-tertiary)}
+  .rcb .rcp-name{font-family:var(--f-head);font-size:16px;font-weight:600;color:var(--txt-primary);margin:var(--space-8) 0 var(--space-2);letter-spacing:-.01em;line-height:1.2}
   .rcb .rcp-handle{font-size:11px;color:var(--txt-tertiary)}
-  .rcb .rcp-plats{display:flex;gap:4px;margin-top:8px}
+  .rcb .rcp-plats{display:flex;gap:var(--space-4);margin-top:var(--space-8)}
   .rcb .rcp-plat{width:22px;height:22px;border-radius:var(--r-md);border:0.5px solid var(--bdr-tertiary);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--txt-secondary)}
   .rcb .rcp-stats{display:flex;border-bottom:0.5px solid var(--bdr-tertiary)}
-  .rcb .rcp-stat{flex:1;padding:9px 12px;text-align:center;border-right:0.5px solid var(--bdr-tertiary)}
+  .rcb .rcp-stat{flex:1;padding:var(--space-8) var(--space-12);text-align:center;border-right:0.5px solid var(--bdr-tertiary)}
   .rcb .rcp-stat:last-child{border-right:none}
   .rcb .rcp-stat-n{font-family:var(--f-head);font-size:15px;font-weight:600;color:var(--txt-primary);line-height:1}
-  .rcb .rcp-stat-l{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt-tertiary);margin-top:2px}
-  .rcb .rcp-bio{padding:10px 13px;font-size:11px;color:var(--txt-secondary);border-bottom:0.5px solid var(--bdr-tertiary);line-height:1.6}
-  .rcb .rcp-pkgs{padding:11px}
-  .rcb .rcp-pkg-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--txt-tertiary);margin-bottom:8px}
-  .rcb .rcp-pkg-list{display:flex;flex-direction:column;gap:5px}
-  .rcb .rcp-pkg{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-md)}
+  .rcb .rcp-stat-l{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt-tertiary);margin-top:var(--space-2)}
+  .rcb .rcp-bio{padding:var(--space-12) var(--space-12);font-size:11px;color:var(--txt-secondary);border-bottom:0.5px solid var(--bdr-tertiary);line-height:1.6}
+  .rcb .rcp-pkgs{padding:var(--space-12)}
+  .rcb .rcp-pkg-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--txt-tertiary);margin-bottom:var(--space-8)}
+  .rcb .rcp-pkg-list{display:flex;flex-direction:column;gap:var(--space-4)}
+  .rcb .rcp-pkg{display:flex;align-items:center;justify-content:space-between;padding:var(--space-8) var(--space-12);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-md)}
   .rcb .rcp-pkg.feat{border-color:var(--accent-border);background:var(--accent-light)}
   .rcb .rcp-pkg-name{font-size:11.5px;font-weight:500;color:var(--txt-primary)}
   .rcb .rcp-pkg-price{font-size:11.5px;font-weight:600;color:var(--accent)}
-  .rcb .rcp-footer{padding:10px 11px;border-top:0.5px solid var(--bdr-tertiary);display:flex;gap:6px}
+  .rcb .rcp-footer{padding:var(--space-12) var(--space-12);border-top:0.5px solid var(--bdr-tertiary);display:flex;gap:var(--space-8)}
   .rcb .rcp-preview-col{position:sticky;top:12px}
 
-  .rcb .pkg-card{background:var(--bg-primary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-xl);padding:18px;position:relative}
+  .rcb .pkg-card{background:var(--bg-primary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-xl);padding:var(--space-20);position:relative}
   .rcb .pkg-card.feat-card{border-color:var(--accent-border);background:var(--accent-light)}
   .rcb .pkg-drag-handle{cursor:grab;color:var(--txt-tertiary);display:flex}
 
-  .rcb .pay-method{background:var(--bg-primary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-xl);padding:18px;transition:all .18s}
+  .rcb .pay-method{background:var(--bg-primary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-xl);padding:var(--space-20);transition:all .18s}
   .rcb .pay-method.active-method{border-color:var(--accent-border);background:var(--accent-light)}
-  .rcb .pay-method-header{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+  .rcb .pay-method-header{display:flex;align-items:center;gap:var(--space-12);margin-bottom:var(--space-16)}
   .rcb .pay-icon{width:36px;height:36px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
-  .rcb .share-box{background:var(--bg-secondary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-md);padding:10px 13px;display:flex;align-items:center;gap:8px}
+  .rcb .share-box{background:var(--bg-secondary);border:0.5px solid var(--bdr-tertiary);border-radius:var(--r-md);padding:var(--space-12) var(--space-12);display:flex;align-items:center;gap:var(--space-8)}
   .rcb .share-url{flex:1;font-size:12.5px;color:var(--txt-secondary);font-family:var(--f-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  .rcb .check-row{display:flex;align-items:center;gap:10px}
+  .rcb .check-row{display:flex;align-items:center;gap:var(--space-12)}
   .rcb .check-row-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .rcb .check-row-dot.ok{background:var(--bg-success);color:var(--txt-success)}
 
@@ -279,9 +279,9 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
           : <div className="av av-md av-accent">{initials(profile.name)}</div>}
         <div className="rcp-name">{headline || profile.name}</div>
         <div className="rcp-handle">@{profile.handle || "handle"} &middot; {profile.location}</div>
-        {pitch && <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 5, lineHeight: 1.4 }}>{pitch}</div>}
+        {pitch && <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 'var(--space-4)', lineHeight: 1.4 }}>{pitch}</div>}
         {(leadTime || availability) && (
-          <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 'var(--space-8)', marginTop: 'var(--space-12)', flexWrap: "wrap" }}>
             {availability && (
               <span className="tag tag-success" style={{ fontSize: 10 }}>
                 <span className="sdot" style={{ background: "var(--green-400)" }} />{availability}
@@ -307,7 +307,7 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
         <div className="rcp-pkg-label">Packages</div>
         <div className="rcp-pkg-list">
           {packages.length === 0 ? (
-            <div style={{ fontSize: 11, color: "var(--txt-tertiary)", textAlign: "center", padding: "10px 0" }}>No packages yet&hellip;</div>
+            <div style={{ fontSize: 11, color: "var(--txt-tertiary)", textAlign: "center", padding: "var(--space-12) 0" }}>No packages yet&hellip;</div>
           ) : (
             packages.map((p) => (
               <div className={`rcp-pkg${p.feat ? " feat" : ""}`} key={p.id}>
@@ -537,14 +537,14 @@ export default function RateCardBuilderPage() {
             <div className="bsplit">
               <div className="bento">
                 <div className="card card-p">
-                  <p className="section-title" style={{ marginBottom: 12 }}>Profile photo</p>
-                  <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                  <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Profile photo</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-16)' }}>
                     {photoUrl ? (
                       <img src={photoUrl} alt="Profile photo" className="av av-xl" style={{ objectFit: "cover", border: "0.5px solid var(--bdr-tertiary)" }} />
                     ) : (
                       <div className="av av-xl av-accent">{initials(profile.name)}</div>
                     )}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
                       <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer" }}>
                         <IconUpload size={12} />{photoUrl ? "Change photo" : "Upload photo"}
                         <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: "none" }} />
@@ -556,8 +556,8 @@ export default function RateCardBuilderPage() {
 
                 <div className="card card-p">
                   <p className="section-title">Your platforms</p>
-                  <p className="hint" style={{ margin: "4px 0 12px" }}>Select all platforms you are active on</p>
-                  <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                  <p className="hint" style={{ margin: "var(--space-4) 0 var(--space-12)" }}>Select all platforms you are active on</p>
+                  <div style={{ display: "flex", gap: 'var(--space-8)', flexWrap: "wrap" }}>
                     {[
                       ["instagram", "Instagram", IconBrandInstagram],
                       ["tiktok", "TikTok", IconBrandTiktok],
@@ -573,8 +573,8 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p span2">
-                  <p className="section-title" style={{ marginBottom: 14 }}>Basic info</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Basic info</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="g2">
                       <div className="field">
                         <label className="field-label field-required">Display name</label>
@@ -584,7 +584,7 @@ export default function RateCardBuilderPage() {
                         <label className="field-label field-required">Handle</label>
                         <div className="inp-wrap">
                           <span className="inp-pre">@</span>
-                          <input className="inp" style={{ paddingLeft: 20 }} value={profile.handle} onChange={(e) => setProfile({ ...profile, handle: e.target.value })} />
+                          <input className="inp" style={{ paddingLeft: 'var(--space-20)' }} value={profile.handle} onChange={(e) => setProfile({ ...profile, handle: e.target.value })} />
                         </div>
                       </div>
                     </div>
@@ -605,7 +605,7 @@ export default function RateCardBuilderPage() {
 
                 <div className="card card-p span2">
                   <p className="section-title">Audience stats</p>
-                  <p className="hint" style={{ margin: "4px 0 14px" }}>Shown on your rate card to build trust with brands</p>
+                  <p className="hint" style={{ margin: "var(--space-4) 0 var(--space-16)" }}>Shown on your rate card to build trust with brands</p>
                   <div className="g3">
                     <div className="field">
                       <label className="field-label">Total followers</label>
@@ -626,7 +626,7 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p span2">
-                  <p className="section-title" style={{ marginBottom: 12 }}>Niche &amp; content</p>
+                  <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Niche &amp; content</p>
                   <div className="g2">
                     <div className="field">
                       <label className="field-label field-required">Primary niche</label>
@@ -649,9 +649,9 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="rcp-preview-col">
-                <p className="section-title" style={{ marginBottom: 10 }}>Live preview</p>
+                <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Live preview</p>
                 <RateCardPreview profile={profile} platforms={platforms} packages={packages} />
-                <p className="hint" style={{ marginTop: 7, textAlign: "center" }}>Updates as you type</p>
+                <p className="hint" style={{ marginTop: 'var(--space-8)', textAlign: "center" }}>Updates as you type</p>
               </div>
             </div>
           )}
@@ -659,11 +659,11 @@ export default function RateCardBuilderPage() {
           {/* STEP 2: PACKAGES */}
           {step === 2 && (
             <div className="bsplit">
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                   {packages.map((pkg) => (
                     <div className={`pkg-card${pkg.feat ? " feat-card" : ""}`} key={pkg.id}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
                         <span className="pkg-drag-handle"><IconGripVertical size={14} /></span>
                         <div className="section-title" style={{ flex: 1 }}>{pkg.name}</div>
                         {pkg.feat && <span className="tag tag-accent">Featured</span>}
@@ -671,7 +671,7 @@ export default function RateCardBuilderPage() {
                           <IconTrash size={12} color="var(--red-400)" />
                         </button>
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                         <div className="g2">
                           <div className="field">
                             <label className="field-label field-required">Package name</label>
@@ -681,7 +681,7 @@ export default function RateCardBuilderPage() {
                             <label className="field-label field-required">Price (KES)</label>
                             <div className="inp-wrap">
                               <span className="inp-pre">KES</span>
-                              <input className="inp" style={{ paddingLeft: 40 }} value={pkg.price} onChange={(e) => updatePackage(pkg.id, "price", e.target.value)} />
+                              <input className="inp" style={{ paddingLeft: 'var(--space-40)' }} value={pkg.price} onChange={(e) => updatePackage(pkg.id, "price", e.target.value)} />
                             </div>
                           </div>
                         </div>
@@ -689,7 +689,7 @@ export default function RateCardBuilderPage() {
                           <label className="field-label">Description</label>
                           <div className="inp-wrap"><span className="inp-icon l"><IconAlignLeft size={14} /></span><input className="inp inp-icon-l" value={pkg.desc} onChange={(e) => updatePackage(pkg.id, "desc", e.target.value)} /></div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
                           <button className={`toggle${pkg.feat ? " on" : ""}`} onClick={() => updatePackage(pkg.id, "feat", !pkg.feat)} />
                           <span style={{ fontSize: 12.5, color: "var(--txt-secondary)" }}>Mark as featured (highlighted on card)</span>
                         </div>
@@ -698,7 +698,7 @@ export default function RateCardBuilderPage() {
                   ))}
                 </div>
                 <div className="bento">
-                  <div className="card-dash card-p" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 58 }} onClick={addPackage}>
+                  <div className="card-dash card-p" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 'var(--space-8)', minHeight: 58 }} onClick={addPackage}>
                     <IconPlus size={16} color="var(--txt-tertiary)" />
                     <span style={{ fontSize: 13, fontWeight: 500, color: "var(--txt-secondary)" }}>Add another package</span>
                   </div>
@@ -710,7 +710,7 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="rcp-preview-col">
-                <p className="section-title" style={{ marginBottom: 10 }}>Live preview</p>
+                <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Live preview</p>
                 <RateCardPreview profile={profile} platforms={platforms} packages={packages} />
               </div>
             </div>
@@ -718,7 +718,7 @@ export default function RateCardBuilderPage() {
 
           {/* STEP 3: PAYMENT */}
           {step === 3 && (
-            <div style={{ maxWidth: 700, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ maxWidth: 700, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
               <div className="alert alert-info">
                 <IconShieldCheck size={16} />
                 <div className="alert-body"><div className="alert-title">Secure &amp; encrypted</div>All payment details are stored securely. Creatorske never stores full card credentials.</div>
@@ -730,10 +730,10 @@ export default function RateCardBuilderPage() {
                   <div style={{ flex: 1 }}><div className="section-title">M-Pesa</div><p className="hint">Safaricom mobile money</p></div>
                   <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                   <div className="field">
                     <label className="field-label field-required">M-Pesa phone number</label>
-                    <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 44 }} value={mpesaPhone} onChange={(e) => setMpesaPhone(e.target.value)} /></div>
+                    <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} value={mpesaPhone} onChange={(e) => setMpesaPhone(e.target.value)} /></div>
                   </div>
                   <div className="field">
                     <label className="field-label">Business name on M-Pesa</label>
@@ -755,7 +755,7 @@ export default function RateCardBuilderPage() {
                 </div>
                 <div className="field">
                   <label className="field-label">Airtel phone number</label>
-                  <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 44 }} placeholder="7XX XXX XXX" /></div>
+                  <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} placeholder="7XX XXX XXX" /></div>
                 </div>
               </div>
 
@@ -766,7 +766,7 @@ export default function RateCardBuilderPage() {
                   <button className="btn btn-ghost btn-sm" onClick={() => setBankOpen((o) => !o)}>{bankOpen ? "Hide" : "Add details"}</button>
                 </div>
                 {bankOpen && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="g2">
                       <div className="field">
                         <label className="field-label">Bank name</label>
@@ -786,19 +786,19 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="card card-p">
-                <p className="section-title" style={{ marginBottom: 14 }}>Invoice preferences</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Invoice preferences</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
                     <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Auto-send invoice on booking</div><p className="hint">Automatically email invoice when a client books</p></div>
                     <button className={`toggle${autoInvoice ? " on" : ""}`} onClick={() => setAutoInvoice((v) => !v)} />
                   </div>
                   <div className="hr" />
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
                     <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Require 50% deposit</div><p className="hint">Client pays half upfront before work begins</p></div>
                     <button className={`toggle${requireDeposit ? " on" : ""}`} onClick={() => setRequireDeposit((v) => !v)} />
                   </div>
                   <div className="hr" />
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
                     <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>WhatsApp payment reminder</div><p className="hint">Send a WhatsApp nudge 24 hrs before due date</p></div>
                     <button className={`toggle${whatsappReminder ? " on" : ""}`} onClick={() => setWhatsappReminder((v) => !v)} />
                   </div>
@@ -810,10 +810,10 @@ export default function RateCardBuilderPage() {
           {/* STEP 4: EDIT CARD */}
           {step === 4 && (
             <div className="bsplit">
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-16)' }}>
                 <div className="card card-p">
-                  <p className="section-title" style={{ marginBottom: 14 }}>Card header</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Card header</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="field">
                       <label className="field-label">Headline</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconHeading size={14} /></span><input className="inp inp-icon-l" value={headline} onChange={(e) => setHeadline(e.target.value)} /></div>
@@ -847,13 +847,13 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p">
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 'var(--space-16)' }}>
                     <p className="section-title">Package order &amp; visibility</p>
                     <button className="btn btn-ghost btn-xs" onClick={() => setStep(2)}><IconPencil size={11} />Edit packages</button>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
                     {packages.map((pkg) => (
-                      <div key={pkg.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", background: pkg.feat ? "var(--accent-light)" : "var(--bg-secondary)", border: `0.5px solid ${pkg.feat ? "var(--accent-border)" : "var(--bdr-tertiary)"}`, borderRadius: "var(--r-md)", opacity: pkg.hidden ? 0.5 : 1 }}>
+                      <div key={pkg.id} style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)', padding: "var(--space-12) var(--space-12)", background: pkg.feat ? "var(--accent-light)" : "var(--bg-secondary)", border: `0.5px solid ${pkg.feat ? "var(--accent-border)" : "var(--bdr-tertiary)"}`, borderRadius: "var(--r-md)", opacity: pkg.hidden ? 0.5 : 1 }}>
                         <span style={{ color: "var(--txt-tertiary)", display: "flex", cursor: "grab" }}><IconGripVertical size={14} /></span>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 13, fontWeight: 500 }}>{pkg.name}{pkg.hidden ? " (hidden)" : ""}</div>
@@ -874,8 +874,8 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p">
-                  <p className="section-title" style={{ marginBottom: 14 }}>Contact &amp; social links</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+                  <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Contact &amp; social links</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="field">
                       <label className="field-label">WhatsApp business number</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconMessageCircle size={14} color="#25D366" /></span><input className="inp inp-icon-l" defaultValue="+254 712 345 678" /></div>
@@ -902,8 +902,8 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p">
-                  <p className="section-title" style={{ marginBottom: 14 }}>Terms &amp; conditions</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+                  <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Terms &amp; conditions</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="field">
                       <label className="field-label">Custom usage rights note</label>
                       <textarea className="inp ta" rows={2} value={usageNote} onChange={(e) => setUsageNote(e.target.value)} />
@@ -917,7 +917,7 @@ export default function RateCardBuilderPage() {
                         <span className="chev"><IconChevronDown size={13} /></span>
                       </div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
                       <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Show KES pricing on card</div><p className="hint">Uncheck to show &ldquo;Price on request&rdquo; instead</p></div>
                       <button className={`toggle${showPricing ? " on" : ""}`} onClick={() => setShowPricing((v) => !v)} />
                     </div>
@@ -926,7 +926,7 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="rcp-preview-col">
-                <p className="section-title" style={{ marginBottom: 10 }}>Live preview</p>
+                <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Live preview</p>
                 <div className="rcp">
                   <div className="rcp-top">
                     {profile.photoUrl
@@ -934,8 +934,8 @@ export default function RateCardBuilderPage() {
           : <div className="av av-md av-accent">{initials(profile.name)}</div>}
                     <div className="rcp-name" style={{ fontSize: 13.5 }}>{headline}</div>
                     <div className="rcp-handle">@{profile.handle} &middot; {profile.location}</div>
-                    <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 5, lineHeight: 1.4 }}>{pitch}</div>
-                    <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 'var(--space-4)', lineHeight: 1.4 }}>{pitch}</div>
+                    <div style={{ display: "flex", gap: 'var(--space-8)', marginTop: 'var(--space-12)', flexWrap: "wrap" }}>
                       <span className="tag tag-success" style={{ fontSize: 10 }}><span className="sdot" style={{ background: "var(--green-400)" }} />{availability}</span>
                       <span className="tag tag-default" style={{ fontSize: 10 }}>{leadTime} lead time</span>
                     </div>
@@ -953,35 +953,35 @@ export default function RateCardBuilderPage() {
                         <div className={`rcp-pkg${pkg.feat ? " feat" : ""}`} key={pkg.id}>
                           <div>
                             <div className="rcp-pkg-name">{pkg.name}</div>
-                            <div style={{ fontSize: 9, color: "var(--txt-tertiary)", marginTop: 1 }}>{pkg.desc}</div>
+                            <div style={{ fontSize: 9, color: "var(--txt-tertiary)", marginTop: 'var(--space-2)' }}>{pkg.desc}</div>
                           </div>
                           <div className="rcp-pkg-price">{showPricing ? `KES ${compact(pkg.price)}` : "On request"}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div style={{ padding: "10px 12px", borderTop: "0.5px solid var(--bdr-tertiary)", display: "flex", gap: 5, alignItems: "center" }}>
+                  <div style={{ padding: "var(--space-12) var(--space-12)", borderTop: "0.5px solid var(--bdr-tertiary)", display: "flex", gap: 'var(--space-4)', alignItems: "center" }}>
                     <IconBrandInstagram size={14} color="var(--txt-secondary)" />
                     <IconBrandTiktok size={14} color="var(--txt-secondary)" />
                     <IconMessageCircle size={14} color="var(--txt-secondary)" />
-                    <span style={{ fontSize: 10, color: "var(--txt-tertiary)", marginLeft: 4 }}>Usage rights &middot; {revisionPolicy.split(" ").slice(0, 2).join(" ")}</span>
+                    <span style={{ fontSize: 10, color: "var(--txt-tertiary)", marginLeft: 'var(--space-4)' }}>Usage rights &middot; {revisionPolicy.split(" ").slice(0, 2).join(" ")}</span>
                   </div>
                   <div className="rcp-footer">
                     <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={previewOnly}><IconMessageCircle size={12} />Enquire</button>
                     <button className="btn btn-accent btn-sm" style={{ flex: 1 }} onClick={previewOnly}>Book now</button>
                   </div>
                 </div>
-                <p className="hint" style={{ marginTop: 7, textAlign: "center" }}>Updates as you type</p>
+                <p className="hint" style={{ marginTop: 'var(--space-8)', textAlign: "center" }}>Updates as you type</p>
               </div>
             </div>
           )}
 
           {/* STEP 5: PUBLISH */}
           {step === 5 && (
-            <div style={{ maxWidth: 720, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ maxWidth: 720, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 'var(--space-16)' }}>
               <div className="card card-p">
-                <p className="section-title" style={{ marginBottom: 14 }}>Readiness check</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Readiness check</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                   {[
                     "Profile setup complete",
                     `${packages.length} package${packages.length === 1 ? "" : "s"} added`,
@@ -1001,13 +1001,13 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="card card-p">
-                <p className="section-title" style={{ marginBottom: 12 }}>Your public link</p>
+                <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Your public link</p>
                 <div className="share-box">
                   <IconLink size={14} color="var(--txt-tertiary)" />
                   <span className="share-url">{slug}</span>
                   <button className="btn btn-ghost btn-xs" onClick={copyLink}>{copied ? <><IconCheck size={11} />Copied!</> : <><IconCopy size={11} />Copy</>}</button>
                 </div>
-                <div style={{ display: "flex", gap: 7, marginTop: 10 }}>
+                <div style={{ display: "flex", gap: 'var(--space-8)', marginTop: 'var(--space-12)' }}>
                   <button className="btn btn-ghost btn-sm" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent("Check out my rate card: https://" + slug)}`, "_blank")}>
                     <IconMessageCircle size={12} />Share on WhatsApp
                   </button>
@@ -1015,21 +1015,21 @@ export default function RateCardBuilderPage() {
               </div>
 
               {published ? (
-                <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: 32, textAlign: "center" }}>
+                <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 'var(--space-16)', padding: 'var(--space-32)', textAlign: "center" }}>
                   <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--bg-success)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <IconCheck size={24} color="var(--txt-success)" />
                   </div>
                   <div>
-                    <div className="page-title" style={{ marginBottom: 4 }}>You're live!</div>
+                    <div className="page-title" style={{ marginBottom: 'var(--space-4)' }}>You're live!</div>
                     <p style={{ fontSize: 13, color: "var(--txt-secondary)" }}>Your rate card is published and ready to share with brands.</p>
                   </div>
-                  <div style={{ display: "flex", gap: 7, flexWrap: "wrap", justifyContent: "center" }}>
+                  <div style={{ display: "flex", gap: 'var(--space-8)', flexWrap: "wrap", justifyContent: "center" }}>
                     <button className="btn btn-secondary btn-sm" onClick={copyLink}><IconCopy size={12} />Copy link</button>
                     <button className="btn btn-ghost btn-sm" onClick={() => navigate('/creator/dashboard')}><IconLayoutDashboard size={12} />Go to dashboard</button>
                   </div>
                 </div>
               ) : (
-                <button className={`btn btn-accent btn-full${isPublishing || isCreating ? " btn-loading" : ""}`} style={{ padding: 13 }} disabled={isPublishing || isCreating} onClick={doPublish}>
+                <button className={`btn btn-accent btn-full${isPublishing || isCreating ? " btn-loading" : ""}`} style={{ padding: 'var(--space-12)' }} disabled={isPublishing || isCreating} onClick={doPublish}>
                   <IconRocket size={15} />Publish rate card
                 </button>
               )}
@@ -1043,7 +1043,7 @@ export default function RateCardBuilderPage() {
             {step > 1 ? (
               <button className="btn btn-ghost" onClick={back}><IconArrowLeft size={13} />Back</button>
             ) : <div />}
-            <div style={{ display: "flex", gap: 7 }}>
+            <div style={{ display: "flex", gap: 'var(--space-8)' }}>
               {step < 5 && <button className={`btn btn-ghost${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={handleSaveDraft}>Save draft</button>}
               {step === 5 ? (
                 <button className={`btn btn-ghost${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={handleSaveDraft}>Save draft</button>

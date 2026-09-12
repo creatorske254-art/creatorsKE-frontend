@@ -110,16 +110,16 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
       <style>{`
-        .pr-nav-link { font-size:13px; color:var(--grey-600); padding:6px 12px; border-radius:8px; cursor:pointer; font-weight:500; background:none; border:none; font-family:var(--font-body); transition:all .15s; text-decoration:none; }
+        .pr-nav-link { font-size:13px; color:var(--grey-600); padding:var(--space-8) var(--space-12); border-radius:8px; cursor:pointer; font-weight:500; background:none; border:none; font-family:var(--font-body); transition:all .15s; text-decoration:none; }
         .pr-nav-link:hover { color:var(--black); background:var(--grey-50); }
-        .pr-btn-ghost { background:transparent; color:var(--grey-600); border-radius:8px; font-size:13px; padding:7px 16px; border:0.5px solid var(--grey-200); cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
+        .pr-btn-ghost { background:transparent; color:var(--grey-600); border-radius:8px; font-size:13px; padding:var(--space-8) var(--space-16); border:0.5px solid var(--grey-200); cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
         .pr-btn-ghost:hover { color:var(--black); border-color:var(--grey-400); background:var(--grey-50); }
-        .pr-btn-purple { background:var(--purple-600); color:#fff; border-radius:8px; font-size:13px; padding:7px 16px; border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
+        .pr-btn-purple { background:var(--purple-600); color:#fff; border-radius:8px; font-size:13px; padding:var(--space-8) var(--space-16); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
         .pr-btn-purple:hover { background:var(--purple-700); }
       `}</style>
 
       {/* Nav */}
-      <nav className="h-[60px] flex items-center justify-between px-10 border-b border-[0.5px] border-[var(--grey-100)] bg-white/[0.92] backdrop-blur-md sticky top-0 z-10">
+      <nav className="h-[60px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[0.5px] border-[var(--grey-100)] bg-white/[0.92] backdrop-blur-md sticky top-0 z-10">
         <button
           type="button"
           onClick={() => navigate('/')}
@@ -138,7 +138,7 @@ export default function TermsPage() {
       </nav>
 
       {/* Content */}
-      <div className="max-w-[720px] w-full mx-auto px-8 py-16 flex-1">
+      <div className="max-w-[720px] w-full mx-auto px-[var(--gutter-public)] py-16 flex-1">
         <h1 className="font-[var(--font-display)] text-[32px] font-semibold tracking-[-0.02em] text-[var(--black)] mb-2">
           Terms of Service
         </h1>
@@ -165,7 +165,7 @@ export default function TermsPage() {
       </div>
 
       {/* Footer */}
-      <footer className="px-8 py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)]">
+      <footer className="px-[var(--gutter-public)] py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)]">
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </div>

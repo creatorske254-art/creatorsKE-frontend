@@ -60,10 +60,10 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
       }}
     >
       {/* Cover gradient: niche tag, remove control, and identity row */}
-      <div style={{ background: creator.bg, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 12, minHeight: 130 }}>
+      <div style={{ background: creator.bg, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'var(--space-12)', minHeight: 130 }}>
         <div style={{
           position: 'absolute', top: 10, right: 10, fontSize: 9, fontWeight: 600,
-          letterSpacing: '0.06em', textTransform: 'uppercase', padding: '3px 9px',
+          letterSpacing: '0.06em', textTransform: 'uppercase', padding: 'var(--space-4) var(--space-8)',
           borderRadius: 999, background: 'rgba(255,255,255,0.22)', color: '#fff',
         }}>
           {creator.niche}
@@ -85,7 +85,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
         </button>
 
         {/* identity row: avatar + name/handle, inline with the cover like DirectoryPage's CreatorCard */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)', position: 'relative', zIndex: 1 }}>
           <div style={{
             width: 38, height: 38, borderRadius: '50%',
             border: '2px solid rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.15)',
@@ -108,12 +108,12 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
       </div>
 
       {/* Body */}
-      <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 10, flex: 1, background: 'var(--white)' }}>
+      <div style={{ padding: 'var(--space-12)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)', flex: 1, background: 'var(--white)' }}>
         {/* stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, background: 'var(--grey-200)', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)', background: 'var(--grey-200)', borderRadius: 8, overflow: 'hidden' }}>
           {[['followers', formatFollowers(creator.followers)], ['eng.', `${creator.eng}%`], ['rating', creator.rating]].map(([lbl, val]) => (
-            <div key={lbl} style={{ background: 'var(--grey-50)', padding: '7px 0', textAlign: 'center' }}>
-              <strong style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, fontSize: 13, fontWeight: 600, color: 'var(--black)', fontFamily: 'var(--font-display)' }}>
+            <div key={lbl} style={{ background: 'var(--grey-50)', padding: 'var(--space-8) 0', textAlign: 'center' }}>
+              <strong style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-4)', fontSize: 13, fontWeight: 600, color: 'var(--black)', fontFamily: 'var(--font-display)' }}>
                 {val}
                 {lbl === 'rating' && <IconStarFilled size={11} style={{ color: 'var(--black)' }} />}
               </strong>
@@ -124,13 +124,13 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
 
         {/* footer row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, color: 'var(--grey-500)' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)', fontSize: 11, color: 'var(--grey-500)' }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: a.dot, display: 'inline-block', flexShrink: 0 }} />
             {a.label}
           </div>
           <button
             onClick={() => onEnquire(creator)}
-            style={{ padding: '6px 14px', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 500, background: 'var(--purple-600)', color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
+            style={{ padding: 'var(--space-8) var(--space-16)', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 500, background: 'var(--purple-600)', color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--purple-700)'}
             onMouseLeave={e => e.currentTarget.style.background = 'var(--purple-600)'}
           >
@@ -148,8 +148,8 @@ function Toast({ message, visible, action }) {
     <div style={{
       position: 'fixed', bottom: 24, left: '50%', transform: `translateX(-50%) translateY(${visible ? 0 : 10}px)`,
       zIndex: 999, pointerEvents: visible ? 'auto' : 'none',
-      background: 'var(--black)', color: 'var(--white)', padding: '11px 18px', borderRadius: 'var(--radius-lg)', fontSize: 13,
-      fontWeight: 500, boxShadow: 'var(--shadow-xl)', display: 'flex', alignItems: 'center', gap: 12,
+      background: 'var(--black)', color: 'var(--white)', padding: 'var(--space-12) var(--space-20)', borderRadius: 'var(--radius-lg)', fontSize: 13,
+      fontWeight: 500, boxShadow: 'var(--shadow-xl)', display: 'flex', alignItems: 'center', gap: 'var(--space-12)',
       opacity: visible ? 1 : 0, transition: 'all 0.25s', whiteSpace: 'nowrap',
     }}>
       <IconCheck size={14} />
@@ -169,15 +169,15 @@ function Toast({ message, visible, action }) {
 // ── Empty states ──────────────────────────────────────────────────────────
 function EmptyShortlist({ navigate }) {
   return (
-    <div className="card card-p-xl" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '64px 24px' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 'var(--radius-xl)', background: 'var(--grey-50)', border: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-400)', marginBottom: 4 }}>
+    <div className="card card-p-lg" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-64) var(--space-24)' }}>
+      <div style={{ width: 52, height: 52, borderRadius: 'var(--radius-xl)', background: 'var(--grey-50)', border: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-400)', marginBottom: 'var(--space-4)' }}>
         <IconBookmark size={22} />
       </div>
       <h4 style={{ margin: 0 }}>Your shortlist is empty</h4>
       <p className="card-body-text" style={{ maxWidth: 320 }}>
         Save creators while you browse the directory and they'll show up here so you can compare them side by side before reaching out.
       </p>
-      <button className="btn btn-purple" style={{ marginTop: 6 }} onClick={() => navigate('/directory')}>
+      <button className="btn btn-purple" style={{ marginTop: 'var(--space-8)' }} onClick={() => navigate('/directory')}>
         <IconSearch size={13} />Browse the directory
       </button>
     </div>
@@ -186,13 +186,13 @@ function EmptyShortlist({ navigate }) {
 
 function NoResults({ onClear }) {
   return (
-    <div className="card card-p-xl" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '48px 24px' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 'var(--radius-xl)', background: 'var(--grey-50)', border: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-400)', marginBottom: 4 }}>
+    <div className="card card-p-lg" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-48) var(--space-24)' }}>
+      <div style={{ width: 52, height: 52, borderRadius: 'var(--radius-xl)', background: 'var(--grey-50)', border: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-400)', marginBottom: 'var(--space-4)' }}>
         <IconFilterOff size={22} />
       </div>
       <h4 style={{ margin: 0 }}>No creators match your filters</h4>
       <p className="card-body-text" style={{ maxWidth: 260 }}>Try a different niche, or clear your search.</p>
-      <button className="btn btn-ghost" style={{ marginTop: 4 }} onClick={onClear}>Clear filters</button>
+      <button className="btn btn-ghost" style={{ marginTop: 'var(--space-4)' }} onClick={onClear}>Clear filters</button>
     </div>
   );
 }
@@ -264,12 +264,12 @@ export default function ShortlistPage() {
       <style>{`
         @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-        .sl-chip { padding:5px 14px; border:0.5px solid var(--grey-200); border-radius:var(--radius-pill); font-size:12px; font-weight:500; cursor:pointer; background:var(--white); color:var(--grey-600); transition:all var(--transition-fast); white-space:nowrap; font-family:var(--font-body); }
+        .sl-chip { padding:var(--space-4) var(--space-16); border:0.5px solid var(--grey-200); border-radius:var(--radius-pill); font-size:12px; font-weight:500; cursor:pointer; background:var(--white); color:var(--grey-600); transition:all var(--transition-fast); white-space:nowrap; font-family:var(--font-body); }
         .sl-chip:hover { border-color:var(--grey-400); color:var(--black); }
         .sl-chip.active { background:var(--black); color:var(--white); border-color:var(--black); }
 
         /* Summary row: uniform 4-up stat tiles */
-        .sl-stats-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; width:100%; }
+        .sl-stats-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-16); width:100%; }
         @media (max-width:900px) {
           .sl-stats-row { grid-template-columns: 1fr 1fr; }
         }
@@ -278,10 +278,10 @@ export default function ShortlistPage() {
         }
 
         /* Card grid: uniform */
-        .sl-card-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:16px; width:100%; }
+        .sl-card-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:var(--space-16); width:100%; }
         .sl-card { width:100%; }
 
-        .sl-search-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; width:100%; }
+        .sl-search-row { display:flex; gap:var(--space-12); align-items:center; flex-wrap:wrap; width:100%; }
         @media(max-width:720px) {
           .sl-search-row { flex-direction:column !important; align-items:stretch !important; }
           .sl-search-wrap { max-width:100% !important; }
@@ -289,10 +289,10 @@ export default function ShortlistPage() {
       `}</style>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-20)', flexWrap: 'wrap' }}>
         <div>
           <h3 className="page-title">Your shortlist</h3>
-          <p className="text-body-sm" style={{ color: 'var(--grey-500)', marginTop: 6, maxWidth: 520 }}>
+          <p className="text-body-sm" style={{ color: 'var(--grey-500)', marginTop: 'var(--space-8)', maxWidth: 520 }}>
             Creators you've saved while browsing. Reach out whenever you're ready to book.
           </p>
         </div>
@@ -320,7 +320,7 @@ export default function ShortlistPage() {
             </div>
             <div className="stat-card">
               <div className="stat-card-label">Avg. rating</div>
-              <div className="stat-card-value" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <div className="stat-card-value" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
                 {stats.avgRating}
                 {stats.avgRating !== 'N/A' && <IconStarFilled size={14} style={{ color: 'var(--black)' }} />}
               </div>
@@ -338,14 +338,14 @@ export default function ShortlistPage() {
               <IconSearch size={15} className="input-icon left" />
               <input
                 className="search-input"
-                style={{ paddingLeft: 38 }}
+                style={{ paddingLeft: 'var(--space-40)' }}
                 type="text"
                 placeholder="Search by name, handle, or niche"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
               />
             </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-8)', flexWrap: 'wrap' }}>
               {NICHES.map(n => (
                 <button key={n} className={`sl-chip${activeNiche === n ? ' active' : ''}`} onClick={() => setNiche(n)}>
                   {n}

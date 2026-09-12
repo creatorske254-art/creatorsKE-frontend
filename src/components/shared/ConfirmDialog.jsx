@@ -56,7 +56,7 @@ export default function ConfirmDialog({
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 1000,
-        padding: '24px',
+        padding: 'var(--space-24)',
       }}
     >
       <div
@@ -73,13 +73,13 @@ export default function ConfirmDialog({
         {/* Header */}
         <div
           style={{
-            padding: '24px 24px 0',
+            padding: 'var(--space-24) var(--space-24) 0',
             display: 'flex',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
             {variant === 'danger' && (
               <div
                 style={{
@@ -129,7 +129,7 @@ export default function ConfirmDialog({
         </div>
 
         {/* Body */}
-        <div style={{ padding: '12px 24px 24px' }}>
+        <div style={{ padding: 'var(--space-12) var(--space-24) var(--space-24)' }}>
           <p
             style={{
               fontSize: '14px',
@@ -144,18 +144,18 @@ export default function ConfirmDialog({
         {/* Footer */}
         <div
           style={{
-            padding: '14px 24px',
+            padding: 'var(--space-16) var(--space-24)',
             background: 'var(--grey-50)',
             borderTop: '0.5px solid var(--grey-100)',
             display: 'flex',
             justifyContent: 'flex-end',
-            gap: '10px',
+            gap: 'var(--space-12)',
           }}
         >
           <button
             onClick={onCancel}
             style={{
-              padding: '9px 20px',
+              padding: 'var(--space-8) var(--space-20)',
               fontSize: '13px',
               fontFamily: 'var(--font-body)',
               fontWeight: 500,
@@ -171,7 +171,7 @@ export default function ConfirmDialog({
           <button
             onClick={onConfirm}
             style={{
-              padding: '9px 20px',
+              padding: 'var(--space-8) var(--space-20)',
               fontSize: '13px',
               fontFamily: 'var(--font-body)',
               fontWeight: 500,

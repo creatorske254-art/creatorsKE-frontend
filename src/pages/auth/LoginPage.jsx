@@ -24,7 +24,7 @@ const inputStyle = (hasError) => ({
   background: 'var(--white)',
   border: hasError ? '0.5px solid var(--status-error)' : '0.5px solid var(--grey-300)',
   borderRadius: 'var(--radius-md)',
-  padding: '10px 14px',
+  padding: 'var(--space-12) var(--space-16)',
   outline: 'none',
   transition: 'border-color .15s, box-shadow .15s',
 });
@@ -80,7 +80,7 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 40px',
+        padding: '0 var(--gutter-public)',
         position: 'sticky',
         top: 0,
         zIndex: 100,
@@ -89,11 +89,11 @@ export default function LoginPage() {
         <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', textDecoration: 'none' }}>
           Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
           <span className="auth-navbar-hint" style={{ fontSize: '13px', color: 'var(--grey-500)' }}>New to Creatorske?</span>
           <Link
             to={{ pathname: '/signup', search: location.search }}
-            style={{ padding: '7px 16px', fontSize: '13px', fontWeight: 500, background: 'var(--purple-600)', color: 'var(--white)', borderRadius: 'var(--radius-md)', textDecoration: 'none', transition: 'all .15s' }}
+            style={{ padding: 'var(--space-8) var(--space-16)', fontSize: '13px', fontWeight: 500, background: 'var(--purple-600)', color: 'var(--white)', borderRadius: 'var(--radius-md)', textDecoration: 'none', transition: 'all .15s' }}
           >
             Get started free
           </Link>
@@ -101,20 +101,20 @@ export default function LoginPage() {
       </nav>
 
       {/* Card */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-48) var(--gutter-public)' }}>
         <div style={{
           width: '100%',
           maxWidth: '440px',
           background: 'var(--white)',
           border: '0.5px solid var(--grey-200)',
           borderRadius: 'var(--radius-xl)',
-          padding: '40px 36px 36px',
+          padding: 'var(--space-40) var(--space-40) var(--space-40)',
           boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
-          <h1 className="hero-title" style={{ marginBottom: '6px' }}>
+          <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
             Welcome back
           </h1>
-          <p className="page-subtitle" style={{ marginBottom: '24px' }}>
+          <p className="page-subtitle" style={{ marginBottom: 'var(--space-24)' }}>
             Sign in to your account.
           </p>
 
@@ -123,10 +123,10 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
 
               {/* Email */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
                 <label className="field-label">Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
                 <div className="input-wrapper">
                   <IconMail className="input-icon left" aria-hidden="true" />
@@ -134,14 +134,14 @@ export default function LoginPage() {
                     type="email"
                     placeholder="you@email.com"
                     {...register('email')}
-                    style={{ ...inputStyle(errors.email), paddingLeft: '38px' }}
+                    style={{ ...inputStyle(errors.email), paddingLeft: 'var(--space-40)' }}
                   />
                 </div>
                 {errors.email && <span className="field-hint error">{errors.email.message}</span>}
               </div>
 
               {/* Password */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
                 <label className="field-label">Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
                 <div className="input-wrapper">
                   <IconLock className="input-icon left" aria-hidden="true" />
@@ -149,7 +149,7 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     {...register('password')}
-                    style={{ ...inputStyle(errors.password), paddingLeft: '38px', paddingRight: '42px' }}
+                    style={{ ...inputStyle(errors.password), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
                   />
                   <button
                     type="button"
@@ -160,7 +160,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 {errors.password && <span className="field-hint error">{errors.password.message}</span>}
-                <Link to="/reset-password" style={{ fontSize: '12px', color: 'var(--purple-600)', fontWeight: 500, textAlign: 'right', textDecoration: 'none', marginTop: '-4px' }}>
+                <Link to="/reset-password" style={{ fontSize: '12px', color: 'var(--purple-600)', fontWeight: 500, textAlign: 'right', textDecoration: 'none', marginTop: 'calc(-1 * var(--space-4))' }}>
                   Forgot password?
                 </Link>
               </div>
@@ -170,14 +170,14 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              style={{ width: '100%', padding: '14px 32px', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--grey-300)' : 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              style={{ width: '100%', padding: 'var(--space-16) var(--space-32)', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--grey-300)' : 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)' }}
             >
               {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
               {loading ? 'Signing in' : 'Log in'}
             </button>
           </form>
 
-          <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: '20px' }}>
+          <div style={{ fontSize: '13px', color: 'var(--grey-500)', textAlign: 'center', marginTop: 'var(--space-20)' }}>
             New to Creatorske?{' '}
             <Link to={{ pathname: '/signup', search: location.search }} style={{ color: 'var(--purple-600)', fontWeight: 500, textDecoration: 'none' }}>
               Create a free account

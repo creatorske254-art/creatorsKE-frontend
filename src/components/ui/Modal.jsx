@@ -38,7 +38,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
+        padding: 'var(--space-24)',
         zIndex: 300,
       }}
     >
@@ -64,7 +64,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }) {
           <div
             className="ui-modal-header"
             style={{
-              padding: '24px 24px 0',
+              padding: 'var(--space-24) var(--space-24) 0',
               display: 'flex',
               alignItems: 'flex-start',
               justifyContent: 'space-between',
@@ -108,7 +108,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }) {
 
         <div
           className="ui-modal-body"
-          style={{ padding: title ? '16px 24px 24px' : '24px', overflowY: 'auto' }}
+          style={{ padding: title ? 'var(--space-16) var(--space-24) var(--space-24)' : 'var(--space-24)', overflowY: 'auto' }}
         >
           {children}
         </div>

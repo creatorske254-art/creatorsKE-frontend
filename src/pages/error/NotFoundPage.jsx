@@ -31,13 +31,13 @@ export default function NotFoundPage() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--black)] text-[13.5px] font-medium hover:bg-[var(--grey-50)]"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--black)] text-[13.5px] font-medium hover:bg-[var(--grey-50)]"
         >
           <IconArrowLeft size={14} /> Go back
         </button>
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-[8px] bg-[var(--black)] text-white text-[13.5px] font-medium hover:opacity-90"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-[8px] bg-[var(--black)] text-white text-[13.5px] font-medium hover:opacity-90"
         >
           <IconHome size={14} /> Go to homepage
         </Link>

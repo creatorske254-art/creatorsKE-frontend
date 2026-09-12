@@ -37,7 +37,7 @@ const css = `
   /* Tabs (pill track, per component library §Navigation) */
   .settings-tabs {
     display: flex;
-    gap: 2px;
+    gap: var(--space-2);
     background: var(--white);
     border: 0.5px solid var(--grey-100);
     box-shadow: var(--shadow-xs);
@@ -51,7 +51,7 @@ const css = `
   .settings-tab {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-8);
     padding: var(--space-8) var(--space-16);
     border-radius: var(--radius-md);
     border: none;
@@ -72,13 +72,13 @@ const css = `
   .settings-stack { display: flex; flex-direction: column; gap: var(--space-16); }
 
   /* Field */
-  .field { display: flex; flex-direction: column; gap: var(--space-6); }
+  .field { display: flex; flex-direction: column; gap: var(--space-8); }
   .field-hint { margin-top: var(--space-2); } /* base styling + icon come from index.css */
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
   .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
 
-  .input-icon-left { padding-left: 40px !important; }
-  .input-icon-right { padding-right: 40px !important; }
+  .input-icon-left { padding-left: var(--space-40) !important; }
+  .input-icon-right { padding-right: var(--space-40) !important; }
   .textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
 
   /* Same "too many borders" fix as the creator settings page: resting-state
@@ -149,7 +149,7 @@ const css = `
   .pay-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .pay-info { flex: 1; min-width: 0; }
   .pay-name { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--black); }
-  .pay-desc { font-size: 12px; color: var(--grey-400); margin-top: 1px; }
+  .pay-desc { font-size: 12px; color: var(--grey-400); margin-top: var(--space-2); }
 
   /* Escrow / info callout */
   .info-callout {
@@ -161,23 +161,23 @@ const css = `
     gap: var(--space-12);
     align-items: flex-start;
   }
-  .info-callout i { color: var(--purple-600); font-size: var(--size-icon-md); margin-top: 2px; flex-shrink: 0; }
-  .info-callout-title { font-size: var(--text-body-sm-size); font-weight: 500; margin-bottom: 3px; }
+  .info-callout i { color: var(--purple-600); font-size: var(--size-icon-md); margin-top: var(--space-2); flex-shrink: 0; }
+  .info-callout-title { font-size: var(--text-body-sm-size); font-weight: 500; margin-bottom: var(--space-4); }
   .info-callout-desc { font-size: 12.5px; color: var(--grey-500); margin: 0; line-height: 1.6; }
 
   /* Session row */
   .session-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-12) 0; }
   .session-row:not(:last-child) { border-bottom: 0.5px solid var(--grey-100); }
   .session-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--page-bg); display: flex; align-items: center; justify-content: center; color: var(--grey-500); flex-shrink: 0; }
-  .session-device { font-size: var(--text-body-sm-size); font-weight: 500; display: flex; align-items: center; gap: var(--space-7); }
-  .session-meta { font-size: 11.5px; color: var(--grey-400); margin-top: 1px; }
+  .session-device { font-size: var(--text-body-sm-size); font-weight: 500; display: flex; align-items: center; gap: var(--space-8); }
+  .session-meta { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-2); }
 
   /* Legal link row */
   .legal-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-10) 14px;
+    padding: var(--space-12) var(--space-16);
     background: var(--page-bg);
     border-radius: var(--radius-md);
     font-size: var(--text-body-sm-size);
@@ -190,9 +190,9 @@ const css = `
   .danger-zone { border: 0.5px solid rgba(239,68,68,0.15); background: var(--status-error-bg); border-radius: var(--radius-xl); padding: var(--space-20); }
   .danger-zone-title { font-family: var(--font-display); font-size: var(--text-h5-size); font-weight: 600; color: var(--status-error-text); margin-bottom: var(--space-4); }
   .danger-zone-desc { font-size: 12.5px; color: var(--status-error-text); opacity: 0.85; margin-bottom: var(--space-16); line-height: 1.6; }
-  .danger-zone-banner { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); border-radius: var(--radius-lg); padding: 12px 14px; font-size: 13px; color: var(--status-error-text); line-height: 1.6; }
-  .warning-banner { background: var(--status-warning-bg); border: 0.5px solid rgba(245,158,11,0.25); border-radius: var(--radius-lg); padding: 12px 14px; font-size: 13px; color: var(--status-warning-text); line-height: 1.6; }
-  .success-banner { background: var(--status-success-bg); border: 0.5px solid rgba(16,185,129,0.25); border-radius: var(--radius-lg); padding: 12px 16px; font-size: 13px; color: var(--status-success-text); display: flex; align-items: center; gap: 7px; }
+  .danger-zone-banner { background: rgba(239,68,68,0.08); border: 0.5px solid rgba(239,68,68,0.2); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-error-text); line-height: 1.6; }
+  .warning-banner { background: var(--status-warning-bg); border: 0.5px solid rgba(245,158,11,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-warning-text); line-height: 1.6; }
+  .success-banner { background: var(--status-success-bg); border: 0.5px solid rgba(16,185,129,0.25); border-radius: var(--radius-lg); padding: var(--space-12) var(--space-16); font-size: 13px; color: var(--status-success-text); display: flex; align-items: center; gap: var(--space-8); }
 
   /* Save bar, floats above the bottom edge with its own card surface */
   .settings-savebar {
@@ -285,7 +285,7 @@ function ProfileTab({ form, setForm, onDirty }) {
     <div className="settings-stack">
       {/* Logo */}
       <CollapsibleCard title="Company logo" collapsible={false}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
           {logoUrl ? (
             <img src={logoUrl} alt="Company logo" className="avatar avatar-lg" style={{ objectFit: "cover" }} />
           ) : (
@@ -293,7 +293,7 @@ function ProfileTab({ form, setForm, onDirty }) {
               {form.companyName ? form.companyName.slice(0, 2).toUpperCase() : "NB"}
             </div>
           )}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
             <label className={`btn btn-ghost btn-sm${logoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
               <i className="ti ti-upload" style={{ fontSize: 12 }} />
               {logoUrl ? "Change logo" : "Upload logo"}
@@ -306,10 +306,10 @@ function ProfileTab({ form, setForm, onDirty }) {
 
       {/* Company details */}
       <CollapsibleCard title="Company details">
-        <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
+        <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
           This information is shown to creators when they receive your enquiry.
         </p>
-        <div className="settings-stack" style={{ gap: 12 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Company name</label>
@@ -343,10 +343,10 @@ function ProfileTab({ form, setForm, onDirty }) {
 
       {/* Contact details */}
       <CollapsibleCard title="Contact details">
-        <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
+        <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
           Used for invoices and shown to creators on accepted bookings.
         </p>
-        <div className="settings-stack" style={{ gap: 12 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Contact name</label>
@@ -394,7 +394,7 @@ function ProfileTab({ form, setForm, onDirty }) {
         )}
       >
         <span className="field-hint">Verified brands get higher placement in creator enquiry lists and build faster trust.</span>
-        <div className="info-callout" style={{ marginTop: 12, padding: "10px 14px" }}>
+        <div className="info-callout" style={{ marginTop: 'var(--space-12)', padding: "var(--space-12) var(--space-16)" }}>
           <i className="ti ti-shield-check" style={{ fontSize: 14, marginTop: 0 }} />
           <span style={{ fontSize: 12.5, color: "var(--grey-500)" }}>
             Business email domain confirmed · <span style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>nairobibrew.co.ke</span>
@@ -456,10 +456,10 @@ function ConnectMethodModal({ method, onClose, onConnect }) {
 
   return (
     <Modal open onClose={onClose} title={`Connect ${method.name}`} size="sm">
-      <p style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 16 }}>
+      <p style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
         {method.sub}. This is charged when you confirm a booking.
       </p>
-      <div className="settings-stack" style={{ gap: 12, marginBottom: 18 }}>
+      <div className="settings-stack" style={{ gap: 'var(--space-12)', marginBottom: 'var(--space-20)' }}>
         {method.fields.map((f) => (
           <div className="field" key={f.key}>
             <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
@@ -475,7 +475,7 @@ function ConnectMethodModal({ method, onClose, onConnect }) {
           </div>
         ))}
       </div>
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
         <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
         <button
           className="btn btn-primary btn-sm"
@@ -518,10 +518,10 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
     <div className="settings-stack">
       {/* Payment methods */}
       <CollapsibleCard title="Payment methods" collapsible={false}>
-        <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
+        <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
           How you pay creators. These are used at checkout when a booking is confirmed.
         </p>
-        <div className="settings-stack" style={{ gap: 10 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
           {methods.map((m) => (
             <div key={m.id} className={`pay-row${m.connected ? " connected" : ""}`}>
               <div className="pay-icon" style={{ background: m.iconBg }}>
@@ -532,7 +532,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
                 <div className="pay-desc">{m.sub}</div>
               </div>
               {m.connected ? (
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
                   <span className="tag tag-success">
                     <i className="ti ti-circle-check" style={{ fontSize: 12 }} />
                     Connected · {m.detail}
@@ -565,7 +565,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
 
       {/* Invoice preferences */}
       <CollapsibleCard title="Invoice preferences" collapsible={false}>
-        <div className="settings-stack" style={{ gap: 13, marginTop: 14 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
           <ToggleRow
             label="Receive auto-invoice on booking"
             hint="Get a PDF invoice emailed immediately when a booking is confirmed."
@@ -641,7 +641,7 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
     <div className="settings-stack">
       {groups.map((g) => (
         <CollapsibleCard key={g.title} title={g.title} collapsible={false}>
-          <div className="settings-stack" style={{ gap: 0, marginTop: 14 }}>
+          <div className="settings-stack" style={{ gap: 0, marginTop: 'var(--space-16)' }}>
             {g.items.map((item) => (
               <div key={item.key} className="notif-row">
                 <div style={{ flex: 1 }}>
@@ -660,7 +660,7 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
       ))}
 
       <CollapsibleCard title="Email digest" collapsible={false}>
-        <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
+        <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
           Instead of individual emails, get a single daily summary.
         </p>
         <ToggleRow
@@ -716,14 +716,14 @@ function SecurityTab({ onDirty }) {
     <div className="settings-stack">
       {/* Change password */}
       <CollapsibleCard title="Change password">
-        <div style={{ marginTop: 14 }}>
+        <div style={{ marginTop: 'var(--space-16)' }}>
           {pwSaved ? (
             <div className="success-banner">
               <i className="ti ti-check" style={{ fontSize: 13 }} />
               Password updated successfully
             </div>
           ) : (
-            <div className="settings-stack" style={{ gap: 12 }}>
+            <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
               <div className="field">
                 <label className="field-label field-required">Current password</label>
                 <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="••••••••" /></div>
@@ -754,7 +754,7 @@ function SecurityTab({ onDirty }) {
         right={<span className={`tag ${twoFAEnabled ? "tag-success" : "tag-warning"}`}>{twoFAEnabled ? "Enabled" : "Not enabled"}</span>}
       >
         <span className="field-hint">Add an extra layer of protection using an authenticator app or SMS code.</span>
-        <div style={{ marginTop: 14 }}>
+        <div style={{ marginTop: 'var(--space-16)' }}>
           <button className="btn btn-secondary btn-sm" onClick={handleToggle2FA}>
             <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
             {twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}
@@ -764,13 +764,13 @@ function SecurityTab({ onDirty }) {
 
       {/* Active sessions */}
       <CollapsibleCard title="Active sessions">
-        <p className="card-body-text" style={{ marginTop: -2, marginBottom: 6 }}>
+        <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-8)' }}>
           Devices where your account is currently signed in.
         </p>
         <div>
           {sessions.map((s) => (
             <div key={s.device} className="session-row">
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
                 <div className="session-icon">
                   <i className="ti ti-device-desktop" style={{ fontSize: 14 }} />
                 </div>
@@ -786,7 +786,7 @@ function SecurityTab({ onDirty }) {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 12 }}>
+        <div style={{ marginTop: 'var(--space-12)' }}>
           <button className="btn btn-ghost btn-sm" onClick={handleSignOutOthers} disabled={sessions.length <= 1}>Sign out of all other sessions</button>
         </div>
       </CollapsibleCard>
@@ -818,8 +818,8 @@ function AccountTab() {
     <div className="settings-stack">
       {/* Plan */}
       <CollapsibleCard title="Your plan" collapsible={false}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginTop: 14 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
             <div className="avatar avatar-md avatar-purple" style={{ borderRadius: "var(--radius-md)" }}>
               <i className="ti ti-star" style={{ fontSize: 17 }} />
             </div>
@@ -834,7 +834,7 @@ function AccountTab() {
 
       {/* Legal */}
       <CollapsibleCard title="Legal" collapsible={false}>
-        <div className="settings-stack" style={{ gap: 10, marginTop: 14 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
           {[{ label: "Terms of Service", href: "/terms" }, { label: "Privacy Policy", href: "/privacy" }].map((l) => (
             <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="legal-row">
               {l.label}
@@ -881,12 +881,12 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
   return (
     <Modal open={open} onClose={deleting ? () => {} : onClose} title="Delete your brand account?" size="sm">
       {blocked ? (
-        <div className="warning-banner" style={{ marginBottom: 18 }}>
+        <div className="warning-banner" style={{ marginBottom: 'var(--space-20)' }}>
           You have {activeBookings} active {activeBookings === 1 ? "campaign" : "campaigns"} that must be completed
           or cancelled before deletion can proceed. Funds in escrow are released when each campaign is approved.
         </div>
       ) : (
-        <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 14 }}>
+        <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
           This permanently removes your company profile, shortlist, and campaign history.
           Your data is fully removed within 30 days. This cannot be undone.
         </p>
@@ -894,7 +894,7 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
 
       {!blocked && (
         <>
-          <label className="field-label" style={{ display: "block", marginBottom: 6 }}>
+          <label className="field-label" style={{ display: "block", marginBottom: 'var(--space-8)' }}>
             Type <strong>DELETE</strong> to confirm
           </label>
           <input
@@ -903,12 +903,12 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
             onChange={(e) => setTyped(e.target.value)}
             placeholder="DELETE"
             disabled={deleting}
-            style={{ marginBottom: 18, width: "100%" }}
+            style={{ marginBottom: 'var(--space-20)', width: "100%" }}
           />
         </>
       )}
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
         <button className="btn btn-secondary btn-sm" onClick={onClose} disabled={deleting}>
           {blocked ? "Close" : "Cancel"}
         </button>

@@ -22,10 +22,10 @@ export default function UpgradePrompt({
         background: 'var(--purple-50)',
         border: '0.5px solid var(--purple-200)',
         borderRadius: isCard ? 'var(--radius-lg)' : 'var(--radius-md)',
-        padding: isCard ? '20px' : '12px 16px',
+        padding: isCard ? 'var(--space-20)' : 'var(--space-12) var(--space-16)',
         display: 'flex',
         alignItems: isCard ? 'flex-start' : 'center',
-        gap: '12px',
+        gap: 'var(--space-12)',
       }}
     >
       <div
@@ -50,7 +50,7 @@ export default function UpgradePrompt({
             fontSize: isCard ? '15px' : '13px',
             fontWeight: 600,
             color: 'var(--purple-800)',
-            marginBottom: '4px',
+            marginBottom: 'var(--space-4)',
           }}
         >
           {feature ? `${feature} is a ${requiredPlan} feature` : `${requiredPlan} plan required`}
@@ -61,7 +61,7 @@ export default function UpgradePrompt({
               fontSize: '13px',
               color: 'var(--purple-600)',
               lineHeight: 1.55,
-              marginBottom: '14px',
+              marginBottom: 'var(--space-16)',
             }}
           >
             Upgrade to {requiredPlan} to unlock this and more premium features.
@@ -72,8 +72,8 @@ export default function UpgradePrompt({
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '6px',
-            padding: isCard ? '8px 16px' : '5px 12px',
+            gap: 'var(--space-8)',
+            padding: isCard ? 'var(--space-8) var(--space-16)' : 'var(--space-4) var(--space-12)',
             fontSize: isCard ? '13px' : '12px',
             fontFamily: 'var(--font-body)',
             fontWeight: 500,

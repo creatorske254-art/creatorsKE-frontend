@@ -15,10 +15,10 @@ export function ExpertiseForm({ control, register, errors }) {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 'var(--space-2)' }}>
             What do you do best? Up to {MAX_EXPERTISE} areas.
           </p>
         </div>
@@ -50,14 +50,14 @@ export function ExpertiseForm({ control, register, errors }) {
         <p className="field-hint error">{errors.expertise.root.message}</p>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
         {fields.map((field, index) => {
           const e = errors?.expertise?.[index] ?? {};
           return (
             <div
               key={field.id}
               className="card card-p-md"
-              style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}
             >
               {/* Counter badge */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

@@ -108,10 +108,10 @@ export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelet
           background: var(--white);
           border: 0.5px solid var(--grey-100);
           border-radius: var(--radius-lg);
-          padding: 18px;
+          padding: var(--space-20);
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: var(--space-12);
           transition: box-shadow 0.15s, border-color 0.15s;
         }
         .rc-tile:hover {
@@ -124,7 +124,7 @@ export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelet
         .rc-tile__status {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-8);
         }
         .rc-tile__status-label {
           font-size: 11px;
@@ -140,21 +140,21 @@ export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelet
         }
         .rc-tile__meta {
           display: flex;
-          gap: 12px;
+          gap: var(--space-12);
           font-size: 12px;
           color: var(--grey-400);
         }
         .rc-tile__analytics {
           display: flex;
-          gap: 16px;
-          padding: 10px 12px;
+          gap: var(--space-16);
+          padding: var(--space-12) var(--space-12);
           background: var(--grey-50);
           border-radius: var(--radius-md);
         }
         .rc-tile__stat {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: var(--space-2);
         }
         .rc-tile__stat-val {
           font-family: var(--font-display);
@@ -171,11 +171,11 @@ export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelet
         }
         .rc-tile__actions {
           display: flex;
-          gap: 6px;
+          gap: var(--space-8);
           align-items: center;
-          padding-top: 6px;
+          padding-top: var(--space-8);
           border-top: 0.5px solid var(--grey-100);
-          margin-top: 2px;
+          margin-top: var(--space-2);
         }
       `}</style>
     </div>

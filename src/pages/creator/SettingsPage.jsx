@@ -38,7 +38,7 @@ const css = `
   /* Tabs (pill track, per component library §Navigation) */
   .settings-tabs {
     display: flex;
-    gap: 2px;
+    gap: var(--space-2);
     background: var(--white);
     border: 0.5px solid var(--grey-100);
     box-shadow: var(--shadow-xs);
@@ -52,7 +52,7 @@ const css = `
   .settings-tab {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-8);
     padding: var(--space-8) var(--space-16);
     border-radius: var(--radius-md);
     border: none;
@@ -80,7 +80,7 @@ const css = `
   .settings-stack { display: flex; flex-direction: column; gap: var(--space-16); }
 
   /* Field */
-  .field { display: flex; flex-direction: column; gap: var(--space-6); }
+  .field { display: flex; flex-direction: column; gap: var(--space-8); }
   .field-hint { margin-top: var(--space-2); } /* base styling + icon come from index.css */
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
   .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
@@ -88,8 +88,8 @@ const css = `
   /* index.css positions the icon glyph (.input-icon / .left / .right) but
      doesn't yet ship the matching input padding, added here so the icon
      never overlaps typed text. */
-  .input-icon-left { padding-left: 40px !important; }
-  .input-icon-right { padding-right: 40px !important; }
+  .input-icon-left { padding-left: var(--space-40) !important; }
+  .input-icon-right { padding-right: var(--space-40) !important; }
   .textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
 
   /* This page packs in far more fields than a typical form, so the default
@@ -156,7 +156,7 @@ const css = `
     display: flex;
     align-items: center;
     gap: var(--space-12);
-    padding: var(--space-12) 14px;
+    padding: var(--space-12) var(--space-16);
     border: 0.5px solid transparent;
     border-radius: var(--radius-lg);
     background: var(--page-bg);
@@ -166,7 +166,7 @@ const css = `
   .pay-icon { width: 36px; height: 36px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: var(--text-h4-size); flex-shrink: 0; }
   .pay-info { flex: 1; min-width: 0; }
   .pay-name { font-size: var(--text-body-sm-size); font-weight: 500; }
-  .pay-desc { font-size: 11.5px; color: var(--grey-400); margin-top: 1px; }
+  .pay-desc { font-size: 11.5px; color: var(--grey-400); margin-top: var(--space-2); }
 
   /* Selectable option card (theme / layout pickers) */
   .option-card {
@@ -179,7 +179,7 @@ const css = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-8);
   }
   .option-card:hover { background: var(--grey-100); }
   .option-card.selected { border-color: var(--black); background: var(--white); box-shadow: var(--shadow-xs); }
@@ -295,7 +295,7 @@ function ProfileTab() {
             Live
           </span>}>
         <div className="settings-stack">
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-16)' }}>
             {photoUrl ? (
               <img
                 src={photoUrl}
@@ -306,7 +306,7 @@ function ProfileTab() {
             ) : (
               <div className="avatar avatar-lg avatar-purple">AO</div>
             )}
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
               <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
                 <i className="ti ti-upload" style={{ fontSize: 12 }} />
                 {photoUrl ? "Change photo" : "Upload photo"}
@@ -343,7 +343,7 @@ function ProfileTab() {
               >
                 @
               </span>
-              <input className="input input-md" style={{ paddingLeft: 26 }} defaultValue="amaracreates" />
+              <input className="input input-md" style={{ paddingLeft: 'var(--space-24)' }} defaultValue="amaracreates" />
             </div>
           </div>
 
@@ -383,7 +383,7 @@ function ProfileTab() {
 
       {/* Audience stats: bento of stat-cards, mirrors the dashboard KPI pattern */}
       <div>
-        <div className="field-label" style={{ marginBottom: 12 }}>Audience stats</div>
+        <div className="field-label" style={{ marginBottom: 'var(--space-12)' }}>Audience stats</div>
         <div className="bento-4">
           <div className="stat-card">
             <div className="stat-card-label">Total followers</div>
@@ -399,7 +399,7 @@ function ProfileTab() {
           </div>
           <div className="stat-card">
             <div className="stat-card-label">Primary platform</div>
-            <div className="select-wrapper" style={{ marginTop: 6 }}>
+            <div className="select-wrapper" style={{ marginTop: 'var(--space-8)' }}>
               <select className="input input-sm">
                 <option>Instagram</option>
                 <option>TikTok</option>
@@ -409,12 +409,12 @@ function ProfileTab() {
             </div>
           </div>
         </div>
-        <p className="field-hint" style={{ marginTop: 8 }}>Shown on your public rate card.</p>
+        <p className="field-hint" style={{ marginTop: 'var(--space-8)' }}>Shown on your public rate card.</p>
       </div>
 
       {/* Social links */}
       <CollapsibleCard title="Social platforms">
-        <div className="settings-stack" style={{ gap: 14, marginTop: 14 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
           <div className="field">
             <label className="field-label">Instagram</label>
             <div className="input-wrapper">
@@ -487,7 +487,7 @@ function NotificationsTab() {
     <div className="settings-stack">
       <div className="bento-2">
         <CollapsibleCard title="Email notifications">
-          <div style={{ marginTop: 10 }}>
+          <div style={{ marginTop: 'var(--space-12)' }}>
             <div className="notif-row">
               <div>
                 <div className="notif-row-label">New enquiry</div>
@@ -521,7 +521,7 @@ function NotificationsTab() {
 
         <div className="settings-stack">
           <CollapsibleCard title="More notifications" collapsible={false}>
-            <div style={{ marginTop: 10 }}>
+            <div style={{ marginTop: 'var(--space-12)' }}>
               <div className="notif-row">
                 <div>
                   <div className="notif-row-label">Card view milestones</div>
@@ -540,7 +540,7 @@ function NotificationsTab() {
           </CollapsibleCard>
 
           <CollapsibleCard title="Notification email" collapsible={false}>
-            <div className="field" style={{ marginTop: 10 }}>
+            <div className="field" style={{ marginTop: 'var(--space-12)' }}>
               <label className="field-label">Send notifications to</label>
               <div className="input-wrapper">
                 <i className="ti ti-mail input-icon left" />
@@ -609,10 +609,10 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
 
   return (
     <Modal open onClose={onClose} title={`Connect ${provider.name}`} size="sm">
-      <p style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 16 }}>
+      <p style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
         {provider.blurb}. These details are shown to brands when they pay you.
       </p>
-      <div className="settings-stack" style={{ gap: 12, marginBottom: 18 }}>
+      <div className="settings-stack" style={{ gap: 'var(--space-12)', marginBottom: 'var(--space-20)' }}>
         {provider.fields.map((f) => (
           <div className="field" key={f.key}>
             <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
@@ -629,7 +629,7 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
           </div>
         ))}
       </div>
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
         <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
         <button
           className="btn btn-primary btn-sm"
@@ -670,7 +670,7 @@ function PaymentsTab() {
     <div className="settings-stack">
       <CollapsibleCard title="Payment methods" collapsible={false}
         right={<p className="field-hint" style={{ margin: 0 }}>Accept payments from brands directly</p>}>
-        <div className="settings-stack" style={{ gap: 12, marginTop: 16 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
           {Object.entries(PAY_PROVIDERS).map(([key, provider]) => {
             const summary = connected[key];
             return (
@@ -683,7 +683,7 @@ function PaymentsTab() {
                   <div className="pay-desc">{summary ?? provider.blurb}</div>
                 </div>
                 {summary ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
                     <span className="tag tag-success">
                       <span className="sdot" style={{ background: "var(--status-success)" }} />
                       Connected
@@ -718,7 +718,7 @@ function PaymentsTab() {
       />
 
       <CollapsibleCard title="Payout settings" collapsible={false}>
-        <div className="settings-stack" style={{ marginTop: 14 }}>
+        <div className="settings-stack" style={{ marginTop: 'var(--space-16)' }}>
           <div className="field-row">
             <div className="field">
               <label className="field-label">Default payout method</label>
@@ -783,13 +783,13 @@ function AppearanceTab() {
   return (
     <div className="settings-stack">
       <CollapsibleCard title="Interface theme" collapsible={false}>
-        <div className="bento-3" style={{ marginTop: 14 }}>
+        <div className="bento-3" style={{ marginTop: 'var(--space-16)' }}>
           {["light", "dark", "system"].map((t) => (
             <button
               key={t}
               onClick={() => setTheme(t)}
               className={`option-card${theme === t ? " selected" : ""}`}
-              style={{ padding: "14px 8px" }}
+              style={{ padding: "var(--space-16) var(--space-8)" }}
             >
               <i
                 className={`ti ${t === "light" ? "ti-sun" : t === "dark" ? "ti-moon" : "ti-device-laptop"}`}
@@ -803,10 +803,10 @@ function AppearanceTab() {
 
       <div className="bento-2">
         <CollapsibleCard title="Accent colour" collapsible={false}>
-          <p className="field-hint" style={{ marginBottom: 14 }}>Applied to buttons, highlights, and your rate card theme.</p>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <p className="field-hint" style={{ marginBottom: 'var(--space-16)' }}>Applied to buttons, highlights, and your rate card theme.</p>
+          <div style={{ display: "flex", gap: 'var(--space-12)', flexWrap: "wrap" }}>
             {ACCENT_COLORS.map(({ hex, label }) => (
-              <div key={hex} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+              <div key={hex} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 'var(--space-4)' }}>
                 <button
                   type="button"
                   className={`accent-swatch${accent === hex ? " selected" : ""}`}
@@ -823,7 +823,7 @@ function AppearanceTab() {
         </CollapsibleCard>
 
         <CollapsibleCard title="Rate card layout" collapsible={false}>
-          <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+          <div style={{ display: "flex", gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
             {["Classic", "Minimal"].map((option) => (
               <button
                 key={option}
@@ -839,10 +839,10 @@ function AppearanceTab() {
                     background: "var(--white)",
                     border: "0.5px solid var(--grey-100)",
                     borderRadius: 6,
-                    padding: 6,
+                    padding: 'var(--space-8)',
                     display: "flex",
                     flexDirection: "column",
-                    gap: 3,
+                    gap: 'var(--space-4)',
                   }}
                 >
                   <div style={{ height: 5, background: "var(--purple-50)", borderRadius: 2, width: "60%" }} />
@@ -910,7 +910,7 @@ function AccountTab() {
   return (
     <div className="settings-stack">
       <CollapsibleCard title="Login details">
-        <div className="settings-stack" style={{ gap: 12, marginTop: 14 }}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
           <div className="field">
             <label className="field-label field-required">Email address</label>
             <div className="input-wrapper">
@@ -941,7 +941,7 @@ function AccountTab() {
 
       <div className="bento-2">
         <CollapsibleCard title="Two-factor authentication" collapsible={false}>
-          <div style={{ marginTop: 14 }}>
+          <div style={{ marginTop: 'var(--space-16)' }}>
             <ToggleRow
               label="Enable 2FA"
               desc="Protect your account with an authenticator app"
@@ -949,7 +949,7 @@ function AccountTab() {
               onChange={setTwoFAEnabled}
             />
           </div>
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: 'var(--space-12)' }}>
             <button className="btn btn-ghost btn-sm" onClick={() => setTwoFAOpen(true)}>
               <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
               Set up authenticator
@@ -958,7 +958,7 @@ function AccountTab() {
         </CollapsibleCard>
 
         <CollapsibleCard title="Privacy" collapsible={false}>
-          <div className="settings-stack" style={{ gap: 13, marginTop: 14 }}>
+          <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
             <ToggleRow
               label="Show profile in Creatorske directory"
               desc="Let brands find you via the platform search"
@@ -981,7 +981,7 @@ function AccountTab() {
         <div className="danger-zone-desc">
           These actions are permanent and cannot be undone.
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 'var(--space-8)', flexWrap: "wrap" }}>
           <button
             className={`btn btn-danger btn-sm${unpublishing || isUnpublishingAll ? " btn-loading" : ""}`}
             disabled={unpublishing || isUnpublishingAll}
@@ -1036,11 +1036,11 @@ function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
 
   return (
     <Modal open={open} onClose={deleting ? () => {} : onCancel} title="Delete your account?" size="sm">
-      <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 14 }}>
+      <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
         This permanently deletes your creator profile, rate cards, portfolio, and booking history.
         Pending payouts are forfeited. This cannot be undone.
       </p>
-      <label className="field-label" style={{ display: "block", marginBottom: 6 }}>
+      <label className="field-label" style={{ display: "block", marginBottom: 'var(--space-8)' }}>
         Type <strong>DELETE</strong> to confirm
       </label>
       <input
@@ -1049,9 +1049,9 @@ function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
         onChange={(e) => setTyped(e.target.value)}
         placeholder="DELETE"
         disabled={deleting}
-        style={{ marginBottom: 18 }}
+        style={{ marginBottom: 'var(--space-20)' }}
       />
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
         <button className="btn btn-secondary btn-sm" onClick={onCancel} disabled={deleting}>Cancel</button>
         <button className={`btn btn-danger btn-sm${deleting ? " btn-loading" : ""}`} onClick={onConfirm} disabled={!armed || deleting}>
           Delete my account
@@ -1071,15 +1071,15 @@ function TwoFactorDialog({ open, onClose, onEnabled }) {
 
   return (
     <Modal open={open} onClose={onClose} title="Set up authenticator app" size="sm">
-      <ol style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.75, paddingLeft: 18, marginBottom: 16 }}>
+      <ol style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.75, paddingLeft: 'var(--space-20)', marginBottom: 'var(--space-16)' }}>
         <li>Install an authenticator app (Google Authenticator, Authy, 1Password).</li>
         <li>Scan the QR code below, or enter the setup key manually.</li>
         <li>Enter the 6-digit code the app shows to finish.</li>
       </ol>
       <div style={{
-        display: "flex", alignItems: "center", gap: 14, padding: 14,
+        display: "flex", alignItems: "center", gap: 'var(--space-16)', padding: 'var(--space-16)',
         background: "var(--page-bg)", border: "0.5px solid var(--grey-100)",
-        borderRadius: "var(--radius-lg)", marginBottom: 16,
+        borderRadius: "var(--radius-lg)", marginBottom: 'var(--space-16)',
       }}>
         <div style={{
           width: 92, height: 92, borderRadius: "var(--radius-md)", background: "var(--white)",
@@ -1089,14 +1089,14 @@ function TwoFactorDialog({ open, onClose, onEnabled }) {
           <i className="ti ti-qrcode" style={{ fontSize: 40 }} />
         </div>
         <div style={{ minWidth: 0 }}>
-          <div className="field-label" style={{ marginBottom: 4 }}>Setup key</div>
+          <div className="field-label" style={{ marginBottom: 'var(--space-4)' }}>Setup key</div>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: "var(--grey-600)", wordBreak: "break-all" }}>
             Available once 2FA enrolment ships
           </div>
         </div>
       </div>
-      <label className="field-label" style={{ display: "block", marginBottom: 6 }}>6-digit code</label>
-      <div className="input-wrapper" style={{ marginBottom: 18 }}>
+      <label className="field-label" style={{ display: "block", marginBottom: 'var(--space-8)' }}>6-digit code</label>
+      <div className="input-wrapper" style={{ marginBottom: 'var(--space-20)' }}>
         <i className="ti ti-shield-lock input-icon left" aria-hidden="true" />
         <input
           className="input input-md input-icon-left"
@@ -1107,7 +1107,7 @@ function TwoFactorDialog({ open, onClose, onEnabled }) {
           style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
         />
       </div>
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
         <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
         <button
           className="btn btn-primary btn-sm"
@@ -1138,7 +1138,7 @@ function SaveBar({ saved, onSave }) {
     <div className="settings-savebar">
       <span className="settings-savebar-hint">
         {saved ? (
-          <span style={{ color: "var(--status-success-text)", display: "flex", alignItems: "center", gap: 5 }}>
+          <span style={{ color: "var(--status-success-text)", display: "flex", alignItems: "center", gap: 'var(--space-4)' }}>
             <i className="ti ti-check" style={{ fontSize: 13 }} />
             Changes saved
           </span>
@@ -1146,7 +1146,7 @@ function SaveBar({ saved, onSave }) {
           "Unsaved changes"
         )}
       </span>
-      <div style={{ display: "flex", gap: 7 }}>
+      <div style={{ display: "flex", gap: 'var(--space-8)' }}>
         <button className="btn btn-ghost" onClick={() => setConfirmDiscard(true)}>Discard</button>
         <button className="btn btn-primary" onClick={onSave}>
           <i className="ti ti-check" style={{ fontSize: 13 }} />

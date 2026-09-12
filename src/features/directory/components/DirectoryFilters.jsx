@@ -12,7 +12,7 @@ export default function DirectoryFilters({ filters, updateFilter, filterOptions 
   const platforms = filterOptions?.platforms?.length ? filterOptions.platforms : PLATFORMS;
 
   const selectClass =
-    'appearance-none w-full bg-white border border-[0.5px] border-[var(--grey-200)] rounded-[8px] px-3 py-[9px] pr-8 text-sm text-[var(--black)] font-[var(--font-body)] outline-none cursor-pointer transition-all focus:border-[var(--purple-400)] focus:shadow-[0_0_0_3px_rgba(84,69,232,0.08)]';
+    'appearance-none w-full bg-white border border-[0.5px] border-[var(--grey-200)] rounded-[8px] px-3 py-2 pr-8 text-sm text-[var(--black)] font-[var(--font-body)] outline-none cursor-pointer transition-all focus:border-[var(--purple-400)] focus:shadow-[0_0_0_3px_rgba(84,69,232,0.08)]';
 
   return (
     <div className="flex flex-wrap gap-3 items-center">
@@ -70,7 +70,7 @@ export default function DirectoryFilters({ filters, updateFilter, filterOptions 
         value={filters.location}
         onChange={(e) => updateFilter('location', e.target.value)}
         placeholder="e.g. Nairobi, Kenya"
-        className="bg-white border border-[0.5px] border-[var(--grey-200)] rounded-[8px] px-3 py-[9px] text-sm font-[var(--font-body)] text-[var(--black)] outline-none placeholder:text-[var(--grey-300)] focus:border-[var(--purple-400)] focus:shadow-[0_0_0_3px_rgba(84,69,232,0.08)] transition-all"
+        className="bg-white border border-[0.5px] border-[var(--grey-200)] rounded-[8px] px-3 py-2 text-sm font-[var(--font-body)] text-[var(--black)] outline-none placeholder:text-[var(--grey-300)] focus:border-[var(--purple-400)] focus:shadow-[0_0_0_3px_rgba(84,69,232,0.08)] transition-all"
         style={{ minWidth: 130 }}
       />
 

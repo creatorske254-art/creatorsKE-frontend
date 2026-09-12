@@ -19,7 +19,7 @@ export default function KeywordSearch({ value, onChange }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search by name, handle, or keyword…"
-        className="w-full pl-9 pr-9 py-[9px] rounded-[999px] border border-[0.5px] border-[var(--grey-200)] bg-white text-sm font-[var(--font-body)] text-[var(--black)] outline-none transition-all placeholder:text-[var(--grey-300)] focus:border-[var(--purple-400)] focus:shadow-[0_0_0_3px_rgba(84,69,232,0.08)]"
+        className="w-full pl-9 pr-9 py-2 rounded-[999px] border border-[0.5px] border-[var(--grey-200)] bg-white text-sm font-[var(--font-body)] text-[var(--black)] outline-none transition-all placeholder:text-[var(--grey-300)] focus:border-[var(--purple-400)] focus:shadow-[0_0_0_3px_rgba(84,69,232,0.08)]"
       />
       {value && (
         <button

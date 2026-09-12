@@ -62,7 +62,7 @@ const RECENT_REVIEWS = [
 // Tiny helpers
 function Stars({ n }) {
   return (
-    <span style={{ display: "inline-flex", gap: 2 }}>
+    <span style={{ display: "inline-flex", gap: 'var(--space-2)' }}>
       {[1,2,3,4,5].map(i => (
         <svg key={i} width={12} height={12} viewBox="0 0 16 16" fill={i <= n ? "var(--status-warning)" : "var(--grey-200)"}>
           <path d="M8 1l1.9 3.8 4.2.6-3 2.9.7 4.2L8 10.4l-3.8 2 .7-4.2-3-2.9 4.2-.6z"/>
@@ -74,7 +74,7 @@ function Stars({ n }) {
 
 function SectionHead({ title, action, actionLabel }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 'var(--space-16)' }}>
       <h2 className="section-title">{title}</h2>
       {action && (
         <button className="btn btn-ghost btn-xs" onClick={action}>
@@ -91,7 +91,7 @@ function MiniBarChart({ data, labels, accentIndex, color = "var(--purple-300)", 
   const max = Math.max(...data);
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height }}>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 'var(--space-4)', height }}>
         {data.map((v, i) => {
           const pct = Math.round((v / max) * 100);
           const isActive = i === (accentIndex ?? data.length - 1);
@@ -104,7 +104,7 @@ function MiniBarChart({ data, labels, accentIndex, color = "var(--purple-300)", 
               style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%", cursor: "default", position: "relative" }}
             >
               {isHov && (
-                <div style={{ position: "absolute", bottom: "calc(100% + 4px)", left: "50%", transform: "translateX(-50%)", background: "var(--black)", color: "var(--white)", fontSize: 10, padding: "3px 6px", borderRadius: "var(--radius-sm)", whiteSpace: "nowrap", zIndex: 10 }}>
+                <div style={{ position: "absolute", bottom: "calc(100% + 4px)", left: "50%", transform: "translateX(-50%)", background: "var(--black)", color: "var(--white)", fontSize: 10, padding: "var(--space-4) var(--space-8)", borderRadius: "var(--radius-sm)", whiteSpace: "nowrap", zIndex: 10 }}>
                   {v}
                 </div>
               )}
@@ -113,7 +113,7 @@ function MiniBarChart({ data, labels, accentIndex, color = "var(--purple-300)", 
           );
         })}
       </div>
-      <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+      <div style={{ display: "flex", gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
         {labels.map((l, i) => (
           <div key={i} style={{ flex: 1, textAlign: "center", fontSize: 9, color: "var(--grey-300)" }}>{l}</div>
         ))}
@@ -131,8 +131,8 @@ function Alert({ type = "warning", icon, children }) {
     error: { bg: "var(--status-error-bg)", text: "var(--status-error-text)", border: "rgba(239,68,68,0.2)" },
   }[type];
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", borderRadius: "var(--radius-md)", background: styles.bg, border: `0.5px solid ${styles.border}`, color: styles.text, fontSize: 12.5, lineHeight: 1.55, marginBottom: 12 }}>
-      <span style={{ fontSize: 15, marginTop: 1 }}><i className={`ti ${icon}`} /></span>
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 'var(--space-12)', padding: "var(--space-12) var(--space-16)", borderRadius: "var(--radius-md)", background: styles.bg, border: `0.5px solid ${styles.border}`, color: styles.text, fontSize: 12.5, lineHeight: 1.55, marginBottom: 'var(--space-12)' }}>
+      <span style={{ fontSize: 15, marginTop: 'var(--space-2)' }}><i className={`ti ${icon}`} /></span>
       <span>{children}</span>
     </div>
   );
@@ -200,11 +200,11 @@ export default function OverviewPage() {
   }), [rawFlagged]);
 
   return (
-    <div style={{ padding: 28, background: "var(--page-bg)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
+    <div style={{ padding: 'var(--space-32)', background: "var(--page-bg)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
 
       {/* Page heading */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 className="page-title" style={{ marginBottom: 4 }}>
+      <div style={{ marginBottom: 'var(--space-32)' }}>
+        <h1 className="page-title" style={{ marginBottom: 'var(--space-4)' }}>
           Platform Overview
         </h1>
         <p className="page-subtitle">
@@ -225,13 +225,13 @@ export default function OverviewPage() {
       )}
 
       {/* Health metric grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: 14, marginBottom: 28 }}>
+      <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: 'var(--space-16)', marginBottom: 'var(--space-32)' }}>
         {HEALTH_METRICS_DEF.map((m) => {
           const raw = stats?.[m.field];
           const display = raw == null ? '-' : m.currency ? formatCurrency(raw) : raw.toLocaleString?.() ?? raw;
           return (
             <div className="card card-p-md" key={m.label}>
-              <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--grey-400)", marginBottom: 8 }}>{m.label}</div>
+              <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--grey-400)", marginBottom: 'var(--space-8)' }}>{m.label}</div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--black)", lineHeight: 1 }}>
                 {statsLoading ? <span style={{ color: 'var(--grey-200)' }}>···</span> : display}
               </div>
@@ -241,31 +241,31 @@ export default function OverviewPage() {
       </div>
 
       {/* Charts row */}
-      <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 20, marginBottom: 28 }}>
+      <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-20)', marginBottom: 'var(--space-32)' }}>
 
         {/* Abandoned drafts */}
         <div className="card card-p-md">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 'var(--space-16)' }}>
             <div>
-              <div className="section-title" style={{ marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Abandoned onboarding drafts <DemoTag /></div>
+              <div className="section-title" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Abandoned onboarding drafts <DemoTag /></div>
               <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · re-engagement emails auto-sent at 48 h</div>
             </div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--black)", lineHeight: 1 }}>
               {ABANDONED_DRAFTS[ABANDONED_DRAFTS.length - 1]}
-              <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--grey-400)", fontWeight: 400, marginLeft: 4 }}>today</span>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--grey-400)", fontWeight: 400, marginLeft: 'var(--space-4)' }}>today</span>
             </div>
           </div>
           <MiniBarChart data={ABANDONED_DRAFTS} labels={DRAFT_LABELS} height={72} color="var(--grey-100)" activeColor="var(--grey-700)" />
-          <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--status-warning-text)", background: "var(--status-warning-bg)", border: "0.5px solid rgba(245,158,11,0.2)", borderRadius: "var(--radius-md)", padding: "8px 12px" }}>
+          <div style={{ marginTop: 'var(--space-16)', display: "flex", alignItems: "center", gap: 'var(--space-8)', fontSize: 12, color: "var(--status-warning-text)", background: "var(--status-warning-bg)", border: "0.5px solid rgba(245,158,11,0.2)", borderRadius: "var(--radius-md)", padding: "var(--space-8) var(--space-12)" }}>
             <i className="ti ti-alert-triangle" /> Open rate on re-engagement emails is 21%, below the 30% target. Consider reviewing copy.
           </div>
         </div>
 
         {/* Enquiry volume */}
         <div className="card card-p-md">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 'var(--space-16)' }}>
             <div>
-              <div className="section-title" style={{ marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Enquiry volume <DemoTag /></div>
+              <div className="section-title" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Enquiry volume <DemoTag /></div>
               <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · all statuses</div>
             </div>
             <div className="tabs">
@@ -281,28 +281,28 @@ export default function OverviewPage() {
       </div>
 
       {/* Bottom three-col */}
-      <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 20, marginBottom: 28 }}>
+      <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 'var(--space-20)', marginBottom: 'var(--space-32)' }}>
 
         {/* Open disputes */}
         <div className="card">
-          <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 className="section-title">Open disputes</h2>
             <span className="tag tag-default">{disputesLoading ? '···' : openDisputeCount} open</span>
           </div>
-          <div style={{ padding: "4px 0" }}>
+          <div style={{ padding: "var(--space-4) 0" }}>
             {disputesLoading ? (
-              <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ padding: 'var(--space-20)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
                 {[0, 1].map((i) => <div key={i} className="skeleton" style={{ height: 40, borderRadius: 'var(--radius-md)' }} />)}
               </div>
             ) : openDisputes.length === 0 ? (
-              <div style={{ padding: "32px 20px", textAlign: "center", fontSize: 13, color: "var(--grey-400)" }}>No open disputes.</div>
+              <div style={{ padding: "var(--space-32) var(--space-20)", textAlign: "center", fontSize: 13, color: "var(--grey-400)" }}>No open disputes.</div>
             ) : openDisputes.map((d, i) => (
-              <div key={d.id} style={{ padding: "14px 20px", borderBottom: i < openDisputes.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+              <div key={d.id} style={{ padding: "var(--space-16) var(--space-20)", borderBottom: i < openDisputes.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 'var(--space-8)' }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "var(--black)" }}>{d.creator}</div>
                   <StatusPill status={d.status} />
                 </div>
-                <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 4 }}>{d.brand} · {d.package}</div>
+                <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-4)' }}>{d.brand} · {d.package}</div>
                 <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <button className="btn btn-ghost btn-xs" style={{ border: "none", padding: 0 }} onClick={() => navigate('/admin/disputes')}>Review <i className="ti ti-arrow-right" style={{ fontSize: 12 }} /></button>
                 </div>
@@ -313,28 +313,28 @@ export default function OverviewPage() {
 
         {/* Flagged accounts */}
         <div className="card">
-          <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 className="section-title">Flagged accounts</h2>
             <span className="tag tag-error">{flaggedLoading ? '···' : flaggedAccountCount} pending</span>
           </div>
-          <div style={{ padding: "4px 0" }}>
+          <div style={{ padding: "var(--space-4) 0" }}>
             {flaggedLoading ? (
-              <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ padding: 'var(--space-20)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
                 {[0, 1].map((i) => <div key={i} className="skeleton" style={{ height: 40, borderRadius: 'var(--radius-md)' }} />)}
               </div>
             ) : flaggedAccounts.length === 0 ? (
-              <div style={{ padding: "32px 20px", textAlign: "center", fontSize: 13, color: "var(--grey-400)" }}>No flagged accounts.</div>
+              <div style={{ padding: "var(--space-32) var(--space-20)", textAlign: "center", fontSize: 13, color: "var(--grey-400)" }}>No flagged accounts.</div>
             ) : flaggedAccounts.map((a, i) => (
-              <div key={a.name} style={{ padding: "14px 20px", borderBottom: i < flaggedAccounts.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <div key={a.name} style={{ padding: "var(--space-16) var(--space-20)", borderBottom: i < flaggedAccounts.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)', marginBottom: 'var(--space-8)' }}>
                   <Initials letters={a.initials} color={a.color} />
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "var(--black)" }}>{a.name}</div>
                     <div style={{ fontSize: 11, color: "var(--grey-400)", textTransform: 'capitalize' }}>{a.type}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 10 }}>{a.reason}</div>
-                <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-12)' }}>{a.reason}</div>
+                <div style={{ display: "flex", gap: 'var(--space-8)' }}>
                   <button className="btn btn-primary btn-xs" style={{ flex: 1 }} onClick={() => navigate('/admin/accounts')}>Review</button>
                 </div>
               </div>
@@ -343,17 +343,17 @@ export default function OverviewPage() {
         </div>
 
         {/* Escrow queue + flagged reviews stacked */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-20)' }}>
 
           {/* Escrow timeout queue */}
           <div className="card">
-            <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
               <h2 className="section-title">Escrow timeout queue</h2>
               <DemoTag />
             </div>
-            <div style={{ padding: "4px 0" }}>
+            <div style={{ padding: "var(--space-4) 0" }}>
               {ESCROW_QUEUE.map((e, i) => (
-                <div key={e.id} style={{ padding: "13px 20px", borderBottom: i < ESCROW_QUEUE.length - 1 ? "0.5px solid var(--grey-100)" : "none", display: "flex", alignItems: "center", gap: 10 }}>
+                <div key={e.id} style={{ padding: "var(--space-12) var(--space-20)", borderBottom: i < ESCROW_QUEUE.length - 1 ? "0.5px solid var(--grey-100)" : "none", display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
                   <Initials letters={e.initials} color="var(--grey-600)" size={30} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 500, color: "var(--black)" }}>{e.creator}</div>
@@ -367,20 +367,20 @@ export default function OverviewPage() {
 
           {/* Flagged reviews */}
           <div className="card" style={{ flex: 1 }}>
-            <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
               <h2 className="section-title">Flagged reviews</h2>
               <DemoTag />
             </div>
-            <div style={{ padding: "4px 0" }}>
+            <div style={{ padding: "var(--space-4) 0" }}>
               {RECENT_REVIEWS.filter(r => r.flagged).map((r, i, arr) => (
-                <div key={r.id} style={{ padding: "13px 20px", borderBottom: i < arr.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                <div key={r.id} style={{ padding: "var(--space-12) var(--space-20)", borderBottom: i < arr.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 'var(--space-4)' }}>
                     <div style={{ fontSize: 13, fontWeight: 500, color: "var(--black)" }}>{r.creator}</div>
                     <Stars n={r.stars} />
                   </div>
-                  <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 6 }}>"{r.excerpt}"</div>
-                  <div style={{ fontSize: 11, color: "var(--status-error-text)", marginBottom: 8, display: "flex", alignItems: "center", gap: 5 }}><i className="ti ti-flag-3" style={{ fontSize: 12 }} /> {r.reason}</div>
-                  <div style={{ display: "flex", gap: 6 }}>
+                  <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-8)' }}>"{r.excerpt}"</div>
+                  <div style={{ fontSize: 11, color: "var(--status-error-text)", marginBottom: 'var(--space-8)', display: "flex", alignItems: "center", gap: 'var(--space-4)' }}><i className="ti ti-flag-3" style={{ fontSize: 12 }} /> {r.reason}</div>
+                  <div style={{ display: "flex", gap: 'var(--space-8)' }}>
                     <button className="btn btn-danger btn-xs" onClick={() => navigate('/admin/reviews')}>Remove</button>
                     <button className="btn btn-ghost btn-xs" onClick={() => navigate('/admin/reviews')}>Dismiss</button>
                   </div>
@@ -394,9 +394,9 @@ export default function OverviewPage() {
 
       {/* Re-engagement email queue */}
       <div className="card">
-        <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <h2 className="section-title" style={{ marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8 }}>Re-engagement email queue <DemoTag /></h2>
+            <h2 className="section-title" style={{ marginBottom: 'var(--space-2)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Re-engagement email queue <DemoTag /></h2>
             <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Creators who abandoned their onboarding draft for 48+ hours. Emails sent automatically.</div>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={() => setEmailCopyOpen(true)}>
@@ -443,15 +443,15 @@ export default function OverviewPage() {
       </div>
 
       <Modal open={emailCopyOpen} onClose={() => setEmailCopyOpen(false)} title="Re-engagement email" size="md">
-        <p style={{ fontSize: 12.5, color: "var(--grey-500)", marginBottom: 14 }}>
+        <p style={{ fontSize: 12.5, color: "var(--grey-500)", marginBottom: 'var(--space-16)' }}>
           Sent automatically 48 hours after a creator abandons their onboarding draft. Editing the copy needs a backend template endpoint; this shows what currently goes out.
         </p>
         <div style={{ border: "0.5px solid var(--grey-200)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
-          <div style={{ padding: "10px 14px", background: "var(--grey-50)", borderBottom: "0.5px solid var(--grey-200)", fontSize: 12.5 }}>
+          <div style={{ padding: "var(--space-12) var(--space-16)", background: "var(--grey-50)", borderBottom: "0.5px solid var(--grey-200)", fontSize: 12.5 }}>
             <div><span style={{ color: "var(--grey-400)" }}>Subject:</span> <strong>Your rate card is almost ready, {'{{firstName}}'}</strong></div>
-            <div style={{ marginTop: 2 }}><span style={{ color: "var(--grey-400)" }}>From:</span> Creatorske &lt;hello@creatorske.com&gt;</div>
+            <div style={{ marginTop: 'var(--space-2)' }}><span style={{ color: "var(--grey-400)" }}>From:</span> Creatorske &lt;hello@creatorske.com&gt;</div>
           </div>
-          <div style={{ padding: 16, fontSize: 13.5, lineHeight: 1.7, color: "var(--grey-700)" }}>
+          <div style={{ padding: 'var(--space-16)', fontSize: 13.5, lineHeight: 1.7, color: "var(--grey-700)" }}>
             <p>Hi {'{{firstName}}'},</p>
             <p>You started building your rate card on Creatorske but didn't finish. It's saved exactly where you left it, with {'{{packageCount}}'} package{'{{packageCount === 1 ? "" : "s"}}'} and counting.</p>
             <p>Creators with a published card get their first brand enquiry within a median of 6 days. Pick up where you left off:</p>

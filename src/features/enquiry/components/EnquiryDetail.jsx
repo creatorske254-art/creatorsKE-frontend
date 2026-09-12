@@ -26,15 +26,15 @@ export default function EnquiryDetail({
         <div className="enq-detail-head">
           <Skeleton circle width={48} height={48} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <Skeleton width="50%" height={15} style={{ marginBottom: 6 }} />
+            <Skeleton width="50%" height={15} style={{ marginBottom: 'var(--space-8)' }} />
             <Skeleton width="70%" height={12} />
           </div>
         </div>
         <div className="enq-pkg">
-          <Skeleton width="40%" height={11} style={{ marginBottom: 8 }} />
+          <Skeleton width="40%" height={11} style={{ marginBottom: 'var(--space-8)' }} />
           <Skeleton width="80%" height={16} />
         </div>
-        <Skeleton width="100%" height={60} style={{ marginTop: 16 }} />
+        <Skeleton width="100%" height={60} style={{ marginTop: 'var(--space-16)' }} />
       </div>
     );
   }

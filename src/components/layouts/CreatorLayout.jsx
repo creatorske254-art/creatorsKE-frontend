@@ -61,7 +61,7 @@ const DASHBOARD_SHELL_STYLES = `
 
 .dashboard-shell__main {
   flex: 1;
-  padding: var(--space-28);
+  padding: var(--gutter-dashboard);
   overflow-y: auto;
   min-width: 0;
   background: var(--page-bg);
@@ -72,7 +72,7 @@ const DASHBOARD_SHELL_STYLES = `
 .dashboard-shell__sidebar-divider {
   height: 0.5px;
   background: var(--grey-100);
-  margin: var(--space-10) var(--space-10) var(--space-4);
+  margin: var(--space-12) var(--space-12) var(--space-4);
 }
 
 .dashboard-shell__menu-btn {
@@ -113,11 +113,6 @@ const DASHBOARD_SHELL_STYLES = `
   }
 }
 
-@media (max-width: 600px) {
-  .dashboard-shell__main {
-    padding: var(--space-16) var(--space-12);
-  }
-}
 `;
 
 // Sidebar - grouped sections. Per the library's "Dashboard Shell" pattern,
@@ -215,8 +210,8 @@ export default function CreatorLayout() {
                 style={{
                   width: '100%',
                   fontSize: 'var(--text-body-sm-size)',
-                  paddingTop: 'var(--space-7)',
-                  paddingBottom: 'var(--space-7)',
+                  paddingTop: 'var(--space-8)',
+                  paddingBottom: 'var(--space-8)',
                 }}
               />
             </div>

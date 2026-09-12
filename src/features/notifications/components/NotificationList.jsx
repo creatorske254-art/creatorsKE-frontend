@@ -52,15 +52,15 @@ export default function NotificationList({ onClose }) {
         .notif-panel__header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-12) var(--space-16); border-bottom: 0.5px solid var(--grey-100); }
         .notif-panel__title { font-family: var(--font-display); font-size: var(--text-h4-size); font-weight: 600; color: var(--black); }
         .notif-panel__body { max-height: 380px; overflow-y: auto; }
-        .notif-item { display: flex; align-items: flex-start; gap: var(--space-10); padding: var(--space-12) var(--space-16); border-bottom: 0.5px solid var(--grey-100); cursor: pointer; transition: background var(--transition-fast); }
+        .notif-item { display: flex; align-items: flex-start; gap: var(--space-12); padding: var(--space-12) var(--space-16); border-bottom: 0.5px solid var(--grey-100); cursor: pointer; transition: background var(--transition-fast); }
         .notif-item:last-child { border-bottom: none; }
         .notif-item:hover { background: var(--page-bg); }
         .notif-item__icon { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-50); color: var(--purple-600); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; }
         .notif-item__body { flex: 1; min-width: 0; }
-        .notif-item__title { font-size: var(--text-body-sm-size); font-weight: 600; color: var(--black); margin-bottom: 2px; }
+        .notif-item__title { font-size: var(--text-body-sm-size); font-weight: 600; color: var(--black); margin-bottom: var(--space-2); }
         .notif-item__message { font-size: var(--text-body-sm-size); color: var(--grey-600); line-height: 1.5; }
         .notif-item__time { font-size: var(--text-caption-size); color: var(--grey-400); margin-top: var(--space-4); }
-        .notif-item__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple-500); flex-shrink: 0; margin-top: var(--space-6); }
+        .notif-item__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple-500); flex-shrink: 0; margin-top: var(--space-8); }
       `}</style>
 
       <div className="notif-panel__header">
@@ -79,7 +79,7 @@ export default function NotificationList({ onClose }) {
               <div key={i} className="notif-item" style={{ cursor: 'default' }}>
                 <Skeleton circle width={32} height={32} />
                 <div className="notif-item__body">
-                  <Skeleton width="70%" height={13} style={{ marginBottom: 6 }} />
+                  <Skeleton width="70%" height={13} style={{ marginBottom: 'var(--space-8)' }} />
                   <Skeleton width="40%" height={11} />
                 </div>
               </div>

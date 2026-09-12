@@ -12,23 +12,23 @@ export default function OfflinePage() {
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999, background: 'var(--page-bg)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      padding: 32, textAlign: 'center',
+      padding: 'var(--space-32)', textAlign: 'center',
     }}>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: 'var(--black)', marginBottom: 40 }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-40)' }}>
         Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
       </div>
 
       <div style={{
         width: 56, height: 56, borderRadius: 'var(--radius-xl)', background: 'var(--grey-100)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-20)',
       }}>
         <IconWifiOff size={24} color="var(--grey-500)" />
       </div>
 
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--black)', marginBottom: 12 }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-12)' }}>
         You're offline
       </h1>
-      <p style={{ fontSize: 14, color: 'var(--grey-500)', maxWidth: 360, lineHeight: 1.7, marginBottom: 32 }}>
+      <p style={{ fontSize: 14, color: 'var(--grey-500)', maxWidth: 360, lineHeight: 1.7, marginBottom: 'var(--space-32)' }}>
         Check your internet connection. Creatorske will reconnect automatically once you're back online.
       </p>
 
@@ -36,7 +36,7 @@ export default function OfflinePage() {
         type="button"
         onClick={() => window.location.reload()}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px',
+          display: 'inline-flex', alignItems: 'center', gap: 'var(--space-8)', padding: 'var(--space-12) var(--space-20)',
           borderRadius: 8, background: 'var(--black)', color: 'var(--white)', fontSize: 13.5,
           fontWeight: 500, border: 'none', cursor: 'pointer',
         }}

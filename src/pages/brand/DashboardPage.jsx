@@ -137,7 +137,7 @@ function AvailBadge({ status }) {
   };
   const cls = map[status] || map["Open"];
   return (
-    <span className={`tag ${cls}`} style={{ fontSize: 10, padding: "3px 8px" }}>
+    <span className={`tag ${cls}`} style={{ fontSize: 10, padding: "var(--space-4) var(--space-8)" }}>
       {status}
     </span>
   );
@@ -166,19 +166,19 @@ function StatCard({ label, value, sub, change, changeUp }) {
   return (
     <div style={{
       background: C.white, border: `0.5px solid ${C.grey100}`,
-      borderRadius: R.lg, padding: 20, height: "100%",
+      borderRadius: R.lg, padding: 'var(--space-20)', height: "100%",
       display: "flex", flexDirection: "column", justifyContent: "space-between",
     }}>
-      <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: ".07em", textTransform: "uppercase", color: C.grey400, marginBottom: 8 }}>
+      <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: ".07em", textTransform: "uppercase", color: C.grey400, marginBottom: 'var(--space-8)' }}>
         {label}
       </div>
-      <div style={{ fontFamily: FONT_DISPLAY, fontSize: 32, fontWeight: 700, color: C.black, lineHeight: 1, marginBottom: 8 }}>
+      <div style={{ fontFamily: FONT_DISPLAY, fontSize: 32, fontWeight: 700, color: C.black, lineHeight: 1, marginBottom: 'var(--space-8)' }}>
         {value}
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)', fontSize: 12 }}>
         <span style={{ color: C.grey500 }}>{sub}</span>
         {change && (
-          <span style={{ display: "flex", alignItems: "center", gap: 4, fontWeight: 500, color: changeUp ? C.successText : C.errorText }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 'var(--space-4)', fontWeight: 500, color: changeUp ? C.successText : C.errorText }}>
             <TrendIcon up={changeUp} />{change}
           </span>
         )}
@@ -191,8 +191,8 @@ function StatCard({ label, value, sub, change, changeUp }) {
 function CampaignRow({ c, onSelect }) {
   return (
     <tr onClick={() => onSelect(c)} style={{ cursor: "pointer" }}>
-      <td style={{ padding: "13px 16px", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <td style={{ padding: "var(--space-12) var(--space-16)", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
           <Avatar initials={c.initials} color={c.avatarColor} size={32} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 500, color: C.black }}>{c.creator}</div>
@@ -202,30 +202,30 @@ function CampaignRow({ c, onSelect }) {
             <span style={{
               background: C.error, color: C.white, fontSize: 9, fontWeight: 700,
               minWidth: 16, height: 16, borderRadius: R.pill, display: "flex",
-              alignItems: "center", justifyContent: "center", padding: "0 4px", marginLeft: 2,
+              alignItems: "center", justifyContent: "center", padding: "0 var(--space-4)", marginLeft: 'var(--space-2)',
             }}>{c.unread}</span>
           )}
         </div>
       </td>
-      <td style={{ padding: "13px 16px", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
+      <td style={{ padding: "var(--space-12) var(--space-16)", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
         <div style={{ fontSize: 13, color: C.black }}>{c.package}</div>
         <div style={{ fontSize: 11.5, color: C.grey500 }}>{c.platform}</div>
       </td>
-      <td style={{ padding: "13px 16px", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
+      <td style={{ padding: "var(--space-12) var(--space-16)", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
         <StatusBadge status={c.status} />
       </td>
-      <td style={{ padding: "13px 16px", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
+      <td style={{ padding: "var(--space-12) var(--space-16)", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
         <div style={{ fontSize: 13, color: C.grey700 }}>{c.deliveryDate}</div>
       </td>
-      <td style={{ padding: "13px 16px", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
+      <td style={{ padding: "var(--space-12) var(--space-16)", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
         <div style={{ fontFamily: FONT_DISPLAY, fontSize: 13, fontWeight: 700, color: C.black }}>{c.amount}</div>
       </td>
-      <td style={{ padding: "13px 16px", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
+      <td style={{ padding: "var(--space-12) var(--space-16)", borderBottom: `0.5px solid ${C.grey100}`, verticalAlign: "middle" }}>
         <button
           onClick={(e) => { e.stopPropagation(); onSelect(c); }}
           style={{
             background: C.white, border: `0.5px solid ${C.grey200}`,
-            borderRadius: R.sm, padding: "6px 14px", fontSize: 12, fontWeight: 500,
+            borderRadius: R.sm, padding: "var(--space-8) var(--space-16)", fontSize: 12, fontWeight: 500,
             color: C.grey600, cursor: "pointer", fontFamily: FONT_BODY,
           }}
         >
@@ -271,49 +271,49 @@ function CampaignDrawer({ campaign, onClose }) {
       <div style={{
         position: "relative", width: "min(420px, 100vw)", background: C.white,
         borderLeft: `0.5px solid ${C.grey100}`, height: "100%",
-        overflowY: "auto", padding: 28, display: "flex", flexDirection: "column", gap: 20,
+        overflowY: "auto", padding: 'var(--space-32)', display: "flex", flexDirection: "column", gap: 'var(--space-20)',
         animation: "slideIn .18s ease both", fontFamily: FONT_BODY,
       }}>
         <style>{`@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}`}</style>
 
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
             <Avatar initials={campaign.initials} color={campaign.avatarColor} size={44} />
             <div>
               <div className="card-title" style={{ marginBottom: 0 }}>{campaign.creator}</div>
               <div style={{ fontSize: 12, color: C.grey500 }}>{campaign.handle}</div>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.grey500, lineHeight: 1, padding: 4, display: "flex" }}><IconX size={20} /></button>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.grey500, lineHeight: 1, padding: 'var(--space-4)', display: "flex" }}><IconX size={20} /></button>
         </div>
 
         <div style={{ height: "0.5px", background: C.grey100 }} />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
           <StatusBadge status={campaign.status} />
           <span style={{ fontSize: 12, color: C.grey500 }}>Due {campaign.deliveryDate}</span>
         </div>
 
-        <div style={{ background: C.grey50, borderRadius: R.lg, padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ background: C.grey50, borderRadius: R.lg, padding: 'var(--space-16)', display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
           <Row label="Package" value={campaign.package} />
           <Row label="Platform" value={campaign.platform} />
           <Row label="Amount" value={campaign.amount} bold />
         </div>
 
         {campaign.status === "delivered" && !approved && (
-          <div style={{ background: C.infoBg, borderRadius: R.lg, padding: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.infoText, marginBottom: 4 }}>Content delivered</div>
-            <div style={{ fontSize: 12, color: C.infoText, marginBottom: 14, lineHeight: 1.55 }}>
+          <div style={{ background: C.infoBg, borderRadius: R.lg, padding: 'var(--space-16)' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.infoText, marginBottom: 'var(--space-4)' }}>Content delivered</div>
+            <div style={{ fontSize: 12, color: C.infoText, marginBottom: 'var(--space-16)', lineHeight: 1.55 }}>
               {campaign.creator} has marked this campaign as delivered. Review the content and approve to release escrow.
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 'var(--space-8)' }}>
               <button
                 onClick={handleApprove}
                 disabled={isApproving}
                 className={isApproving ? "btn-loading" : undefined}
                 style={{
                   flex: 1, background: C.black, color: C.white, border: "none",
-                  borderRadius: R.md, padding: "10px 0", fontSize: 13, fontWeight: 500,
+                  borderRadius: R.md, padding: "var(--space-12) 0", fontSize: 13, fontWeight: 500,
                   cursor: "pointer", fontFamily: FONT_BODY,
                 }}
               >
@@ -323,7 +323,7 @@ function CampaignDrawer({ campaign, onClose }) {
                 onClick={handleRaiseDispute}
                 style={{
                   flex: 1, background: C.errorBg, color: C.errorText, border: "none",
-                  borderRadius: R.md, padding: "10px 0", fontSize: 13, fontWeight: 500, cursor: "pointer",
+                  borderRadius: R.md, padding: "var(--space-12) 0", fontSize: 13, fontWeight: 500, cursor: "pointer",
                   fontFamily: FONT_BODY,
                 }}
               >
@@ -334,14 +334,14 @@ function CampaignDrawer({ campaign, onClose }) {
         )}
 
         {approved && (
-          <div style={{ background: C.successBg, borderRadius: R.lg, padding: 14, fontSize: 13, color: C.successText, fontWeight: 500, display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ background: C.successBg, borderRadius: R.lg, padding: 'var(--space-16)', fontSize: 13, color: C.successText, fontWeight: 500, display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
             <IconCheck size={15} /> Delivery approved, escrow released
           </div>
         )}
 
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: C.grey400, marginBottom: 10 }}>Messages</div>
-          <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: C.grey400, marginBottom: 'var(--space-12)' }}>Messages</div>
+          <div style={{ marginTop: 'var(--space-12)', display: "flex", gap: 'var(--space-8)' }}>
             <input
               placeholder="Reply…"
               value={reply}
@@ -349,7 +349,7 @@ function CampaignDrawer({ campaign, onClose }) {
               onKeyDown={(e) => { if (e.key === "Enter") handleSendReply(); }}
               style={{
                 flex: 1, background: C.grey50, border: `0.5px solid ${C.grey100}`,
-                borderRadius: R.md, padding: "9px 12px", fontSize: 13, color: C.black,
+                borderRadius: R.md, padding: "var(--space-8) var(--space-12)", fontSize: 13, color: C.black,
                 fontFamily: FONT_BODY, outline: "none",
               }}
             />
@@ -357,7 +357,7 @@ function CampaignDrawer({ campaign, onClose }) {
               onClick={handleSendReply}
               style={{
                 background: C.black, color: C.white, border: "none",
-                borderRadius: R.md, padding: "9px 16px", fontSize: 13, fontWeight: 500, cursor: "pointer",
+                borderRadius: R.md, padding: "var(--space-8) var(--space-16)", fontSize: 13, fontWeight: 500, cursor: "pointer",
                 fontFamily: FONT_BODY,
               }}
             >Send</button>
@@ -365,7 +365,7 @@ function CampaignDrawer({ campaign, onClose }) {
           <button
             onClick={() => { onClose(); navigate(`/brand/campaigns/${campaign.id}#messages`); }}
             style={{
-              marginTop: 10, background: "none", border: "none", padding: 0, cursor: "pointer",
+              marginTop: 'var(--space-12)', background: "none", border: "none", padding: 0, cursor: "pointer",
               fontFamily: FONT_BODY, fontSize: 12.5, fontWeight: 500, color: C.purple600,
             }}
           >
@@ -427,7 +427,7 @@ export default function BrandDashboardPage() {
   return (
     <div style={{ fontFamily: FONT_BODY, background: C.grey50, minHeight: "100%", color: C.black }}>
       <style>{`
-        .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+        .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--space-16)}
         .col-3{grid-column:span 3}
         .col-4{grid-column:span 4}
         .col-8{grid-column:span 8}
@@ -436,12 +436,12 @@ export default function BrandDashboardPage() {
         @media (max-width:600px){.col-3,.col-4,.col-6,.col-8{grid-column:span 12}}
       `}</style>
 
-      <div style={{ padding: "32px 32px 48px", width: "100%", maxWidth: "none", margin: 0, boxSizing: "border-box" }}>
+      <div style={{ padding: "var(--space-32) var(--space-32) var(--space-48)", width: "100%", maxWidth: "none", margin: 0, boxSizing: "border-box" }}>
 
         {/* ── Hello message (replaces nav) ── */}
         <div style={{
           display: "flex", alignItems: "flex-start", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 16, marginBottom: 28,
+          flexWrap: "wrap", gap: 'var(--space-16)', marginBottom: 'var(--space-32)',
         }}>
           <div>
             <div className="page-title">
@@ -455,8 +455,8 @@ export default function BrandDashboardPage() {
             onClick={() => navigate('/directory')}
             style={{
               background: C.black, color: C.white, border: "none",
-              borderRadius: R.md, padding: "11px 20px", fontSize: 13.5, fontWeight: 500,
-              cursor: "pointer", display: "flex", alignItems: "center", gap: 7,
+              borderRadius: R.md, padding: "var(--space-12) var(--space-20)", fontSize: 13.5, fontWeight: 500,
+              cursor: "pointer", display: "flex", alignItems: "center", gap: 'var(--space-8)',
               fontFamily: FONT_BODY, flexShrink: 0,
             }}
           >
@@ -477,8 +477,8 @@ export default function BrandDashboardPage() {
           {/* Delivery alert */}
           {deliveredCampaign && (
             <div className="col-12" style={{
-              background: C.successBg, borderRadius: R.lg, padding: "14px 20px",
-              display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
+              background: C.successBg, borderRadius: R.lg, padding: "var(--space-16) var(--space-20)",
+              display: "flex", alignItems: "center", gap: 'var(--space-16)', flexWrap: "wrap",
             }}>
               <IconCircleCheck size={17} color={C.successText} strokeWidth={2} style={{ flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 200, fontSize: 13.5, color: C.successText }}>
@@ -488,7 +488,7 @@ export default function BrandDashboardPage() {
                 onClick={() => setSelectedCampaign(deliveredCampaign)}
                 style={{
                   background: C.black, color: C.white, border: "none",
-                  borderRadius: R.sm, padding: "8px 16px", fontSize: 12.5, fontWeight: 500,
+                  borderRadius: R.sm, padding: "var(--space-8) var(--space-16)", fontSize: 12.5, fontWeight: 500,
                   cursor: "pointer", whiteSpace: "nowrap", fontFamily: FONT_BODY,
                 }}
               >
@@ -499,15 +499,15 @@ export default function BrandDashboardPage() {
 
           {/* Active campaigns table */}
           <div className="col-12" style={{ background: C.white, border: `0.5px solid ${C.grey100}`, borderRadius: R.xl, overflow: "hidden" }}>
-            <div style={{ padding: "16px 20px", borderBottom: `0.5px solid ${C.grey100}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-              <div style={{ display: "flex", background: C.grey50, borderRadius: R.lg, padding: 4, gap: 2 }}>
+            <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: `0.5px solid ${C.grey100}`, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 'var(--space-12)' }}>
+              <div style={{ display: "flex", background: C.grey50, borderRadius: R.lg, padding: 'var(--space-4)', gap: 'var(--space-2)' }}>
                 {["active", "history"].map(t => (
                   <button
                     key={t}
                     onClick={() => setTab(t)}
                     style={{
                       background: tab === t ? C.white : "transparent",
-                      border: "none", borderRadius: R.md, padding: "8px 14px",
+                      border: "none", borderRadius: R.md, padding: "var(--space-8) var(--space-16)",
                       fontSize: 13, fontWeight: 500,
                       color: tab === t ? C.black : C.grey500,
                       boxShadow: tab === t ? "0 1px 2px rgba(0,0,0,.05)" : "none",
@@ -522,7 +522,7 @@ export default function BrandDashboardPage() {
                 onClick={() => navigate('/directory')}
                 style={{
                   background: "transparent", border: `1px solid ${C.purple400}`,
-                  borderRadius: R.md, padding: "8px 16px", fontSize: 12.5, fontWeight: 500,
+                  borderRadius: R.md, padding: "var(--space-8) var(--space-16)", fontSize: 12.5, fontWeight: 500,
                   color: C.purple600, cursor: "pointer", fontFamily: FONT_BODY,
                 }}
               >
@@ -533,7 +533,7 @@ export default function BrandDashboardPage() {
             {isCampaignsError ? (
               <ErrorState size="sm" onRetry={refetchCampaigns} />
             ) : isLoadingCampaigns ? (
-              <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ padding: 'var(--space-16)', display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                 {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={40} />)}
               </div>
             ) : tab === "active" ? (
@@ -551,7 +551,7 @@ export default function BrandDashboardPage() {
                       <tr>
                         {["Creator", "Package", "Status", "Delivery date", "Amount", ""].map(h => (
                           <th key={h} style={{
-                            padding: "10px 16px", textAlign: "left",
+                            padding: "var(--space-12) var(--space-16)", textAlign: "left",
                             fontSize: 10, fontWeight: 600, letterSpacing: ".08em",
                             textTransform: "uppercase", color: C.grey400,
                             borderBottom: `0.5px solid ${C.grey200}`, background: C.grey50,
@@ -582,7 +582,7 @@ export default function BrandDashboardPage() {
                     <tr>
                       {["Creator", "Package", "Status", "Delivery date", "Amount", ""].map(h => (
                         <th key={h} style={{
-                          padding: "10px 16px", textAlign: "left",
+                          padding: "var(--space-12) var(--space-16)", textAlign: "left",
                           fontSize: 10, fontWeight: 600, letterSpacing: ".08em",
                           textTransform: "uppercase", color: C.grey400,
                           borderBottom: `0.5px solid ${C.grey200}`, background: C.grey50,
@@ -602,7 +602,7 @@ export default function BrandDashboardPage() {
           </div>
 
           {/* Shortlist heading */}
-          <div className="col-12" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
+          <div className="col-12" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 'var(--space-8)' }}>
             <div>
               <div className="card-title" style={{ marginBottom: 0 }}>Shortlisted creators</div>
               <div className="page-subtitle">Creators you've saved for comparison</div>
@@ -623,15 +623,15 @@ export default function BrandDashboardPage() {
           ) : displayedShortlist.length === 0 ? (
             <div className="col-12" style={{
               background: C.white, border: `1.5px dashed ${C.grey200}`,
-              borderRadius: R.lg, padding: 40, textAlign: "center",
+              borderRadius: R.lg, padding: 'var(--space-40)', textAlign: "center",
             }}>
               <div style={{ fontSize: 13, color: C.grey500 }}>Your shortlist is empty.</div>
-              <div style={{ fontSize: 12, color: C.grey400, marginTop: 4, marginBottom: 12 }}>Browse the creator directory to find your next collaborator.</div>
+              <div style={{ fontSize: 12, color: C.grey400, marginTop: 'var(--space-4)', marginBottom: 'var(--space-12)' }}>Browse the creator directory to find your next collaborator.</div>
               <button
                 onClick={() => navigate('/directory')}
                 style={{
                   background: C.black, color: C.white, border: "none", borderRadius: R.md,
-                  padding: "8px 16px", fontSize: 12.5, fontWeight: 500, cursor: "pointer", fontFamily: FONT_BODY,
+                  padding: "var(--space-8) var(--space-16)", fontSize: 12.5, fontWeight: 500, cursor: "pointer", fontFamily: FONT_BODY,
                 }}
               >
                 Browse directory
@@ -644,11 +644,11 @@ export default function BrandDashboardPage() {
                 borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column",
               }}>
                 {/* Cover gradient: niche tag + identity row, matching DirectoryPage's CreatorCard */}
-                <div style={{ background: `linear-gradient(135deg, ${c.avatarColor}, ${shade(c.avatarColor, -35)})`, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 12, minHeight: 130 }}>
-                  <div style={{ position: "absolute", top: 10, right: 10, fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "3px 9px", borderRadius: 999, background: "rgba(255,255,255,0.22)", color: "#fff" }}>
+                <div style={{ background: `linear-gradient(135deg, ${c.avatarColor}, ${shade(c.avatarColor, -35)})`, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 'var(--space-12)', minHeight: 130 }}>
+                  <div style={{ position: "absolute", top: 10, right: 10, fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "var(--space-4) var(--space-8)", borderRadius: 999, background: "rgba(255,255,255,0.22)", color: "#fff" }}>
                     {c.niche}
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9, position: "relative", zIndex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)', position: "relative", zIndex: 1 }}>
                     <div style={{ width: 38, height: 38, borderRadius: "50%", border: "2px solid rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FONT_DISPLAY, fontSize: 12, fontWeight: 600, color: "#fff", flexShrink: 0 }}>
                       {c.initials}
                     </div>
@@ -660,35 +660,35 @@ export default function BrandDashboardPage() {
                 </div>
 
                 {/* Body */}
-                <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10, flex: 1, background: C.white }}>
+                <div style={{ padding: 'var(--space-12)', display: "flex", flexDirection: "column", gap: 'var(--space-12)', flex: 1, background: C.white }}>
                   {/* nuance: platform tag + availability badge (Dashboard-specific, replaces the plain dot+label used elsewhere) */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                    <span style={{ fontSize: 12, fontWeight: 500, padding: "4px 10px", borderRadius: R.pill, background: C.grey50, color: C.grey700 }}>{c.platform}</span>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-8)' }}>
+                    <span style={{ fontSize: 12, fontWeight: 500, padding: "var(--space-4) var(--space-12)", borderRadius: R.pill, background: C.grey50, color: C.grey700 }}>{c.platform}</span>
                     <AvailBadge status={c.availability} />
                   </div>
 
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1, background: C.grey200, borderRadius: 8, overflow: "hidden" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 'var(--space-2)', background: C.grey200, borderRadius: 8, overflow: "hidden" }}>
                     {[
                       { label: "Followers", value: c.followers },
                       { label: "Engagement", value: c.engagement },
                       { label: "Rating", value: c.rating },
                     ].map(s => (
-                      <div key={s.label} style={{ background: C.grey50, padding: "7px 0", textAlign: "center" }}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, fontFamily: FONT_DISPLAY, fontSize: 13, fontWeight: 600, color: C.black }}>
+                      <div key={s.label} style={{ background: C.grey50, padding: "var(--space-8) 0", textAlign: "center" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 'var(--space-4)', fontFamily: FONT_DISPLAY, fontSize: 13, fontWeight: 600, color: C.black }}>
                           {s.value}
                           {s.label === "Rating" && <IconStarFilled size={11} style={{ color: C.black }} />}
                         </div>
-                        <div style={{ fontSize: 9, color: C.grey400, textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 1 }}>{s.label}</div>
+                        <div style={{ fontSize: 9, color: C.grey400, textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 'var(--space-2)' }}>{s.label}</div>
                       </div>
                     ))}
                   </div>
 
-                  <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ display: "flex", gap: 'var(--space-8)' }}>
                     <button
                       onClick={() => navigate(`/c/${c.handle.replace('@', '')}?enquire=1`)}
                       style={{
                         flex: 1, background: C.black, color: C.white, border: "none",
-                        borderRadius: R.md, padding: "9px 0", fontSize: 12.5, fontWeight: 500,
+                        borderRadius: R.md, padding: "var(--space-8) 0", fontSize: 12.5, fontWeight: 500,
                         cursor: "pointer", fontFamily: FONT_BODY,
                       }}
                     >Send enquiry</button>
@@ -697,7 +697,7 @@ export default function BrandDashboardPage() {
                       style={{
                         background: C.white, color: C.grey600,
                         border: `0.5px solid ${C.grey200}`, borderRadius: R.md,
-                        padding: "9px 14px", fontSize: 12.5, fontWeight: 500,
+                        padding: "var(--space-8) var(--space-16)", fontSize: 12.5, fontWeight: 500,
                         cursor: "pointer", fontFamily: FONT_BODY,
                       }}
                     >Remove</button>
@@ -714,7 +714,7 @@ export default function BrandDashboardPage() {
             style={{
               background: C.white, border: `1.5px dashed ${C.grey200}`, borderRadius: R.lg,
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              gap: 10, padding: 18, cursor: "pointer", minHeight: 200, textAlign: "center",
+              gap: 'var(--space-12)', padding: 'var(--space-20)', cursor: "pointer", minHeight: 200, textAlign: "center",
             }}
           >
             <div style={{

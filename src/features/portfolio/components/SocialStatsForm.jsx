@@ -33,10 +33,10 @@ export function SocialStatsForm({ control, register, errors }) {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 2 }}>
+          <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 'var(--space-2)' }}>
             Add the platforms you're active on. Brands use these numbers to evaluate fit.
           </p>
         </div>
@@ -68,10 +68,10 @@ export function SocialStatsForm({ control, register, errors }) {
           <div
             key={field.id}
             className="card card-p-md"
-            style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}
           >
             {/* Row 1: platform + handle */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, alignItems: 'end' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)', alignItems: 'end' }}>
               <div className="field">
                 <label className="field-label field-required">Platform</label>
                 <div className="select-wrapper">
@@ -99,7 +99,7 @@ export function SocialStatsForm({ control, register, errors }) {
             </div>
 
             {/* Row 2: stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-12)' }}>
               <div className="field">
                 <label className="field-label field-required">Followers</label>
                 <input

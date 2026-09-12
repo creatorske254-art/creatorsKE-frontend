@@ -83,13 +83,13 @@ const LAYOUT_STYLES = `
 }
 
 .admin-layout__search .input-icon.left {
-  left: var(--space-10);
+  left: var(--space-12);
   font-size: var(--size-icon-sm);
 }
 
 .admin-layout__main {
   flex: 1;
-  padding: var(--space-28);
+  padding: var(--gutter-dashboard);
   overflow-y: auto;
   min-width: 0;
 }
@@ -98,7 +98,7 @@ const LAYOUT_STYLES = `
 .admin-layout__sidebar-divider {
   height: 0.5px;
   background: var(--grey-100);
-  margin: var(--space-10) var(--space-10) var(--space-4);
+  margin: var(--space-12) var(--space-12) var(--space-4);
 }
 
 /* Positions an urgency .badge at the end of a sidebar row - .badge itself
@@ -146,9 +146,6 @@ const LAYOUT_STYLES = `
 }
 
 @media (max-width: 600px) {
-  .admin-layout__main {
-    padding: var(--space-16) var(--space-12);
-  }
   .admin-layout__search {
     display: none;
   }
@@ -322,7 +319,7 @@ export default function AdminLayout() {
               <div key={section.label} className="admin-layout__sidebar-group">
                 <div
                   className="sidebar-section"
-                  style={si === 0 ? { marginTop: 4 } : undefined}
+                  style={si === 0 ? { marginTop: 'var(--space-4)' } : undefined}
                 >
                   {section.label}
                 </div>

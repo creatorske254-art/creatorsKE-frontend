@@ -36,7 +36,7 @@ export default function CollapsibleCard({ title, right, collapsible = true, defa
     <section className={className} data-collapsed={(collapsible && !open) || undefined}>
       <div
         {...headerInteractive}
-        style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: collapsible ? 'pointer' : 'default', userSelect: collapsible ? 'none' : 'auto' }}
+        style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)', cursor: collapsible ? 'pointer' : 'default', userSelect: collapsible ? 'none' : 'auto' }}
       >
         <span className="card-title" style={{ marginBottom: 0, flex: 1, minWidth: 0 }}>{title}</span>
         {right && (

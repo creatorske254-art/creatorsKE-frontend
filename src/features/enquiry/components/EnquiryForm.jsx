@@ -9,7 +9,7 @@ const LABEL_STYLE = {
   letterSpacing: '0.07em',
   textTransform: 'uppercase',
   color: 'var(--grey-600)',
-  marginBottom: '6px',
+  marginBottom: 'var(--space-8)',
 };
 
 // ASSUMPTION: POST /enquiries payload isn't documented - assumed
@@ -29,7 +29,7 @@ export default function EnquiryForm({ creatorId, packages = [], initialPackageId
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
       {packages.length > 0 && (
         <div>
           <label style={LABEL_STYLE}>Package</label>
@@ -61,7 +61,7 @@ export default function EnquiryForm({ creatorId, packages = [], initialPackageId
         />
       </div>
 
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', gap: 'var(--space-8)', justifyContent: 'flex-end' }}>
         {onCancel && (
           <button type="button" className="btn btn-ghost" onClick={onCancel}>
             Cancel

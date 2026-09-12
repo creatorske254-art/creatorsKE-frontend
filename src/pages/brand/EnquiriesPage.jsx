@@ -21,7 +21,7 @@ const PAGE_CSS = `
       "list list list side";
     gap: var(--space-16);
   }
-  .enq-list-area { grid-area: list; display: flex; flex-direction: column; gap: var(--space-10); }
+  .enq-list-area { grid-area: list; display: flex; flex-direction: column; gap: var(--space-12); }
   .enq-side-area { grid-area: side; }
 
   @media (max-width: 900px) {
@@ -62,7 +62,7 @@ export default function EnquiriesPage() {
   const selectedEnquiry = enquiries.find((e) => e.id === selectedId) ?? null
 
   return (
-    <div style={{ flex: 1, padding: 'var(--space-28)', overflowY: 'auto', minWidth: 0, width: '100%' }}>
+    <div style={{ flex: 1, padding: 'var(--space-32)', overflowY: 'auto', minWidth: 0, width: '100%' }}>
       <style>{ENQUIRY_CSS}</style>
       <style>{PAGE_CSS}</style>
 
@@ -97,7 +97,7 @@ export default function EnquiriesPage() {
                 title="No enquiries sent yet"
                 description="Browse the creator directory and send your first enquiry to start a conversation."
                 action={
-                  <Link to="/directory" className="btn btn-purple btn-sm" style={{ marginTop: 4 }}>
+                  <Link to="/directory" className="btn btn-purple btn-sm" style={{ marginTop: 'var(--space-4)' }}>
                     Browse creators
                   </Link>
                 }

@@ -758,6 +758,12 @@
     margin: var(--space-2) 0 0;
   }
   .text-hint { font-size: 12px; line-height: 1.5; color: var(--grey-400); }
+
+  /* ── Collapsible card body ────────────────────────────────────────────── */
+  /* The header supplies the gap; content that used to sit under an inline
+     title often carries its own margin-top, which would double it. */
+  .collapsible-card__body { margin-top: var(--space-16); }
+  .collapsible-card__body > :first-child { margin-top: 0 !important; }
   .card-body-text { font-size: var(--text-body-sm-size); line-height: 1.65; color: var(--grey-500); }
 
   /* ── Empty states ─────────────────────────────────────────────────────── */

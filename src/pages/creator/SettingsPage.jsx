@@ -7,6 +7,7 @@ import { authService, userService } from '@/features/auth/services/auth.service'
 import { useImageUpload } from '@/lib/useImageUpload';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import Modal from '@/components/ui/Modal';
+import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import { useTheme } from '@/context/ThemeContext';
 import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
 
@@ -288,15 +289,11 @@ function ProfileTab() {
   return (
     <div className="settings-stack">
       {/* Avatar & name */}
-      <div className="card card-p-lg">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-          <span className="card-title" style={{ marginBottom: 0 }}>Public profile</span>
-          <span className="tag tag-success">
+      <CollapsibleCard title="Public profile"
+        right={<span className="tag tag-success">
             <span className="sdot" style={{ background: "var(--status-success)" }} />
             Live
-          </span>
-        </div>
-
+          </span>}>
         <div className="settings-stack">
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             {photoUrl ? (
@@ -382,7 +379,7 @@ function ProfileTab() {
             </div>
           </div>
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Audience stats: bento of stat-cards, mirrors the dashboard KPI pattern */}
       <div>
@@ -416,8 +413,7 @@ function ProfileTab() {
       </div>
 
       {/* Social links */}
-      <div className="card card-p-lg">
-        <span className="card-title">Social platforms</span>
+      <CollapsibleCard title="Social platforms">
         <div className="settings-stack" style={{ gap: 14, marginTop: 14 }}>
           <div className="field">
             <label className="field-label">Instagram</label>
@@ -460,7 +456,7 @@ function ProfileTab() {
           </div>
           <p className="field-hint">WhatsApp number is used for the "Enquire" button on your rate card.</p>
         </div>
-      </div>
+      </CollapsibleCard>
 
       <SaveBar saved={saved} onSave={handleSave} />
     </div>
@@ -490,8 +486,7 @@ function NotificationsTab() {
   return (
     <div className="settings-stack">
       <div className="bento-2">
-        <div className="card card-p-lg">
-          <span className="card-title">Email notifications</span>
+        <CollapsibleCard title="Email notifications">
           <div style={{ marginTop: 10 }}>
             <div className="notif-row">
               <div>
@@ -522,11 +517,10 @@ function NotificationsTab() {
               <Toggle on={notifs.weeklyDigest} onChange={() => toggle("weeklyDigest")} />
             </div>
           </div>
-        </div>
+        </CollapsibleCard>
 
         <div className="settings-stack">
-          <div className="card card-p-lg">
-            <span className="card-title">More notifications</span>
+          <CollapsibleCard title="More notifications">
             <div style={{ marginTop: 10 }}>
               <div className="notif-row">
                 <div>
@@ -543,10 +537,9 @@ function NotificationsTab() {
                 <Toggle on={notifs.productUpdates} onChange={() => toggle("productUpdates")} />
               </div>
             </div>
-          </div>
+          </CollapsibleCard>
 
-          <div className="card card-p-lg">
-            <span className="card-title">Notification email</span>
+          <CollapsibleCard title="Notification email">
             <div className="field" style={{ marginTop: 10 }}>
               <label className="field-label">Send notifications to</label>
               <div className="input-wrapper">
@@ -555,7 +548,7 @@ function NotificationsTab() {
               </div>
               <p className="field-hint">We'll also send receipts and important account info here.</p>
             </div>
-          </div>
+          </CollapsibleCard>
         </div>
       </div>
 
@@ -675,11 +668,8 @@ function PaymentsTab() {
 
   return (
     <div className="settings-stack">
-      <div className="card card-p-lg">
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <span className="card-title" style={{ marginBottom: 0 }}>Payment methods</span>
-          <p className="field-hint" style={{ margin: 0 }}>Accept payments from brands directly</p>
-        </div>
+      <CollapsibleCard title="Payment methods"
+        right={<p className="field-hint" style={{ margin: 0 }}>Accept payments from brands directly</p>}>
         <div className="settings-stack" style={{ gap: 12, marginTop: 16 }}>
           {Object.entries(PAY_PROVIDERS).map(([key, provider]) => {
             const summary = connected[key];
@@ -709,7 +699,7 @@ function PaymentsTab() {
             );
           })}
         </div>
-      </div>
+      </CollapsibleCard>
 
       <ConnectPayoutModal
         providerKey={connecting}
@@ -727,8 +717,7 @@ function PaymentsTab() {
         onCancel={() => setDisconnecting(null)}
       />
 
-      <div className="card card-p-lg">
-        <span className="card-title">Payout settings</span>
+      <CollapsibleCard title="Payout settings">
         <div className="settings-stack" style={{ marginTop: 14 }}>
           <div className="field-row">
             <div className="field">
@@ -766,7 +755,7 @@ function PaymentsTab() {
             onChange={setAutoWithdraw}
           />
         </div>
-      </div>
+      </CollapsibleCard>
     </div>
   );
 }
@@ -793,8 +782,7 @@ function AppearanceTab() {
 
   return (
     <div className="settings-stack">
-      <div className="card card-p-lg">
-        <span className="card-title">Interface theme</span>
+      <CollapsibleCard title="Interface theme">
         <div className="bento-3" style={{ marginTop: 14 }}>
           {["light", "dark", "system"].map((t) => (
             <button
@@ -811,11 +799,10 @@ function AppearanceTab() {
             </button>
           ))}
         </div>
-      </div>
+      </CollapsibleCard>
 
       <div className="bento-2">
-        <div className="card card-p-lg">
-          <span className="card-title">Accent colour</span>
+        <CollapsibleCard title="Accent colour">
           <p className="field-hint" style={{ marginBottom: 14 }}>Applied to buttons, highlights, and your rate card theme.</p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {ACCENT_COLORS.map(({ hex, label }) => (
@@ -833,10 +820,9 @@ function AppearanceTab() {
               </div>
             ))}
           </div>
-        </div>
+        </CollapsibleCard>
 
-        <div className="card card-p-lg">
-          <span className="card-title">Rate card layout</span>
+        <CollapsibleCard title="Rate card layout">
           <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
             {["Classic", "Minimal"].map((option) => (
               <button
@@ -868,7 +854,7 @@ function AppearanceTab() {
               </button>
             ))}
           </div>
-        </div>
+        </CollapsibleCard>
       </div>
 
       <SaveBar saved={saved} onSave={handleSave} />
@@ -923,8 +909,7 @@ function AccountTab() {
 
   return (
     <div className="settings-stack">
-      <div className="card card-p-lg">
-        <span className="card-title">Login details</span>
+      <CollapsibleCard title="Login details">
         <div className="settings-stack" style={{ gap: 12, marginTop: 14 }}>
           <div className="field">
             <label className="field-label field-required">Email address</label>
@@ -952,11 +937,10 @@ function AccountTab() {
             </div>
           </div>
         </div>
-      </div>
+      </CollapsibleCard>
 
       <div className="bento-2">
-        <div className="card card-p-lg">
-          <span className="card-title">Two-factor authentication</span>
+        <CollapsibleCard title="Two-factor authentication">
           <div style={{ marginTop: 14 }}>
             <ToggleRow
               label="Enable 2FA"
@@ -971,10 +955,9 @@ function AccountTab() {
               Set up authenticator
             </button>
           </div>
-        </div>
+        </CollapsibleCard>
 
-        <div className="card card-p-lg">
-          <span className="card-title">Privacy</span>
+        <CollapsibleCard title="Privacy">
           <div className="settings-stack" style={{ gap: 13, marginTop: 14 }}>
             <ToggleRow
               label="Show profile in Creatorske directory"
@@ -990,7 +973,7 @@ function AccountTab() {
               onChange={setShareAnalytics}
             />
           </div>
-        </div>
+        </CollapsibleCard>
       </div>
 
       <div className="danger-zone">

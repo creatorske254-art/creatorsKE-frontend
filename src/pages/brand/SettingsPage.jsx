@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useNavigate } from 'react-router-dom';
 import Modal from '@/components/ui/Modal';
+import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/features/auth/services/auth.service';
@@ -283,8 +284,7 @@ function ProfileTab({ form, setForm, onDirty }) {
   return (
     <div className="settings-stack">
       {/* Logo */}
-      <div className="card card-p-lg">
-        <span className="card-title">Company logo</span>
+      <CollapsibleCard title="Company logo">
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 14 }}>
           {logoUrl ? (
             <img src={logoUrl} alt="Company logo" className="avatar avatar-lg" style={{ objectFit: "cover" }} />
@@ -302,11 +302,10 @@ function ProfileTab({ form, setForm, onDirty }) {
             <span className="field-hint">PNG or SVG · max 2 MB · shown on invoices and scope confirmations</span>
           </div>
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Company details */}
-      <div className="card card-p-lg">
-        <span className="card-title">Company details</span>
+      <CollapsibleCard title="Company details">
         <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
           This information is shown to creators when they receive your enquiry.
         </p>
@@ -340,11 +339,10 @@ function ProfileTab({ form, setForm, onDirty }) {
             <span className="field-hint">Optional: helps creators understand your brand before accepting your enquiry.</span>
           </div>
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Contact details */}
-      <div className="card card-p-lg">
-        <span className="card-title">Contact details</span>
+      <CollapsibleCard title="Contact details">
         <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
           Used for invoices and shown to creators on accepted bookings.
         </p>
@@ -383,27 +381,26 @@ function ProfileTab({ form, setForm, onDirty }) {
             </div>
           </div>
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Verification status */}
-      <div className="card card-p-lg">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-          <div>
-            <span className="card-title" style={{ marginBottom: 3, display: "block" }}>Brand verification</span>
-            <span className="field-hint">Verified brands get higher placement in creator enquiry lists and build faster trust.</span>
-          </div>
+      <CollapsibleCard
+        title="Brand verification"
+        right={(
           <span className="tag tag-success">
             <i className="ti ti-circle-check" style={{ fontSize: 12 }} />
             Verified
           </span>
-        </div>
+        )}
+      >
+        <span className="field-hint">Verified brands get higher placement in creator enquiry lists and build faster trust.</span>
         <div className="info-callout" style={{ marginTop: 12, padding: "10px 14px" }}>
           <i className="ti ti-shield-check" style={{ fontSize: 14, marginTop: 0 }} />
           <span style={{ fontSize: 12.5, color: "var(--grey-500)" }}>
             Business email domain confirmed · <span style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>nairobibrew.co.ke</span>
           </span>
         </div>
-      </div>
+      </CollapsibleCard>
     </div>
   );
 }
@@ -520,8 +517,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
   return (
     <div className="settings-stack">
       {/* Payment methods */}
-      <div className="card card-p-lg">
-        <span className="card-title">Payment methods</span>
+      <CollapsibleCard title="Payment methods">
         <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
           How you pay creators. These are used at checkout when a booking is confirmed.
         </p>
@@ -549,7 +545,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
             </div>
           ))}
         </div>
-      </div>
+      </CollapsibleCard>
 
       <ConnectMethodModal
         method={connecting}
@@ -568,8 +564,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
       />
 
       {/* Invoice preferences */}
-      <div className="card card-p-lg">
-        <span className="card-title">Invoice preferences</span>
+      <CollapsibleCard title="Invoice preferences">
         <div className="settings-stack" style={{ gap: 13, marginTop: 14 }}>
           <ToggleRow
             label="Receive auto-invoice on booking"
@@ -592,7 +587,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
             onChange={() => toggle("payReminder")}
           />
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Escrow info */}
       <div className="info-callout">
@@ -645,8 +640,7 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
   return (
     <div className="settings-stack">
       {groups.map((g) => (
-        <div key={g.title} className="card card-p-lg">
-          <span className="card-title">{g.title}</span>
+        <CollapsibleCard key={g.title} title={g.title}>
           <div className="settings-stack" style={{ gap: 0, marginTop: 14 }}>
             {g.items.map((item) => (
               <div key={item.key} className="notif-row">
@@ -662,11 +656,10 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
               </div>
             ))}
           </div>
-        </div>
+        </CollapsibleCard>
       ))}
 
-      <div className="card card-p-lg">
-        <span className="card-title">Email digest</span>
+      <CollapsibleCard title="Email digest">
         <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
           Instead of individual emails, get a single daily summary.
         </p>
@@ -676,7 +669,7 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
           on={notifPrefs.digest}
           onChange={() => toggle("digest")}
         />
-      </div>
+      </CollapsibleCard>
     </div>
   );
 }
@@ -722,8 +715,7 @@ function SecurityTab({ onDirty }) {
   return (
     <div className="settings-stack">
       {/* Change password */}
-      <div className="card card-p-lg">
-        <span className="card-title">Change password</span>
+      <CollapsibleCard title="Change password">
         <div style={{ marginTop: 14 }}>
           {pwSaved ? (
             <div className="success-banner">
@@ -754,28 +746,24 @@ function SecurityTab({ onDirty }) {
             </div>
           )}
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Two-factor */}
-      <div className="card card-p-lg">
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
-          <div>
-            <span className="card-title" style={{ marginBottom: 3, display: "block" }}>Two-factor authentication</span>
-            <span className="field-hint">Add an extra layer of protection using an authenticator app or SMS code.</span>
-          </div>
-          <span className={`tag ${twoFAEnabled ? "tag-success" : "tag-warning"}`}>{twoFAEnabled ? "Enabled" : "Not enabled"}</span>
-        </div>
+      <CollapsibleCard
+        title="Two-factor authentication"
+        right={<span className={`tag ${twoFAEnabled ? "tag-success" : "tag-warning"}`}>{twoFAEnabled ? "Enabled" : "Not enabled"}</span>}
+      >
+        <span className="field-hint">Add an extra layer of protection using an authenticator app or SMS code.</span>
         <div style={{ marginTop: 14 }}>
           <button className="btn btn-secondary btn-sm" onClick={handleToggle2FA}>
             <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
             {twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}
           </button>
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Active sessions */}
-      <div className="card card-p-lg">
-        <span className="card-title">Active sessions</span>
+      <CollapsibleCard title="Active sessions">
         <p className="card-body-text" style={{ marginTop: -2, marginBottom: 6 }}>
           Devices where your account is currently signed in.
         </p>
@@ -801,7 +789,7 @@ function SecurityTab({ onDirty }) {
         <div style={{ marginTop: 12 }}>
           <button className="btn btn-ghost btn-sm" onClick={handleSignOutOthers} disabled={sessions.length <= 1}>Sign out of all other sessions</button>
         </div>
-      </div>
+      </CollapsibleCard>
     </div>
   );
 }
@@ -829,8 +817,7 @@ function AccountTab() {
   return (
     <div className="settings-stack">
       {/* Plan */}
-      <div className="card card-p-lg">
-        <span className="card-title">Your plan</span>
+      <CollapsibleCard title="Your plan">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginTop: 14 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div className="avatar avatar-md avatar-purple" style={{ borderRadius: "var(--radius-md)" }}>
@@ -843,11 +830,10 @@ function AccountTab() {
           </div>
           <span className="tag tag-purple">Active</span>
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Legal */}
-      <div className="card card-p-lg">
-        <span className="card-title">Legal</span>
+      <CollapsibleCard title="Legal">
         <div className="settings-stack" style={{ gap: 10, marginTop: 14 }}>
           {[{ label: "Terms of Service", href: "/terms" }, { label: "Privacy Policy", href: "/privacy" }].map((l) => (
             <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="legal-row">
@@ -856,7 +842,7 @@ function AccountTab() {
             </a>
           ))}
         </div>
-      </div>
+      </CollapsibleCard>
 
       {/* Danger zone */}
       <div className="danger-zone">

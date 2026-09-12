@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/utils';
+import { IconCheck, IconGripVertical, IconPencil, IconRefresh, IconTrash } from '@tabler/icons-react';
 
 /**
  * PackageCard
@@ -26,7 +27,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
     <div className={cn('pkg-card', isActive && 'pkg-card--dragging')}>
       {/* Drag handle */}
       <div className="pkg-card__drag" {...dragHandleProps} title="Drag to reorder">
-        <i className="ti ti-grip-vertical" />
+        <IconGripVertical className="icon-sm" aria-hidden="true" />
       </div>
 
       {/* Content */}
@@ -47,7 +48,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
           <ul className="pkg-card__deliverables">
             {pkg.deliverables.filter(d => d.text).map((d, i) => (
               <li key={i} className="pkg-card__deliverable">
-                <i className="ti ti-check" />
+                <IconCheck className="icon-xs" aria-hidden="true" />
                 {d.text}
               </li>
             ))}
@@ -56,7 +57,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
 
         <div className="pkg-card__footer">
           <span className="tag tag-default" style={{ fontSize: 11 }}>
-            <i className="ti ti-refresh" style={{ fontSize: 10 }} />
+            <IconRefresh className="icon-xs" aria-hidden="true" />
             {revisionLabel}
           </span>
           <div className="pkg-card__actions">
@@ -66,7 +67,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
               onClick={onEdit}
               aria-label="Edit package"
             >
-              <i className="ti ti-pencil" style={{ fontSize: 13 }} />
+              <IconPencil className="icon-sm" aria-hidden="true" />
             </button>
             <button
               type="button"
@@ -75,7 +76,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
               aria-label="Delete package"
               style={{ color: 'var(--status-error-text)' }}
             >
-              <i className="ti ti-trash" style={{ fontSize: 13 }} />
+              <IconTrash className="icon-sm" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -172,11 +173,7 @@ export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, on
           font-size: 12px;
           color: var(--grey-600);
         }
-        .pkg-card__deliverable .ti-check {
-          color: var(--status-success);
-          font-size: 11px;
-          flex-shrink: 0;
-        }
+        .pkg-card__deliverable > svg { color: var(--status-success); }
         .pkg-card__footer {
           display: flex;
           align-items: center;

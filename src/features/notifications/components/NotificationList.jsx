@@ -5,12 +5,13 @@ import { formatRelativeDate } from '@/lib/utils';
 import { TYPES } from '../constants/notifications';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
+import { IconBell, IconBellOff, IconCash, IconMail, IconMessageCircle, IconPackage } from '@tabler/icons-react';
 
 const TYPE_ICON = {
-  [TYPES.NEW_ENQUIRY]: 'ti-mail',
-  [TYPES.PAYMENT_CONFIRMED]: 'ti-cash',
-  [TYPES.DELIVERY_MARKED]: 'ti-package',
-  [TYPES.NEW_MESSAGE]: 'ti-message-circle',
+  [TYPES.NEW_ENQUIRY]: IconMail,
+  [TYPES.PAYMENT_CONFIRMED]: IconCash,
+  [TYPES.DELIVERY_MARKED]: IconPackage,
+  [TYPES.NEW_MESSAGE]: IconMessageCircle,
 };
 
 // Dropdown list of recent notifications, opened from the bell button in
@@ -88,7 +89,7 @@ export default function NotificationList({ onClose }) {
         ) : notifications.length === 0 ? (
           <EmptyState
             size="sm"
-            icon={<i className="ti ti-bell-off" aria-hidden="true" />}
+            icon={<IconBellOff />}
             title="You're all caught up"
             description="New notifications about enquiries, payments, and deliveries will show up here."
           />
@@ -97,10 +98,11 @@ export default function NotificationList({ onClose }) {
             const isUnread = !n.read && !n.isRead;
             const title = n.title || n.subject;
             const message = n.message || n.body || (!title ? 'Notification' : '');
+            const TypeIcon = TYPE_ICON[n.type] || IconBell;
             return (
               <div key={n.id} className="notif-item" onClick={() => handleClickNotification(n)}>
                 <div className="notif-item__icon">
-                  <i className={`ti ${TYPE_ICON[n.type] || 'ti-bell'}`} aria-hidden="true" />
+                  <TypeIcon className="icon-md" aria-hidden="true" />
                 </div>
                 <div className="notif-item__body">
                   {title && <div className="notif-item__title">{title}</div>}

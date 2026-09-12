@@ -128,7 +128,7 @@ const Tokens = () => (
   .rcb .inp-wrap{position:relative}
   .rcb .inp-icon-l{padding-left:var(--space-32)!important}
   .rcb .inp-icon-r{padding-right:var(--space-32)!important}
-  .rcb .inp-icon{position:absolute;top:50%;transform:translateY(-50%);color:var(--txt-tertiary);font-size:14px;pointer-events:none;display:flex}
+  .rcb .inp-icon{position:absolute;top:50%;transform:translateY(-50%);color:var(--txt-tertiary);pointer-events:none;display:flex}
   .rcb .inp-icon.l{left:10px}.rcb .inp-icon.r{right:10px}
   .rcb .inp-pre{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:500;color:var(--txt-tertiary);pointer-events:none;white-space:nowrap}
   .rcb .sel-wrap{position:relative}
@@ -251,7 +251,7 @@ function Stepper({ current }) {
           <div className="st-item" key={label}>
             <div className="st-col">
               <div className={`st-circle ${state}`}>
-                {state === "done" ? <IconCheck size={11} /> : n}
+                {state === "done" ? <IconCheck className="icon-xs" /> : n}
               </div>
               <div className={`st-label ${state}`}>{label}</div>
             </div>
@@ -319,7 +319,7 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
         </div>
       </div>
       <div className="rcp-footer">
-        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={previewOnly}><IconMessageCircle size={12} />Enquire</button>
+        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={previewOnly}><IconMessageCircle className="icon-xs" />Enquire</button>
         <button className="btn btn-accent btn-sm" style={{ flex: 1 }} onClick={previewOnly}>Book now</button>
       </div>
     </div>
@@ -546,7 +546,7 @@ export default function RateCardBuilderPage() {
                     )}
                     <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
                       <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer" }}>
-                        <IconUpload size={12} />{photoUrl ? "Change photo" : "Upload photo"}
+                        <IconUpload className="icon-xs" />{photoUrl ? "Change photo" : "Upload photo"}
                         <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: "none" }} />
                       </label>
                       <p className="hint">JPG, PNG or GIF &middot; max 2 MB &middot; 400&times;400 px</p>
@@ -578,7 +578,7 @@ export default function RateCardBuilderPage() {
                     <div className="g2">
                       <div className="field">
                         <label className="field-label field-required">Display name</label>
-                        <div className="inp-wrap"><span className="inp-icon l"><IconUser size={14} /></span><input className="inp inp-icon-l" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} /></div>
+                        <div className="inp-wrap"><span className="inp-icon l"><IconUser className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} /></div>
                       </div>
                       <div className="field">
                         <label className="field-label field-required">Handle</label>
@@ -596,7 +596,7 @@ export default function RateCardBuilderPage() {
                     <div className="field">
                       <label className="field-label">Location</label>
                       <div className="inp-wrap">
-                        <span className="inp-icon l"><IconMapPin size={14} /></span>
+                        <span className="inp-icon l"><IconMapPin className="icon-sm" /></span>
                         <input className="inp inp-icon-l" value={profile.location} onChange={(e) => setProfile({ ...profile, location: e.target.value })} />
                       </div>
                     </div>
@@ -609,7 +609,7 @@ export default function RateCardBuilderPage() {
                   <div className="g3">
                     <div className="field">
                       <label className="field-label">Total followers</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconUsers size={14} /></span><input className="inp inp-icon-l" value={profile.followers} onChange={(e) => setProfile({ ...profile, followers: e.target.value })} /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconUsers className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.followers} onChange={(e) => setProfile({ ...profile, followers: e.target.value })} /></div>
                     </div>
                     <div className="field">
                       <label className="field-label">Avg engagement</label>
@@ -620,7 +620,7 @@ export default function RateCardBuilderPage() {
                     </div>
                     <div className="field">
                       <label className="field-label">Monthly reach</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconEye size={14} /></span><input className="inp inp-icon-l" value={profile.reach} onChange={(e) => setProfile({ ...profile, reach: e.target.value })} /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconEye className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.reach} onChange={(e) => setProfile({ ...profile, reach: e.target.value })} /></div>
                     </div>
                   </div>
                 </div>
@@ -634,13 +634,13 @@ export default function RateCardBuilderPage() {
                         <select className="inp" value={profile.niche} onChange={(e) => setProfile({ ...profile, niche: e.target.value })}>
                           {["Lifestyle", "Travel", "Fashion & Beauty", "Tech", "Food & Beverage", "Fitness & Health", "Finance", "Gaming", "Education"].map((o) => <option key={o}>{o}</option>)}
                         </select>
-                        <span className="chev"><IconChevronDown size={13} /></span>
+                        <span className="chev"><IconChevronDown className="icon-sm" /></span>
                       </div>
                     </div>
                     <div className="field">
                       <label className="field-label">Content languages</label>
                       <div className="inp-wrap">
-                        <span className="inp-icon l"><IconLanguage size={14} /></span>
+                        <span className="inp-icon l"><IconLanguage className="icon-sm" /></span>
                         <input className="inp inp-icon-l" value={profile.languages} onChange={(e) => setProfile({ ...profile, languages: e.target.value })} />
                       </div>
                     </div>
@@ -664,18 +664,18 @@ export default function RateCardBuilderPage() {
                   {packages.map((pkg) => (
                     <div className={`pkg-card${pkg.feat ? " feat-card" : ""}`} key={pkg.id}>
                       <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
-                        <span className="pkg-drag-handle"><IconGripVertical size={14} /></span>
+                        <span className="pkg-drag-handle"><IconGripVertical className="icon-sm" /></span>
                         <div className="section-title" style={{ flex: 1 }}>{pkg.name}</div>
                         {pkg.feat && <span className="tag tag-accent">Featured</span>}
                         <button className="icon-btn icon-btn-sm" onClick={() => removePackage(pkg.id)}>
-                          <IconTrash size={12} color="var(--red-400)" />
+                          <IconTrash className="icon-xs" color="var(--red-400)" />
                         </button>
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                         <div className="g2">
                           <div className="field">
                             <label className="field-label field-required">Package name</label>
-                            <div className="inp-wrap"><span className="inp-icon l"><IconPackage size={14} /></span><input className="inp inp-icon-l" value={pkg.name} onChange={(e) => updatePackage(pkg.id, "name", e.target.value)} /></div>
+                            <div className="inp-wrap"><span className="inp-icon l"><IconPackage className="icon-sm" /></span><input className="inp inp-icon-l" value={pkg.name} onChange={(e) => updatePackage(pkg.id, "name", e.target.value)} /></div>
                           </div>
                           <div className="field">
                             <label className="field-label field-required">Price (KES)</label>
@@ -687,7 +687,7 @@ export default function RateCardBuilderPage() {
                         </div>
                         <div className="field">
                           <label className="field-label">Description</label>
-                          <div className="inp-wrap"><span className="inp-icon l"><IconAlignLeft size={14} /></span><input className="inp inp-icon-l" value={pkg.desc} onChange={(e) => updatePackage(pkg.id, "desc", e.target.value)} /></div>
+                          <div className="inp-wrap"><span className="inp-icon l"><IconAlignLeft className="icon-sm" /></span><input className="inp inp-icon-l" value={pkg.desc} onChange={(e) => updatePackage(pkg.id, "desc", e.target.value)} /></div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
                           <button className={`toggle${pkg.feat ? " on" : ""}`} onClick={() => updatePackage(pkg.id, "feat", !pkg.feat)} />
@@ -699,11 +699,11 @@ export default function RateCardBuilderPage() {
                 </div>
                 <div className="bento">
                   <div className="card-dash card-p" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 'var(--space-8)', minHeight: 58 }} onClick={addPackage}>
-                    <IconPlus size={16} color="var(--txt-tertiary)" />
+                    <IconPlus className="icon-md" color="var(--txt-tertiary)" />
                     <span style={{ fontSize: 13, fontWeight: 500, color: "var(--txt-secondary)" }}>Add another package</span>
                   </div>
                   <div className="alert alert-info">
-                    <IconInfoCircle size={16} />
+                    <IconInfoCircle className="icon-md" />
                     <div className="alert-body"><div className="alert-title">Pro tip</div>Brands respond best to 2–4 clear packages. Keep names short and prices specific.</div>
                   </div>
                 </div>
@@ -720,13 +720,13 @@ export default function RateCardBuilderPage() {
           {step === 3 && (
             <div style={{ maxWidth: 700, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
               <div className="alert alert-info">
-                <IconShieldCheck size={16} />
+                <IconShieldCheck className="icon-md" />
                 <div className="alert-body"><div className="alert-title">Secure &amp; encrypted</div>All payment details are stored securely. Creatorske never stores full card credentials.</div>
               </div>
 
               <div className="pay-method active-method">
                 <div className="pay-method-header">
-                  <div className="pay-icon" style={{ background: "#00a651" }}><IconDeviceMobile size={17} color="#fff" /></div>
+                  <div className="pay-icon" style={{ background: "#00a651" }}><IconDeviceMobile className="icon-md" color="#fff" /></div>
                   <div style={{ flex: 1 }}><div className="section-title">M-Pesa</div><p className="hint">Safaricom mobile money</p></div>
                   <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
                 </div>
@@ -737,7 +737,7 @@ export default function RateCardBuilderPage() {
                   </div>
                   <div className="field">
                     <label className="field-label">Business name on M-Pesa</label>
-                    <div className="inp-wrap"><span className="inp-icon l"><IconBuildingStore size={14} /></span><input className="inp inp-icon-l" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} /></div>
+                    <div className="inp-wrap"><span className="inp-icon l"><IconBuildingStore className="icon-sm" /></span><input className="inp inp-icon-l" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} /></div>
                     <p className="hint">Displayed to clients when they pay</p>
                   </div>
                 </div>
@@ -745,7 +745,7 @@ export default function RateCardBuilderPage() {
 
               <div className={`pay-method${airtelConnected ? " active-method" : ""}`}>
                 <div className="pay-method-header">
-                  <div className="pay-icon" style={{ background: "#e40000" }}><IconDeviceMobile size={17} color="#fff" /></div>
+                  <div className="pay-icon" style={{ background: "#e40000" }}><IconDeviceMobile className="icon-md" color="#fff" /></div>
                   <div style={{ flex: 1 }}><div className="section-title">Airtel Money</div><p className="hint">Airtel mobile money</p></div>
                   {airtelConnected ? (
                     <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
@@ -761,7 +761,7 @@ export default function RateCardBuilderPage() {
 
               <div className="pay-method">
                 <div className="pay-method-header">
-                  <div className="pay-icon" style={{ background: "var(--bg-secondary)" }}><IconBuilding size={17} color="var(--txt-secondary)" /></div>
+                  <div className="pay-icon" style={{ background: "var(--bg-secondary)" }}><IconBuilding className="icon-md" color="var(--txt-secondary)" /></div>
                   <div style={{ flex: 1 }}><div className="section-title">Bank transfer</div><p className="hint">Local &amp; international wire</p></div>
                   <button className="btn btn-ghost btn-sm" onClick={() => setBankOpen((o) => !o)}>{bankOpen ? "Hide" : "Add details"}</button>
                 </div>
@@ -775,12 +775,12 @@ export default function RateCardBuilderPage() {
                             <option value="" disabled>Select bank</option>
                             {["Equity Bank", "KCB Bank", "Co-operative Bank", "NCBA", "Stanbic Bank", "Other"].map((b) => <option key={b}>{b}</option>)}
                           </select>
-                          <span className="chev"><IconChevronDown size={13} /></span>
+                          <span className="chev"><IconChevronDown className="icon-sm" /></span>
                         </div>
                       </div>
-                      <div className="field"><label className="field-label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" /></div></div>
+                      <div className="field"><label className="field-label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" /></div></div>
                     </div>
-                    <div className="field"><label className="field-label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" /></div></div>
+                    <div className="field"><label className="field-label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" /></div></div>
                   </div>
                 )}
               </div>
@@ -816,7 +816,7 @@ export default function RateCardBuilderPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="field">
                       <label className="field-label">Headline</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconHeading size={14} /></span><input className="inp inp-icon-l" value={headline} onChange={(e) => setHeadline(e.target.value)} /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconHeading className="icon-sm" /></span><input className="inp inp-icon-l" value={headline} onChange={(e) => setHeadline(e.target.value)} /></div>
                       <p className="hint">Appears at the top of your published card</p>
                     </div>
                     <div className="field">
@@ -830,7 +830,7 @@ export default function RateCardBuilderPage() {
                           <select className="inp" value={leadTime} onChange={(e) => setLeadTime(e.target.value)}>
                             {["3–5 business days", "1 week", "2 weeks", "1 month"].map((o) => <option key={o}>{o}</option>)}
                           </select>
-                          <span className="chev"><IconChevronDown size={13} /></span>
+                          <span className="chev"><IconChevronDown className="icon-sm" /></span>
                         </div>
                       </div>
                       <div className="field">
@@ -839,7 +839,7 @@ export default function RateCardBuilderPage() {
                           <select className="inp" value={availability} onChange={(e) => setAvailability(e.target.value)}>
                             {["Open for collabs", "Limited slots", "Fully booked"].map((o) => <option key={o}>{o}</option>)}
                           </select>
-                          <span className="chev"><IconChevronDown size={13} /></span>
+                          <span className="chev"><IconChevronDown className="icon-sm" /></span>
                         </div>
                       </div>
                     </div>
@@ -849,12 +849,12 @@ export default function RateCardBuilderPage() {
                 <div className="card card-p">
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 'var(--space-16)' }}>
                     <p className="section-title">Package order &amp; visibility</p>
-                    <button className="btn btn-ghost btn-xs" onClick={() => setStep(2)}><IconPencil size={11} />Edit packages</button>
+                    <button className="btn btn-ghost btn-xs" onClick={() => setStep(2)}><IconPencil className="icon-xs" />Edit packages</button>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
                     {packages.map((pkg) => (
                       <div key={pkg.id} style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)', padding: "var(--space-12) var(--space-12)", background: pkg.feat ? "var(--accent-light)" : "var(--bg-secondary)", border: `0.5px solid ${pkg.feat ? "var(--accent-border)" : "var(--bdr-tertiary)"}`, borderRadius: "var(--r-md)", opacity: pkg.hidden ? 0.5 : 1 }}>
-                        <span style={{ color: "var(--txt-tertiary)", display: "flex", cursor: "grab" }}><IconGripVertical size={14} /></span>
+                        <span style={{ color: "var(--txt-tertiary)", display: "flex", cursor: "grab" }}><IconGripVertical className="icon-sm" /></span>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 13, fontWeight: 500 }}>{pkg.name}{pkg.hidden ? " (hidden)" : ""}</div>
                           <div style={{ fontSize: 11.5, color: "var(--txt-tertiary)" }}>KES {pkg.price}{pkg.feat ? " · Featured" : ""}</div>
@@ -866,7 +866,7 @@ export default function RateCardBuilderPage() {
                           title={pkg.hidden ? "Show on rate card" : "Hide from rate card"}
                           onClick={() => updatePackage(pkg.id, "hidden", !pkg.hidden)}
                         >
-                          {pkg.hidden ? <IconEyeOff size={13} /> : <IconEye size={13} />}
+                          {pkg.hidden ? <IconEyeOff className="icon-sm" /> : <IconEye className="icon-sm" />}
                         </button>
                       </div>
                     ))}
@@ -878,24 +878,24 @@ export default function RateCardBuilderPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="field">
                       <label className="field-label">WhatsApp business number</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconMessageCircle size={14} color="#25D366" /></span><input className="inp inp-icon-l" defaultValue="+254 712 345 678" /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconMessageCircle className="icon-sm" color="#25D366" /></span><input className="inp inp-icon-l" defaultValue="+254 712 345 678" /></div>
                     </div>
                     <div className="field">
                       <label className="field-label">Instagram</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandInstagram size={14} /></span><input className="inp inp-icon-l" defaultValue="instagram.com/amaracreates" /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandInstagram className="icon-sm" /></span><input className="inp inp-icon-l" defaultValue="instagram.com/amaracreates" /></div>
                     </div>
                     <div className="field">
                       <label className="field-label">TikTok</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandTiktok size={14} /></span><input className="inp inp-icon-l" defaultValue="tiktok.com/@amaracreates" /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandTiktok className="icon-sm" /></span><input className="inp inp-icon-l" defaultValue="tiktok.com/@amaracreates" /></div>
                     </div>
                     <div className="g2">
                       <div className="field">
                         <label className="field-label">YouTube</label>
-                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandYoutube size={14} /></span><input className="inp inp-icon-l" placeholder="youtube.com/…" /></div>
+                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandYoutube className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="youtube.com/…" /></div>
                       </div>
                       <div className="field">
                         <label className="field-label">Twitter / X</label>
-                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandX size={14} /></span><input className="inp inp-icon-l" placeholder="x.com/…" /></div>
+                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandX className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="x.com/…" /></div>
                       </div>
                     </div>
                   </div>
@@ -914,7 +914,7 @@ export default function RateCardBuilderPage() {
                         <select className="inp" value={revisionPolicy} onChange={(e) => setRevisionPolicy(e.target.value)}>
                           {["1 round of revisions included", "2 rounds included", "No revisions", "Unlimited revisions"].map((o) => <option key={o}>{o}</option>)}
                         </select>
-                        <span className="chev"><IconChevronDown size={13} /></span>
+                        <span className="chev"><IconChevronDown className="icon-sm" /></span>
                       </div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
@@ -961,13 +961,13 @@ export default function RateCardBuilderPage() {
                     </div>
                   </div>
                   <div style={{ padding: "var(--space-12) var(--space-12)", borderTop: "0.5px solid var(--bdr-tertiary)", display: "flex", gap: 'var(--space-4)', alignItems: "center" }}>
-                    <IconBrandInstagram size={14} color="var(--txt-secondary)" />
-                    <IconBrandTiktok size={14} color="var(--txt-secondary)" />
-                    <IconMessageCircle size={14} color="var(--txt-secondary)" />
+                    <IconBrandInstagram className="icon-sm" color="var(--txt-secondary)" />
+                    <IconBrandTiktok className="icon-sm" color="var(--txt-secondary)" />
+                    <IconMessageCircle className="icon-sm" color="var(--txt-secondary)" />
                     <span style={{ fontSize: 10, color: "var(--txt-tertiary)", marginLeft: 'var(--space-4)' }}>Usage rights &middot; {revisionPolicy.split(" ").slice(0, 2).join(" ")}</span>
                   </div>
                   <div className="rcp-footer">
-                    <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={previewOnly}><IconMessageCircle size={12} />Enquire</button>
+                    <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={previewOnly}><IconMessageCircle className="icon-xs" />Enquire</button>
                     <button className="btn btn-accent btn-sm" style={{ flex: 1 }} onClick={previewOnly}>Book now</button>
                   </div>
                 </div>
@@ -990,7 +990,7 @@ export default function RateCardBuilderPage() {
                   ].map((label, i) => (
                     <React.Fragment key={label}>
                       <div className="check-row">
-                        <div className="check-row-dot ok"><IconCheck size={10} /></div>
+                        <div className="check-row-dot ok"><IconCheck className="icon-xs" /></div>
                         <span style={{ fontSize: 13, flex: 1 }}>{label}</span>
                         <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Done</span>
                       </div>
@@ -1003,13 +1003,13 @@ export default function RateCardBuilderPage() {
               <div className="card card-p">
                 <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Your public link</p>
                 <div className="share-box">
-                  <IconLink size={14} color="var(--txt-tertiary)" />
+                  <IconLink className="icon-sm" color="var(--txt-tertiary)" />
                   <span className="share-url">{slug}</span>
-                  <button className="btn btn-ghost btn-xs" onClick={copyLink}>{copied ? <><IconCheck size={11} />Copied!</> : <><IconCopy size={11} />Copy</>}</button>
+                  <button className="btn btn-ghost btn-xs" onClick={copyLink}>{copied ? <><IconCheck className="icon-xs" />Copied!</> : <><IconCopy className="icon-xs" />Copy</>}</button>
                 </div>
                 <div style={{ display: "flex", gap: 'var(--space-8)', marginTop: 'var(--space-12)' }}>
                   <button className="btn btn-ghost btn-sm" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent("Check out my rate card: https://" + slug)}`, "_blank")}>
-                    <IconMessageCircle size={12} />Share on WhatsApp
+                    <IconMessageCircle className="icon-xs" />Share on WhatsApp
                   </button>
                 </div>
               </div>
@@ -1017,20 +1017,20 @@ export default function RateCardBuilderPage() {
               {published ? (
                 <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 'var(--space-16)', padding: 'var(--space-32)', textAlign: "center" }}>
                   <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--bg-success)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <IconCheck size={24} color="var(--txt-success)" />
+                    <IconCheck className="icon-xl" color="var(--txt-success)" />
                   </div>
                   <div>
                     <div className="page-title" style={{ marginBottom: 'var(--space-4)' }}>You're live!</div>
                     <p style={{ fontSize: 13, color: "var(--txt-secondary)" }}>Your rate card is published and ready to share with brands.</p>
                   </div>
                   <div style={{ display: "flex", gap: 'var(--space-8)', flexWrap: "wrap", justifyContent: "center" }}>
-                    <button className="btn btn-secondary btn-sm" onClick={copyLink}><IconCopy size={12} />Copy link</button>
-                    <button className="btn btn-ghost btn-sm" onClick={() => navigate('/creator/dashboard')}><IconLayoutDashboard size={12} />Go to dashboard</button>
+                    <button className="btn btn-secondary btn-sm" onClick={copyLink}><IconCopy className="icon-xs" />Copy link</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => navigate('/creator/dashboard')}><IconLayoutDashboard className="icon-xs" />Go to dashboard</button>
                   </div>
                 </div>
               ) : (
                 <button className={`btn btn-accent btn-full${isPublishing || isCreating ? " btn-loading" : ""}`} style={{ padding: 'var(--space-12)' }} disabled={isPublishing || isCreating} onClick={doPublish}>
-                  <IconRocket size={15} />Publish rate card
+                  <IconRocket className="icon-sm" />Publish rate card
                 </button>
               )}
             </div>
@@ -1041,14 +1041,14 @@ export default function RateCardBuilderPage() {
         <div className="bfooter">
           <div className="bfooter-inner">
             {step > 1 ? (
-              <button className="btn btn-ghost" onClick={back}><IconArrowLeft size={13} />Back</button>
+              <button className="btn btn-ghost" onClick={back}><IconArrowLeft className="icon-sm" />Back</button>
             ) : <div />}
             <div style={{ display: "flex", gap: 'var(--space-8)' }}>
               {step < 5 && <button className={`btn btn-ghost${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={handleSaveDraft}>Save draft</button>}
               {step === 5 ? (
                 <button className={`btn btn-ghost${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={handleSaveDraft}>Save draft</button>
               ) : (
-                <button className="btn btn-primary" onClick={next}>Save &amp; continue<IconArrowRight size={13} /></button>
+                <button className="btn btn-primary" onClick={next}>Save &amp; continue<IconArrowRight className="icon-sm" /></button>
               )}
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { IconPaperclip, IconSend } from '@tabler/icons-react';
+import { IconMessageCircle, IconPaperclip, IconSend } from '@tabler/icons-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
 import { formatRelativeDate } from '@/lib/utils';
@@ -105,7 +105,7 @@ export default function MessageThread({ threadId }) {
         ) : messages.length === 0 ? (
           <EmptyState
             size="sm"
-            icon={<i className="ti ti-message-circle" aria-hidden="true" />}
+            icon={<IconMessageCircle />}
             title="No messages yet"
             description="Say hello to get the conversation started."
           />
@@ -128,7 +128,7 @@ export default function MessageThread({ threadId }) {
                       rel="noreferrer"
                       style={{ color: 'inherit' }}
                     >
-                      <IconPaperclip size={12} /> Attachment
+                      <IconPaperclip className="icon-xs" /> Attachment
                     </a>
                   )}
                 </div>
@@ -155,7 +155,7 @@ export default function MessageThread({ threadId }) {
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
         >
-          <IconPaperclip size={14} />
+          <IconPaperclip className="icon-sm" />
         </button>
         <input
           className="input input-md"
@@ -172,7 +172,7 @@ export default function MessageThread({ threadId }) {
           disabled={isSending || !text.trim()}
           title="Send"
         >
-          <IconSend size={14} />
+          <IconSend className="icon-sm" />
         </button>
       </div>
     </div>

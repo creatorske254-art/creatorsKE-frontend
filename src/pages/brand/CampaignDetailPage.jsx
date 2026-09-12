@@ -196,7 +196,7 @@ function ReviewForm({ onSubmit }) {
       <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-12)' }}>
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} type="button" className={`star-btn${n <= rating ? ' filled' : ''}`} onClick={() => setRating(n)}>
-            <IconStar size={20} fill={n <= rating ? 'currentColor' : 'none'} />
+            <IconStar className="icon-lg" fill={n <= rating ? 'currentColor' : 'none'} />
           </button>
         ))}
       </div>
@@ -299,7 +299,7 @@ export default function CampaignDetailPage() {
       <style>{PAGE_STYLES}</style>
       <div className="max-wrap">
         <Link to="/brand/campaigns" className="back-link">
-          <IconArrowLeft size={13} />
+          <IconArrowLeft className="icon-sm" />
           Back to campaigns
         </Link>
 
@@ -326,7 +326,7 @@ export default function CampaignDetailPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
                 {base.deliverables.map((d, i) => (
                   <div key={i} className="text-body" style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-8)' }}>
-                    <IconCheck size={14} style={{ color: 'var(--purple-600)', marginTop: 'var(--space-2)', flexShrink: 0 }} />
+                    <IconCheck className="icon-sm" style={{ color: 'var(--purple-600)', marginTop: 'var(--space-2)', flexShrink: 0 }} />
                     {d}
                   </div>
                 ))}
@@ -344,19 +344,18 @@ export default function CampaignDetailPage() {
               <div className="card card-p-md">
                 <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Delivery</div>
                 <div className="alert alert-warning" style={{ marginBottom: 'var(--space-16)' }}>
-                  <IconClock size={15} />
+                  <IconClock className="icon-sm" />
                   <div>The creator has marked this as delivered. Review the files below, then approve or raise a dispute within 48 hours.</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
                   {base.deliveredFiles.map((f, i) => (
                     <div key={i} className="file-chip">
-                      <IconFileText size={14} style={{ color: 'var(--grey-400)' }} />
+                      <IconFileText className="icon-sm" style={{ color: 'var(--grey-400)' }} />
                       <span style={{ flex: 1 }}>{f.name}</span>
                       <span style={{ color: 'var(--grey-400)' }}>{f.size}</span>
-                      <IconDownload
-                        size={14}
-                        style={{ color: 'var(--grey-400)', cursor: 'pointer' }}
-                        onClick={() => handleDownloadFile(f.name)}
+                      <IconDownload className="icon-sm"
+            style={{ color: 'var(--grey-400)', cursor: 'pointer' }}
+            onClick={() => handleDownloadFile(f.name)}
                       />
                     </div>
                   ))}
@@ -365,11 +364,11 @@ export default function CampaignDetailPage() {
                 {!showDisputeForm ? (
                   <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
                     <button className={`btn btn-purple${isApproving ? ' btn-loading' : ''}`} onClick={handleApprove} disabled={isApproving}>
-                      <IconCheck size={14} />
+                      <IconCheck className="icon-sm" />
                       Approve & release payment
                     </button>
                     <button className="btn btn-danger" onClick={() => setShowDisputeForm(true)}>
-                      <IconScale size={14} />
+                      <IconScale className="icon-sm" />
                       Raise dispute
                     </button>
                   </div>
@@ -397,7 +396,7 @@ export default function CampaignDetailPage() {
               <div className="card card-p-md">
                 <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Dispute</div>
                 <div className="alert alert-error">
-                  <IconScale size={15} />
+                  <IconScale className="icon-sm" />
                   <div>Your evidence has been submitted. Platform admin is reviewing both sides and will issue a binding decision within 5 business days.</div>
                 </div>
               </div>
@@ -407,7 +406,7 @@ export default function CampaignDetailPage() {
               <div className="card card-p-md">
                 <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Delivery</div>
                 <div className="alert alert-success" style={{ marginBottom: review ? 'var(--space-16)' : 0 }}>
-                  <IconCheck size={15} />
+                  <IconCheck className="icon-sm" />
                   <div>Delivery approved. KES {netPayout.toLocaleString()} released to the creator, net of the platform fee.</div>
                 </div>
                 {!review ? (
@@ -417,7 +416,7 @@ export default function CampaignDetailPage() {
                     <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Your review</div>
                     <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-8)' }}>
                       {[1, 2, 3, 4, 5].map((n) => (
-                        <IconStar key={n} size={15} fill={n <= review.rating ? 'var(--status-warning)' : 'none'} stroke="var(--status-warning)" />
+                        <IconStar className="icon-sm" key={n} fill={n <= review.rating ? 'var(--status-warning)' : 'none'} stroke="var(--status-warning)" />
                       ))}
                     </div>
                     {review.text && <p className="text-body-sm" style={{ color: 'var(--grey-600)' }}>{review.text}</p>}
@@ -429,7 +428,7 @@ export default function CampaignDetailPage() {
             {status === 'refunded' && (
               <div className="card card-p-md">
                 <div className="alert alert-warning">
-                  <IconClock size={15} />
+                  <IconClock className="icon-sm" />
                   <div>This booking was refunded in full. Funds were returned to your original payment method.</div>
                 </div>
               </div>
@@ -459,13 +458,13 @@ export default function CampaignDetailPage() {
                 <div>
                   <div className="text-body-sm" style={{ fontWeight: 600 }}>{base.creator}</div>
                   <div className="text-caption" style={{ color: 'var(--grey-400)', textTransform: 'none', letterSpacing: 0, display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-                    <IconStar size={12} fill="var(--status-warning)" stroke="var(--status-warning)" />
+                    <IconStar className="icon-xs" fill="var(--status-warning)" stroke="var(--status-warning)" />
                     {base.rating} ({base.reviewCount})
                   </div>
                 </div>
               </div>
               <Link to={`/c/${base.handle.replace('@', '')}`} className="btn btn-secondary btn-sm btn-full">
-                <IconExternalLink size={13} />
+                <IconExternalLink className="icon-sm" />
                 View rate card
               </Link>
             </div>
@@ -483,7 +482,7 @@ export default function CampaignDetailPage() {
                 <div className="row-between"><span>Paid on</span><span>{base.paidOn}</span></div>
               </div>
               <button className="btn btn-ghost btn-sm btn-full" onClick={handleDownloadInvoice}>
-                <IconDownload size={13} />
+                <IconDownload className="icon-sm" />
                 Download invoice
               </button>
             </div>
@@ -494,7 +493,7 @@ export default function CampaignDetailPage() {
                 If something doesn't look right, you have 48 hours after delivery to raise a dispute.
               </p>
               <a href="mailto:support@creatorske.com" className="btn btn-ghost btn-sm btn-full">
-                <IconMessageCircle size={13} />
+                <IconMessageCircle className="icon-sm" />
                 Contact support
               </a>
             </div>

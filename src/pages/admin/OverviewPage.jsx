@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAdmin } from '@/features/admin/hooks/useAdmin';
@@ -6,24 +6,13 @@ import { useDisputes } from '@/features/admin/hooks/useDisputes';
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
 import { formatCurrency, getInitials } from '@/lib/utils';
 import Modal from '@/components/ui/Modal';
+import { IconAlertTriangle, IconArrowRight, IconFlag3, IconStarFilled } from '@tabler/icons-react';
 
 // A small "Demo data" tag for sections with no backing endpoint yet (see the
 // production-readiness plan's backend spec) - kept visible rather than
 // silently passed off as real.
 function DemoTag() {
   return <span className="tag tag-default" style={{ fontSize: 10 }}>Demo data</span>;
-}
-
-// Pulls in the Tabler Icons webfont for every <i className="ti ti-*"> below.
-function useTablerIcons() {
-  useEffect(() => {
-    if (document.getElementById("tabler-icons-cdn")) return;
-    const link = document.createElement("link");
-    link.id = "tabler-icons-cdn";
-    link.rel = "stylesheet";
-    link.href = "https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css";
-    document.head.appendChild(link);
-  }, []);
 }
 
 // GET /admin/stats' response schema is undocumented - these are best-effort
@@ -64,9 +53,7 @@ function Stars({ n }) {
   return (
     <span style={{ display: "inline-flex", gap: 'var(--space-2)' }}>
       {[1,2,3,4,5].map(i => (
-        <svg key={i} width={12} height={12} viewBox="0 0 16 16" fill={i <= n ? "var(--status-warning)" : "var(--grey-200)"}>
-          <path d="M8 1l1.9 3.8 4.2.6-3 2.9.7 4.2L8 10.4l-3.8 2 .7-4.2-3-2.9 4.2-.6z"/>
-        </svg>
+        <IconStarFilled key={i} className="icon-xs" style={{ color: i <= n ? "var(--status-warning)" : "var(--grey-200)" }} aria-hidden="true" />
       ))}
     </span>
   );
@@ -124,7 +111,7 @@ function MiniBarChart({ data, labels, accentIndex, color = "var(--purple-300)", 
 
 // Alert banner - bespoke, no canonical equivalent (closest is .alert in index.css
 // but that's scoped to a different component; kept local, tokens fixed)
-function Alert({ type = "warning", icon, children }) {
+function Alert({ type = "warning", icon: Icon, children }) {
   const styles = {
     warning: { bg: "var(--status-warning-bg)", text: "var(--status-warning-text)", border: "rgba(245,158,11,0.25)" },
     info: { bg: "var(--status-info-bg)", text: "var(--status-info-text)", border: "rgba(6,182,212,0.2)" },
@@ -132,7 +119,7 @@ function Alert({ type = "warning", icon, children }) {
   }[type];
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 'var(--space-12)', padding: "var(--space-12) var(--space-16)", borderRadius: "var(--radius-md)", background: styles.bg, border: `0.5px solid ${styles.border}`, color: styles.text, fontSize: 12.5, lineHeight: 1.55, marginBottom: 'var(--space-12)' }}>
-      <span style={{ fontSize: 15, marginTop: 'var(--space-2)' }}><i className={`ti ${icon}`} /></span>
+      <Icon className="icon-sm" style={{ marginTop: 'var(--space-2)' }} aria-hidden="true" />
       <span>{children}</span>
     </div>
   );
@@ -166,7 +153,6 @@ function StatusPill({ status }) {
 // Page
 export default function OverviewPage() {
   usePageMeta('Admin Overview', 'Platform health, open items, and activity across all Creatorske users.');
-  useTablerIcons();
   const navigate = useNavigate();
   const [period, setPeriod] = useState("7d");
   const [emailCopyOpen, setEmailCopyOpen] = useState(false);
@@ -214,12 +200,12 @@ export default function OverviewPage() {
 
       {/* Attention alerts */}
       {!disputesLoading && openDisputeCount > 0 && (
-        <Alert type="error" icon="ti-flag-3">
+        <Alert type="error" icon={IconFlag3}>
           <strong>{openDisputeCount} open {openDisputeCount === 1 ? 'dispute' : 'disputes'}</strong> awaiting review.
         </Alert>
       )}
       {!flaggedLoading && flaggedAccountCount > 0 && (
-        <Alert type="warning" icon="ti-alert-triangle">
+        <Alert type="warning" icon={IconAlertTriangle}>
           <strong>{flaggedAccountCount} flagged {flaggedAccountCount === 1 ? 'account' : 'accounts'}</strong> pending verification review.
         </Alert>
       )}
@@ -257,7 +243,7 @@ export default function OverviewPage() {
           </div>
           <MiniBarChart data={ABANDONED_DRAFTS} labels={DRAFT_LABELS} height={72} color="var(--grey-100)" activeColor="var(--grey-700)" />
           <div style={{ marginTop: 'var(--space-16)', display: "flex", alignItems: "center", gap: 'var(--space-8)', fontSize: 12, color: "var(--status-warning-text)", background: "var(--status-warning-bg)", border: "0.5px solid rgba(245,158,11,0.2)", borderRadius: "var(--radius-md)", padding: "var(--space-8) var(--space-12)" }}>
-            <i className="ti ti-alert-triangle" /> Open rate on re-engagement emails is 21%, below the 30% target. Consider reviewing copy.
+            <IconAlertTriangle className="icon-sm" aria-hidden="true" /> Open rate on re-engagement emails is 21%, below the 30% target. Consider reviewing copy.
           </div>
         </div>
 
@@ -304,7 +290,7 @@ export default function OverviewPage() {
                 </div>
                 <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-4)' }}>{d.brand} · {d.package}</div>
                 <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                  <button className="btn btn-ghost btn-xs" style={{ border: "none", padding: 0 }} onClick={() => navigate('/admin/disputes')}>Review <i className="ti ti-arrow-right" style={{ fontSize: 12 }} /></button>
+                  <button className="btn btn-ghost btn-xs" style={{ border: "none", padding: 0 }} onClick={() => navigate('/admin/disputes')}>Review <IconArrowRight className="icon-xs" aria-hidden="true" /></button>
                 </div>
               </div>
             ))}
@@ -379,7 +365,7 @@ export default function OverviewPage() {
                     <Stars n={r.stars} />
                   </div>
                   <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-8)' }}>"{r.excerpt}"</div>
-                  <div style={{ fontSize: 11, color: "var(--status-error-text)", marginBottom: 'var(--space-8)', display: "flex", alignItems: "center", gap: 'var(--space-4)' }}><i className="ti ti-flag-3" style={{ fontSize: 12 }} /> {r.reason}</div>
+                  <div style={{ fontSize: 11, color: "var(--status-error-text)", marginBottom: 'var(--space-8)', display: "flex", alignItems: "center", gap: 'var(--space-4)' }}><IconFlag3 className="icon-xs" aria-hidden="true" /> {r.reason}</div>
                   <div style={{ display: "flex", gap: 'var(--space-8)' }}>
                     <button className="btn btn-danger btn-xs" onClick={() => navigate('/admin/reviews')}>Remove</button>
                     <button className="btn btn-ghost btn-xs" onClick={() => navigate('/admin/reviews')}>Dismiss</button>

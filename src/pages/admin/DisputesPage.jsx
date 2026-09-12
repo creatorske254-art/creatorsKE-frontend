@@ -5,6 +5,7 @@ import ErrorState from '@/components/shared/ErrorState'
 import Skeleton from '@/components/ui/Skeleton'
 import { useDisputes } from '@/features/admin/hooks/useDisputes'
 import { formatDate } from '@/lib/utils'
+import { IconBuildingStore, IconCircleCheck, IconClock, IconFileText, IconGavel, IconMessageCircle, IconPaperclip, IconPhoto, IconSearch, IconSwords, IconUser, IconX } from '@tabler/icons-react';
 
 // GET /admin/disputes' response schema is undocumented (see CLAUDE.md) - the
 // rich scope/evidence breakdown below has no confirmed backend counterpart,
@@ -35,17 +36,17 @@ const TABS = [
 ]
 
 function statusTag(status) {
-  if (status === 'evidence') return <span className="tag tag-warning"><i className="ti ti-clock" style={{ fontSize: 11 }} />Evidence window</span>
-  if (status === 'review') return <span className="tag tag-info"><i className="ti ti-gavel" style={{ fontSize: 11 }} />Awaiting decision</span>
-  if (status === 'decided') return <span className="tag tag-success"><i className="ti ti-circle-check" style={{ fontSize: 11 }} />Resolved</span>
+  if (status === 'evidence') return <span className="tag tag-warning"><IconClock className="icon-xs" aria-hidden="true" />Evidence window</span>
+  if (status === 'review') return <span className="tag tag-info"><IconGavel className="icon-xs" aria-hidden="true" />Awaiting decision</span>
+  if (status === 'decided') return <span className="tag tag-success"><IconCircleCheck className="icon-xs" aria-hidden="true" />Resolved</span>
   return <span className="tag tag-grey">{status}</span>
 }
 
 function evidenceIcon(type) {
-  if (type === 'file') return 'ti-file-text'
-  if (type === 'screenshot') return 'ti-photo'
-  if (type === 'message') return 'ti-message-circle'
-  return 'ti-paperclip'
+  if (type === 'file') return IconFileText
+  if (type === 'screenshot') return IconPhoto
+  if (type === 'message') return IconMessageCircle
+  return IconPaperclip
 }
 
 function outcomeLabel(outcome) {
@@ -133,7 +134,7 @@ export default function DisputesPage() {
         .dsp-page .tab.active .tab-count{background:var(--purple-100);color:var(--purple-700)}
         .dsp-page .search-input{display:flex;align-items:center;gap:var(--space-8);background:var(--white);border:0.5px solid var(--grey-200);border-radius:var(--radius-md);padding:var(--space-8) var(--space-12);font-size:13px;width:260px}
         .dsp-page .search-input input{border:none;outline:none;font-size:13px;font-family:var(--font-body);width:100%;background:transparent;color:var(--black)}
-        .dsp-page .search-input i{color:var(--grey-400);font-size:15px}
+        .dsp-page .search-input svg{color:var(--grey-400)}
         .dsp-page .table-wrap{background:var(--white);border:0.5px solid var(--grey-100);border-radius:var(--radius-xl);overflow-x:auto}
         .dsp-page .data-table{width:100%;min-width:680px;border-collapse:collapse;font-size:13px}
         .dsp-page .data-table td, .dsp-page .data-table th{white-space:nowrap}
@@ -207,7 +208,7 @@ export default function DisputesPage() {
             ))}
           </div>
           <div className="search-input">
-            <i className="ti ti-search" />
+            <IconSearch className="icon-sm" aria-hidden="true" />
             <input
               placeholder="Search by creator, brand, or case ID"
               value={query}
@@ -268,7 +269,7 @@ export default function DisputesPage() {
                 {filtered.length === 0 && (
                   <EmptyState
                     size="sm"
-                    icon={<i className="ti ti-gavel" aria-hidden="true" />}
+                    icon={<IconGavel />}
                     title={disputes.length === 0 ? 'No disputes' : 'No disputes here'}
                     description={disputes.length === 0 ? 'Open disputes will show up here.' : 'Try a different search term or switch tabs.'}
                   />
@@ -285,7 +286,7 @@ export default function DisputesPage() {
                 <div className="card-header">
                   <div className="section-title">Case {selected.id}</div>
                   <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)' }} onClick={() => setSelectedId(null)}>
-                    <i className="ti ti-x" />
+                    <IconX className="icon-sm" aria-hidden="true" />
                   </button>
                 </div>
                 <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
@@ -294,7 +295,7 @@ export default function DisputesPage() {
                     <div>
                       <div style={{ fontWeight: 600, fontSize: 13.5, display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
                         <span>{selected.creator.name}</span>
-                        <i className="ti ti-swords" style={{ fontSize: 13, color: 'var(--grey-400)' }} />
+                        <IconSwords className="icon-sm" style={{ color: 'var(--grey-400)' }} aria-hidden="true" />
                         <span>{selected.brand.name}</span>
                       </div>
                       <div style={{ fontSize: 11.5, color: 'var(--grey-400)' }}>{selected.creator.handle} · Booking {selected.bookingId}</div>
@@ -304,7 +305,7 @@ export default function DisputesPage() {
 
                   {selected.status === 'evidence' && (
                     <div className="alert alert-warning">
-                      <i className="ti ti-clock" style={{ fontSize: 16, marginTop: 'var(--space-2)' }} />
+                      <IconClock className="icon-md" style={{ marginTop: 'var(--space-2)' }} aria-hidden="true" />
                       <div>Evidence submission window: <strong>{selected.evidenceDeadline}</strong>. Both parties may still submit evidence.</div>
                     </div>
                   )}
@@ -326,15 +327,18 @@ export default function DisputesPage() {
                     <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 'var(--space-4)' }}>Evidence submitted</div>
                     {selected.evidence.length === 0 ? (
                       <div style={{ fontSize: 12.5, color: 'var(--grey-400)' }}>No evidence submitted yet.</div>
-                    ) : selected.evidence.map((e, i) => (
+                    ) : selected.evidence.map((e, i) => {
+                      const EvidenceIcon = evidenceIcon(e.type)
+                      return (
                       <div className="evidence-item" key={i}>
-                        <div className="evidence-icon"><i className={`ti ${evidenceIcon(e.type)}`} /></div>
+                        <div className="evidence-icon"><EvidenceIcon className="icon-sm" aria-hidden="true" /></div>
                         <div style={{ flex: 1 }}>
                           <div style={{ color: 'var(--black)' }}>{e.label}</div>
                           <div style={{ fontSize: 11, color: 'var(--grey-400)', marginTop: 'var(--space-2)', textTransform: 'capitalize' }}>From {e.from}</div>
                         </div>
                       </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               </div>
@@ -349,7 +353,7 @@ export default function DisputesPage() {
                   {selected.decision ? (
                     <>
                       <div className="alert alert-success">
-                        <i className="ti ti-circle-check" style={{ fontSize: 16, marginTop: 'var(--space-2)' }} />
+                        <IconCircleCheck className="icon-md" style={{ marginTop: 'var(--space-2)' }} aria-hidden="true" />
                         <div><strong>{outcomeLabel(selected.decision.outcome)}</strong>, decided {selected.decision.decidedOn}</div>
                       </div>
                       <div className="split-bar">
@@ -357,8 +361,8 @@ export default function DisputesPage() {
                         <div className="split-fill-brand" style={{ width: `${100 - selected.decision.creatorShare}%` }} />
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, color: 'var(--grey-500)' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-user" style={{ fontSize: 12 }} />Creator: {selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * selected.decision.creatorShare / 100))})</span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-building-store" style={{ fontSize: 12 }} />Brand: {100 - selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * (100 - selected.decision.creatorShare) / 100))})</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><IconUser className="icon-xs" aria-hidden="true" />Creator: {selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * selected.decision.creatorShare / 100))})</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><IconBuildingStore className="icon-xs" aria-hidden="true" />Brand: {100 - selected.decision.creatorShare}% ({fmt(Math.round(selected.amount * (100 - selected.decision.creatorShare) / 100))})</span>
                       </div>
                       <div style={{ fontSize: 12.5, color: 'var(--grey-600)', lineHeight: 1.6 }}>{selected.decision.note}</div>
                     </>
@@ -395,8 +399,8 @@ export default function DisputesPage() {
                             <div className="split-fill-brand" style={{ width: `${100 - creatorShare}%` }} />
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, color: 'var(--grey-500)' }}>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-user" style={{ fontSize: 12 }} />Creator: {creatorShare}% ({fmt(Math.round(selected.amount * creatorShare / 100))})</span>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><i className="ti ti-building-store" style={{ fontSize: 12 }} />Brand: {100 - creatorShare}% ({fmt(Math.round(selected.amount * (100 - creatorShare) / 100))})</span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><IconUser className="icon-xs" aria-hidden="true" />Creator: {creatorShare}% ({fmt(Math.round(selected.amount * creatorShare / 100))})</span>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}><IconBuildingStore className="icon-xs" aria-hidden="true" />Brand: {100 - creatorShare}% ({fmt(Math.round(selected.amount * (100 - creatorShare) / 100))})</span>
                           </div>
                         </div>
                       )}
@@ -419,7 +423,7 @@ export default function DisputesPage() {
                       </div>
 
                       <button className={`btn btn-primary${isResolving ? ' btn-loading' : ''}`} disabled={!note.trim() || isResolving} onClick={submitDecision}>
-                        <i className="ti ti-gavel" style={{ fontSize: 14 }} /> Issue binding decision
+                        <IconGavel className="icon-sm" aria-hidden="true" /> Issue binding decision
                       </button>
                     </>
                   )}

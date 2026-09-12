@@ -1,26 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
+import { IconBell, IconIdBadge, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconSearch, IconSettings, IconUserCircle, IconWallet, IconX } from '@tabler/icons-react';
 
-// The mockup loads icons via a <link> tag in <head>, not a package import -
-// this effect injects that same stylesheet once, so the "ti ti-*" classes
-// used below actually have glyphs to render. Safe to call from multiple
-// mounts; it no-ops if the link already exists.
-const TABLER_ICONS_URL = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
-function useTablerIcons() {
-  useEffect(() => {
-    if (document.getElementById('tabler-icons-cdn')) return;
-    const link = document.createElement('link');
-    link.id = 'tabler-icons-cdn';
-    link.rel = 'stylesheet';
-    link.href = TABLER_ICONS_URL;
-    document.head.appendChild(link);
-  }, []);
-}
 
 // Component-library chrome (.navbar, .sidebar, .nav-link, .sidebar-link, ...)
 // lives in index.css, ported 1:1 from the Creatorske Component Library §05
@@ -127,33 +113,32 @@ const SIDEBAR_SECTIONS = [
   {
     label: 'Overview',
     items: [
-      { to: '/creator/dashboard', label: 'Dashboard', icon: 'ti-layout-dashboard', end: true },
-      { to: '/creator/portfolio', label: 'Portfolio', icon: 'ti-user-circle' },
-      { to: '/creator/rate-card', label: 'Rate cards', icon: 'ti-id-badge' },
+      { to: '/creator/dashboard', label: 'Dashboard', icon: IconLayoutDashboard, end: true },
+      { to: '/creator/portfolio', label: 'Portfolio', icon: IconUserCircle },
+      { to: '/creator/rate-card', label: 'Rate cards', icon: IconIdBadge },
     ],
   },
   {
     label: 'Clients',
     items: [
-      { to: '/creator/enquiries', label: 'Enquiries', icon: 'ti-inbox', badgeKey: 'new' },
+      { to: '/creator/enquiries', label: 'Enquiries', icon: IconInbox, badgeKey: 'new' },
     ],
   },
   {
     label: 'Finance',
     items: [
-      { to: '/creator/money', label: 'Money account', icon: 'ti-wallet' },
+      { to: '/creator/money', label: 'Money account', icon: IconWallet },
     ],
   },
   {
     label: 'Account',
     items: [
-      { to: '/creator/settings', label: 'Settings', icon: 'ti-settings' },
+      { to: '/creator/settings', label: 'Settings', icon: IconSettings },
     ],
   },
 ];
 
 export default function CreatorLayout() {
-  useTablerIcons();
   const { user, logout } = useAuth();
   const { pipelineCounts } = useEnquiries();
   const { unreadCount } = useNotifications();
@@ -184,7 +169,7 @@ export default function CreatorLayout() {
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setDrawerOpen((v) => !v)}
           >
-            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: '22px' }} aria-hidden="true" />
+            {drawerOpen ? <IconX className="icon-lg" aria-hidden="true" /> : <IconMenu2 className="icon-lg" aria-hidden="true" />}
           </button>
 
           <NavLink to="/creator/dashboard" className="navbar-logo">
@@ -199,7 +184,7 @@ export default function CreatorLayout() {
             style={{ flex: 1, display: 'flex', justifyContent: 'center' }}
           >
             <div className="input-wrapper" style={{ maxWidth: 'var(--navbar-search-max-width)', width: '100%' }}>
-              <i className="ti ti-search input-icon left" style={{ fontSize: 'var(--size-icon-sm)' }} aria-hidden="true" />
+              <IconSearch className="icon-sm input-icon left" aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search creators…"
@@ -229,7 +214,7 @@ export default function CreatorLayout() {
                 aria-expanded={notifOpen}
                 onClick={() => setNotifOpen((v) => !v)}
               >
-                <i className="ti ti-bell" style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
+                <IconBell className="icon-md" aria-hidden="true" />
               </button>
               {unreadCount > 0 && (
                 <span
@@ -285,7 +270,7 @@ export default function CreatorLayout() {
                         `sidebar-link${isActive ? ' active' : ''}`
                       }
                     >
-                      <i className={`ti ${item.icon}`} aria-hidden="true" />
+                      <item.icon className="icon-md" aria-hidden="true" />
                       {item.label}
                       {!!badgeCount && (
                         <span className="sidebar-badge">{badgeCount}</span>
@@ -306,7 +291,7 @@ export default function CreatorLayout() {
               style={{ color: 'var(--status-error-text)' }}
               onClick={logout}
             >
-              <i className="ti ti-logout" style={{ color: 'var(--status-error)' }} aria-hidden="true" />
+              <IconLogout className="icon-sm" style={{ color: 'var(--status-error)' }} aria-hidden="true" />
               Log out
             </button>
           </aside>

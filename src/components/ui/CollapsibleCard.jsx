@@ -45,11 +45,9 @@ export default function CollapsibleCard({ title, right, collapsible = true, defa
           </div>
         )}
         {collapsible && (
-          <IconChevronDown
-            size={16}
-            aria-hidden="true"
-            style={{ color: 'var(--grey-400)', flexShrink: 0, transition: 'transform .18s ease', transform: open ? 'rotate(180deg)' : 'none' }}
-          />
+          <IconChevronDown className="icon-md"
+      aria-hidden="true"
+      style={{ color: 'var(--grey-400)', flexShrink: 0, transition: 'transform .18s ease', transform: open ? 'rotate(180deg)' : 'none' }} />
         )}
       </div>
       {isOpen && <div id={bodyId} className="collapsible-card__body">{children}</div>}

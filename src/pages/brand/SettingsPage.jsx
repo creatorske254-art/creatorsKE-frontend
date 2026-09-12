@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/features/auth/services/auth.service';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
 import { useImageUpload } from '@/lib/useImageUpload';
+import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCheck, IconCircleCheck, IconCreditCard, IconDeviceDesktop, IconDeviceMobile, IconExternalLink, IconHash, IconLock, IconMail, IconMapPin, IconPencil, IconPhone, IconShieldCheck, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUserCircle, IconWorld } from '@tabler/icons-react';
 
 // Page-scoped styles
 // Every value below reads from the global index.css tokens (--purple-*,
@@ -67,7 +68,6 @@ const css = `
   .settings-tab:hover { color: var(--black); background: var(--page-bg); }
   .settings-tab.active { background: var(--purple-600); color: var(--white); }
   .settings-tab.active:hover { background: var(--purple-600); color: var(--white); }
-  .settings-tab i { font-size: var(--size-icon-md); }
 
   .settings-stack { display: flex; flex-direction: column; gap: var(--space-16); }
 
@@ -161,7 +161,7 @@ const css = `
     gap: var(--space-12);
     align-items: flex-start;
   }
-  .info-callout i { color: var(--purple-600); font-size: var(--size-icon-md); margin-top: var(--space-2); flex-shrink: 0; }
+  .info-callout > svg { color: var(--purple-600); margin-top: var(--space-2); }
   .info-callout-title { font-size: var(--text-body-sm-size); font-weight: 500; margin-bottom: var(--space-4); }
   .info-callout-desc { font-size: 12.5px; color: var(--grey-500); margin: 0; line-height: 1.6; }
 
@@ -184,7 +184,7 @@ const css = `
     font-weight: 500;
     color: var(--black);
   }
-  .legal-row i { color: var(--grey-400); font-size: 13px; }
+  .legal-row svg { color: var(--grey-400); }
 
   /* Danger zone */
   .danger-zone { border: 0.5px solid rgba(239,68,68,0.15); background: var(--status-error-bg); border-radius: var(--radius-xl); padding: var(--space-20); }
@@ -220,11 +220,11 @@ const css = `
 
 // Nav tabs
 const TABS = [
-  { id: "profile", label: "Company profile", icon: "ti-building" },
-  { id: "payments", label: "Payment methods", icon: "ti-credit-card" },
-  { id: "notifications", label: "Notifications", icon: "ti-bell" },
-  { id: "security", label: "Security", icon: "ti-shield-lock" },
-  { id: "account", label: "Account", icon: "ti-user-circle" },
+  { id: "profile", label: "Company profile", icon: IconBuilding },
+  { id: "payments", label: "Payment methods", icon: IconCreditCard },
+  { id: "notifications", label: "Notifications", icon: IconBell },
+  { id: "security", label: "Security", icon: IconShieldLock },
+  { id: "account", label: "Account", icon: IconUserCircle },
 ];
 
 // Shared bits
@@ -250,7 +250,7 @@ function SaveBar({ dirty, saving, onSave }) {
     <div className="settings-savebar">
       <span className="settings-savebar-hint">You have unsaved changes</span>
       <button className={`btn btn-primary${saving ? " btn-loading" : ""}`} onClick={onSave} disabled={saving}>
-        <i className="ti ti-check" style={{ fontSize: 13 }} />
+        <IconCheck className="icon-sm" aria-hidden="true" />
         Save changes
       </button>
     </div>
@@ -295,7 +295,7 @@ function ProfileTab({ form, setForm, onDirty }) {
           )}
           <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
             <label className={`btn btn-ghost btn-sm${logoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
-              <i className="ti ti-upload" style={{ fontSize: 12 }} />
+              <IconUpload className="icon-xs" aria-hidden="true" />
               {logoUrl ? "Change logo" : "Upload logo"}
               <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handleLogoChange} disabled={logoUploading} style={{ display: "none" }} />
             </label>
@@ -313,7 +313,7 @@ function ProfileTab({ form, setForm, onDirty }) {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Company name</label>
-              <div className="input-wrapper"><i className="ti ti-building-store input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.companyName} onChange={upd("companyName")} placeholder="e.g. Nairobi Brew Co." /></div>
+              <div className="input-wrapper"><IconBuildingStore className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.companyName} onChange={upd("companyName")} placeholder="e.g. Nairobi Brew Co." /></div>
             </div>
             <div className="field">
               <label className="field-label field-required">Industry</label>
@@ -329,7 +329,7 @@ function ProfileTab({ form, setForm, onDirty }) {
           <div className="field">
             <label className="field-label">Website</label>
             <div className="input-wrapper">
-              <i className="ti ti-world input-icon left" />
+              <IconWorld className="icon-sm input-icon left" aria-hidden="true" />
               <input className="input input-md input-icon-left" value={form.website} onChange={upd("website")} placeholder="https://yourcompany.com" />
             </div>
           </div>
@@ -350,25 +350,25 @@ function ProfileTab({ form, setForm, onDirty }) {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Contact name</label>
-              <div className="input-wrapper"><i className="ti ti-user input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.contactName} onChange={upd("contactName")} placeholder="e.g. Amara Osei" /></div>
+              <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.contactName} onChange={upd("contactName")} placeholder="e.g. Amara Osei" /></div>
             </div>
             <div className="field">
               <label className="field-label">Job title</label>
-              <div className="input-wrapper"><i className="ti ti-briefcase input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.jobTitle} onChange={upd("jobTitle")} placeholder="e.g. Marketing Manager" /></div>
+              <div className="input-wrapper"><IconBriefcase className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.jobTitle} onChange={upd("jobTitle")} placeholder="e.g. Marketing Manager" /></div>
             </div>
           </div>
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Business email</label>
               <div className="input-wrapper">
-                <i className="ti ti-mail input-icon left" />
+                <IconMail className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" type="email" value={form.email} onChange={upd("email")} placeholder="you@company.com" />
               </div>
             </div>
             <div className="field">
               <label className="field-label">Phone number</label>
               <div className="input-wrapper">
-                <i className="ti ti-phone input-icon left" />
+                <IconPhone className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" type="tel" value={form.phone} onChange={upd("phone")} placeholder="+254 7XX XXX XXX" />
               </div>
             </div>
@@ -376,7 +376,7 @@ function ProfileTab({ form, setForm, onDirty }) {
           <div className="field">
             <label className="field-label">Location</label>
             <div className="input-wrapper">
-              <i className="ti ti-map-pin input-icon left" />
+              <IconMapPin className="icon-sm input-icon left" aria-hidden="true" />
               <input className="input input-md input-icon-left" value={form.location} onChange={upd("location")} placeholder="e.g. Nairobi, Kenya" />
             </div>
           </div>
@@ -388,14 +388,14 @@ function ProfileTab({ form, setForm, onDirty }) {
         title="Brand verification" collapsible={false}
         right={(
           <span className="tag tag-success">
-            <i className="ti ti-circle-check" style={{ fontSize: 12 }} />
+            <IconCircleCheck className="icon-xs" aria-hidden="true" />
             Verified
           </span>
         )}
       >
         <span className="field-hint">Verified brands get higher placement in creator enquiry lists and build faster trust.</span>
         <div className="info-callout" style={{ marginTop: 'var(--space-12)', padding: "var(--space-12) var(--space-16)" }}>
-          <i className="ti ti-shield-check" style={{ fontSize: 14, marginTop: 0 }} />
+          <IconShieldCheck className="icon-sm" style={{ marginTop: 0 }} aria-hidden="true" />
           <span style={{ fontSize: 12.5, color: "var(--grey-500)" }}>
             Business email domain confirmed · <span style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>nairobibrew.co.ke</span>
           </span>
@@ -415,7 +415,7 @@ const PAYMENT_METHODS = [
     name: "M-Pesa",
     sub: "Safaricom mobile money · STK push at checkout",
     iconBg: "#00A651",
-    icon: "ti-device-mobile",
+    icon: IconDeviceMobile,
     connected: false,
     fields: [{ key: "phone", label: "M-Pesa phone number", placeholder: "+254 7XX XXX XXX", required: true }],
     summary: (v) => v.phone,
@@ -425,7 +425,7 @@ const PAYMENT_METHODS = [
     name: "Airtel Money",
     sub: "Airtel mobile money · wallet-to-wallet",
     iconBg: "#E40000",
-    icon: "ti-device-mobile",
+    icon: IconDeviceMobile,
     connected: false,
     fields: [{ key: "phone", label: "Airtel phone number", placeholder: "+254 7XX XXX XXX", required: true }],
     summary: (v) => v.phone,
@@ -436,7 +436,7 @@ const PAYMENT_METHODS = [
     sub: "Local & international wire · 1–2 day clearing",
     iconBg: "var(--grey-100)",
     iconColor: "var(--grey-600)",
-    icon: "ti-building-bank",
+    icon: IconBuildingBank,
     connected: false,
     fields: [
       { key: "bank", label: "Bank name", placeholder: "e.g. Equity Bank", required: true },
@@ -447,7 +447,7 @@ const PAYMENT_METHODS = [
 ];
 
 // Leading icon inside each dynamic input, keyed by what the field collects.
-const FIELD_ICON = { phone: "ti-device-mobile", till: "ti-hash", email: "ti-mail", bank: "ti-building-bank", account: "ti-hash", holder: "ti-user" };
+const FIELD_ICON = { phone: IconDeviceMobile, till: IconHash, email: IconMail, bank: IconBuildingBank, account: IconHash, holder: IconUser };
 function ConnectMethodModal({ method, onClose, onConnect }) {
   const [values, setValues] = useState({});
   if (!method) return null;
@@ -464,7 +464,7 @@ function ConnectMethodModal({ method, onClose, onConnect }) {
           <div className="field" key={f.key}>
             <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
             <div className="input-wrapper">
-              <i className={`ti ${FIELD_ICON[f.key] ?? "ti-pencil"} input-icon left`} aria-hidden="true" />
+              {(() => { const FieldIcon = FIELD_ICON[f.key] ?? IconPencil; return <FieldIcon className="icon-sm input-icon left" aria-hidden="true" />; })()}
               <input
                 className="input input-md input-icon-left"
                 placeholder={f.placeholder}
@@ -525,7 +525,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
           {methods.map((m) => (
             <div key={m.id} className={`pay-row${m.connected ? " connected" : ""}`}>
               <div className="pay-icon" style={{ background: m.iconBg }}>
-                <i className={`ti ${m.icon}`} style={{ fontSize: 17, color: m.iconColor || "#fff" }} />
+                <m.icon className="icon-md" style={{ color: m.iconColor || "#fff" }} aria-hidden="true" />
               </div>
               <div className="pay-info">
                 <div className="pay-name">{m.name}</div>
@@ -534,7 +534,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
               {m.connected ? (
                 <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
                   <span className="tag tag-success">
-                    <i className="ti ti-circle-check" style={{ fontSize: 12 }} />
+                    <IconCircleCheck className="icon-xs" aria-hidden="true" />
                     Connected · {m.detail}
                   </span>
                   <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(m.id)}>Disconnect</button>
@@ -591,7 +591,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
 
       {/* Escrow info */}
       <div className="info-callout">
-        <i className="ti ti-shield-lock" />
+        <IconShieldLock className="icon-sm" aria-hidden="true" />
         <div>
           <div className="info-callout-title">Funds are held in escrow</div>
           <p className="info-callout-desc">
@@ -719,23 +719,23 @@ function SecurityTab({ onDirty }) {
         <div style={{ marginTop: 'var(--space-16)' }}>
           {pwSaved ? (
             <div className="success-banner">
-              <i className="ti ti-check" style={{ fontSize: 13 }} />
+              <IconCheck className="icon-sm" aria-hidden="true" />
               Password updated successfully
             </div>
           ) : (
             <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
               <div className="field">
                 <label className="field-label field-required">Current password</label>
-                <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="••••••••" /></div>
+                <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="••••••••" /></div>
               </div>
               <div className="field-row">
                 <div className="field">
                   <label className="field-label field-required">New password</label>
-                  <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.next} onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))} placeholder="At least 8 characters" /></div>
+                  <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.next} onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))} placeholder="At least 8 characters" /></div>
                 </div>
                 <div className="field">
                   <label className="field-label field-required">Confirm new password</label>
-                  <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.confirm} onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))} placeholder="Re-enter your new password" /></div>
+                  <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" value={pwForm.confirm} onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))} placeholder="Re-enter your new password" /></div>
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -756,7 +756,7 @@ function SecurityTab({ onDirty }) {
         <span className="field-hint">Add an extra layer of protection using an authenticator app or SMS code.</span>
         <div style={{ marginTop: 'var(--space-16)' }}>
           <button className="btn btn-secondary btn-sm" onClick={handleToggle2FA}>
-            <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
+            <IconShieldCheck className="icon-sm" aria-hidden="true" />
             {twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}
           </button>
         </div>
@@ -772,7 +772,7 @@ function SecurityTab({ onDirty }) {
             <div key={s.device} className="session-row">
               <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
                 <div className="session-icon">
-                  <i className="ti ti-device-desktop" style={{ fontSize: 14 }} />
+                  <IconDeviceDesktop className="icon-sm" aria-hidden="true" />
                 </div>
                 <div>
                   <div className="session-device">
@@ -821,7 +821,7 @@ function AccountTab() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
           <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
             <div className="avatar avatar-md avatar-purple" style={{ borderRadius: "var(--radius-md)" }}>
-              <i className="ti ti-star" style={{ fontSize: 17 }} />
+              <IconStar className="icon-md" aria-hidden="true" />
             </div>
             <div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-h5-size)", fontWeight: 600 }}>Brand account</div>
@@ -838,7 +838,7 @@ function AccountTab() {
           {[{ label: "Terms of Service", href: "/terms" }, { label: "Privacy Policy", href: "/privacy" }].map((l) => (
             <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="legal-row">
               {l.label}
-              <i className="ti ti-external-link" />
+              <IconExternalLink className="icon-sm" aria-hidden="true" />
             </a>
           ))}
         </div>
@@ -851,7 +851,7 @@ function AccountTab() {
           Permanently remove your company profile, campaign history, and all data. This cannot be undone.
         </div>
         <button className="btn btn-danger" onClick={() => setDeleteOpen(true)}>
-          <i className="ti ti-trash" style={{ fontSize: 13 }} />
+          <IconTrash className="icon-sm" aria-hidden="true" />
           Request account deletion
         </button>
       </div>
@@ -1000,10 +1000,6 @@ export default function BrandSettingsPage() {
   return (
     <>
       <style>{css}</style>
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
-      />
       <div className="settings-page">
         <div className="settings-header">
           <h3 className="page-title">Settings</h3>
@@ -1017,7 +1013,7 @@ export default function BrandSettingsPage() {
               className={`settings-tab${activeTab === tab.id ? " active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
-              <i className={`ti ${tab.icon}`} />
+              <tab.icon className="icon-md" aria-hidden="true" />
               {tab.label}
             </button>
           ))}

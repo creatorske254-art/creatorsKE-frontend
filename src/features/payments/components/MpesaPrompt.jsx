@@ -15,7 +15,7 @@ export default function MpesaPrompt({ phone, status, isPolling }) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-24) 0', textAlign: 'center' }}>
         <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-success-text)' }}>
-          <IconCheck size={24} />
+          <IconCheck className="icon-xl" />
         </div>
         <div style={{ fontWeight: 600, fontSize: 14 }}>Payment confirmed</div>
       </div>
@@ -26,7 +26,7 @@ export default function MpesaPrompt({ phone, status, isPolling }) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-24) 0', textAlign: 'center' }}>
         <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-error-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-error-text)' }}>
-          <IconX size={24} />
+          <IconX className="icon-xl" />
         </div>
         <div style={{ fontWeight: 600, fontSize: 14 }}>Payment wasn't completed</div>
         <div style={{ fontSize: 12.5, color: 'var(--grey-500)' }}>You can try again from the withdraw button.</div>
@@ -37,7 +37,7 @@ export default function MpesaPrompt({ phone, status, isPolling }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-24) 0', textAlign: 'center' }}>
       <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-success-text)' }}>
-        <IconDeviceMobile size={22} />
+        <IconDeviceMobile className="icon-lg" />
       </div>
       <div style={{ fontWeight: 600, fontSize: 14 }}>Check your phone</div>
       <div style={{ fontSize: 12.5, color: 'var(--grey-500)', lineHeight: 1.6 }}>

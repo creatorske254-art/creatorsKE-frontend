@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
@@ -6,21 +6,8 @@ import { useEnquiries } from '@/features/enquiry';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
+import { IconBell, IconBookmark, IconClockHour4, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconReceipt2, IconReportMoney, IconRocket, IconSearch, IconSettings, IconWorldSearch, IconX } from '@tabler/icons-react';
 
-// Injects Tabler Icons webfont once - same pattern as CreatorLayout.
-const TABLER_ICONS_URL =
-  'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
-
-function useTablerIcons() {
-  useEffect(() => {
-    if (document.getElementById('tabler-icons-cdn')) return;
-    const link = document.createElement('link');
-    link.id = 'tabler-icons-cdn';
-    link.rel = 'stylesheet';
-    link.href = TABLER_ICONS_URL;
-    document.head.appendChild(link);
-  }, []);
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // Navbar/sidebar shape and color both come from index.css as-is - no local
@@ -79,7 +66,6 @@ const LAYOUT_STYLES = `
 
 .brand-layout__search .input-icon.left {
   left: var(--space-12);
-  font-size: var(--size-icon-sm);
 }
 
 .brand-layout__main {
@@ -165,36 +151,35 @@ const SIDEBAR_SECTIONS = [
   {
     label: 'Discovery',
     items: [
-      { to: '/brand/dashboard',  label: 'Dashboard',  icon: 'ti-layout-dashboard', end: true },
-      { to: '/brand/shortlist',  label: 'Shortlist',  icon: 'ti-bookmark' },
-      { to: '/directory', label: 'Creator directory', icon: 'ti-world-search' },
+      { to: '/brand/dashboard',  label: 'Dashboard',  icon: IconLayoutDashboard, end: true },
+      { to: '/brand/shortlist',  label: 'Shortlist',  icon: IconBookmark },
+      { to: '/directory', label: 'Creator directory', icon: IconWorldSearch },
     ],
   },
   {
     label: 'Campaigns',
     items: [
-      { to: '/brand/enquiries',         label: 'Enquiries',          icon: 'ti-inbox',         badgeKey: 'new' },
-      { to: '/brand/campaigns',         label: 'Active campaigns',   icon: 'ti-rocket',        hasActiveDot: true },
-      { to: '/brand/campaigns?filter=history', label: 'Campaign history', icon: 'ti-clock-hour-4' },
+      { to: '/brand/enquiries',         label: 'Enquiries',          icon: IconInbox,         badgeKey: 'new' },
+      { to: '/brand/campaigns',         label: 'Active campaigns',   icon: IconRocket,        hasActiveDot: true },
+      { to: '/brand/campaigns?filter=history', label: 'Campaign history', icon: IconClockHour4 },
     ],
   },
   {
     label: 'Payments',
     items: [
-      { label: 'Billing & invoices', icon: 'ti-receipt-2',  disabled: true },
-      { label: 'Transaction history', icon: 'ti-report-money', disabled: true },
+      { label: 'Billing & invoices', icon: IconReceipt2,  disabled: true },
+      { label: 'Transaction history', icon: IconReportMoney, disabled: true },
     ],
   },
   {
     label: 'Account',
     items: [
-      { to: '/brand/settings', label: 'Settings', icon: 'ti-settings' },
+      { to: '/brand/settings', label: 'Settings', icon: IconSettings },
     ],
   },
 ];
 
 export default function BrandLayout() {
-  useTablerIcons();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { activeCampaignCount } = useBrandDashboard();
@@ -234,7 +219,7 @@ export default function BrandLayout() {
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setDrawerOpen((v) => !v)}
           >
-            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: '22px' }} aria-hidden="true" />
+            {drawerOpen ? <IconX className="icon-lg" aria-hidden="true" /> : <IconMenu2 className="icon-lg" aria-hidden="true" />}
           </button>
 
           <NavLink to="/brand/dashboard" className="navbar-logo">
@@ -243,7 +228,7 @@ export default function BrandLayout() {
 
           <form className="brand-layout__search" onSubmit={handleSearchSubmit} role="search">
             <div className="input-wrapper">
-              <i className="ti ti-search input-icon left" aria-hidden="true" />
+              <IconSearch className="icon-sm input-icon left" aria-hidden="true" />
               <input
                 className="search-input"
                 type="text"
@@ -264,7 +249,7 @@ export default function BrandLayout() {
                 aria-expanded={notifOpen}
                 onClick={() => setNotifOpen((v) => !v)}
               >
-                <i className="ti ti-bell" style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
+                <IconBell className="icon-md" aria-hidden="true" />
               </button>
               {unreadCount > 0 && (
                 <span
@@ -322,7 +307,7 @@ export default function BrandLayout() {
                         className="sidebar-link disabled"
                         title="Coming soon"
                       >
-                        <i className={`ti ${item.icon}`} aria-hidden="true" />
+                        <item.icon className="icon-md" aria-hidden="true" />
                         {item.label}
                       </span>
                     );
@@ -341,7 +326,7 @@ export default function BrandLayout() {
                         `sidebar-link${isActive ? ' active' : ''}`
                       }
                     >
-                      <i className={`ti ${item.icon}`} aria-hidden="true" />
+                      <item.icon className="icon-md" aria-hidden="true" />
                       {item.label}
                       {!!badgeCount && (
                         <span className="sidebar-badge">{badgeCount}</span>
@@ -366,7 +351,7 @@ export default function BrandLayout() {
               style={{ color: 'var(--status-error-text)' }}
               onClick={handleLogout}
             >
-              <i className="ti ti-logout" style={{ color: 'var(--status-error)' }} aria-hidden="true" />
+              <IconLogout className="icon-sm" style={{ color: 'var(--status-error)' }} aria-hidden="true" />
               Log out
             </button>
           </aside>

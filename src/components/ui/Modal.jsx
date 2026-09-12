@@ -101,7 +101,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }) {
                 flexShrink: 0,
               }}
             >
-              <IconX size={16} />
+              <IconX className="icon-md" />
             </button>
           </div>
         )}

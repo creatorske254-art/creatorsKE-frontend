@@ -5,7 +5,7 @@ import { reviewService } from '@/features/reviews/services/review.service';
 import ReviewResponse from '@/features/reviews/components/ReviewResponse';
 import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
-  IconMapPin, IconCheck, IconSend, IconShare, IconLayoutGrid,
+  IconCheck, IconSend, IconShare, IconLayoutGrid,
   IconBrandWhatsapp, IconShieldCheck, IconCircleCheck, IconClock,
   IconStar, IconStarHalfFilled, IconLeaf, IconArrowRight, IconPackage,
 } from '@tabler/icons-react';
@@ -142,9 +142,9 @@ function StarRow({ value = 0 }) {
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => {
-        if (i < full) return <IconStar key={i} size={12} className="text-[var(--purple-500)]" fill="currentColor" />;
-        if (i === full && half) return <IconStarHalfFilled key={i} size={12} className="text-[var(--purple-500)]" fill="currentColor" />;
-        return <IconStar key={i} size={12} className="text-[var(--grey-200)]" />;
+        if (i < full) return <IconStar key={i} className="text-[var(--purple-500)] icon-xs" fill="currentColor" />;
+        if (i === full && half) return <IconStarHalfFilled key={i} className="text-[var(--purple-500)] icon-xs" fill="currentColor" />;
+        return <IconStar key={i} className="text-[var(--grey-200)] icon-xs" />;
       })}
     </div>
   );
@@ -223,7 +223,7 @@ function PackageCard({ pkg, onEnquire }) {
               : 'bg-[var(--purple-500)] text-on-accent hover:opacity-90'
           }`}
         >
-          <IconSend size={12} /> Enquire about this
+          <IconSend className="icon-xs" /> Enquire about this
         </button>
       )}
     </div>
@@ -378,7 +378,7 @@ export default function RateCardPage() {
                     {creator.initials}
                   </div>
                   <div className="absolute bottom-0 right-0 w-[22px] h-[22px] rounded-full bg-[var(--status-success)] border-2 border-[var(--black)] flex items-center justify-center">
-                    <IconCheck size={11} className="text-on-accent" />
+                    <IconCheck className="text-on-accent icon-xs" />
                   </div>
                 </div>
 
@@ -412,19 +412,19 @@ export default function RateCardPage() {
                     disabled={!packages.length}
                     className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[13px] font-medium hover:opacity-90 hover:-translate-y-px transition-all whitespace-nowrap disabled:opacity-50"
                   >
-                    <IconSend size={14} /> Send enquiry
+                    <IconSend className="icon-sm" /> Send enquiry
                   </button>
                   <button
                     onClick={() => shareRateCard(creator.displayName)}
                     className="inline-flex items-center gap-2 px-5 py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
                   >
-                    <IconShare size={13} /> Share
+                    <IconShare className="icon-sm" /> Share
                   </button>
                   <Link
                     to={`/c/${handle}/portfolio`}
                     className="inline-flex items-center gap-2 px-5 py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
                   >
-                    <IconLayoutGrid size={13} /> Full portfolio
+                    <IconLayoutGrid className="icon-sm" /> Full portfolio
                   </Link>
                 </div>
               </div>
@@ -468,13 +468,13 @@ export default function RateCardPage() {
                           : 'bg-[var(--grey-50)] text-[var(--grey-600)] border border-[0.5px] border-[var(--grey-100)]'
                       }`}
                     >
-                      {i === 0 && <IconLeaf size={11} />}
+                      {i === 0 && <IconLeaf className="icon-xs" />}
                       {n}
                     </span>
                   ))}
                   {creator.availability === 'available' && (
                     <span className="inline-flex items-center gap-1 text-[11px] font-medium px-3 py-1 rounded-[999px] bg-[#EAF7EE] text-[var(--status-success-text)] border border-[0.5px] border-[#B9E6C4]">
-                      <IconCircleCheck size={11} /> Available now
+                      <IconCircleCheck className="icon-xs" /> Available now
                     </span>
                   )}
                 </div>
@@ -487,7 +487,7 @@ export default function RateCardPage() {
               {packages.length === 0 ? (
                 <EmptyState
                   size="sm"
-                  icon={<IconPackage size={18} />}
+                  icon={<IconPackage />}
                   title="No packages yet"
                   description="This creator hasn't published any packages yet. Check back soon."
                 />
@@ -529,19 +529,19 @@ export default function RateCardPage() {
                   disabled={!packages.length}
                   className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[14px] font-medium hover:opacity-90 transition-all disabled:opacity-50"
                 >
-                  <IconSend size={15} /> Send enquiry
+                  <IconSend className="icon-sm" /> Send enquiry
                 </button>
                 <button
                   onClick={() => openWhatsApp(creator.phone)}
                   className="flex items-center justify-center gap-2 w-full mt-2 px-6 py-3 rounded-[8px] bg-[#25D366] text-on-accent text-[13px] font-medium hover:opacity-90 transition-all"
                 >
-                  <IconBrandWhatsapp size={14} /> Chat on WhatsApp
+                  <IconBrandWhatsapp className="icon-sm" /> Chat on WhatsApp
                 </button>
 
                 <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[0.5px] border-[var(--grey-100)]">
-                  <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconShieldCheck size={13} className="text-[var(--status-success)]" /> Secure</span>
-                  <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconCircleCheck size={13} className="text-[var(--status-success)]" /> No spam</span>
-                  <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconClock size={13} className="text-[var(--status-success)]" /> Replies in 24hrs</span>
+                  <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconShieldCheck className="text-[var(--status-success)] icon-sm" /> Secure</span>
+                  <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconCircleCheck className="text-[var(--status-success)] icon-sm" /> No spam</span>
+                  <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconClock className="text-[var(--status-success)] icon-sm" /> Replies in 24hrs</span>
                 </div>
               </div>
 
@@ -578,7 +578,7 @@ export default function RateCardPage() {
               to={`/c/${handle}/portfolio`}
               className="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--purple-500)] hover:text-[var(--purple-700)] transition-colors"
             >
-              View {creator.displayName}'s portfolio <IconArrowRight size={14} />
+              View {creator.displayName}'s portfolio <IconArrowRight className="icon-sm" />
             </Link>
           </div>
         </>

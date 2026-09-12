@@ -2,6 +2,7 @@ import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
 import Skeleton from '@/components/ui/Skeleton';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { IconReceipt2 } from '@tabler/icons-react';
 
 // GET /payments/transactions' response schema is undocumented - field names
 // below are best-effort guesses with graceful fallbacks (see CLAUDE.md).
@@ -47,7 +48,7 @@ export default function TransactionHistory({
     return (
       <EmptyState
         size="sm"
-        icon={<i className="ti ti-receipt-2" style={{ fontSize: 20 }} aria-hidden="true" />}
+        icon={<IconReceipt2 />}
         title="No transactions yet"
         description="Payments and payouts will show up here."
       />

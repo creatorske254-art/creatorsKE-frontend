@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IconCheck, IconCopy, IconEye, IconPencil, IconWallet } from '@tabler/icons-react';
 
 /**
  * QuickActions
@@ -25,10 +26,7 @@ export default function QuickActions({ publicUrl, copyPublicLink }) {
       id: 'edit-rate-card',
       label: 'Edit rate card',
       icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-          <path d="M13 2.5l2.5 2.5-9 9H4V11.5l9-9z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-          <path d="M2 16h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        </svg>
+        <IconPencil className="icon-md" aria-hidden="true" />
       ),
       onClick: () => navigate('/creator/rate-card'),
     },
@@ -36,14 +34,9 @@ export default function QuickActions({ publicUrl, copyPublicLink }) {
       id: 'copy-link',
       label: copied ? 'Copied!' : 'Copy public link',
       icon: copied ? (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-          <path d="M3 9l4.5 4.5L15 5" stroke="var(--color-success)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <IconCheck className="icon-md" style={{ color: 'var(--status-success)' }} aria-hidden="true" />
       ) : (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-          <rect x="6" y="6" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-          <path d="M3 12V3h9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <IconCopy className="icon-md" aria-hidden="true" />
       ),
       onClick: handleCopy,
       disabled: !publicUrl,
@@ -52,10 +45,7 @@ export default function QuickActions({ publicUrl, copyPublicLink }) {
       id: 'view-as-brand',
       label: 'View as brand',
       icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-          <circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
-          <path d="M1.5 9C3 5 5.5 3 9 3s6 2 7.5 6c-1.5 4-4 6-7.5 6S3 13 1.5 9z" stroke="currentColor" strokeWidth="1.5"/>
-        </svg>
+        <IconEye className="icon-md" aria-hidden="true" />
       ),
       onClick: () => publicUrl && window.open(publicUrl, '_blank', 'noopener'),
       disabled: !publicUrl,
@@ -64,11 +54,7 @@ export default function QuickActions({ publicUrl, copyPublicLink }) {
       id: 'go-to-money',
       label: 'Go to Money',
       icon: (
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-          <rect x="1.5" y="4.5" width="15" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-          <circle cx="9" cy="9.5" r="2" stroke="currentColor" strokeWidth="1.5"/>
-          <path d="M5 4.5V3M13 4.5V3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-        </svg>
+        <IconWallet className="icon-md" aria-hidden="true" />
       ),
       onClick: () => navigate('/creator/money'),
     },

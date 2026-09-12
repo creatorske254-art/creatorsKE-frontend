@@ -85,7 +85,7 @@ export default function VerifyEmailPage() {
         {status === STATUS.IDLE && (
           <>
             <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
-              <IconMailCheck size={28} style={{ color: 'var(--purple-500)' }} />
+              <IconMailCheck className="icon-xl" style={{ color: 'var(--purple-500)' }} />
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Check your email</div>
             <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
@@ -113,7 +113,7 @@ export default function VerifyEmailPage() {
         {/* LOADING */}
         {status === STATUS.LOADING && (
           <>
-            <IconLoader2 size={36} style={{ color: 'var(--purple-400)', margin: '0 auto var(--space-16)', display: 'block', animation: 'spin 0.8s linear infinite' }} />
+            <IconLoader2 className="icon-xl" style={{ color: 'var(--purple-400)', margin: '0 auto var(--space-16)', display: 'block', animation: 'spin 0.8s linear infinite' }} />
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Verifying</div>
             <div style={{ fontSize: '14px', color: 'var(--grey-500)' }}>Just a moment.</div>
           </>
@@ -123,7 +123,7 @@ export default function VerifyEmailPage() {
         {status === STATUS.SUCCESS && (
           <>
             <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
-              <IconCircleCheck size={28} style={{ color: 'var(--status-success)' }} />
+              <IconCircleCheck className="icon-xl" style={{ color: 'var(--status-success)' }} />
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Email verified</div>
             <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
@@ -153,7 +153,7 @@ export default function VerifyEmailPage() {
         {status === STATUS.ERROR && (
           <>
             <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-error-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
-              <IconCircleX size={28} style={{ color: 'var(--status-error)' }} />
+              <IconCircleX className="icon-xl" style={{ color: 'var(--status-error)' }} />
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Verification failed</div>
             <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>

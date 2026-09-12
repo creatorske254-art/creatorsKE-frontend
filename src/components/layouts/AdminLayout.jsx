@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useDisputes } from '@/features/admin/hooks/useDisputes';
@@ -7,21 +7,8 @@ import { useAdmin } from '@/features/admin/hooks/useAdmin';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
+import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSearch, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
 
-// Injects Tabler Icons webfont once - same pattern as CreatorLayout / BrandLayout.
-const TABLER_ICONS_URL =
-  'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
-
-function useTablerIcons() {
-  useEffect(() => {
-    if (document.getElementById('tabler-icons-cdn')) return;
-    const link = document.createElement('link');
-    link.id = 'tabler-icons-cdn';
-    link.rel = 'stylesheet';
-    link.href = TABLER_ICONS_URL;
-    document.head.appendChild(link);
-  }, []);
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // Navbar/sidebar shape and color both come from index.css as-is - no local
@@ -84,7 +71,6 @@ const LAYOUT_STYLES = `
 
 .admin-layout__search .input-icon.left {
   left: var(--space-12);
-  font-size: var(--size-icon-sm);
 }
 
 .admin-layout__main {
@@ -161,7 +147,7 @@ const SIDEBAR_SECTIONS = [
   {
     label: 'Platform',
     items: [
-      { to: '/admin', label: 'Overview', icon: 'ti-chart-bar', end: true },
+      { to: '/admin', label: 'Overview', icon: IconChartBar, end: true },
     ],
   },
   {
@@ -170,21 +156,21 @@ const SIDEBAR_SECTIONS = [
       {
         to: '/admin/disputes',
         label: 'Disputes',
-        icon: 'ti-scale',
+        icon: IconScale,
         badgeVariant: 'urgent',
         badgeKey: 'openDisputeCount',
       },
       {
         to: '/admin/accounts',
         label: 'Flagged accounts',
-        icon: 'ti-user-exclamation',
+        icon: IconUserExclamation,
         badgeVariant: 'urgent',
         badgeKey: 'flaggedAccountCount',
       },
       {
         to: '/admin/reviews',
         label: 'Flagged reviews',
-        icon: 'ti-flag',
+        icon: IconFlag,
         badgeVariant: 'pending',
         badgeKey: 'flaggedReviewCount',
       },
@@ -196,15 +182,14 @@ const SIDEBAR_SECTIONS = [
       // Placeholder items for operational views that sit outside the four
       // MVP pages but are referenced in the admin journeys (escaped escrow,
       // creator abandonment cases, deletion request queue).
-      { label: 'Escrow cases',      icon: 'ti-lock-dollar',   disabled: true },
-      { label: 'Deletion requests', icon: 'ti-user-minus',    disabled: true },
-      { label: 'Re-engagement',     icon: 'ti-mail-forward',  disabled: true },
+      { label: 'Escrow cases',      icon: IconLockDollar,   disabled: true },
+      { label: 'Deletion requests', icon: IconUserMinus,    disabled: true },
+      { label: 'Re-engagement',     icon: IconMailForward,  disabled: true },
     ],
   },
 ];
 
 export default function AdminLayout() {
-  useTablerIcons();
   const { user, logout } = useAuth();
   const { openDisputeCount } = useDisputes();
   const { flaggedAccountCount } = useFlaggedAccounts();
@@ -245,7 +230,7 @@ export default function AdminLayout() {
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setDrawerOpen((v) => !v)}
           >
-            <i className={`ti ${drawerOpen ? 'ti-x' : 'ti-menu-2'}`} style={{ fontSize: '22px' }} aria-hidden="true" />
+            {drawerOpen ? <IconX className="icon-lg" aria-hidden="true" /> : <IconMenu2 className="icon-lg" aria-hidden="true" />}
           </button>
 
           <NavLink to="/admin" className="navbar-logo">
@@ -255,7 +240,7 @@ export default function AdminLayout() {
           {/* Submits to the accounts moderation list, which reads ?q= */}
           <form className="admin-layout__search" role="search" onSubmit={handleSearchSubmit}>
             <div className="input-wrapper">
-              <i className="ti ti-search input-icon left" aria-hidden="true" />
+              <IconSearch className="icon-sm input-icon left" aria-hidden="true" />
               <input
                 className="search-input"
                 type="text"
@@ -276,7 +261,7 @@ export default function AdminLayout() {
                 aria-expanded={notifOpen}
                 onClick={() => setNotifOpen((v) => !v)}
               >
-                <i className="ti ti-bell" style={{ fontSize: 'var(--size-icon-md)' }} aria-hidden="true" />
+                <IconBell className="icon-md" aria-hidden="true" />
               </button>
               {unreadCount > 0 && (
                 <span
@@ -334,7 +319,7 @@ export default function AdminLayout() {
                         className="sidebar-link disabled"
                         title="Coming soon"
                       >
-                        <i className={`ti ${item.icon}`} aria-hidden="true" />
+                        <item.icon className="icon-md" aria-hidden="true" />
                         {item.label}
                       </span>
                     );
@@ -354,7 +339,7 @@ export default function AdminLayout() {
                         `sidebar-link${isActive ? ' active' : ''}`
                       }
                     >
-                      <i className={`ti ${item.icon}`} aria-hidden="true" />
+                      <item.icon className="icon-md" aria-hidden="true" />
                       {item.label}
                       {showBadge && (
                         <span
@@ -377,7 +362,7 @@ export default function AdminLayout() {
               style={{ color: 'var(--status-error-text)' }}
               onClick={handleLogout}
             >
-              <i className="ti ti-logout" style={{ color: 'var(--status-error)' }} aria-hidden="true" />
+              <IconLogout className="icon-sm" style={{ color: 'var(--status-error)' }} aria-hidden="true" />
               Log out
             </button>
           </aside>

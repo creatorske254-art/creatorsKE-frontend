@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import { IconPencil, IconTrash } from '@tabler/icons-react';
 
 /**
  * RateCardTile
@@ -72,7 +73,7 @@ export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelet
           to={`/creator/rate-card/${id}/edit`}
           className="btn btn-secondary btn-sm"
         >
-          <i className="ti ti-pencil" style={{ fontSize: 13 }} />
+          <IconPencil className="icon-sm" aria-hidden="true" />
           Edit
         </Link>
         {isPublished ? (
@@ -99,7 +100,7 @@ export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelet
           aria-label="Delete rate card"
           style={{ marginLeft: 'auto', color: 'var(--status-error-text)' }}
         >
-          <i className="ti ti-trash" style={{ fontSize: 13 }} />
+          <IconTrash className="icon-sm" aria-hidden="true" />
         </button>
       </div>
 

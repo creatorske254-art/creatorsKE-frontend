@@ -1,5 +1,6 @@
 import { useFieldArray } from 'react-hook-form';
 import { cn } from '@/lib/utils';
+import { IconAlertCircle, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 
 /**
  * PackageForm
@@ -33,7 +34,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
             onClick={onRemove}
             aria-label="Remove package"
           >
-            <i className="ti ti-trash" />
+            <IconTrash className="icon-sm" aria-hidden="true" />
           </button>
         )}
       </div>
@@ -50,7 +51,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
         />
         {errors?.name && (
           <span className="field-hint error">
-            <i className="ti ti-alert-circle" /> {errors.name.message}
+            <IconAlertCircle className="icon-sm" aria-hidden="true" /> {errors.name.message}
           </span>
         )}
       </div>
@@ -76,7 +77,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
         </div>
         {errors?.price && (
           <span className="field-hint error">
-            <i className="ti ti-alert-circle" /> {errors.price.message}
+            <IconAlertCircle className="icon-sm" aria-hidden="true" /> {errors.price.message}
           </span>
         )}
       </div>
@@ -110,7 +111,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
                 onClick={() => remove(di)}
                 aria-label="Remove deliverable"
               >
-                <i className="ti ti-x" style={{ fontSize: 12 }} />
+                <IconX className="icon-xs" aria-hidden="true" />
               </button>
             </div>
           ))}
@@ -119,7 +120,7 @@ export default function PackageForm({ index, register, control, errors, onRemove
             className="package-form__add-deliverable"
             onClick={() => append({ text: '' })}
           >
-            <i className="ti ti-plus" style={{ fontSize: 14 }} />
+            <IconPlus className="icon-sm" aria-hidden="true" />
             Add deliverable
           </button>
         </div>

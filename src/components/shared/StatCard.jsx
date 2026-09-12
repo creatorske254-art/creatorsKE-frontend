@@ -63,8 +63,8 @@ export default function StatCard({ label, value, delta, trend, purple = false })
             color: deltaColor,
           }}
         >
-          {!purple && trend === 'up' && <IconTrendingUp size={14} />}
-          {!purple && trend === 'down' && <IconTrendingDown size={14} />}
+          {!purple && trend === 'up' && <IconTrendingUp className="icon-sm" />}
+          {!purple && trend === 'down' && <IconTrendingDown className="icon-sm" />}
           {delta}
         </div>
       )}

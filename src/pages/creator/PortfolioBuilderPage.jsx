@@ -4,23 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { usePortfolio } from '@/features/portfolio/hooks/usePortfolio';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useImageUpload } from '@/lib/useImageUpload';
-
-// Same as CreatorLayout.jsx: the component library loads icons via a <link>
-// tag in <head>, not a package import. This page normally renders inside
-// CreatorLayout (which already injects the stylesheet), but the effect is
-// idempotent, safe to call again here so this page still renders correctly
-// if it's ever mounted standalone (e.g. in isolation for testing).
-const TABLER_ICONS_URL = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
-function useTablerIcons() {
-  useEffect(() => {
-    if (document.getElementById('tabler-icons-cdn')) return;
-    const link = document.createElement('link');
-    link.id = 'tabler-icons-cdn';
-    link.rel = 'stylesheet';
-    link.href = TABLER_ICONS_URL;
-    document.head.appendChild(link);
-  }, []);
-}
+import { IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, IconCheck, IconEye, IconEyeOff, IconMail, IconMapPin, IconPhone, IconPlus, IconSend, IconUpload, IconUser, IconUsers, IconX } from '@tabler/icons-react';
 
 // Component-library chrome (.btn, .card, .tag, .avatar, .input, .badge,
 // .progress-bar-*) lives in index.css, ported 1:1 from the Creatorske
@@ -59,7 +43,7 @@ const PORTFOLIO_BUILDER_STYLES = `
 .inp-wrap { position: relative; }
 .inp-icon-l { padding-left: var(--space-32) !important; }
 .inp-icon-r { padding-right: var(--space-32) !important; }
-.inp-icon { position: absolute; top: 50%; transform: translateY(-50%); color: var(--grey-400); font-size: 14px; pointer-events: none; display: flex; }
+.inp-icon { position: absolute; top: 50%; transform: translateY(-50%); color: var(--grey-400); pointer-events: none; display: flex; }
 .inp-icon.l { left: 10px; }
 .inp-icon.r { right: 10px; }
 .ta { resize: vertical; min-height: 100px; line-height: 1.6; font-family: var(--font-body); }
@@ -115,7 +99,7 @@ const PORTFOLIO_BUILDER_STYLES = `
 .pb-preview-follow-l { font-size: 9px; color: var(--grey-400); margin-top: var(--space-2); }
 .pb-preview-contact { border-top: 0.5px solid var(--grey-100); padding-top: var(--space-12); display: flex; flex-direction: column; gap: var(--space-8); }
 .pb-preview-contact-row { display: flex; align-items: center; gap: var(--space-8); font-size: 11.5px; color: var(--grey-600); }
-.pb-preview-contact-row i { color: var(--grey-400); font-size: 13px; }
+.pb-preview-contact-row svg { color: var(--grey-400); }
 `;
 
 /* field set / defaults
@@ -264,9 +248,9 @@ function LivePreview({ values, creatorName, handle }) {
         </div>
 
         <div className="pb-preview-contact">
-          <div className="pb-preview-contact-row"><i className="ti ti-phone" aria-hidden="true" />{values.contact?.phone || 'No phone yet'}</div>
-          <div className="pb-preview-contact-row"><i className="ti ti-brand-instagram" aria-hidden="true" />{values.contact?.instagramHandle || handle}</div>
-          <div className="pb-preview-contact-row"><i className="ti ti-mail" aria-hidden="true" />{values.contact?.email || 'No email yet'}</div>
+          <div className="pb-preview-contact-row"><IconPhone className="icon-sm" aria-hidden="true" />{values.contact?.phone || 'No phone yet'}</div>
+          <div className="pb-preview-contact-row"><IconBrandInstagram className="icon-sm" aria-hidden="true" />{values.contact?.instagramHandle || handle}</div>
+          <div className="pb-preview-contact-row"><IconMail className="icon-sm" aria-hidden="true" />{values.contact?.email || 'No email yet'}</div>
         </div>
       </div>
     </div>
@@ -277,7 +261,6 @@ function LivePreview({ values, creatorName, handle }) {
 
 export default function PortfolioBuilderPage() {
   usePageMeta('Portfolio Builder', 'Build your portfolio to showcase past work and brand collaborations on Creatorske.');
-  useTablerIcons();
 
   const { user } = useAuth();
   const { portfolio, isLoading, autoSave, publish, unpublish, isPublishing, isUnpublishing } =
@@ -379,7 +362,7 @@ export default function PortfolioBuilderPage() {
           <span className="pb-topbar-title">Portfolio</span>
           {portfolio?.updatedAt && (
             <span className="pb-topbar-saved">
-              <i className="ti ti-check" style={{ fontSize: 11 }} aria-hidden="true" />
+              <IconCheck className="icon-xs" aria-hidden="true" />
               Saved {new Date(portfolio.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
@@ -393,7 +376,7 @@ export default function PortfolioBuilderPage() {
               onClick={() => unpublish(portfolio.id)}
               disabled={isUnpublishing}
             >
-              <i className="ti ti-eye-off" style={{ fontSize: 13 }} aria-hidden="true" />
+              <IconEyeOff className="icon-sm" aria-hidden="true" />
               Unpublish
             </button>
           ) : (
@@ -403,7 +386,7 @@ export default function PortfolioBuilderPage() {
               onClick={() => publish(portfolio?.id)}
               disabled={isPublishing}
             >
-              <i className="ti ti-send" style={{ fontSize: 13 }} aria-hidden="true" />
+              <IconSend className="icon-sm" aria-hidden="true" />
               Publish portfolio
             </button>
           )}
@@ -430,7 +413,7 @@ export default function PortfolioBuilderPage() {
 
           <form onSubmit={handleSubmit(onSave)} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
             {/* 1. Profile photo */}
-            <SectionCard icon="ti-camera" title="Profile photo">
+            <SectionCard title="Profile photo">
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)' }}>
                 <div className="avatar avatar-lg avatar-purple" style={{ overflow: 'hidden' }}>
                   {formValues.photoUrl ? (
@@ -445,7 +428,7 @@ export default function PortfolioBuilderPage() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
                   <label className={`btn btn-ghost btn-sm${photoUploading ? ' btn-loading' : ''}`} style={{ cursor: 'pointer', width: 'fit-content' }}>
-                    <i className="ti ti-upload" style={{ fontSize: 12 }} aria-hidden="true" />
+                    <IconUpload className="icon-xs" aria-hidden="true" />
                     {formValues.photoUrl ? 'Change photo' : 'Upload photo'}
                     <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: 'none' }} />
                   </label>
@@ -457,16 +440,16 @@ export default function PortfolioBuilderPage() {
             </SectionCard>
 
             {/* 2. Identity */}
-            <SectionCard icon="ti-id-badge" title="Identity">
+            <SectionCard title="Identity">
               <Field label="Full name" required>
-                <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-user" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" {...register('name')} /></div>
+                <div className="inp-wrap"><span className="inp-icon l"><IconUser className="icon-sm" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" {...register('name')} /></div>
               </Field>
               <Field label="Role / tagline">
-                <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-briefcase" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. Lifestyle & travel creator" {...register('role')} /></div>
+                <div className="inp-wrap"><span className="inp-icon l"><IconBriefcase className="icon-sm" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. Lifestyle & travel creator" {...register('role')} /></div>
               </Field>
               <Field label="Location label">
                 <div className="inp-wrap">
-                  <span className="inp-icon l"><i className="ti ti-map-pin" aria-hidden="true" /></span>
+                  <span className="inp-icon l"><IconMapPin className="icon-sm" aria-hidden="true" /></span>
                   <input className="inp inp-icon-l" placeholder="e.g. Content Creator · Nairobi" {...register('location')} />
                 </div>
               </Field>
@@ -481,11 +464,11 @@ export default function PortfolioBuilderPage() {
             </SectionCard>
 
             {/* 3. Social stats */}
-            <SectionCard icon="ti-chart-bar" title="Social stats" hint="Shown on your portfolio to build trust with brands">
+            <SectionCard title="Social stats" hint="Shown on your portfolio to build trust with brands">
               <div className="pb-g2" style={{ marginBottom: 'var(--space-12)' }}>
                 <Field label="Instagram followers">
                   <div className="inp-wrap">
-                    <span className="inp-icon l"><i className="ti ti-brand-instagram" style={{ color: '#E1306C' }} aria-hidden="true" /></span>
+                    <span className="inp-icon l"><IconBrandInstagram className="icon-sm" style={{ color: '#E1306C' }} aria-hidden="true" /></span>
                     <input className="inp inp-icon-l" placeholder="e.g. 82.5K" {...register('socialStats.igFollowers')} />
                   </div>
                 </Field>
@@ -499,30 +482,30 @@ export default function PortfolioBuilderPage() {
               <div className="pb-g2" style={{ marginBottom: 'var(--space-12)' }}>
                 <Field label="TikTok followers">
                   <div className="inp-wrap">
-                    <span className="inp-icon l"><i className="ti ti-brand-tiktok" aria-hidden="true" /></span>
+                    <span className="inp-icon l"><IconBrandTiktok className="icon-sm" aria-hidden="true" /></span>
                     <input className="inp inp-icon-l" placeholder="e.g. 73.1K" {...register('socialStats.ttFollowers')} />
                   </div>
                 </Field>
                 <Field label="Avg. views/video">
-                  <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-eye" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 6,400" {...register('socialStats.ttAvgViews')} /></div>
+                  <div className="inp-wrap"><span className="inp-icon l"><IconEye className="icon-sm" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 6,400" {...register('socialStats.ttAvgViews')} /></div>
                 </Field>
               </div>
               <div className="pb-g2">
                 <Field label="Medium followers">
                   <div className="inp-wrap">
-                    <span className="inp-icon l"><i className="ti ti-brand-medium" aria-hidden="true" /></span>
+                    <span className="inp-icon l"><IconBrandMedium className="icon-sm" aria-hidden="true" /></span>
                     <input className="inp inp-icon-l" placeholder="e.g. 259" {...register('socialStats.mediumFollowers')} />
                   </div>
                 </Field>
                 <Field label="Core audience age">
-                  <div className="inp-wrap"><span className="inp-icon l"><i className="ti ti-users" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 18-30" {...register('socialStats.audienceAge')} /></div>
+                  <div className="inp-wrap"><span className="inp-icon l"><IconUsers className="icon-sm" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 18-30" {...register('socialStats.audienceAge')} /></div>
                 </Field>
               </div>
             </SectionCard>
 
             {/* 4. Niches */}
             <SectionCard
-              icon="ti-tag"
+             
               title="Niche & focus areas"
               hint="Press Enter or tap + to add. Tap a tag to remove it."
             >
@@ -535,7 +518,7 @@ export default function PortfolioBuilderPage() {
                     style={{ cursor: 'pointer' }}
                   >
                     {niche}
-                    <i className="ti ti-x" style={{ fontSize: 10, opacity: 0.6 }} aria-hidden="true" />
+                    <IconX className="icon-xs" style={{ opacity: 0.6 }} aria-hidden="true" />
                   </span>
                 ))}
               </div>
@@ -554,16 +537,16 @@ export default function PortfolioBuilderPage() {
                   }}
                 />
                 <button type="button" className="btn btn-purple btn-square" onClick={addNiche} aria-label="Add niche">
-                  <i className="ti ti-plus" style={{ fontSize: 14 }} aria-hidden="true" />
+                  <IconPlus className="icon-sm" aria-hidden="true" />
                 </button>
               </div>
             </SectionCard>
 
             {/* 5. Contact */}
-            <SectionCard icon="ti-address-book" title="Contact details">
+            <SectionCard title="Contact details">
               <Field label="Phone / WhatsApp">
                 <div className="inp-wrap">
-                  <span className="inp-icon l"><i className="ti ti-phone" aria-hidden="true" /></span>
+                  <span className="inp-icon l"><IconPhone className="icon-sm" aria-hidden="true" /></span>
                   <input className="inp inp-icon-l" placeholder="+254..." {...register('contact.phone')} />
                 </div>
               </Field>
@@ -575,7 +558,7 @@ export default function PortfolioBuilderPage() {
               </Field>
               <Field label="Email">
                 <div className="inp-wrap">
-                  <span className="inp-icon l"><i className="ti ti-mail" aria-hidden="true" /></span>
+                  <span className="inp-icon l"><IconMail className="icon-sm" aria-hidden="true" /></span>
                   <input
                     className="inp inp-icon-l"
                     type="email"
@@ -591,7 +574,7 @@ export default function PortfolioBuilderPage() {
         {/* RIGHT: live preview */}
         <div className="pb-preview-col">
           <div className="pb-preview-label">
-            <i className="ti ti-eye" style={{ fontSize: 12 }} aria-hidden="true" />
+            <IconEye className="icon-xs" aria-hidden="true" />
             Live preview
           </div>
           <div style={{ position: 'sticky', top: 0 }}>

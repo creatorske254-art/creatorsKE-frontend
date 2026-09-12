@@ -49,19 +49,19 @@ function PricingCard({ tier }) {
             : 'bg-[var(--black)] text-white hover:opacity-90'
         }`}
       >
-        {isFree ? 'Get started free' : 'Get started'} <IconArrowRight size={14} />
+        {isFree ? 'Get started free' : 'Get started'} <IconArrowRight className="icon-sm" />
       </button>
 
       <div className="flex flex-col gap-3">
         {tier.features.map((f, i) => (
           <div key={i} className="flex items-start gap-2 text-[12.5px] text-[var(--grey-700)] leading-[1.5]">
-            <IconCheck size={14} className="text-[var(--purple-500)] flex-shrink-0 mt-0.5" />
+            <IconCheck className="text-[var(--purple-500)] flex-shrink-0 mt-0.5 icon-sm" />
             {f}
           </div>
         ))}
         {tier.limitations?.map((l, i) => (
           <div key={i} className="flex items-start gap-2 text-[12.5px] text-[var(--grey-400)] leading-[1.5]">
-            <IconMinus size={14} className="text-[var(--grey-300)] flex-shrink-0 mt-0.5" />
+            <IconMinus className="text-[var(--grey-300)] flex-shrink-0 mt-0.5 icon-sm" />
             {l}
           </div>
         ))}

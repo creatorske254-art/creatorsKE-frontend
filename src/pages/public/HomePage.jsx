@@ -68,7 +68,7 @@ function RcMiniCard({ initials, name, handle, followers, eng, rating, avail, gra
           <div key={lbl} style={{ flex: 1, padding: 'var(--space-8) var(--space-12)', textAlign: 'center', borderRight: '0.5px solid var(--grey-100)' }}>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: 'var(--black)', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
               {val}
-              {lbl === 'Rating' && <IconStarFilled size={12} style={{ color: 'var(--black)' }} />}
+              {lbl === 'Rating' && <IconStarFilled className="icon-xs" style={{ color: 'var(--black)' }} />}
             </div>
             <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{lbl}</div>
           </div>
@@ -82,7 +82,7 @@ function RcMiniCard({ initials, name, handle, followers, eng, rating, avail, gra
           {a.label}
         </div>
         <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--purple-600)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-          Enquire <IconArrowRight size={12} />
+          Enquire <IconArrowRight className="icon-xs" />
         </span>
       </div>
     </div>
@@ -148,9 +148,9 @@ export default function HomePage() {
   ];
 
   const features = [
-    { icon: <IconLayoutCards size={22} />,         title: 'Beautiful rate cards',   desc: 'Choose from curated designs. Your rate card looks professional from day one, no design skills needed.' },
-    { icon: <IconDeviceMobileDollar size={22} />,  title: 'M-Pesa & Airtel Money',  desc: 'Built for East Africa. Accept payments directly through M-Pesa, Airtel Money, or bank transfer.' },
-    { icon: <IconBrandWhatsapp size={22} />,       title: 'WhatsApp notifications', desc: 'Get instant WhatsApp alerts when a brand submits an enquiry or payment is received.' },
+    { icon: <IconLayoutCards className="icon-lg" />,         title: 'Beautiful rate cards',   desc: 'Choose from curated designs. Your rate card looks professional from day one, no design skills needed.' },
+    { icon: <IconDeviceMobileDollar className="icon-lg" />,  title: 'M-Pesa & Airtel Money',  desc: 'Built for East Africa. Accept payments directly through M-Pesa, Airtel Money, or bank transfer.' },
+    { icon: <IconBrandWhatsapp className="icon-lg" />,       title: 'WhatsApp notifications', desc: 'Get instant WhatsApp alerts when a brand submits an enquiry or payment is received.' },
   ];
 
   const footerLinks = {
@@ -288,7 +288,7 @@ export default function HomePage() {
             We stripped away everything complex. Creatorske gives you a clean builder, a beautiful published page, and a direct line to brand enquiries.
           </p>
           <button className="hp-btn-purple" onClick={() => navigate('/signup')}>
-            Start for free <IconArrowRight size={14} />
+            Start for free <IconArrowRight className="icon-sm" />
           </button>
         </div>
 

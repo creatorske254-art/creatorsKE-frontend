@@ -66,7 +66,7 @@ function RequestResetForm() {
     return (
       <div style={{ textAlign: 'center' }}>
         <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--purple-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
-          <IconCircleCheck size={28} style={{ color: 'var(--purple-500)' }} />
+          <IconCircleCheck className="icon-xl" style={{ color: 'var(--purple-500)' }} />
         </div>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Check your email</div>
         <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
@@ -93,7 +93,7 @@ function RequestResetForm() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Email address</label>
             <div style={{ position: 'relative' }}>
-              <IconMail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
+              <IconMail className="icon-md" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input
                 type="email"
                 placeholder="you@email.com"
@@ -126,7 +126,7 @@ function RequestResetForm() {
             gap: 'var(--space-8)',
           }}
         >
-          {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
+          {loading && <IconLoader2 className="icon-md" style={{ animation: 'spin 0.8s linear infinite' }} />}
           {loading ? 'Sending' : 'Send reset link'}
         </button>
       </form>
@@ -168,7 +168,7 @@ function SetNewPasswordForm({ token }) {
     return (
       <div style={{ textAlign: 'center' }}>
         <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-20)' }}>
-          <IconCircleCheck size={28} style={{ color: 'var(--status-success)' }} />
+          <IconCircleCheck className="icon-xl" style={{ color: 'var(--status-success)' }} />
         </div>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Password updated</div>
         <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
@@ -210,7 +210,7 @@ function SetNewPasswordForm({ token }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">New password</label>
             <div style={{ position: 'relative' }}>
-              <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
+              <IconLock className="icon-md" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="At least 8 characters"
@@ -218,7 +218,7 @@ function SetNewPasswordForm({ token }) {
                 style={{ ...inputStyle(errors.password), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
               <button type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
-                {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
+                {showPassword ? <IconEyeOff className="icon-sm" /> : <IconEye className="icon-sm" />}
               </button>
             </div>
             {errors.password
@@ -231,7 +231,7 @@ function SetNewPasswordForm({ token }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Confirm password</label>
             <div style={{ position: 'relative' }}>
-              <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
+              <IconLock className="icon-md" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input
                 type={showConfirm ? 'text' : 'password'}
                 placeholder="Re-enter your password"
@@ -239,7 +239,7 @@ function SetNewPasswordForm({ token }) {
                 style={{ ...inputStyle(errors.confirmPassword), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
               <button type="button" onClick={() => setShowConfirm((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
-                {showConfirm ? <IconEyeOff size={15} /> : <IconEye size={15} />}
+                {showConfirm ? <IconEyeOff className="icon-sm" /> : <IconEye className="icon-sm" />}
               </button>
             </div>
             {errors.confirmPassword && <span className="field-hint error">{errors.confirmPassword.message}</span>}
@@ -267,7 +267,7 @@ function SetNewPasswordForm({ token }) {
             gap: 'var(--space-8)',
           }}
         >
-          {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
+          {loading && <IconLoader2 className="icon-md" style={{ animation: 'spin 0.8s linear infinite' }} />}
           {loading ? 'Updating' : 'Update password'}
         </button>
       </form>

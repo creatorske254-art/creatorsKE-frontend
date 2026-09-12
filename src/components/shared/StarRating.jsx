@@ -5,14 +5,14 @@ import { IconStar, IconStarFilled } from '@tabler/icons-react';
  * StarRating
  * @param {number}   value       - current rating (1–5)
  * @param {function} [onChange]  - if provided, renders interactive mode
- * @param {number}   [size]      - icon size in px (default 18)
+ * @param {string}   [size]      - icon size tier: xs | sm | md | lg | xl (default md)
  * @param {boolean}  [showCount] - shows "(n)" after stars in display mode
  * @param {number}   [count]     - review count to display
  */
 export default function StarRating({
   value = 0,
   onChange,
-  size = 18,
+  size = 'md',
   showCount = false,
   count,
 }) {
@@ -44,9 +44,9 @@ export default function StarRating({
             aria-label={interactive ? `Rate ${star} star${star !== 1 ? 's' : ''}` : undefined}
           >
             {filled ? (
-              <IconStarFilled size={size} />
+              <IconStarFilled className={`icon-${size}`} aria-hidden="true" />
             ) : (
-              <IconStar size={size} />
+              <IconStar className={`icon-${size}`} aria-hidden="true" />
             )}
           </button>
         );

@@ -66,7 +66,7 @@ function CreatorCard({ creator, index, onOpen, onEnquire }) {
             {creator.initials}
             {creator.verified && (
               <div style={{ position: 'absolute', bottom: 0, right: 0, width: 13, height: 13, background: 'var(--status-success)', borderRadius: '50%', border: '1.5px solid transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <IconCheck size={7} color="#fff" strokeWidth={3} />
+                <IconCheck className="icon-xs" color="#fff" />
               </div>
             )}
           </div>
@@ -85,7 +85,7 @@ function CreatorCard({ creator, index, onOpen, onEnquire }) {
             <div key={lbl} style={{ background: 'var(--grey-50)', padding: 'var(--space-8) 0', textAlign: 'center' }}>
               <strong style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-4)', fontSize: 13, fontWeight: 600, color: 'var(--black)', fontFamily: 'var(--font-display)' }}>
                 {val}
-                {lbl === 'rating' && <IconStarFilled size={11} style={{ color: 'var(--black)' }} />}
+                {lbl === 'rating' && <IconStarFilled className="icon-xs" style={{ color: 'var(--black)' }} />}
               </strong>
               <span style={{ fontSize: 9, color: 'var(--grey-400)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{lbl}</span>
             </div>
@@ -197,7 +197,7 @@ export default function DirectoryPage() {
               onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
               onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
             >
-              List your rates free <IconArrowRight size={13} />
+              List your rates free <IconArrowRight className="icon-sm" />
             </span>
           </div>
         </div>
@@ -205,7 +205,7 @@ export default function DirectoryPage() {
         {/* search + chips */}
         <div className="dir-search-row" style={{ display: 'flex', gap: 'var(--space-12)', alignItems: 'center', flexWrap: 'wrap' }}>
           <div className="dir-search-wrap" style={{ position: 'relative', flex: 1, maxWidth: 440, minWidth: 200 }}>
-            <IconSearch size={15} style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
+            <IconSearch className="icon-sm" style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
             <input
               className="dir-search-input"
               type="text"
@@ -278,7 +278,7 @@ export default function DirectoryPage() {
           onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
           onMouseLeave={e => e.currentTarget.style.opacity = '1'}
         >
-          Create your rate card <IconArrowRight size={14} />
+          Create your rate card <IconArrowRight className="icon-sm" />
         </button>
       </div>
     </div>

@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
+import { IconChartAreaLine } from '@tabler/icons-react';
 
 const PERIOD_LABELS = { '7d': '7 days', '30d': '30 days', '90d': '90 days' };
 
@@ -100,7 +101,7 @@ export default function EarningsChart({
           <p className="earnings-chart__error">{error}</p>
         ) : data.length === 0 ? (
           <EmptyState
-            icon={<i className="ti ti-chart-area-line" aria-hidden="true" />}
+            icon={<IconChartAreaLine />}
             title="No earnings yet"
             description={`No earnings recorded for the last ${PERIOD_LABELS[period]}.`}
           />

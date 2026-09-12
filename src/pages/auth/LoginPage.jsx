@@ -129,7 +129,7 @@ export default function LoginPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
                 <label className="field-label">Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
                 <div className="input-wrapper">
-                  <IconMail className="input-icon left" aria-hidden="true" />
+                  <IconMail className="icon-sm input-icon left" aria-hidden="true" />
                   <input
                     type="email"
                     placeholder="you@email.com"
@@ -144,7 +144,7 @@ export default function LoginPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
                 <label className="field-label">Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
                 <div className="input-wrapper">
-                  <IconLock className="input-icon left" aria-hidden="true" />
+                  <IconLock className="icon-sm input-icon left" aria-hidden="true" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
@@ -156,7 +156,7 @@ export default function LoginPage() {
                     onClick={() => setShowPassword((p) => !p)}
                     style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}
                   >
-                    {showPassword ? <IconEyeOff size={15} /> : <IconEye size={15} />}
+                    {showPassword ? <IconEyeOff className="icon-sm" /> : <IconEye className="icon-sm" />}
                   </button>
                 </div>
                 {errors.password && <span className="field-hint error">{errors.password.message}</span>}
@@ -172,7 +172,7 @@ export default function LoginPage() {
               disabled={loading}
               style={{ width: '100%', padding: 'var(--space-16) var(--space-32)', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--grey-300)' : 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)' }}
             >
-              {loading && <IconLoader2 size={16} style={{ animation: 'spin 0.8s linear infinite' }} />}
+              {loading && <IconLoader2 className="icon-md" style={{ animation: 'spin 0.8s linear infinite' }} />}
               {loading ? 'Signing in' : 'Log in'}
             </button>
           </form>

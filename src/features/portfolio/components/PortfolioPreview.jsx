@@ -1,3 +1,4 @@
+import { IconAward, IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandTiktok, IconBrandX, IconBrandYoutube, IconBuildingStore, IconChartBar, IconEye, IconLayoutCards, IconMicrophone, IconPencil, IconTrendingUp, IconWorld } from '@tabler/icons-react';
 const PLATFORM_LABELS = {
   instagram: 'Instagram',
   tiktok: 'TikTok',
@@ -11,15 +12,15 @@ const PLATFORM_LABELS = {
 };
 
 const PLATFORM_ICONS = {
-  instagram: 'ti-brand-instagram',
-  tiktok: 'ti-brand-tiktok',
-  youtube: 'ti-brand-youtube',
-  twitter: 'ti-brand-x',
-  facebook: 'ti-brand-facebook',
-  linkedin: 'ti-brand-linkedin',
-  podcast: 'ti-microphone',
-  blog: 'ti-pencil',
-  other: 'ti-world',
+  instagram: IconBrandInstagram,
+  tiktok: IconBrandTiktok,
+  youtube: IconBrandYoutube,
+  twitter: IconBrandX,
+  facebook: IconBrandFacebook,
+  linkedin: IconBrandLinkedin,
+  podcast: IconMicrophone,
+  blog: IconPencil,
+  other: IconWorld,
 };
 
 function formatNumber(n) {
@@ -63,7 +64,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
           gap: 'var(--space-8)',
         }}
       >
-        <i className="ti ti-eye" style={{ fontSize: 13, color: 'var(--purple-500)' }} />
+        <IconEye className="icon-sm" style={{ color: 'var(--purple-500)' }} aria-hidden="true" />
         <span
           style={{
             fontSize: 11,
@@ -126,7 +127,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
               gap: 'var(--space-8)',
             }}
           >
-            <i className="ti ti-layout-cards" style={{ fontSize: 32 }} />
+            <IconLayoutCards className="icon-xl" aria-hidden="true" />
             <p style={{ fontSize: 13 }}>Fill in the form on the left to see your portfolio preview here.</p>
           </div>
         )}
@@ -134,7 +135,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
         {/* Social Stats */}
         {hasStats && (
           <section>
-            <SectionHeading icon="ti-chart-bar" label="Reach & Engagement" />
+            <SectionHeading icon={IconChartBar} label="Reach & Engagement" />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)', marginTop: 'var(--space-12)' }}>
               {socialStats
                 .filter((s) => s.platform)
@@ -151,10 +152,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                       gap: 'var(--space-12)',
                     }}
                   >
-                    <i
-                      className={`ti ${PLATFORM_ICONS[stat.platform] ?? 'ti-world'}`}
-                      style={{ fontSize: 18, color: 'var(--purple-400)', flexShrink: 0 }}
-                    />
+                    {(() => { const PlatformIcon = PLATFORM_ICONS[stat.platform] ?? IconWorld; return <PlatformIcon className="icon-md" style={{ color: 'var(--purple-400)' }} aria-hidden="true" />; })()}
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--black)' }}>
                         {PLATFORM_LABELS[stat.platform] ?? stat.platform}
@@ -181,7 +179,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
         {/* Expertise */}
         {hasExpertise && (
           <section>
-            <SectionHeading icon="ti-award" label="Expertise" />
+            <SectionHeading icon={IconAward} label="Expertise" />
             <div
               style={{
                 display: 'grid',
@@ -226,7 +224,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
         {/* Collaborations */}
         {hasCollabs && (
           <section>
-            <SectionHeading icon="ti-building-store" label="Past Collaborations" />
+            <SectionHeading icon={IconBuildingStore} label="Past Collaborations" />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)', marginTop: 'var(--space-12)' }}>
               {collaborations
                 .filter((c) => c.brandName)
@@ -276,7 +274,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
                           borderRadius: 'var(--radius-pill)',
                         }}
                       >
-                        <i className="ti ti-trending-up" style={{ fontSize: 12 }} />
+                        <IconTrendingUp className="icon-xs" aria-hidden="true" />
                         {collab.resultMetric}
                       </div>
                     )}
@@ -292,10 +290,10 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
 
 /* ─── small helper components ─────────────────────────────────── */
 
-function SectionHeading({ icon, label }) {
+function SectionHeading({ icon: Icon, label }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-      <i className={`ti ${icon}`} style={{ fontSize: 14, color: 'var(--purple-400)' }} />
+      <Icon className="icon-sm" style={{ color: 'var(--purple-400)' }} aria-hidden="true" />
       <span
         style={{
           fontSize: 11,

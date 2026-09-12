@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { usePageMeta } from '@/lib/usePageMeta'
@@ -8,6 +8,7 @@ import MpesaPrompt from '@/features/payments/components/MpesaPrompt'
 import { usePlan } from '@/features/plans/hooks/usePlan'
 import Modal from '@/components/ui/Modal'
 import { formatCurrency } from '@/lib/utils'
+import { IconBuildingBank, IconDeviceMobile, IconDownload, IconHistory, IconInfoCircle, IconPlus, IconX } from '@tabler/icons-react';
 
 /*
    MoneyPage: content area only (sidebar/navbar live in the
@@ -20,9 +21,9 @@ import { formatCurrency } from '@/lib/utils'
 */
 
 const METHOD_TYPES = [
-  { key: 'mpesa', label: 'M-Pesa', icon: 'ti-device-mobile', field: 'M-Pesa phone number', placeholder: '+254 7XX XXX XXX' },
-  { key: 'airtel', label: 'Airtel Money', icon: 'ti-device-mobile', field: 'Airtel phone number', placeholder: '+254 7XX XXX XXX' },
-  { key: 'bank', label: 'Bank account', icon: 'ti-building-bank', field: 'Account number', placeholder: '0123456789' },
+  { key: 'mpesa', label: 'M-Pesa', icon: IconDeviceMobile, field: 'M-Pesa phone number', placeholder: '+254 7XX XXX XXX' },
+  { key: 'airtel', label: 'Airtel Money', icon: IconDeviceMobile, field: 'Airtel phone number', placeholder: '+254 7XX XXX XXX' },
+  { key: 'bank', label: 'Bank account', icon: IconBuildingBank, field: 'Account number', placeholder: '0123456789' },
 ]
 
 function AddPaymentMethodModal({ open, onClose, onAdd }) {
@@ -65,7 +66,7 @@ function AddPaymentMethodModal({ open, onClose, onAdd }) {
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-4)',
             }}
           >
-            <i className={`ti ${m.icon}`} style={{ fontSize: 17 }} />
+            <m.icon className="icon-md" aria-hidden="true" />
             {m.label}
           </button>
         ))}
@@ -74,13 +75,13 @@ function AddPaymentMethodModal({ open, onClose, onAdd }) {
       {type === 'bank' && (
         <div style={{ marginBottom: 'var(--space-16)' }}>
           <label className="field-label" style={{ display: 'block', marginBottom: 'var(--space-8)', fontSize: 12, color: 'var(--grey-600)' }}>Bank name</label>
-          <div className="input-wrapper"><i className="ti ti-building-bank input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. Equity Bank" style={{ width: '100%' }} /></div>
+          <div className="input-wrapper"><IconBuildingBank className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. Equity Bank" style={{ width: '100%' }} /></div>
         </div>
       )}
 
       <div style={{ marginBottom: 'var(--space-16)' }}>
         <label className="field-label" style={{ display: 'block', marginBottom: 'var(--space-8)', fontSize: 12, color: 'var(--grey-600)' }}>{selected.field}</label>
-        <div className="input-wrapper"><i className={`ti ${selected.icon} input-icon left`} aria-hidden="true" /><input className="input input-md input-icon-left" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder={selected.placeholder} style={{ width: '100%' }} /></div>
+        <div className="input-wrapper"><selected.icon className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder={selected.placeholder} style={{ width: '100%' }} /></div>
       </div>
 
       <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)', fontSize: 13, color: 'var(--grey-600)', marginBottom: 'var(--space-20)', cursor: 'pointer' }}>
@@ -97,8 +98,8 @@ function AddPaymentMethodModal({ open, onClose, onAdd }) {
 }
 
 const PAYMENT_METHODS = [
-  { icon: 'ti-device-mobile', iconBg: '#00A651', name: 'M-Pesa', detail: '+254 712 345 678', primary: true },
-  { icon: 'ti-building-bank', iconBg: 'var(--grey-100)', iconColor: 'var(--grey-600)', name: 'Equity Bank', detail: '···· ···· 4521', primary: false },
+  { icon: IconDeviceMobile, iconBg: '#00A651', name: 'M-Pesa', detail: '+254 712 345 678', primary: true },
+  { icon: IconBuildingBank, iconBg: 'var(--grey-100)', iconColor: 'var(--grey-600)', name: 'Equity Bank', detail: '···· ···· 4521', primary: false },
 ]
 
 export default function MoneyPage() {
@@ -156,7 +157,7 @@ export default function MoneyPage() {
     setPaymentMethods((prev) => [
       ...prev.map((m) => ({ ...m, primary: method.makePrimary ? false : m.primary })),
       {
-        icon: method.type === 'bank' ? 'ti-building-bank' : 'ti-device-mobile',
+        icon: method.type === 'bank' ? IconBuildingBank : IconDeviceMobile,
         iconBg: method.type === 'mpesa' ? '#00A651' : method.type === 'airtel' ? '#E40000' : 'var(--grey-100)',
         iconColor: method.type === 'bank' ? 'var(--grey-600)' : undefined,
         name: method.name,
@@ -184,18 +185,6 @@ export default function MoneyPage() {
     a.click()
     URL.revokeObjectURL(url)
   }
-
-  // Pull in the Tabler Icons webfont the design relies on for every <i class="ti ti-*">
-  useEffect(() => {
-    const id = 'tabler-icons-cdn'
-    if (!document.getElementById(id)) {
-      const link = document.createElement('link')
-      link.id = id
-      link.rel = 'stylesheet'
-      link.href = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css'
-      document.head.appendChild(link)
-    }
-  }, [])
 
   function openWithdraw() {
     setAmount(String(availableBalance || ''))
@@ -322,10 +311,10 @@ export default function MoneyPage() {
               <div className="hero-sub">Ready to withdraw</div>
               <div className="hero-actions">
                 <button className="btn btn-sm hero-btn hero-btn-solid" onClick={openWithdraw}>
-                  <i className="ti ti-download" style={{ fontSize: 12 }}></i>Withdraw
+                  <IconDownload className="icon-xs" aria-hidden="true" />Withdraw
                 </button>
                 <button className="btn btn-sm hero-btn" onClick={() => setHistoryOpen(true)}>
-                  <i className="ti ti-history" style={{ fontSize: 12 }}></i>History
+                  <IconHistory className="icon-xs" aria-hidden="true" />History
                 </button>
               </div>
               <div className="hero-ring-a"></div>
@@ -399,7 +388,7 @@ export default function MoneyPage() {
               <div style={{ padding: 'var(--space-16) var(--space-20)', borderBottom: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span className="section-title">Transactions</span>
                 <button className="btn btn-ghost btn-xs" onClick={() => setHistoryOpen(true)}>
-                  <i className="ti ti-history" style={{ fontSize: 11 }}></i>View all
+                  <IconHistory className="icon-xs" aria-hidden="true" />View all
                 </button>
               </div>
               <TransactionHistory
@@ -427,7 +416,7 @@ export default function MoneyPage() {
                     }}
                   >
                     <div className="pay-icon" style={{ background: m.iconBg, width: 32, height: 32 }}>
-                      <i className={`ti ${m.icon}`} style={{ color: m.iconColor || 'white', fontSize: 15 }}></i>
+                      <m.icon className="icon-sm" style={{ color: m.iconColor || 'white' }} aria-hidden="true" />
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 500 }}>{m.name}</div>
@@ -443,7 +432,7 @@ export default function MoneyPage() {
                   </div>
                 ))}
                 <button className="btn btn-secondary btn-full btn-sm" style={{ marginTop: 'var(--space-2)' }} onClick={() => setAddMethodOpen(true)}>
-                  <i className="ti ti-plus" style={{ fontSize: 13 }}></i>Add payment method
+                  <IconPlus className="icon-sm" aria-hidden="true" />Add payment method
                 </button>
               </div>
             </div>
@@ -490,7 +479,7 @@ export default function MoneyPage() {
             <div className="card card-p-md cta s-5">
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
                 <div style={{ width: 36, height: 36, background: 'var(--white)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <i className="ti ti-download" style={{ fontSize: 16, color: 'var(--status-success-text)' }}></i>
+                  <IconDownload className="icon-md" style={{ color: 'var(--status-success-text)' }} aria-hidden="true" />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--status-success-text)' }}>Withdraw funds</div>
@@ -523,7 +512,7 @@ export default function MoneyPage() {
             <div className="modal-header">
               <div className="modal-title">Withdraw funds</div>
               <button className="modal-close" onClick={() => !isPolling && !isRequestingPayout && closeWithdraw()}>
-                <i className="ti ti-x" style={{ fontSize: 14 }}></i>
+                <IconX className="icon-sm" aria-hidden="true" />
               </button>
             </div>
             <div className="modal-body">
@@ -550,7 +539,7 @@ export default function MoneyPage() {
                   </div>
 
                   <div className="alert alert-info">
-                    <span className="alert-icon-badge"><i className="ti ti-info-circle"></i></span>
+                    <span className="alert-icon-badge"><IconInfoCircle className="icon-sm" aria-hidden="true" /></span>
                     <div>Withdrawals to M-Pesa usually land within a few minutes.</div>
                   </div>
                 </>
@@ -590,7 +579,7 @@ export default function MoneyPage() {
             <div className="modal-header">
               <div className="modal-title">Transaction history</div>
               <button className="modal-close" onClick={() => setHistoryOpen(false)}>
-                <i className="ti ti-x" style={{ fontSize: 14 }}></i>
+                <IconX className="icon-sm" aria-hidden="true" />
               </button>
             </div>
             <div className="modal-body">
@@ -606,7 +595,7 @@ export default function MoneyPage() {
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setHistoryOpen(false)}>Close</button>
               <button className="btn btn-secondary" onClick={handleExportCsv}>
-                <i className="ti ti-download" style={{ fontSize: 13 }}></i>Export CSV
+                <IconDownload className="icon-sm" aria-hidden="true" />Export CSV
               </button>
             </div>
           </div>

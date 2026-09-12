@@ -1,5 +1,6 @@
 import { useFieldArray } from 'react-hook-form';
 import EmptyState from '@/components/shared/EmptyState';
+import { IconBuildingStore, IconPlus, IconX } from '@tabler/icons-react';
 
 const EMPTY_COLLAB = {
   brandName: '',
@@ -31,7 +32,7 @@ export function CollaborationForm({ control, register, errors }) {
           className="btn btn-secondary btn-sm"
           onClick={() => append({ ...EMPTY_COLLAB })}
         >
-          <i className="ti ti-plus" style={{ fontSize: 13 }} />
+          <IconPlus className="icon-sm" aria-hidden="true" />
           Add collaboration
         </button>
       </div>
@@ -40,7 +41,7 @@ export function CollaborationForm({ control, register, errors }) {
         <div className="card card-dashed">
           <EmptyState
             size="sm"
-            icon={<i className="ti ti-building-store" aria-hidden="true" />}
+            icon={<IconBuildingStore />}
             title="No collaborations added yet"
             description="These are optional but help brands say yes faster."
           />
@@ -75,7 +76,7 @@ export function CollaborationForm({ control, register, errors }) {
                   onClick={() => remove(index)}
                   style={{ color: 'var(--status-error-text)', background: 'var(--status-error-bg)', borderColor: 'rgba(255,75,75,0.3)' }}
                 >
-                  <i className="ti ti-x" style={{ fontSize: 13 }} />
+                  <IconX className="icon-sm" aria-hidden="true" />
                 </button>
               </div>
 
@@ -137,7 +138,7 @@ export function CollaborationForm({ control, register, errors }) {
           style={{ alignSelf: 'flex-start' }}
           onClick={() => append({ ...EMPTY_COLLAB })}
         >
-          <i className="ti ti-plus" style={{ fontSize: 13 }} />
+          <IconPlus className="icon-sm" aria-hidden="true" />
           Add another collaboration
         </button>
       )}

@@ -131,13 +131,13 @@ function CampaignCard({ campaign, onOpen }) {
             <div style={{ display: 'flex', gap: 'var(--space-8)', alignItems: 'center' }}>
               {isDelivered && (
                 <Link to={`/brand/campaigns/${campaign.id}`} className="btn btn-purple btn-sm">
-                  <IconEye size={13} />
+                  <IconEye className="icon-sm" />
                   Review delivery
                 </Link>
               )}
               {isDisputed && (
                 <Link to={`/brand/campaigns/${campaign.id}`} className="btn btn-secondary btn-sm">
-                  <IconScale size={13} />
+                  <IconScale className="icon-sm" />
                   View dispute
                 </Link>
               )}
@@ -148,7 +148,7 @@ function CampaignCard({ campaign, onOpen }) {
               )}
             </div>
             <Link to={`/brand/campaigns/${campaign.id}#messages`} className="btn btn-square btn-icon-style" title="Messages">
-              <IconMessageCircle size={14} />
+              <IconMessageCircle className="icon-sm" />
             </Link>
           </div>
         </div>
@@ -215,7 +215,7 @@ export default function CampaignsPage() {
           {/* Mixed from the tile's own text colour so it stays legible when the
               inverted tile flips to a light surface in dark mode. */}
           <div className="stat-card-label" style={{ color: 'color-mix(in srgb, var(--white) 60%, var(--black))' }}>
-            <IconWallet size={14} />
+            <IconWallet className="icon-sm" />
             Total spent
           </div>
           <div>
@@ -230,7 +230,7 @@ export default function CampaignsPage() {
 
         <div className="stat-card" style={{ gridArea: 'active' }}>
           <div className="stat-card-label">
-            <IconFlame size={14} />
+            <IconFlame className="icon-sm" />
             Active campaigns
           </div>
           <div className="stat-card-value">{isLoadingCampaigns ? <Skeleton width={30} height={22} /> : counts.active}</div>
@@ -238,7 +238,7 @@ export default function CampaignsPage() {
 
         <div className="stat-card" style={{ gridArea: 'awaiting' }}>
           <div className="stat-card-label">
-            <IconClock size={14} />
+            <IconClock className="icon-sm" />
             Awaiting approval
           </div>
           <div className="stat-card-value">{isLoadingCampaigns ? <Skeleton width={30} height={22} /> : counts.awaiting}</div>
@@ -246,7 +246,7 @@ export default function CampaignsPage() {
 
         <div className="stat-card" style={{ gridArea: 'completed' }}>
           <div className="stat-card-label">
-            <IconCheck size={14} />
+            <IconCheck className="icon-sm" />
             Completed
           </div>
           <div className="stat-card-value">{isLoadingCampaigns ? <Skeleton width={30} height={22} /> : counts.completed}</div>
@@ -284,7 +284,7 @@ export default function CampaignsPage() {
       ) : (
         <div className="card">
           <EmptyState
-            icon={<IconBriefcase size={22} />}
+            icon={<IconBriefcase />}
             title={campaigns.length === 0 ? 'No campaigns yet' : 'No campaigns match your filters'}
             description={campaigns.length === 0 ? 'Book a creator from the directory to start your first campaign.' : 'Try a different status filter or clear your search.'}
             action={

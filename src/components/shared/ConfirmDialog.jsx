@@ -93,7 +93,7 @@ export default function ConfirmDialog({
                   flexShrink: 0,
                 }}
               >
-                <IconAlertTriangle size={18} style={{ color: 'var(--status-error)' }} />
+                <IconAlertTriangle className="icon-md" style={{ color: 'var(--status-error)' }} />
               </div>
             )}
             <div
@@ -124,7 +124,7 @@ export default function ConfirmDialog({
               flexShrink: 0,
             }}
           >
-            <IconX size={15} />
+            <IconX className="icon-sm" />
           </button>
         </div>
 

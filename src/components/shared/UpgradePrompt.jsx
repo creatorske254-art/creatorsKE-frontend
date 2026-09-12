@@ -40,7 +40,7 @@ export default function UpgradePrompt({
           flexShrink: 0,
         }}
       >
-        <IconLock size={isCard ? 16 : 13} style={{ color: 'var(--purple-600)' }} />
+        <IconLock className={isCard ? 'icon-md' : 'icon-sm'} style={{ color: 'var(--purple-600)' }} aria-hidden="true" />
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -84,7 +84,7 @@ export default function UpgradePrompt({
             cursor: 'pointer',
           }}
         >
-          <IconRocket size={13} />
+          <IconRocket className="icon-sm" />
           Upgrade to {requiredPlan}
         </button>
       </div>

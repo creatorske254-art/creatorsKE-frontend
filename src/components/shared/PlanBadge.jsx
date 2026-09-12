@@ -1,4 +1,4 @@
-import { IconStar, IconRocket, IconBuildingStore } from '@tabler/icons-react';
+import { IconStar, IconRocket } from '@tabler/icons-react';
 
 const PLAN_MAP = {
   starter: {

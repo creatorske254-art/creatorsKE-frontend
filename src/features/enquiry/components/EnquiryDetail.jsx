@@ -1,4 +1,4 @@
-import { IconCheck, IconX } from '@tabler/icons-react';
+import { IconCheck, IconMailOpened, IconX } from '@tabler/icons-react';
 import { STATUS, STATUS_META } from '../constants/enquiry';
 import { formatCurrency, formatDate, getInitials } from '@/lib/utils';
 import { MessageThread } from '@/features/messaging';
@@ -43,7 +43,7 @@ export default function EnquiryDetail({
     return (
       <div className="card card-p-md enq-detail">
         <EmptyState
-          icon={<i className="ti ti-mail-opened" aria-hidden="true" />}
+          icon={<IconMailOpened />}
           title="No enquiry selected"
           description="Select an enquiry to see details."
         />
@@ -100,7 +100,7 @@ export default function EnquiryDetail({
             onClick={onAccept}
             disabled={isAccepting || isDeclining}
           >
-            <IconCheck size={14} />
+            <IconCheck className="icon-sm" />
             Accept enquiry
           </button>
           <button
@@ -109,7 +109,7 @@ export default function EnquiryDetail({
             onClick={onDecline}
             disabled={isAccepting || isDeclining}
           >
-            <IconX size={14} />
+            <IconX className="icon-sm" />
             Decline
           </button>
         </div>

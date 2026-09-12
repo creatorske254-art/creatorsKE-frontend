@@ -5,6 +5,7 @@ import { ENQUIRY_CSS } from '@/features/enquiry/constants/enquiryStyles'
 import { usePageMeta } from '@/lib/usePageMeta'
 import EmptyState from '@/components/shared/EmptyState'
 import ErrorState from '@/components/shared/ErrorState'
+import { IconSend } from '@tabler/icons-react';
 
 /**
  * EnquiriesPage - brand side. Mirrors the creator page structurally
@@ -93,7 +94,7 @@ export default function EnquiriesPage() {
               [0, 1, 2].map((i) => <EnquiryCardSkeleton key={i} />)
             ) : enquiries.length === 0 ? (
               <EmptyState
-                icon={<i className="ti ti-send" aria-hidden="true" />}
+                icon={<IconSend />}
                 title="No enquiries sent yet"
                 description="Browse the creator directory and send your first enquiry to start a conversation."
                 action={

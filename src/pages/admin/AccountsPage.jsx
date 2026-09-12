@@ -6,6 +6,7 @@ import ErrorState from '@/components/shared/ErrorState'
 import Skeleton from '@/components/ui/Skeleton'
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts'
 import { formatDate } from '@/lib/utils'
+import { IconBan, IconChevronRight, IconCircleCheck, IconFlag, IconRotate, IconSearch, IconShieldCheck, IconShieldX, IconUsers, IconX } from '@tabler/icons-react';
 
 // GET /admin/accounts/flagged is the only account-listing endpoint that
 // exists today (see CLAUDE.md / production plan's backend spec) - there is
@@ -36,9 +37,9 @@ function normalizeAccount(a) {
 }
 
 function statusTag(status) {
-  if (status === 'active') return <span className="tag tag-success"><i className="ti ti-circle-check" style={{ fontSize: 11 }} />Active</span>
-  if (status === 'flagged') return <span className="tag tag-warning"><i className="ti ti-flag" style={{ fontSize: 11 }} />Flagged</span>
-  if (status === 'suspended') return <span className="tag tag-error"><i className="ti ti-ban" style={{ fontSize: 11 }} />Suspended</span>
+  if (status === 'active') return <span className="tag tag-success"><IconCircleCheck className="icon-xs" aria-hidden="true" />Active</span>
+  if (status === 'flagged') return <span className="tag tag-warning"><IconFlag className="icon-xs" aria-hidden="true" />Flagged</span>
+  if (status === 'suspended') return <span className="tag tag-error"><IconBan className="icon-xs" aria-hidden="true" />Suspended</span>
   return <span className="tag tag-grey">{status}</span>
 }
 
@@ -93,7 +94,7 @@ export default function AccountsPage() {
         .acc-page .tab.active .tab-count{background:var(--purple-100);color:var(--purple-700)}
         .acc-page .search-input{display:flex;align-items:center;gap:var(--space-8);background:var(--white);border:0.5px solid var(--grey-200);border-radius:var(--radius-md);padding:var(--space-8) var(--space-12);font-size:13px;width:260px}
         .acc-page .search-input input{border:none;outline:none;font-size:13px;font-family:var(--font-body);width:100%;background:transparent;color:var(--black)}
-        .acc-page .search-input i{color:var(--grey-400);font-size:15px}
+        .acc-page .search-input svg{color:var(--grey-400)}
         .acc-page .table-wrap{background:var(--white);border:0.5px solid var(--grey-100);border-radius:var(--radius-xl);overflow-x:auto}
         .acc-page .data-table{width:100%;min-width:680px;border-collapse:collapse;font-size:13px}
         .acc-page .data-table td, .acc-page .data-table th{white-space:nowrap}
@@ -159,7 +160,7 @@ export default function AccountsPage() {
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
             <div className="search-input">
-              <i className="ti ti-search" />
+              <IconSearch className="icon-sm" aria-hidden="true" />
               <input
                 placeholder="Search by name, handle, or email"
                 value={query}
@@ -216,15 +217,15 @@ export default function AccountsPage() {
                       <div style={{ fontSize: 12.5 }}>{a.email}</div>
                       {a.type === 'brand' && (
                         a.domainVerified
-                          ? <div style={{ fontSize: 11, color: 'var(--status-success-text)', marginTop: 'var(--space-2)' }}><i className="ti ti-shield-check" style={{ fontSize: 11 }} /> Verified domain</div>
-                          : <div style={{ fontSize: 11, color: 'var(--status-error-text)', marginTop: 'var(--space-2)' }}><i className="ti ti-shield-x" style={{ fontSize: 11 }} /> Unverified domain</div>
+                          ? <div style={{ fontSize: 11, color: 'var(--status-success-text)', marginTop: 'var(--space-2)' }}><IconShieldCheck className="icon-xs" aria-hidden="true" /> Verified domain</div>
+                          : <div style={{ fontSize: 11, color: 'var(--status-error-text)', marginTop: 'var(--space-2)' }}><IconShieldX className="icon-xs" aria-hidden="true" /> Unverified domain</div>
                       )}
                     </td>
                     <td style={{ whiteSpace: 'nowrap', fontSize: 12.5 }}>{a.joined}</td>
                     <td>{statusTag(a.status)}</td>
                     <td>
                       <button className="btn btn-ghost" onClick={(e) => { e.stopPropagation(); setSelectedId(a.id) }}>
-                        Review <i className="ti ti-chevron-right" style={{ fontSize: 12 }} />
+                        Review <IconChevronRight className="icon-xs" aria-hidden="true" />
                       </button>
                     </td>
                   </tr>
@@ -235,7 +236,7 @@ export default function AccountsPage() {
             {filtered.length === 0 && (
               <EmptyState
                 size="sm"
-                icon={<i className="ti ti-users" aria-hidden="true" />}
+                icon={<IconUsers />}
                 title={accounts.length === 0 ? 'No flagged accounts' : 'No accounts found'}
                 description={accounts.length === 0 ? "There's nothing needing review right now." : 'Try a different search term.'}
               />
@@ -250,7 +251,7 @@ export default function AccountsPage() {
               <div className="card-header">
                 <div className="section-title">Account detail</div>
                 <button className="btn-ghost" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)' }} onClick={() => setSelectedId(null)}>
-                  <i className="ti ti-x" />
+                  <IconX className="icon-sm" aria-hidden="true" />
                 </button>
               </div>
               <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
@@ -284,7 +285,7 @@ export default function AccountsPage() {
                 {selected.flag && (
                   <>
                     <div className={`alert ${selected.status === 'suspended' ? 'alert-error' : 'alert-warning'}`}>
-                      <i className={`ti ${selected.status === 'suspended' ? 'ti-ban' : 'ti-flag'} alert-icon`} style={{ fontSize: 16, marginTop: 'var(--space-2)' }} />
+                      {selected.status === 'suspended' ? <IconBan className="icon-md alert-icon" style={{ marginTop: 'var(--space-2)' }} aria-hidden="true" /> : <IconFlag className="icon-md alert-icon" style={{ marginTop: 'var(--space-2)' }} aria-hidden="true" />}
                       <div>{selected.flag.reason}</div>
                     </div>
                     <div>
@@ -299,12 +300,12 @@ export default function AccountsPage() {
                 <div style={{ display: 'flex', gap: 'var(--space-8)', flexWrap: 'wrap' }}>
                   {selected.status !== 'suspended' && (
                     <button className="btn btn-danger" onClick={() => setConfirmAction({ type: 'suspend', account: selected })}>
-                      <i className="ti ti-ban" style={{ fontSize: 13 }} /> Suspend account
+                      <IconBan className="icon-sm" aria-hidden="true" /> Suspend account
                     </button>
                   )}
                   {selected.status !== 'active' && (
                     <button className="btn btn-secondary" onClick={() => setConfirmAction({ type: 'restore', account: selected })}>
-                      <i className="ti ti-rotate" style={{ fontSize: 13 }} /> Restore access
+                      <IconRotate className="icon-sm" aria-hidden="true" /> Restore access
                     </button>
                   )}
                   {selected.status === 'suspended' && (

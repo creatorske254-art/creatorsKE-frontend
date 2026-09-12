@@ -4,6 +4,7 @@ import { ENQUIRY_CSS } from '@/features/enquiry/constants/enquiryStyles'
 import { usePageMeta } from '@/lib/usePageMeta'
 import EmptyState from '@/components/shared/EmptyState'
 import ErrorState from '@/components/shared/ErrorState'
+import { IconInbox } from '@tabler/icons-react';
 
 /**
  * EnquiriesPage - creator side. Layout/visual language kept from the
@@ -59,16 +60,6 @@ export default function EnquiriesPage() {
     }
   }, [selectedId, enquiries])
 
-  useEffect(() => {
-    if (!document.querySelector('link[data-tabler-icons]')) {
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css'
-      link.setAttribute('data-tabler-icons', 'true')
-      document.head.appendChild(link)
-    }
-  }, [])
-
   const selectedEnquiry = enquiries.find((e) => e.id === selectedId) ?? null
 
   return (
@@ -103,7 +94,7 @@ export default function EnquiriesPage() {
               [0, 1, 2].map((i) => <EnquiryCardSkeleton key={i} />)
             ) : enquiries.length === 0 ? (
               <EmptyState
-                icon={<i className="ti ti-inbox" aria-hidden="true" />}
+                icon={<IconInbox />}
                 title="No enquiries yet"
                 description="They'll show up here once a brand reaches out about your rate card."
               />

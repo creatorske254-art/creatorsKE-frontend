@@ -22,7 +22,7 @@ export default function OfflinePage() {
         width: 56, height: 56, borderRadius: 'var(--radius-xl)', background: 'var(--grey-100)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-20)',
       }}>
-        <IconWifiOff size={24} color="var(--grey-500)" />
+        <IconWifiOff className="icon-xl" color="var(--grey-500)" />
       </div>
 
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-12)' }}>
@@ -41,7 +41,7 @@ export default function OfflinePage() {
           fontWeight: 500, border: 'none', cursor: 'pointer',
         }}
       >
-        <IconRefresh size={14} /> Try again
+        <IconRefresh className="icon-sm" /> Try again
       </button>
     </div>
   );

@@ -17,6 +17,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import PackageCard from './PackageCard';
+import { IconPlus } from '@tabler/icons-react';
 
 // ─── Sortable item wrapper ────────────────────────────────────────────────────
 function SortablePackageCard({ pkg, onEdit, onDelete }) {
@@ -127,7 +128,7 @@ export default function DraggablePackageList({ packages = [], onChange, onEdit, 
         className="draggable-list__add"
         onClick={onAddNew}
       >
-        <i className="ti ti-plus" style={{ fontSize: 20 }} />
+        <IconPlus className="icon-lg" aria-hidden="true" />
         Add package
       </button>
 

@@ -33,7 +33,7 @@ export default function ServerErrorPage() {
         width: 56, height: 56, borderRadius: 'var(--radius-xl)', background: 'var(--status-error-bg)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-20)',
       }}>
-        <IconAlertTriangle size={24} color="var(--status-error-text)" />
+        <IconAlertTriangle className="icon-xl" color="var(--status-error-text)" />
       </div>
 
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-12)' }}>
@@ -55,7 +55,7 @@ export default function ServerErrorPage() {
             color: 'var(--black)', fontSize: 13.5, fontWeight: 500, cursor: 'pointer',
           }}
         >
-          <IconRefresh size={14} /> Reload page
+          <IconRefresh className="icon-sm" /> Reload page
         </button>
         <Link
           to="/"
@@ -65,7 +65,7 @@ export default function ServerErrorPage() {
             fontWeight: 500, textDecoration: 'none',
           }}
         >
-          <IconHome size={14} /> Go to homepage
+          <IconHome className="icon-sm" /> Go to homepage
         </Link>
       </div>
     </div>

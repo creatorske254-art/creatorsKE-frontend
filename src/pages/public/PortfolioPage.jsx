@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
   IconCurrencyDollar, IconBrandWhatsapp, IconShare, IconUser,
-  IconSparkles, IconTarget, IconVideo, IconCalendarEvent, IconPencil,
+  IconSparkles, IconVideo, IconCalendarEvent, IconPencil,
   IconMoodSmile, IconPlane, IconBulb, IconTrendingUp, IconPhone, IconMail,
   IconEdit,
 } from '@tabler/icons-react';
@@ -175,13 +175,13 @@ export default function PortfolioPage() {
             to={`/creator/portfolio`}
             className="inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] hover:bg-[var(--grey-50)]"
           >
-            <IconEdit size={13} /> Edit portfolio
+            <IconEdit className="icon-sm" /> Edit portfolio
           </Link>
           <Link
             to={`/c/${handle}`}
             className="inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent hover:opacity-90"
           >
-            <IconCurrencyDollar size={13} /> View rate card
+            <IconCurrencyDollar className="icon-sm" /> View rate card
           </Link>
         </div>
       </nav>
@@ -220,19 +220,19 @@ export default function PortfolioPage() {
                       to={`/c/${handle}`}
                       className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--black)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
                     >
-                      <IconCurrencyDollar size={15} /> View rate card
+                      <IconCurrencyDollar className="icon-sm" /> View rate card
                     </Link>
                     <button
                       onClick={() => openWhatsApp(contact.phone)}
                       className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
                     >
-                      <IconBrandWhatsapp size={15} /> WhatsApp me
+                      <IconBrandWhatsapp className="icon-sm" /> WhatsApp me
                     </button>
                     <button
                       onClick={() => sharePortfolio(creator.displayName)}
                       className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
                     >
-                      <IconShare size={14} /> Share
+                      <IconShare className="icon-sm" /> Share
                     </button>
                   </div>
                 </div>
@@ -242,7 +242,7 @@ export default function PortfolioPage() {
                     className="w-[260px] h-[310px] bg-[var(--grey-50)] flex items-center justify-center overflow-hidden"
                     style={{ borderRadius: '60% 40% 60% 40% / 50% 60% 40% 50%' }}
                   >
-                    <IconUser size={56} className="text-[var(--grey-200)]" />
+                    <IconUser className="text-[var(--grey-200)] icon-xl" />
                   </div>
                 </div>
               </div>
@@ -404,7 +404,7 @@ export default function PortfolioPage() {
                 {contact.phone && (
                   <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
                     <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
-                      <IconPhone size={17} className="text-[var(--purple-500)]" />
+                      <IconPhone className="text-[var(--purple-500)] icon-md" />
                     </div>
                     <div className="min-w-0">
                       <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">WhatsApp / Phone</div>
@@ -415,7 +415,7 @@ export default function PortfolioPage() {
                 {contact.instagram && (
                   <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
                     <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
-                      <IconBrandInstagram size={17} className="text-[var(--purple-500)]" />
+                      <IconBrandInstagram className="text-[var(--purple-500)] icon-md" />
                     </div>
                     <div className="min-w-0">
                       <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">Instagram</div>
@@ -426,7 +426,7 @@ export default function PortfolioPage() {
                 {contact.email && (
                   <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
                     <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
-                      <IconMail size={17} className="text-[var(--purple-500)]" />
+                      <IconMail className="text-[var(--purple-500)] icon-md" />
                     </div>
                     <div className="min-w-0">
                       <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">Email</div>
@@ -452,13 +452,13 @@ export default function PortfolioPage() {
                     to={`/c/${handle}`}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] bg-[var(--black)] text-white text-[14px] font-medium hover:opacity-90"
                   >
-                    <IconCurrencyDollar size={15} /> View rate card
+                    <IconCurrencyDollar className="icon-sm" /> View rate card
                   </Link>
                   <button
                     onClick={() => openWhatsApp(contact.phone)}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-white"
                   >
-                    <IconBrandWhatsapp size={15} /> WhatsApp me
+                    <IconBrandWhatsapp className="icon-sm" /> WhatsApp me
                   </button>
                 </div>
               </div>

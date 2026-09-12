@@ -2,9 +2,9 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
-  IconX, IconCheck, IconStarFilled, IconStar,
+  IconX, IconCheck, IconStarFilled,
   IconTrendingUp, IconTrendingDown,
-  IconSearch, IconCircleCheck, IconHistory,
+  IconSearch, IconCircleCheck, IconHistory, IconArrowRight,
 } from '@tabler/icons-react';
 import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
@@ -158,7 +158,7 @@ function Avatar({ initials, color, size = 36 }) {
 }
 
 function TrendIcon({ up }) {
-  return up ? <IconTrendingUp size={13} strokeWidth={2.5} /> : <IconTrendingDown size={13} strokeWidth={2.5} />;
+  return up ? <IconTrendingUp className="icon-sm" /> : <IconTrendingDown className="icon-sm" />;
 }
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
@@ -284,7 +284,7 @@ function CampaignDrawer({ campaign, onClose }) {
               <div style={{ fontSize: 12, color: C.grey500 }}>{campaign.handle}</div>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.grey500, lineHeight: 1, padding: 'var(--space-4)', display: "flex" }}><IconX size={20} /></button>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.grey500, lineHeight: 1, padding: 'var(--space-4)', display: "flex" }}><IconX className="icon-lg" /></button>
         </div>
 
         <div style={{ height: "0.5px", background: C.grey100 }} />
@@ -335,7 +335,7 @@ function CampaignDrawer({ campaign, onClose }) {
 
         {approved && (
           <div style={{ background: C.successBg, borderRadius: R.lg, padding: 'var(--space-16)', fontSize: 13, color: C.successText, fontWeight: 500, display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
-            <IconCheck size={15} /> Delivery approved, escrow released
+            <IconCheck className="icon-sm" /> Delivery approved, escrow released
           </div>
         )}
 
@@ -367,9 +367,10 @@ function CampaignDrawer({ campaign, onClose }) {
             style={{
               marginTop: 'var(--space-12)', background: "none", border: "none", padding: 0, cursor: "pointer",
               fontFamily: FONT_BODY, fontSize: 12.5, fontWeight: 500, color: C.purple600,
+              display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)',
             }}
           >
-            Open full conversation →
+            Open full conversation <IconArrowRight className="icon-xs" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -460,7 +461,7 @@ export default function BrandDashboardPage() {
               fontFamily: FONT_BODY, flexShrink: 0,
             }}
           >
-            <IconSearch size={14} strokeWidth={2.5} />
+            <IconSearch className="icon-sm" />
             Find creators
           </button>
         </div>
@@ -480,7 +481,7 @@ export default function BrandDashboardPage() {
               background: C.successBg, borderRadius: R.lg, padding: "var(--space-16) var(--space-20)",
               display: "flex", alignItems: "center", gap: 'var(--space-16)', flexWrap: "wrap",
             }}>
-              <IconCircleCheck size={17} color={C.successText} strokeWidth={2} style={{ flexShrink: 0 }} />
+              <IconCircleCheck className="icon-md" color={C.successText} style={{ flexShrink: 0 }} />
               <div style={{ flex: 1, minWidth: 200, fontSize: 13.5, color: C.successText }}>
                 <strong style={{ fontWeight: 600 }}>{deliveredCampaign.creator}</strong> has marked your {deliveredCampaign.package} as delivered. Review and approve to release payment.
               </div>
@@ -540,7 +541,7 @@ export default function BrandDashboardPage() {
               activeCampaigns.length === 0 ? (
                 <EmptyState
                   size="sm"
-                  icon={<IconHistory size={18} />}
+                  icon={<IconHistory />}
                   title="No active campaigns"
                   description="Book a creator from the directory to start your first campaign."
                 />
@@ -571,7 +572,7 @@ export default function BrandDashboardPage() {
             ) : historyCampaigns.length === 0 ? (
               <EmptyState
                 size="sm"
-                icon={<IconHistory size={18} />}
+                icon={<IconHistory />}
                 title="No completed campaigns yet"
                 description="Campaigns move here once they're delivered and approved."
               />
@@ -676,7 +677,7 @@ export default function BrandDashboardPage() {
                       <div key={s.label} style={{ background: C.grey50, padding: "var(--space-8) 0", textAlign: "center" }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 'var(--space-4)', fontFamily: FONT_DISPLAY, fontSize: 13, fontWeight: 600, color: C.black }}>
                           {s.value}
-                          {s.label === "Rating" && <IconStarFilled size={11} style={{ color: C.black }} />}
+                          {s.label === "Rating" && <IconStarFilled className="icon-xs" style={{ color: C.black }} />}
                         </div>
                         <div style={{ fontSize: 9, color: C.grey400, textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 'var(--space-2)' }}>{s.label}</div>
                       </div>
@@ -721,7 +722,7 @@ export default function BrandDashboardPage() {
               width: 40, height: 40, borderRadius: "50%", background: C.purple50,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <IconSearch size={18} strokeWidth={2.5} style={{ color: C.purple600 }} />
+              <IconSearch className="icon-md" style={{ color: C.purple600 }} />
             </div>
             <div style={{ fontSize: 14, fontWeight: 500, color: C.black }}>Browse full directory</div>
             <div style={{ fontSize: 12, color: C.grey500 }}>Discover more creators to shortlist</div>

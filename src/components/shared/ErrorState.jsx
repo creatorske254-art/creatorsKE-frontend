@@ -23,7 +23,7 @@ export default function ErrorState({
   return (
     <div className={`empty-state${isSmall ? ' empty-state-sm' : ''}`}>
       <div className={`empty-icon${isSmall ? ' empty-icon-sm' : ''}`} style={{ background: 'var(--status-error-bg)', color: 'var(--status-error-text)' }}>
-        <IconAlertTriangle size={isSmall ? 18 : 22} />
+        <IconAlertTriangle className={isSmall ? 'icon-md' : 'icon-lg'} aria-hidden="true" />
       </div>
       <div className="empty-title">{title}</div>
       <div className="empty-desc">{description}</div>

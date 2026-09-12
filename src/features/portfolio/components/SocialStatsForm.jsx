@@ -1,5 +1,6 @@
 import { useFieldArray } from 'react-hook-form';
 import EmptyState from '@/components/shared/EmptyState';
+import { IconDeviceMobile, IconPercentage, IconPlus, IconTrash } from '@tabler/icons-react';
 
 const PLATFORMS = [
   { value: 'instagram', label: 'Instagram' },
@@ -46,7 +47,7 @@ export function SocialStatsForm({ control, register, errors }) {
           onClick={() => append({ ...EMPTY_STAT })}
           disabled={fields.length >= 8}
         >
-          <i className="ti ti-plus" style={{ fontSize: 13 }} />
+          <IconPlus className="icon-sm" aria-hidden="true" />
           Add platform
         </button>
       </div>
@@ -55,7 +56,7 @@ export function SocialStatsForm({ control, register, errors }) {
         <div className="card card-dashed">
           <EmptyState
             size="sm"
-            icon={<i className="ti ti-device-mobile" aria-hidden="true" />}
+            icon={<IconDeviceMobile />}
             title="No platforms added yet"
             description="Click 'Add platform' to get started."
           />
@@ -140,7 +141,7 @@ export function SocialStatsForm({ control, register, errors }) {
                     className={`input input-md input-icon-right ${e.engagementRate ? 'input-error' : ''}`}
                     placeholder="e.g. 4.2"
                   />
-                  <i className="ti ti-percentage input-icon right" />
+                  <IconPercentage className="icon-sm input-icon right" aria-hidden="true" />
                 </div>
                 {e.engagementRate && <span className="field-hint error">{e.engagementRate.message}</span>}
               </div>
@@ -153,7 +154,7 @@ export function SocialStatsForm({ control, register, errors }) {
                 className="btn btn-danger btn-xs"
                 onClick={() => remove(index)}
               >
-                <i className="ti ti-trash" style={{ fontSize: 12 }} />
+                <IconTrash className="icon-xs" aria-hidden="true" />
                 Remove
               </button>
             </div>

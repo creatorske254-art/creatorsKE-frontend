@@ -4,11 +4,11 @@ import { usePageMeta } from '@/lib/usePageMeta'
 import { usePlan } from '@/features/plans/hooks/usePlan'
 import { CREATOR_PRICING_TIERS } from '@/features/plans/constants/pricingTiers'
 import Modal from '@/components/ui/Modal'
+import { IconArrowRight, IconCheck, IconDeviceMobile, IconPencil } from '@tabler/icons-react';
 
 // ─── CSS-in-JS tokens (shared subset matching auth.html) ─────────────────────
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-  @import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
 
   .ps-page {
     --ease-out: cubic-bezier(.16,1,.3,1);
@@ -64,13 +64,13 @@ const css = `
     display: flex; align-items: center; justify-content: center; transition: all .2s;
   }
   .ps-card.selected .ps-check-indicator { background: var(--purple-500); border-color: var(--purple-500); }
-  .ps-check-indicator i { color: transparent; font-size: 12px; }
-  .ps-card.selected .ps-check-indicator i { color: #fff; }
+  .ps-check-indicator svg { color: transparent; }
+  .ps-card.selected .ps-check-indicator svg { color: #fff; }
 
   /* Business card check indicator overrides */
   .ps-card-business .ps-check-indicator { border-color: var(--grey-600); background: transparent; }
   .ps-card-business.selected .ps-check-indicator { background: var(--grey-600); border-color: var(--grey-500); }
-  .ps-card-business.selected .ps-check-indicator i { color: #fff; }
+  .ps-card-business.selected .ps-check-indicator svg { color: #fff; }
 
   .ps-plan-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--grey-400); margin-bottom: var(--space-8); }
   .ps-card-pro .ps-plan-label { color: var(--purple-500); }
@@ -85,15 +85,15 @@ const css = `
 
   .ps-feats { display: flex; flex-direction: column; gap: var(--space-8); }
   .ps-feat { font-size: 12px; color: var(--grey-600); display: flex; align-items: flex-start; gap: var(--space-8); line-height: 1.4; }
-  .ps-feat i { color: var(--status-success); font-size: 13px; flex-shrink: 0; margin-top: var(--space-2); }
+  .ps-feat svg { color: var(--status-success); margin-top: var(--space-2); }
   .ps-card-pro .ps-feat { color: var(--purple-700); }
-  .ps-card-pro .ps-feat i { color: var(--purple-500); }
+  .ps-card-pro .ps-feat svg { color: var(--purple-500); }
   .ps-card-business .ps-feat { color: var(--grey-300); }
-  .ps-card-business .ps-feat i { color: var(--status-success); }
+  .ps-card-business .ps-feat svg { color: var(--status-success); }
 
   /* Starter note */
   .ps-starter-note { font-size: 12px; color: var(--grey-400); text-align: center; margin-bottom: var(--space-24); }
-  .ps-starter-note .ps-link-btn { color: var(--purple-600); font-weight: 500; cursor: pointer; text-decoration: none; background: none; border: none; padding: 0; font: inherit; }
+  .ps-starter-note .ps-link-btn { color: var(--purple-600); font-weight: 500; cursor: pointer; text-decoration: none; background: none; border: none; padding: 0; font: inherit; display: inline-flex; align-items: center; gap: var(--space-4); }
   .ps-starter-note .ps-link-btn:hover { text-decoration: underline; }
 
   /* CTA button - .btn/.btn-purple/.btn-lg/.btn-full/.btn-loading come from
@@ -124,7 +124,7 @@ const css = `
   .rc-mini-footer { padding: var(--space-12) var(--space-16); display: flex; align-items: center; justify-content: space-between; }
   .rc-avail { display: inline-flex; align-items: center; gap: var(--space-4); font-size: 11px; color: var(--grey-500); }
   .rc-avail-dot { width: 5px; height: 5px; border-radius: 50%; background: #639922; }
-  .rc-mini-cta { font-size: 11px; font-weight: 600; color: var(--purple-600); cursor: pointer; }
+  .rc-mini-cta { font-size: 11px; font-weight: 600; color: var(--purple-600); cursor: pointer; display: inline-flex; align-items: center; gap: var(--space-2); }
 
   /* Welcome / complete screen */
   .ps-complete-shell {
@@ -238,7 +238,7 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
         Phone number
       </label>
       <div className="input-wrapper" style={{ marginBottom: 'var(--space-8)' }}>
-        <i className="ti ti-device-mobile input-icon left" aria-hidden="true" />
+        <IconDeviceMobile className="icon-sm input-icon left" aria-hidden="true" />
         <input
           className="input input-md input-icon-left"
           value={phone}
@@ -284,7 +284,7 @@ function Toast({ message }) {
   return (
     <div className="ps-toast-wrap">
       <div className={`ps-toast${message ? ' show' : ''}`}>
-        <i className="ti ti-check" />
+        <IconCheck className="icon-sm" aria-hidden="true" />
         <span>{message}</span>
       </div>
     </div>
@@ -301,7 +301,7 @@ function PlanCard({ plan, selected, onSelect }) {
     >
       {plan.badge && <div className="ps-badge">{plan.badge}</div>}
       <div className="ps-check-indicator">
-        <i className="ti ti-check" />
+        <IconCheck className="icon-sm" aria-hidden="true" />
       </div>
       <div className="ps-plan-label">{plan.label}</div>
       <div className="ps-price">{plan.price}</div>
@@ -309,7 +309,7 @@ function PlanCard({ plan, selected, onSelect }) {
       <div className="ps-feats">
         {plan.features.map((feat, i) => (
           <div key={i} className="ps-feat">
-            <i className="ti ti-check" />
+            <IconCheck className="icon-sm" aria-hidden="true" />
             {feat}
           </div>
         ))}
@@ -365,12 +365,12 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
             <span className="rc-avail-dot" />
             Available now
           </div>
-          <div className="rc-mini-cta">Enquire →</div>
+          <div className="rc-mini-cta">Enquire <IconArrowRight className="icon-xs" aria-hidden="true" /></div>
         </div>
       </div>
 
       <button className="btn btn-purple btn-lg" onClick={onStartBuilding}>
-        <i className="ti ti-pencil" style={{ fontSize: 15 }} /> Start building my rate card
+        <IconPencil className="icon-sm" aria-hidden="true" /> Start building my rate card
       </button>
 
       <p style={{ fontSize: 12, color: 'var(--grey-400)', marginTop: 'calc(-1 * var(--space-16))' }}>
@@ -464,7 +464,7 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
               <div className="ps-starter-note">
                 No commitment on Starter.{' '}
                 <button type="button" className="ps-link-btn" onClick={() => { setSelectedPlan('starter'); handleContinue('starter') }}>
-                  Continue free →
+                  Continue free <IconArrowRight className="icon-xs" aria-hidden="true" />
                 </button>
               </div>
 
@@ -474,7 +474,7 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
                 disabled={!selectedPlan || isUpgrading}
               >
                 Continue with {selectedPlan ? PLAN_BTN_LABELS[selectedPlan] : 'selected plan'}{' '}
-                <i className="ti ti-arrow-right" style={{ fontSize: 14 }} />
+                <IconArrowRight className="icon-sm" aria-hidden="true" />
               </button>
             </div>
           </div>

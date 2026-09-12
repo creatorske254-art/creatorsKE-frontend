@@ -11,9 +11,7 @@ export default function KeywordSearch({ value, onChange }) {
   return (
     <div className="relative w-full">
       <IconSearch
-        size={16}
-        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--grey-400)] pointer-events-none"
-      />
+    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--grey-400)] pointer-events-none icon-md" />
       <input
         type="text"
         value={value}
@@ -27,7 +25,7 @@ export default function KeywordSearch({ value, onChange }) {
           className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--grey-400)] hover:text-[var(--black)] transition-colors"
           aria-label="Clear search"
         >
-          <IconX size={14} />
+          <IconX className="icon-sm" />
         </button>
       )}
     </div>

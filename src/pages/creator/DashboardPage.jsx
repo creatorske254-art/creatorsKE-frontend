@@ -3,6 +3,7 @@ import { useCreatorDashboard } from '../../features/creator-dashboard/hooks/useC
 import { usePageMeta } from '@/lib/usePageMeta';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
+import { IconBrandWhatsapp, IconCash, IconChartArcs, IconCopy, IconEdit, IconEye, IconInbox, IconPlus, IconStar, IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 
 /*
    Layout: Bento grid.
@@ -121,7 +122,7 @@ export default function DashboardPage() {
           </p>
         </div>
         <Link to="/creator/rate-card" className="btn btn-purple btn-sm">
-          <i className="ti ti-plus" style={{ fontSize: 13 }} />
+          <IconPlus className="icon-sm" aria-hidden="true" />
           New rate card
         </Link>
       </div>
@@ -132,41 +133,41 @@ export default function DashboardPage() {
         {/* Hero: earnings, the metric creators check first */}
         <div className="bento-hero stat-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-24)', flexWrap: 'wrap' }}>
           <div>
-            <div className="stat-card-label"><i className="ti ti-cash" style={{ fontSize: 14 }} /> Earned (KES)</div>
+            <div className="stat-card-label"><IconCash className="icon-sm" aria-hidden="true" /> Earned (KES)</div>
             <div className="stat-card-value" style={{ fontSize: 44 }}>
               {statsLoading
                 ? <Skeleton width={90} height={38} />
                 : statsError ? '-' : `${Math.round((stats?.earningsTotal ?? 0) / 1000)}K`}
             </div>
             <div className="stat-card-delta up">
-              <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+22% vs last month
+              <IconTrendingUp className="icon-sm" aria-hidden="true" />+22% vs last month
             </div>
           </div>
-          <i className="ti ti-chart-arcs" style={{ fontSize: 56, color: 'var(--purple-100)' }} />
+          <IconChartArcs className="icon-xl" style={{ color: 'var(--purple-100)' }} aria-hidden="true" />
         </div>
 
         {/* Secondary stats */}
         <div className="bento-views stat-card">
-          <div className="stat-card-label"><i className="ti ti-eye" style={{ fontSize: 14 }} /> Card views</div>
+          <div className="stat-card-label"><IconEye className="icon-sm" aria-hidden="true" /> Card views</div>
           <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : statsError ? '-' : (stats?.profileViews ?? 0).toLocaleString('en-KE')}</div>
           <div className="stat-card-delta up">
-            <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+18% this month
+            <IconTrendingUp className="icon-sm" aria-hidden="true" />+18% this month
           </div>
         </div>
 
         <div className="bento-enq stat-card">
-          <div className="stat-card-label"><i className="ti ti-inbox" style={{ fontSize: 14 }} /> Enquiries</div>
+          <div className="stat-card-label"><IconInbox className="icon-sm" aria-hidden="true" /> Enquiries</div>
           <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : statsError ? '-' : (stats?.enquiries?.total ?? 0)}</div>
           <div className="stat-card-delta up">
-            <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+4 this week
+            <IconTrendingUp className="icon-sm" aria-hidden="true" />+4 this week
           </div>
         </div>
 
         <div className="bento-conv stat-card">
-          <div className="stat-card-label"><i className="ti ti-star" style={{ fontSize: 14 }} /> Conversion</div>
+          <div className="stat-card-label"><IconStar className="icon-sm" aria-hidden="true" /> Conversion</div>
           <div className="stat-card-value">{statsLoading ? <Skeleton width={50} height={24} /> : statsError ? '-' : `${stats?.cardCtr ?? 0}%`}</div>
           <div className="stat-card-delta down">
-            <i className="ti ti-trending-down" style={{ fontSize: 14 }} />-0.2% vs last month
+            <IconTrendingDown className="icon-sm" aria-hidden="true" />-0.2% vs last month
           </div>
         </div>
 
@@ -178,7 +179,7 @@ export default function DashboardPage() {
           </div>
           {!statsLoading && rows.length === 0 ? (
             <EmptyState
-              icon={<i className="ti ti-inbox" style={{ fontSize: 22 }} />}
+              icon={<IconInbox />}
               title="No enquiries yet"
               description="Share your rate card to start getting enquiries from brands."
             />
@@ -225,16 +226,16 @@ export default function DashboardPage() {
             <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Quick actions</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
               <Link to="/creator/rate-card" className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }}>
-                <i className="ti ti-edit" style={{ fontSize: 14 }} />Edit rate card
+                <IconEdit className="icon-sm" aria-hidden="true" />Edit rate card
               </Link>
               <button className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }} onClick={copyPublicLink}>
-                <i className="ti ti-copy" style={{ fontSize: 14 }} />Copy public link
+                <IconCopy className="icon-sm" aria-hidden="true" />Copy public link
               </button>
               <button className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }} onClick={shareWhatsApp}>
-                <i className="ti ti-brand-whatsapp" style={{ fontSize: 14 }} />Share on WhatsApp
+                <IconBrandWhatsapp className="icon-sm" aria-hidden="true" />Share on WhatsApp
               </button>
               <Link to="/creator/money" className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }}>
-                <i className="ti ti-cash" style={{ fontSize: 14 }} />View earnings
+                <IconCash className="icon-sm" aria-hidden="true" />View earnings
               </Link>
             </div>
           </div>

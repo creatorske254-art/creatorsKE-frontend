@@ -1,5 +1,6 @@
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/utils';
+import { IconCheck, IconEye, IconPackage } from '@tabler/icons-react';
 
 const previewOnly = () =>
   toast.info('This is a preview. Brands will use this button on your published rate card.');
@@ -32,7 +33,7 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
     <div className="rc-preview">
       {/* ── Preview label ──────────────────────────────────────────────── */}
       <div className="rc-preview__badge">
-        <i className="ti ti-eye" style={{ fontSize: 11 }} />
+        <IconEye className="icon-xs" aria-hidden="true" />
         Preview: public view
       </div>
 
@@ -72,7 +73,7 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
 
       {visiblePackages.length === 0 ? (
         <div className="rc-preview__empty">
-          <i className="ti ti-package" style={{ fontSize: 28, color: 'var(--grey-200)' }} />
+          <IconPackage className="icon-xl" style={{ color: 'var(--grey-200)' }} aria-hidden="true" />
           <p>Add your first package<br />to see it appear here</p>
         </div>
       ) : (
@@ -94,7 +95,7 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
                 <ul className="rc-preview__deliverables">
                   {pkg.deliverables.filter((d) => d.text).map((d, di) => (
                     <li key={di}>
-                      <i className="ti ti-check" style={{ color: 'var(--status-success)', fontSize: 11 }} />
+                      <IconCheck className="icon-xs" style={{ color: 'var(--status-success)' }} aria-hidden="true" />
                       {d.text}
                     </li>
                   ))}

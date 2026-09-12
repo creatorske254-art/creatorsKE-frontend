@@ -10,6 +10,7 @@ import Modal from '@/components/ui/Modal';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import { useTheme } from '@/context/ThemeContext';
 import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
+import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandWhatsapp, IconBrandYoutube, IconBuildingBank, IconCheck, IconCreditCard, IconDeviceLaptop, IconDeviceMobile, IconEyeOff, IconHash, IconLock, IconMail, IconMapPin, IconMoon, IconPalette, IconPencil, IconQrcode, IconShieldCheck, IconShieldLock, IconSun, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
 
 // Page-scoped styles
 // Every value below reads from the global index.css tokens (--purple-*,
@@ -68,7 +69,6 @@ const css = `
   .settings-tab:hover { color: var(--black); background: var(--page-bg); }
   .settings-tab.active { background: var(--purple-600); color: var(--white); }
   .settings-tab.active:hover { background: var(--purple-600); color: var(--white); }
-  .settings-tab i { font-size: var(--size-icon-md); }
 
   /* Bento grid utilities */
   /* Content fills the full width of the content area, no max-width cap,
@@ -230,11 +230,11 @@ const css = `
 `;
 
 const TABS = [
-  { id: "profile", label: "Profile", icon: "ti-user" },
-  { id: "notifications", label: "Notifications", icon: "ti-bell" },
-  { id: "payments", label: "Payments", icon: "ti-wallet" },
-  { id: "appearance", label: "Appearance", icon: "ti-palette" },
-  { id: "account", label: "Account", icon: "ti-shield-lock" },
+  { id: "profile", label: "Profile", icon: IconUser },
+  { id: "notifications", label: "Notifications", icon: IconBell },
+  { id: "payments", label: "Payments", icon: IconWallet },
+  { id: "appearance", label: "Appearance", icon: IconPalette },
+  { id: "account", label: "Account", icon: IconShieldLock },
 ];
 
 const ACCENT_COLORS = [
@@ -308,7 +308,7 @@ function ProfileTab() {
             )}
             <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
               <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
-                <i className="ti ti-upload" style={{ fontSize: 12 }} />
+                <IconUpload className="icon-xs" aria-hidden="true" />
                 {photoUrl ? "Change photo" : "Upload photo"}
                 <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: "none" }} />
               </label>
@@ -319,11 +319,11 @@ function ProfileTab() {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">First name</label>
-              <div className="input-wrapper"><i className="ti ti-user input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Amara" /></div>
+              <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Amara" /></div>
             </div>
             <div className="field">
               <label className="field-label field-required">Last name</label>
-              <div className="input-wrapper"><i className="ti ti-user input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Osei" /></div>
+              <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Osei" /></div>
             </div>
           </div>
 
@@ -361,7 +361,7 @@ function ProfileTab() {
             <div className="field">
               <label className="field-label">Location</label>
               <div className="input-wrapper">
-                <i className="ti ti-map-pin input-icon left" />
+                <IconMapPin className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" defaultValue="Nairobi, Kenya" />
               </div>
             </div>
@@ -418,7 +418,7 @@ function ProfileTab() {
           <div className="field">
             <label className="field-label">Instagram</label>
             <div className="input-wrapper">
-              <i className="ti ti-brand-instagram input-icon left" />
+              <IconBrandInstagram className="icon-sm input-icon left" aria-hidden="true" />
               <input className="input input-md input-icon-left" defaultValue="instagram.com/amaracreates" />
             </div>
           </div>
@@ -426,14 +426,14 @@ function ProfileTab() {
             <div className="field">
               <label className="field-label">TikTok</label>
               <div className="input-wrapper">
-                <i className="ti ti-brand-tiktok input-icon left" />
+                <IconBrandTiktok className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" defaultValue="tiktok.com/@amaracreates" />
               </div>
             </div>
             <div className="field">
               <label className="field-label">YouTube</label>
               <div className="input-wrapper">
-                <i className="ti ti-brand-youtube input-icon left" />
+                <IconBrandYoutube className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" placeholder="youtube.com/…" />
               </div>
             </div>
@@ -442,14 +442,14 @@ function ProfileTab() {
             <div className="field">
               <label className="field-label">Twitter / X</label>
               <div className="input-wrapper">
-                <i className="ti ti-brand-twitter input-icon left" />
+                <IconBrandTwitter className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" placeholder="x.com/…" />
               </div>
             </div>
             <div className="field">
               <label className="field-label">WhatsApp business</label>
               <div className="input-wrapper">
-                <i className="ti ti-brand-whatsapp input-icon left" style={{ color: "var(--status-success)" }} />
+                <IconBrandWhatsapp className="icon-sm input-icon left" style={{ color: "var(--status-success)" }} aria-hidden="true" />
                 <input className="input input-md input-icon-left" type="tel" defaultValue="+254 712 345 678" />
               </div>
             </div>
@@ -543,7 +543,7 @@ function NotificationsTab() {
             <div className="field" style={{ marginTop: 'var(--space-12)' }}>
               <label className="field-label">Send notifications to</label>
               <div className="input-wrapper">
-                <i className="ti ti-mail input-icon left" />
+                <IconMail className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" type="email" defaultValue="amara@example.com" />
               </div>
               <p className="field-hint">We'll also send receipts and important account info here.</p>
@@ -564,7 +564,7 @@ function NotificationsTab() {
 const PAY_PROVIDERS = {
   mpesa: {
     name: "M-Pesa",
-    icon: "ti-device-mobile",
+    icon: IconDeviceMobile,
     iconStyle: { background: "var(--tint-green-bg)", color: "var(--tint-green-text)" },
     blurb: "Connect your M-Pesa till or paybill",
     fields: [
@@ -575,7 +575,7 @@ const PAY_PROVIDERS = {
   },
   stripe: {
     name: "Stripe",
-    icon: "ti-credit-card",
+    icon: IconCreditCard,
     iconStyle: { background: "var(--purple-50)", color: "var(--purple-600)" },
     blurb: "Accept card payments internationally",
     fields: [
@@ -585,7 +585,7 @@ const PAY_PROVIDERS = {
   },
   bank: {
     name: "Bank transfer",
-    icon: "ti-building-bank",
+    icon: IconBuildingBank,
     iconStyle: { background: "var(--page-bg)", color: "var(--grey-600)" },
     blurb: "Local bank account (KES)",
     fields: [
@@ -598,7 +598,7 @@ const PAY_PROVIDERS = {
 };
 
 // Leading icon inside each dynamic input, keyed by what the field collects.
-const FIELD_ICON = { phone: "ti-device-mobile", till: "ti-hash", email: "ti-mail", bank: "ti-building-bank", account: "ti-hash", holder: "ti-user" };
+const FIELD_ICON = { phone: IconDeviceMobile, till: IconHash, email: IconMail, bank: IconBuildingBank, account: IconHash, holder: IconUser };
 function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
   const provider = providerKey ? PAY_PROVIDERS[providerKey] : null;
   const [values, setValues] = useState({});
@@ -617,7 +617,7 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
           <div className="field" key={f.key}>
             <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
             <div className="input-wrapper">
-              <i className={`ti ${FIELD_ICON[f.key] ?? "ti-pencil"} input-icon left`} aria-hidden="true" />
+              {(() => { const FieldIcon = FIELD_ICON[f.key] ?? IconPencil; return <FieldIcon className="icon-sm input-icon left" aria-hidden="true" />; })()}
               <input
                 className="input input-md input-icon-left"
                 type={f.type ?? "text"}
@@ -676,7 +676,7 @@ function PaymentsTab() {
             return (
               <div key={key} className={`pay-row${summary ? " connected" : ""}`}>
                 <div className="pay-icon" style={provider.iconStyle}>
-                  <i className={`ti ${provider.icon}`} />
+                  <provider.icon className="icon-md" aria-hidden="true" />
                 </div>
                 <div className="pay-info">
                   <div className="pay-name">{provider.name}</div>
@@ -791,10 +791,7 @@ function AppearanceTab() {
               className={`option-card${theme === t ? " selected" : ""}`}
               style={{ padding: "var(--space-16) var(--space-8)" }}
             >
-              <i
-                className={`ti ${t === "light" ? "ti-sun" : t === "dark" ? "ti-moon" : "ti-device-laptop"}`}
-                style={{ fontSize: 18 }}
-              />
+              {t === "light" ? <IconSun className="icon-md" aria-hidden="true" /> : t === "dark" ? <IconMoon className="icon-md" aria-hidden="true" /> : <IconDeviceLaptop className="icon-md" aria-hidden="true" />}
               <span className="option-card-label">{t.charAt(0).toUpperCase() + t.slice(1)}</span>
             </button>
           ))}
@@ -914,7 +911,7 @@ function AccountTab() {
           <div className="field">
             <label className="field-label field-required">Email address</label>
             <div className="input-wrapper">
-              <i className="ti ti-mail input-icon left" />
+              <IconMail className="icon-sm input-icon left" aria-hidden="true" />
               <input className="input input-md input-icon-left" type="email" defaultValue="amara@example.com" />
             </div>
           </div>
@@ -922,18 +919,18 @@ function AccountTab() {
           <div className="field">
             <label className="field-label">Current password</label>
             <div className="input-wrapper">
-              <i className="ti ti-lock input-icon left" />
+              <IconLock className="icon-sm input-icon left" aria-hidden="true" />
               <input className="input input-md input-icon-left" type="password" placeholder="••••••••" />
             </div>
           </div>
           <div className="field-row">
             <div className="field">
               <label className="field-label">New password</label>
-              <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="At least 8 characters" /></div>
+              <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="At least 8 characters" /></div>
             </div>
             <div className="field">
               <label className="field-label">Confirm new password</label>
-              <div className="input-wrapper"><i className="ti ti-lock input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="Re-enter your password" /></div>
+              <div className="input-wrapper"><IconLock className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" type="password" placeholder="Re-enter your password" /></div>
             </div>
           </div>
         </div>
@@ -951,7 +948,7 @@ function AccountTab() {
           </div>
           <div style={{ marginTop: 'var(--space-12)' }}>
             <button className="btn btn-ghost btn-sm" onClick={() => setTwoFAOpen(true)}>
-              <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
+              <IconShieldCheck className="icon-sm" aria-hidden="true" />
               Set up authenticator
             </button>
           </div>
@@ -987,11 +984,11 @@ function AccountTab() {
             disabled={unpublishing || isUnpublishingAll}
             onClick={() => setConfirmUnpublish(true)}
           >
-            <i className="ti ti-eye-off" style={{ fontSize: 12 }} />
+            <IconEyeOff className="icon-xs" aria-hidden="true" />
             Unpublish all cards
           </button>
           <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
-            <i className="ti ti-trash" style={{ fontSize: 12 }} />
+            <IconTrash className="icon-xs" aria-hidden="true" />
             Delete account
           </button>
         </div>
@@ -1086,7 +1083,7 @@ function TwoFactorDialog({ open, onClose, onEnabled }) {
           border: "0.5px solid var(--grey-200)", display: "flex", alignItems: "center",
           justifyContent: "center", color: "var(--grey-300)", flexShrink: 0,
         }}>
-          <i className="ti ti-qrcode" style={{ fontSize: 40 }} />
+          <IconQrcode className="icon-xl" aria-hidden="true" />
         </div>
         <div style={{ minWidth: 0 }}>
           <div className="field-label" style={{ marginBottom: 'var(--space-4)' }}>Setup key</div>
@@ -1097,7 +1094,7 @@ function TwoFactorDialog({ open, onClose, onEnabled }) {
       </div>
       <label className="field-label" style={{ display: "block", marginBottom: 'var(--space-8)' }}>6-digit code</label>
       <div className="input-wrapper" style={{ marginBottom: 'var(--space-20)' }}>
-        <i className="ti ti-shield-lock input-icon left" aria-hidden="true" />
+        <IconShieldLock className="icon-sm input-icon left" aria-hidden="true" />
         <input
           className="input input-md input-icon-left"
           value={code}
@@ -1139,7 +1136,7 @@ function SaveBar({ saved, onSave }) {
       <span className="settings-savebar-hint">
         {saved ? (
           <span style={{ color: "var(--status-success-text)", display: "flex", alignItems: "center", gap: 'var(--space-4)' }}>
-            <i className="ti ti-check" style={{ fontSize: 13 }} />
+            <IconCheck className="icon-sm" aria-hidden="true" />
             Changes saved
           </span>
         ) : (
@@ -1149,7 +1146,7 @@ function SaveBar({ saved, onSave }) {
       <div style={{ display: "flex", gap: 'var(--space-8)' }}>
         <button className="btn btn-ghost" onClick={() => setConfirmDiscard(true)}>Discard</button>
         <button className="btn btn-primary" onClick={onSave}>
-          <i className="ti ti-check" style={{ fontSize: 13 }} />
+          <IconCheck className="icon-sm" aria-hidden="true" />
           Save changes
         </button>
       </div>
@@ -1188,10 +1185,6 @@ export default function SettingsPage() {
   return (
     <>
       <style>{css}</style>
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"
-      />
       <div className="settings-page">
         <div className="settings-header">
           <h3 className="page-title">Settings</h3>
@@ -1205,7 +1198,7 @@ export default function SettingsPage() {
               className={`settings-tab${activeTab === tab.id ? " active" : ""}`}
               onClick={() => setActiveTab(tab.id)}
             >
-              <i className={`ti ${tab.icon}`} />
+              <tab.icon className="icon-md" aria-hidden="true" />
               {tab.label}
             </button>
           ))}

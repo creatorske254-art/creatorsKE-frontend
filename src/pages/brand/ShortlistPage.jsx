@@ -81,7 +81,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.34)'}
           onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.22)'}
         >
-          <IconBookmarkFilled size={12} />
+          <IconBookmarkFilled className="icon-xs" />
         </button>
 
         {/* identity row: avatar + name/handle, inline with the cover like DirectoryPage's CreatorCard */}
@@ -96,7 +96,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
             {creator.initials}
             {creator.verified && (
               <div style={{ position: 'absolute', bottom: 0, right: 0, width: 13, height: 13, background: 'var(--status-success)', borderRadius: '50%', border: '1.5px solid transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <IconCheck size={7} color="#fff" strokeWidth={3} />
+                <IconCheck className="icon-xs" color="#fff" />
               </div>
             )}
           </div>
@@ -115,7 +115,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
             <div key={lbl} style={{ background: 'var(--grey-50)', padding: 'var(--space-8) 0', textAlign: 'center' }}>
               <strong style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-4)', fontSize: 13, fontWeight: 600, color: 'var(--black)', fontFamily: 'var(--font-display)' }}>
                 {val}
-                {lbl === 'rating' && <IconStarFilled size={11} style={{ color: 'var(--black)' }} />}
+                {lbl === 'rating' && <IconStarFilled className="icon-xs" style={{ color: 'var(--black)' }} />}
               </strong>
               <span style={{ fontSize: 9, color: 'var(--grey-400)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{lbl}</span>
             </div>
@@ -152,7 +152,7 @@ function Toast({ message, visible, action }) {
       fontWeight: 500, boxShadow: 'var(--shadow-xl)', display: 'flex', alignItems: 'center', gap: 'var(--space-12)',
       opacity: visible ? 1 : 0, transition: 'all 0.25s', whiteSpace: 'nowrap',
     }}>
-      <IconCheck size={14} />
+      <IconCheck className="icon-sm" />
       {message}
       {action && (
         <button
@@ -171,14 +171,14 @@ function EmptyShortlist({ navigate }) {
   return (
     <div className="card card-p-lg" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-64) var(--space-24)' }}>
       <div style={{ width: 52, height: 52, borderRadius: 'var(--radius-xl)', background: 'var(--grey-50)', border: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-400)', marginBottom: 'var(--space-4)' }}>
-        <IconBookmark size={22} />
+        <IconBookmark className="icon-lg" />
       </div>
       <h4 style={{ margin: 0 }}>Your shortlist is empty</h4>
       <p className="card-body-text" style={{ maxWidth: 320 }}>
         Save creators while you browse the directory and they'll show up here so you can compare them side by side before reaching out.
       </p>
       <button className="btn btn-purple" style={{ marginTop: 'var(--space-8)' }} onClick={() => navigate('/directory')}>
-        <IconSearch size={13} />Browse the directory
+        <IconSearch className="icon-sm" />Browse the directory
       </button>
     </div>
   );
@@ -188,7 +188,7 @@ function NoResults({ onClear }) {
   return (
     <div className="card card-p-lg" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-48) var(--space-24)' }}>
       <div style={{ width: 52, height: 52, borderRadius: 'var(--radius-xl)', background: 'var(--grey-50)', border: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-400)', marginBottom: 'var(--space-4)' }}>
-        <IconFilterOff size={22} />
+        <IconFilterOff className="icon-lg" />
       </div>
       <h4 style={{ margin: 0 }}>No creators match your filters</h4>
       <p className="card-body-text" style={{ maxWidth: 260 }}>Try a different niche, or clear your search.</p>
@@ -297,7 +297,7 @@ export default function ShortlistPage() {
           </p>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => navigate('/directory')}>
-          <IconSearch size={14} />Browse more creators
+          <IconSearch className="icon-sm" />Browse more creators
         </button>
       </div>
 
@@ -322,7 +322,7 @@ export default function ShortlistPage() {
               <div className="stat-card-label">Avg. rating</div>
               <div className="stat-card-value" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)' }}>
                 {stats.avgRating}
-                {stats.avgRating !== 'N/A' && <IconStarFilled size={14} style={{ color: 'var(--black)' }} />}
+                {stats.avgRating !== 'N/A' && <IconStarFilled className="icon-sm" style={{ color: 'var(--black)' }} />}
               </div>
             </div>
             <div className="stat-card">
@@ -335,7 +335,7 @@ export default function ShortlistPage() {
           {/* Search + chips */}
           <div className="sl-search-row">
             <div className="sl-search-wrap input-wrapper" style={{ flex: 1, maxWidth: 360, minWidth: 200 }}>
-              <IconSearch size={15} className="input-icon left" />
+              <IconSearch className="input-icon left icon-sm" />
               <input
                 className="search-input"
                 style={{ paddingLeft: 'var(--space-40)' }}

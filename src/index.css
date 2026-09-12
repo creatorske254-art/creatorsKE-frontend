@@ -154,10 +154,15 @@
   --input-icon-pad:   var(--space-40); /* text inset when an input has a leading/trailing icon */
 
   /* ─── Component sizing ───────────────────────────────────────────────── */
-  --size-icon-sm:   14px; /* inline input icons, e.g. navbar search */
-  --size-icon-md:   16px; /* icon-only buttons, e.g. notification bell */
-  --size-icon-lg:   17px; /* sidebar nav-item icons */
-  --size-icon-slot: 20px; /* fixed-width column sidebar icons sit in, for label alignment */
+  /* ─── Iconography ─────────────────────────────────────────────────────── */
+  /* One source (@tabler/icons-react), one stroke (2), five sizes. Every icon
+     carries exactly one .icon-* class; the base rule below makes the size
+     classes the only way an icon gets a dimension. */
+  --icon-xs: 12px; /* beside caption/hint text (11-12px) */
+  --icon-sm: 14px; /* default: buttons, tags, inputs, inline with body text */
+  --icon-md: 16px; /* navbar, sidebar, icon-only buttons, callouts */
+  --icon-lg: 20px; /* section/card leads, hamburger, provider tiles */
+  --icon-xl: 24px; /* empty states, success/error result screens */
   --size-avatar-sm: 32px; /* navbar avatar */
   --size-badge:     18px; /* notification count badge, min-width == height (pill/circle) */
   --badge-overlap:  -4px; /* pulls the notification badge onto the icon button's corner */
@@ -496,13 +501,30 @@
   .badge-red { background: var(--status-error); color: #fff; }
 
   /* ── Search input (navbar search) ────────────────────────────────────── */
+  /* ─── Icons ─────────────────────────────────────────────────────────────
+     @tabler/icons-react renders <svg class="tabler-icon tabler-icon-NAME">.
+     Size and stroke live here, not on the element: the width/height/
+     stroke-width attributes the component emits are presentation
+     attributes, so these rules win, and every icon is one of five sizes
+     by construction. Colour is always inherited (currentColor). */
+  svg.tabler-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    stroke-width: 2;
+    flex-shrink: 0;
+    vertical-align: -0.15em; /* optical centre against adjacent text */
+  }
+  .icon-xs { width: var(--icon-xs) !important; height: var(--icon-xs) !important; }
+  .icon-sm { width: var(--icon-sm) !important; height: var(--icon-sm) !important; }
+  .icon-md { width: var(--icon-md) !important; height: var(--icon-md) !important; }
+  .icon-lg { width: var(--icon-lg) !important; height: var(--icon-lg) !important; }
+  .icon-xl { width: var(--icon-xl) !important; height: var(--icon-xl) !important; }
   .input-wrapper { position: relative; }
   .input-icon {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     color: var(--grey-400);
-    font-size: var(--size-icon-md);
     pointer-events: none;
   }
   .input-icon.left { left: var(--space-12); }
@@ -511,7 +533,6 @@
      Works for both the tabler webfont <i> and @tabler/icons-react <svg>. */
   .input-icon-left  { padding-left: var(--input-icon-pad) !important; }
   .input-icon-right { padding-right: var(--input-icon-pad) !important; }
-  .input-wrapper > svg.input-icon { width: 15px; height: 15px; }
   .search-input {
     background: var(--white);
     border: 0.5px solid var(--grey-200);
@@ -627,8 +648,8 @@
   }
   .sidebar-link:hover { background: var(--grey-50); color: var(--black); }
   .sidebar-link.active { background: var(--purple-50); color: var(--purple-800); }
-  .sidebar-link i { font-size: var(--size-icon-lg); width: var(--size-icon-slot); text-align: center; color: var(--grey-400); }
-  .sidebar-link.active i { color: var(--purple-600); }
+  .sidebar-link > svg { color: var(--grey-400); }
+  .sidebar-link.active > svg { color: var(--purple-600); }
   .sidebar-link.disabled { cursor: not-allowed; opacity: 0.45; }
   .sidebar-badge {
     margin-left: auto;
@@ -955,7 +976,6 @@
   }
   /* Raw (non-.btn) buttons aren't flex, so give the spinner its own gap */
   .btn-loading:not(.btn)::before { margin-right: var(--space-8); vertical-align: -2px; }
-  .btn-loading > i:first-child,
   .btn-loading > svg:first-child { display: none; }
   .btn-xs.btn-loading::before, .btn-sm.btn-loading::before { width: 11px; height: 11px; }
 
@@ -1000,14 +1020,16 @@
   .input-md { padding: var(--space-12) var(--space-16); border-radius: var(--radius-md); }
   .select-wrapper { position: relative; }
   .select-wrapper::after {
-    content: '\ea99';
-    font-family: 'tabler-icons';
+    content: '';
     position: absolute;
     right: var(--space-12);
     top: 50%;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
     transform: translateY(-50%);
-    color: var(--grey-400);
-    font-size: var(--size-icon-sm);
+    background: var(--grey-400);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E") center / contain no-repeat;
     pointer-events: none;
   }
   select.input { appearance: none; padding-right: var(--space-32); cursor: pointer; }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { usePageMeta } from '@/lib/usePageMeta';
 import EmptyState from '@/components/shared/EmptyState';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
+import { IconFlag3, IconMessage2, IconShieldCheck, IconStar, IconStarFilled } from '@tabler/icons-react';
 
 const reviews = [
   {
@@ -77,16 +78,13 @@ const reviews = [
   },
 ];
 
-function Stars({ count, size = 14 }) {
+function Stars({ count, size = "sm" }) {
   return (
     <span style={{ display: "inline-flex", gap: 'var(--space-2)' }}>
-      {[1, 2, 3, 4, 5].map((i) => (
-        <i
-          key={i}
-          className={`ti ${i <= count ? "ti-star-filled" : "ti-star"}`}
-          style={{ fontSize: size, color: i <= count ? "var(--black)" : "var(--grey-200)", lineHeight: 1 }}
-        />
-      ))}
+      {[1, 2, 3, 4, 5].map((i) => {
+        const Star = i <= count ? IconStarFilled : IconStar;
+        return <Star key={i} className={`icon-${size}`} style={{ color: i <= count ? "var(--black)" : "var(--grey-200)" }} aria-hidden="true" />;
+      })}
     </span>
   );
 }
@@ -154,7 +152,7 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
       {/* Campaign tag + flagged tag */}
       <div style={{ display: "flex", gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
         <span className="tag tag-default">{review.campaign}</span>
-        {review.flagged && <span className="tag tag-error"><i className="ti ti-flag-3" style={{ fontSize: 11 }} /> Flagged</span>}
+        {review.flagged && <span className="tag tag-error"><IconFlag3 className="icon-xs" aria-hidden="true" /> Flagged</span>}
       </div>
 
       {/* Review text */}
@@ -216,7 +214,7 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
               style={{ border: "none", padding: 0, color: "var(--purple-600)" }}
               onClick={() => setShowReplyBox(true)}
             >
-              <i className="ti ti-message-2" style={{ fontSize: 13 }} />
+              <IconMessage2 className="icon-sm" aria-hidden="true" />
               Write a reply
             </button>
           ) : (
@@ -319,7 +317,7 @@ export default function ReviewsPage() {
         <div className="card" style={{ padding: "var(--space-20) var(--space-32)", display: "flex", alignItems: "center", gap: 'var(--space-32)', minWidth: 280 }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 52, fontWeight: 700, color: "var(--black)", lineHeight: 1 }}>{avg}</div>
-            <Stars count={Math.round(parseFloat(avg))} size={16} />
+            <Stars count={Math.round(parseFloat(avg))} size="md" />
             <div style={{ fontSize: 11, color: "var(--grey-400)", marginTop: 'var(--space-8)' }}>{total} reviews</div>
           </div>
           <div style={{ flex: 1 }}>
@@ -366,7 +364,7 @@ export default function ReviewsPage() {
         {filtered.length === 0 ? (
           <div className="card">
             <EmptyState
-              icon={<i className={filter === "flagged" ? "ti ti-shield-check" : "ti ti-star"} aria-hidden="true" />}
+              icon={filter === "flagged" ? <IconShieldCheck /> : <IconStar />}
               title={filter === "flagged" ? "Nothing flagged" : "No reviews in this category"}
               description={filter === "flagged" ? "No reviews currently need moderation." : "Reviews from brands will show up here once they're submitted."}
             />

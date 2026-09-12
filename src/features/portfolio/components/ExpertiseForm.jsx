@@ -1,5 +1,6 @@
 import { useFieldArray } from 'react-hook-form';
 import EmptyState from '@/components/shared/EmptyState';
+import { IconAward, IconPlus, IconX } from '@tabler/icons-react';
 
 const MAX_EXPERTISE = 4;
 
@@ -28,7 +29,7 @@ export function ExpertiseForm({ control, register, errors }) {
             className="btn btn-secondary btn-sm"
             onClick={() => append({ area: '', description: '' })}
           >
-            <i className="ti ti-plus" style={{ fontSize: 13 }} />
+            <IconPlus className="icon-sm" aria-hidden="true" />
             Add expertise
           </button>
         )}
@@ -38,7 +39,7 @@ export function ExpertiseForm({ control, register, errors }) {
         <div className="card card-dashed">
           <EmptyState
             size="sm"
-            icon={<i className="ti ti-award" aria-hidden="true" />}
+            icon={<IconAward />}
             title="No expertise added yet"
             description="Add at least one expertise area to complete your portfolio."
           />
@@ -78,7 +79,7 @@ export function ExpertiseForm({ control, register, errors }) {
                   onClick={() => remove(index)}
                   style={{ color: 'var(--status-error-text)', background: 'var(--status-error-bg)', borderColor: 'rgba(255,75,75,0.3)' }}
                 >
-                  <i className="ti ti-x" style={{ fontSize: 13 }} />
+                  <IconX className="icon-sm" aria-hidden="true" />
                 </button>
               </div>
 
@@ -118,7 +119,7 @@ export function ExpertiseForm({ control, register, errors }) {
           style={{ alignSelf: 'flex-start' }}
           onClick={() => append({ area: '', description: '' })}
         >
-          <i className="ti ti-plus" style={{ fontSize: 13 }} />
+          <IconPlus className="icon-sm" aria-hidden="true" />
           Add another
         </button>
       )}

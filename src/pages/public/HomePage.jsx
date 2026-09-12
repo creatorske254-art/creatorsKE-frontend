@@ -21,23 +21,23 @@ const COPY = {
   creator: {
     eyebrow: 'For creators',
     headline: <>Get paid what you're worth,<br />on time, every time.</>,
-    sub: 'Build a rate card brands can book from directly, and get paid straight to M-Pesa the moment your work is approved.',
+    sub: 'Build a rate card brands can book from directly, and get paid straight to M‑Pesa the moment your work is approved.',
     primary: { label: 'Build your rate card', to: '/signup?role=creator' },
     secondary: { label: 'See a live rate card', to: '/c/amara' },
     stepsTitle: 'How creators get paid',
     steps: [
       { img: 'creator-01-build-rate-card', title: 'Build your rate card', desc: 'Package deliverables, pricing and social stats once. Publish a link brands can book from.' },
       { img: 'creator-02-receive-briefs', title: 'Receive direct briefs', desc: 'Accept campaign enquiries with budgets already funded into escrow.' },
-      { img: 'creator-03-deliver-get-paid', title: 'Deliver & get paid', desc: 'Submit the work; approval releases the payout to your M-Pesa.' },
+      { img: 'creator-03-deliver-get-paid', title: 'Deliver & get paid', desc: 'Submit the work; approval releases the payout to your M‑Pesa.' },
     ],
     features: [
       { icon: IconLayoutCards, title: 'Beautiful rate cards', desc: 'Curated designs that look professional from day one - no design skills needed.' },
-      { icon: IconDeviceMobileDollar, title: 'M-Pesa & Airtel Money', desc: 'Built for East Africa. Payouts land on M-Pesa, Airtel Money or your bank.' },
+      { icon: IconDeviceMobileDollar, title: 'M‑Pesa & Airtel Money', desc: 'Built for East Africa. Payouts land on M‑Pesa, Airtel Money or your bank.' },
       { icon: IconBrandWhatsapp, title: 'WhatsApp alerts', desc: 'Instant WhatsApp notifications when a brand enquires or a payment lands.' },
     ],
     faq: [
       { q: 'Is Creatorske free to join?', a: 'Yes. The Starter account is free forever - no subscription needed to build a rate card and start receiving briefs. Pro and Elite add more packages and payout methods.' },
-      { q: 'How do I actually get paid?', a: 'Brands fund the campaign into escrow before work starts. Once you deliver and they approve, the payout goes straight to your M-Pesa - no invoicing or chasing.' },
+      { q: 'How do I actually get paid?', a: 'Brands fund the campaign into escrow before work starts. Once you deliver and they approve, the payout goes straight to your M‑Pesa - no invoicing or chasing.' },
       { q: 'What do I need to get verified?', a: 'A quick identity check plus a look at your audience stats. It protects you too: it keeps low-quality accounts off the directory brands are browsing.' },
       { q: 'What if a brand never approves?', a: 'Funds auto-release 14 days after delivery unless the brand opens a dispute, which a Creatorske admin decides on the evidence.' },
     ],
@@ -109,7 +109,7 @@ function RoleSwitch({ role, onChange, dark }) {
 }
 
 export default function HomePage() {
-  usePageMeta(null, "Creatorske: the marketplace for Kenya's content creators and the brands that book them. Rate cards, verified profiles and M-Pesa escrow.");
+  usePageMeta(null, "Creatorske: the marketplace for Kenya's content creators and the brands that book them. Rate cards, verified profiles and M‑Pesa escrow.");
   const navigate = useNavigate();
   const { hash } = useLocation();
   const [params, setParams] = useSearchParams();
@@ -249,7 +249,7 @@ export default function HomePage() {
 
         @media(max-width:700px){
           .hp-steps, .hp-features { grid-template-columns:1fr; }
-          .hp-step__ill { max-width:420px; }
+          .hp-steps { justify-items:stretch; max-width:460px; margin:0 auto; }
         }
         @media(max-width:900px){
           .hp-hero__grid { min-height:0; padding:var(--space-64) var(--gutter-public); }
@@ -312,7 +312,7 @@ export default function HomePage() {
           <div className="hp-head hp-reveal">
             <span className="eyebrow">How it works</span>
             <h2>{c.stepsTitle}</h2>
-            <p>{role === 'brand' ? 'Three steps from a shortlist to approved, paid work.' : 'Three steps from a blank profile to money on M-Pesa.'}</p>
+            <p>{role === 'brand' ? 'Three steps from a shortlist to approved, paid work.' : 'Three steps from a blank profile to money on M‑Pesa.'}</p>
           </div>
           <div className="hp-steps" key={`steps-${role}`}>
             {c.steps.map((s, i) => (
@@ -388,7 +388,7 @@ export default function HomePage() {
               Creatorske<span style={{ color: 'var(--purple-400)' }}>.</span>
             </div>
             <div style={{ fontSize: 13, color: 'var(--grey-500)', lineHeight: 1.7, maxWidth: 240, marginBottom: 'var(--space-24)' }}>
-              Where Kenya's creators and brands build campaigns - rate cards, verified profiles and M-Pesa escrow.
+              Where Kenya's creators and brands build campaigns - rate cards, verified profiles and M‑Pesa escrow.
             </div>
             <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
               {SOCIAL_LINKS.map(({ key, Icon, href, label }) => (

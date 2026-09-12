@@ -7,7 +7,7 @@ import { useRateCards } from '@/features/rate-card/hooks/useRateCard';
 const PERIODS = ['7d', '30d', '90d'];
 
 // GET /rate-cards/health is documented as a generic module-up check, not a
-// per-creator completeness score — see CLAUDE.md. These package/payment-method
+// per-creator completeness score - see CLAUDE.md. These package/payment-method
 // caps are the real, documented per-plan limits from
 // features/plans/constants/pricingTiers.js, reused here instead of inventing
 // new numbers. `null` = unlimited (Elite tier).
@@ -32,7 +32,7 @@ export function useCreatorDashboard() {
   const [earningsLoading, setEarningsLoading] = useState(true);
   const [earningsError, setEarningsError] = useState(null);
 
-  // Raw module-up signal only — not used for scoring, see note above.
+  // Raw module-up signal only - not used for scoring, see note above.
   const [healthError, setHealthError] = useState(null);
 
   const { rateCards, isLoading: rateCardsLoading } = useRateCards();
@@ -104,7 +104,7 @@ export function useCreatorDashboard() {
   }, [rateCards, user]);
 
   // --- Public URL ---
-  // No API endpoint for this — it's just the creator's own handle, which
+  // No API endpoint for this - it's just the creator's own handle, which
   // already lives on the authenticated user object.
   useEffect(() => {
     if (user?.handle) {

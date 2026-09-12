@@ -35,6 +35,6 @@ export const rateCardService = {
 export const getCardHealth = () =>
   api.get('/rate-cards/health').then((r) => r.data);
 
-// Public rate card by creator handle (unauthenticated) — used by /c/:handle
+// Public rate card by creator handle (unauthenticated) - used by /c/:handle
 export const getPublicRateCard = (handle) =>
   api.get(`/public/creators/${handle}/rate-card`).then((r) => r.data);

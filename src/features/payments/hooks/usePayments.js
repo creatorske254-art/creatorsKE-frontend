@@ -14,7 +14,7 @@ const STATS_KEY = (period) => ['payments', 'stats', period];
 const TIMELINE_KEY = (period) => ['payments', 'earnings-timeline', period];
 const HISTORY_KEY = ['payments', 'transactions'];
 
-// GET /payments/status/:id has no documented response schema — checked
+// GET /payments/status/:id has no documented response schema - checked
 // defensively against a few likely status field/value names. Capped at 20
 // polls (~1 min at 3s intervals) so a stuck payment doesn't poll forever.
 const MAX_POLL_ATTEMPTS = 20;
@@ -80,7 +80,7 @@ export function usePayments({ period = '30d' } = {}) {
     mutationFn: (data) => initiateSTKPush(data),
     onSuccess: (res) => {
       startPolling(res?.checkoutRequestId ?? res?.CheckoutRequestID ?? res?.id);
-      toast.success('Payment request sent — check your phone to complete it.');
+      toast.success('Payment request sent. Check your phone to complete it.');
     },
     onError: () => toast.error('Could not start the payment. Please try again.'),
   });

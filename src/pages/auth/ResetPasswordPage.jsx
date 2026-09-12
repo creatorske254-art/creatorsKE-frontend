@@ -220,7 +220,7 @@ function SetNewPasswordForm({ token }) {
               <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Min. 8 characters"
+                placeholder="At least 8 characters"
                 {...register('password')}
                 style={{ ...inputStyle(errors.password), paddingLeft: '40px', paddingRight: '40px' }}
               />
@@ -241,7 +241,7 @@ function SetNewPasswordForm({ token }) {
               <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input
                 type={showConfirm ? 'text' : 'password'}
-                placeholder="Repeat password"
+                placeholder="Re-enter your password"
                 {...register('confirmPassword')}
                 style={{ ...inputStyle(errors.confirmPassword), paddingLeft: '40px', paddingRight: '40px' }}
               />

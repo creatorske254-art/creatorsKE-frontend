@@ -8,7 +8,7 @@ import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts'
 import { formatDate } from '@/lib/utils'
 
 // GET /admin/accounts/flagged is the only account-listing endpoint that
-// exists today (see CLAUDE.md / production plan's backend spec) — there is
+// exists today (see CLAUDE.md / production plan's backend spec) - there is
 // no "list all accounts" endpoint yet, so this page only shows flagged
 // accounts rather than pretending to have the full directory.
 function normalizeAccount(a) {
@@ -18,7 +18,7 @@ function normalizeAccount(a) {
     type: a.type ?? a.role ?? 'creator',
     name: a.name ?? a.fullName ?? 'Unknown',
     handle: a.handle ?? a.email ?? '',
-    email: a.email ?? '—',
+    email: a.email ?? '-',
     domainVerified: a.domainVerified ?? null,
     joined: formatDate(a.joinedAt ?? a.createdAt),
     status: a.status ?? 'flagged',
@@ -31,7 +31,7 @@ function normalizeAccount(a) {
     },
     stat: a.type === 'brand'
       ? { label: 'Enquiries sent', value: flagSource.enquiriesSent ?? 0 }
-      : { label: 'Rating', value: a.rating ?? '—' },
+      : { label: 'Rating', value: a.rating ?? '-' },
   }
 }
 
@@ -146,7 +146,7 @@ export default function AccountsPage() {
           <div className="section-title">Accounts & Moderation</div>
           <div className="section-desc">Review flagged creator and brand accounts and resolve verification issues.</div>
           <div className="section-desc" style={{ marginTop: 4, fontStyle: 'italic' }}>
-            Showing flagged accounts only — a full account directory needs a backend endpoint that doesn't exist yet.
+            Showing flagged accounts only. A full account directory needs a backend endpoint that doesn't exist yet.
           </div>
         </div>
 

@@ -28,7 +28,7 @@ export default function VerifyEmailPage() {
   const handleResend = async () => {
     if (resendCooldown > 0 || resending) return;
     if (!pendingEmail) {
-      toast.error("We don't know which email to resend to — please sign up again.");
+      toast.error("We don't know which email to resend to. Please sign up again.");
       return;
     }
     setResending(true);

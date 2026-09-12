@@ -4,12 +4,12 @@ import { Component } from 'react';
  * Root-level crash catcher, mounted in main.jsx around the entire provider
  * tree (AuthProvider, NotificationProvider, AppRouter). React Router's own
  * `errorElement` (wired per route group in routes/index.jsx) already catches
- * render/loader errors *inside* the router — this class component is the
+ * render/loader errors *inside* the router - this class component is the
  * backstop for anything above it, like a crash in AuthProvider itself, where
  * the router may not even be mounted yet.
  *
  * Its fallback UI is deliberately self-contained (no react-router hooks or
- * <Link>) — if the crash happened before the router mounted, anything that
+ * <Link>) - if the crash happened before the router mounted, anything that
  * depends on router context would itself throw, defeating the boundary.
  */
 export default class ErrorBoundary extends Component {

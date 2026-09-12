@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { messageService } from '../services/message.service';
 
-// threadId is assumed to be the enquiry/campaign id it belongs to — the API
+// threadId is assumed to be the enquiry/campaign id it belongs to - the API
 // doc doesn't document a separate "create thread" endpoint.
 export function useMessages(threadId) {
   const queryClient = useQueryClient();
@@ -14,7 +14,7 @@ export function useMessages(threadId) {
     refetchInterval: 15_000, // light polling for new messages
   });
 
-  // payload: { text, attachmentUrl? } — ASSUMPTION: POST /messages accepting
+  // payload: { text, attachmentUrl? } - ASSUMPTION: POST /messages accepting
   // an attachmentUrl alongside text isn't documented in the API reference.
   const sendMutation = useMutation({
     mutationFn: (payload) => messageService.sendMessage({ threadId, ...payload }),

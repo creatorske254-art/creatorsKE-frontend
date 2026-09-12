@@ -23,6 +23,6 @@ export const portfolioService = {
     api.get(`/portfolio/${id}/analytics`).then((r) => r.data),
 };
 
-// Public portfolio by creator handle (unauthenticated) — used by /c/:handle/portfolio
+// Public portfolio by creator handle (unauthenticated) - used by /c/:handle/portfolio
 export const getPublicPortfolio = (handle) =>
   api.get(`/public/creators/${handle}/portfolio`).then((r) => r.data);

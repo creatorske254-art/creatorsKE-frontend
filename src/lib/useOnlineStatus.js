@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 /**
  * Tracks the browser's own connectivity (navigator.onLine + the online/offline
  * events). This reflects "does this device have a network link at all", not
- * "can we reach the Creatorske API" — a device can be online while the API
+ * "can we reach the Creatorske API" - a device can be online while the API
  * itself is unreachable, which individual pages/hooks already surface via
  * their own error states.
  */

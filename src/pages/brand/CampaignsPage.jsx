@@ -56,7 +56,7 @@ const FILTERS = [
   { key: 'history', label: 'History', match: (s) => s === 'completed' || s === 'refunded' },
 ]
 
-// Response schema for GET /brands/campaigns is undocumented (see CLAUDE.md) —
+// Response schema for GET /brands/campaigns is undocumented (see CLAUDE.md) -
 // field names below are best-effort guesses with graceful fallbacks, not
 // confirmed contract. avatarClass is purely decorative (no such field exists
 // on any documented response) so every card uses the same accent.
@@ -78,8 +78,8 @@ function normalizeCampaign(c) {
     handle: c.creatorHandle ?? c.handle ?? '',
     initials: getInitials(creatorName),
     avatarClass: 'avatar-purple',
-    package: c.packageName ?? c.package ?? '—',
-    platform: c.platform ?? '—',
+    package: c.packageName ?? c.package ?? '-',
+    platform: c.platform ?? '-',
     rawPrice: Number(c.price ?? c.amount ?? 0),
     price: formatCurrency(c.price ?? c.amount),
     status: c.status ?? 'in_progress',

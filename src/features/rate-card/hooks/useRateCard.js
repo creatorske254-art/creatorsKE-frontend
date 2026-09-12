@@ -34,7 +34,7 @@ export function useRateCard(id) {
       clearTimeout(autoSaveTimer.current);
       autoSaveTimer.current = setTimeout(() => {
         rateCardService.saveDraft(id, data).catch(() => {
-          // silent — auto-save failures should not disrupt the creator
+          // silent - auto-save failures should not disrupt the creator
         });
       }, 1500);
     },

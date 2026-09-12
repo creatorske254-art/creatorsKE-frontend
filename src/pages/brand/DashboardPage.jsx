@@ -71,7 +71,7 @@ function shade(hex, percent) {
 }
 
 // Response schema for GET /brands/campaigns and GET /brands/shortlist is
-// undocumented (see CLAUDE.md) — field names below are best-effort guesses
+// undocumented (see CLAUDE.md) - field names below are best-effort guesses
 // with graceful fallbacks. Status vocabulary is shared with CampaignsPage.jsx
 // (in_progress/delivered/disputed/completed/refunded) since both pages read
 // the same underlying campaign resource.
@@ -90,8 +90,8 @@ function normalizeCampaign(c) {
     creator: creatorName,
     handle: c.creatorHandle ?? c.handle ?? "",
     initials: getInitials(creatorName),
-    package: c.packageName ?? c.package ?? "—",
-    platform: c.platform ?? "—",
+    package: c.packageName ?? c.package ?? "-",
+    platform: c.platform ?? "-",
     status: c.status ?? "in_progress",
     deliveryDate: formatDate(c.expectedDeliveryAt ?? c.deliveredAt),
     amount: formatCurrency(c.price ?? c.amount),
@@ -108,11 +108,11 @@ function normalizeShortlistEntry(s) {
     creator: creatorName,
     handle: s.handle ?? s.creatorHandle ?? "",
     initials: getInitials(creatorName),
-    niche: s.niche ?? s.category ?? "—",
-    platform: s.platform ?? "—",
-    followers: s.followers != null ? formatCount(s.followers) : "—",
-    engagement: s.engagementRate != null ? `${s.engagementRate}%` : "—",
-    rating: s.rating ?? "—",
+    niche: s.niche ?? s.category ?? "-",
+    platform: s.platform ?? "-",
+    followers: s.followers != null ? formatCount(s.followers) : "-",
+    engagement: s.engagementRate != null ? `${s.engagementRate}%` : "-",
+    rating: s.rating ?? "-",
     availability: s.availability ?? "Open",
     avatarColor: "#534AB7",
   };
@@ -255,7 +255,7 @@ function CampaignDrawer({ campaign, onClose }) {
     const trimmed = reply.trim();
     if (!trimmed) return;
     // The thread itself lives on the campaign page, which is wired to the real
-    // messaging endpoint — send the brand there rather than faking a bubble here.
+    // messaging endpoint - send the brand there rather than faking a bubble here.
     onClose();
     navigate(`/brand/campaigns/${campaign.id}#messages`);
   }

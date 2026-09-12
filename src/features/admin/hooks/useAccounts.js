@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 
 // GET /admin/accounts and POST /admin/invite don't exist on the backend yet
-// (see the production-readiness plan's backend spec) — this hook exists as a
+// (see the production-readiness plan's backend spec) - this hook exists as a
 // ready seam so AccountsPage.jsx can swap from useFlaggedAccounts() to this
 // once a real "list all accounts" endpoint ships, without a bigger rewrite.
 export function useAccounts(params) {
@@ -16,7 +16,7 @@ export function useAccounts(params) {
   const inviteMutation = useMutation({
     mutationFn: ({ email, role }) => adminService.inviteAdmin(email, role),
     retry: false,
-    onError: () => toast.error("Inviting admins isn't available yet — this needs backend support."),
+    onError: () => toast.error("Inviting admins isn't available yet. It needs backend support."),
   });
 
   return {

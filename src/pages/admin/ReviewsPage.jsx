@@ -224,7 +224,7 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
               <textarea
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Write your public reply to this review..."
+                placeholder="Write your public reply to this review…"
                 maxLength={400}
                 className="input"
                 style={{
@@ -308,7 +308,7 @@ export default function ReviewsPage() {
           Moderate reviews flagged by creators or auto-detected for policy violations across the platform.
         </p>
         <p style={{ fontSize: 12, color: "var(--grey-400)", lineHeight: 1.6, fontStyle: 'italic', marginTop: 4 }}>
-          Demo data — a cross-creator review moderation feed endpoint doesn't exist on the backend yet (reviewService only supports listing one creator's reviews at a time). See the production-readiness plan's backend spec.
+          Demo data. A cross-creator review moderation feed endpoint doesn't exist on the backend yet (reviewService only supports listing one creator's reviews at a time). See the production-readiness plan's backend spec.
         </p>
       </div>
 

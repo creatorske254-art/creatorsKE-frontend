@@ -3,7 +3,7 @@ import { IconArrowLeft, IconHome } from '@tabler/icons-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 
 /**
- * 404 — catch-all for any URL that doesn't match a route. Standalone (not
+ * 404 - catch-all for any URL that doesn't match a route. Standalone (not
  * nested in any layout) since a bad URL can come from any part of the app,
  * logged in or not.
  */

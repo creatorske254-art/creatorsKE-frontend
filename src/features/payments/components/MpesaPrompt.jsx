@@ -1,7 +1,7 @@
 import { IconDeviceMobile, IconCheck, IconX } from '@tabler/icons-react';
 
 /**
- * MpesaPrompt — waiting screen shown while an STK push / payout is polling
+ * MpesaPrompt - waiting screen shown while an STK push / payout is polling
  * for confirmation (usePayments().isPolling), matching the ~3s poll interval
  * in usePayments.js. `status` is the raw usePayments().paymentStatus value;
  * its schema is undocumented so only a best-effort status field is read.

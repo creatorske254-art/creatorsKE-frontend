@@ -93,7 +93,7 @@ export function SocialStatsForm({ control, register, errors }) {
                 <input
                   {...register(`socialStats.${index}.handle`)}
                   className="input input-md"
-                  placeholder="@yourhandle"
+                  placeholder="e.g. amaracreates"
                 />
               </div>
             </div>
@@ -109,7 +109,7 @@ export function SocialStatsForm({ control, register, errors }) {
                   })}
                   type="number"
                   className={`input input-md ${e.followers ? 'input-error' : ''}`}
-                  placeholder="12000"
+                  placeholder="e.g. 12,000"
                 />
                 {e.followers && <span className="field-hint error">{e.followers.message}</span>}
               </div>
@@ -122,7 +122,7 @@ export function SocialStatsForm({ control, register, errors }) {
                   })}
                   type="number"
                   className={`input input-md ${e.avgViews ? 'input-error' : ''}`}
-                  placeholder="3500"
+                  placeholder="e.g. 3,500"
                 />
                 {e.avgViews && <span className="field-hint error">{e.avgViews.message}</span>}
               </div>
@@ -138,7 +138,7 @@ export function SocialStatsForm({ control, register, errors }) {
                     type="number"
                     step="0.1"
                     className={`input input-md input-icon-right ${e.engagementRate ? 'input-error' : ''}`}
-                    placeholder="4.2"
+                    placeholder="e.g. 4.2"
                   />
                   <i className="ti ti-percentage input-icon right" />
                 </div>

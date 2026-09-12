@@ -8,7 +8,7 @@ import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
 
-// Injects Tabler Icons webfont once — same pattern as CreatorLayout / BrandLayout.
+// Injects Tabler Icons webfont once - same pattern as CreatorLayout / BrandLayout.
 const TABLER_ICONS_URL =
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
 
@@ -24,7 +24,7 @@ function useTablerIcons() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Navbar/sidebar shape and color both come from index.css as-is — no local
+// Navbar/sidebar shape and color both come from index.css as-is - no local
 // palette (the previous slate accent, dark navbar fill, and red/amber
 // hex values are gone; everything below resolves through existing tokens).
 // This matches the component library's "Dashboard Navbar" pattern exactly:
@@ -35,8 +35,8 @@ function useTablerIcons() {
 // (all defined in index.css) rather than imported from shared components,
 // since those aren't rendering yet.
 //
-// What's scoped here is only page-level layout — sticky positioning, scroll
-// regions, responsive breakpoints — plus a sidebar divider and a small
+// What's scoped here is only page-level layout - sticky positioning, scroll
+// regions, responsive breakpoints - plus a sidebar divider and a small
 // margin-left wrapper for the urgency badges, neither of which has a
 // library equivalent.
 // ─────────────────────────────────────────────────────────────────────────
@@ -94,14 +94,14 @@ const LAYOUT_STYLES = `
   min-width: 0;
 }
 
-/* Sidebar divider between groups — no library equivalent. */
+/* Sidebar divider between groups - no library equivalent. */
 .admin-layout__sidebar-divider {
   height: 0.5px;
   background: var(--grey-100);
   margin: var(--space-10) var(--space-10) var(--space-4);
 }
 
-/* Positions an urgency .badge at the end of a sidebar row — .badge itself
+/* Positions an urgency .badge at the end of a sidebar row - .badge itself
    has no margin-left rule since it's also used inline (e.g. the navbar bell). */
 .admin-layout__sidebar-badge-slot {
   margin-left: auto;
@@ -155,10 +155,10 @@ const LAYOUT_STYLES = `
 }
 `;
 
-// Sidebar — grouped by operational domain, matching admin journeys.
+// Sidebar - grouped by operational domain, matching admin journeys.
 // `badgeVariant` maps to an existing index.css badge color:
-//   'urgent'  → badge-red     (open disputes / flagged accounts — binding decisions)
-//   'pending' → badge-warning (flagged reviews — queued, not yet time-critical)
+//   'urgent'  → badge-red     (open disputes / flagged accounts - binding decisions)
+//   'pending' → badge-warning (flagged reviews - queued, not yet time-critical)
 // `badgeCount` keys below are read off the live hook data in AdminLayout().
 const SIDEBAR_SECTIONS = [
   {
@@ -240,7 +240,7 @@ export default function AdminLayout() {
       <style>{LAYOUT_STYLES}</style>
       <div className="admin-layout">
 
-        {/* ── Navbar: logo · search · bell · avatar (no links — sidebar owns those) ── */}
+        {/* ── Navbar: logo · search · bell · avatar (no links - sidebar owns those) ── */}
         <nav className="navbar" aria-label="Admin primary">
           <button
             type="button"
@@ -329,7 +329,7 @@ export default function AdminLayout() {
 
                 {section.items.map((item) => {
 
-                  // Disabled stub — not yet built
+                  // Disabled stub - not yet built
                   if (item.disabled) {
                     return (
                       <span

@@ -1,7 +1,7 @@
 import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react';
 
 /**
- * StatCard — generic metric tile
+ * StatCard - generic metric tile
  * @param {string}  label      - uppercase label above the value
  * @param {string}  value      - the big number / metric
  * @param {string}  [delta]    - e.g. "+12% this month"

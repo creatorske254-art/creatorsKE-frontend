@@ -2,7 +2,7 @@ import { IconWifiOff, IconRefresh } from '@tabler/icons-react';
 
 /**
  * Full-screen takeover shown while the browser itself has no network
- * connection (see useOnlineStatus) — mounted at the app root in main.jsx, in
+ * connection (see useOnlineStatus) - mounted at the app root in main.jsx, in
  * front of everything else, since almost nothing in Creatorske works without
  * connectivity anyway. Disappears automatically the moment the browser
  * reports it's back online.

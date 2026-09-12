@@ -12,7 +12,7 @@ const LABEL_STYLE = {
   marginBottom: '6px',
 };
 
-// ASSUMPTION: POST /enquiries payload isn't documented — assumed
+// ASSUMPTION: POST /enquiries payload isn't documented - assumed
 // { creatorId, packageId, message }.
 export default function EnquiryForm({ creatorId, packages = [], initialPackageId, onSuccess, onCancel }) {
   const { mutate: create, isPending: isCreating } = useCreateEnquiry();
@@ -41,7 +41,7 @@ export default function EnquiryForm({ creatorId, packages = [], initialPackageId
             {packages.map((pkg) => (
               <option key={pkg.id} value={pkg.id}>
                 {pkg.name}
-                {pkg.price ? ` — ${formatCurrency(pkg.price)}` : ''}
+                {pkg.price ? ` · ${formatCurrency(pkg.price)}` : ''}
               </option>
             ))}
           </select>

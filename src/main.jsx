@@ -16,7 +16,7 @@ import '@/index.css'
 
 // Shows OfflinePage as a full-screen takeover in front of the whole app the
 // moment the browser loses connectivity, and clears itself the moment it's
-// restored — the app underneath keeps whatever state it had.
+// restored - the app underneath keeps whatever state it had.
 function OnlineGate({ children }) {
   const isOnline = useOnlineStatus()
   return (
@@ -48,12 +48,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <QueryClientProvider client={queryClient}>
         <OnlineGate>
 
-          {/* Auth must wrap everything — contexts below it may read auth state */}
+          {/* Auth must wrap everything - contexts below it may read auth state */}
           <AuthProvider>
             <ThemeProvider>
             <NotificationProvider>
 
-              {/* Single Toaster instance — all features call toast() from sonner */}
+              {/* Single Toaster instance - all features call toast() from sonner */}
               <Toaster
                 position="top-right"
                 duration={4000}
@@ -69,7 +69,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
         </OnlineGate>
 
-        {/* Dev tools — the package already no-ops itself outside dev via
+        {/* Dev tools - the package already no-ops itself outside dev via
             process.env.NODE_ENV, but gate it explicitly too so it's never
             ambiguous whether a "dev thing" can reach production. */}
         {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

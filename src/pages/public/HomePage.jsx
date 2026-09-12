@@ -122,7 +122,7 @@ const SOCIAL_LINKS = [
 ];
 
 export default function HomePage() {
-  usePageMeta(null, "Creatorske — the marketplace for Kenya's content creators. Build a shareable rate card, get discovered by brands, and get paid via M-Pesa.");
+  usePageMeta(null, "Creatorske: the marketplace for Kenya's content creators. Build a shareable rate card, get discovered by brands, and get paid via M-Pesa.");
   const navigate = useNavigate();
   const { hash } = useLocation();
 

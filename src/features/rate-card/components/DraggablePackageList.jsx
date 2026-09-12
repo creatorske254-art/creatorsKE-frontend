@@ -51,11 +51,11 @@ function SortablePackageCard({ pkg, onEdit, onDelete }) {
 // ─── DraggablePackageList ─────────────────────────────────────────────────────
 /**
  * Props:
- *   packages   — array of package objects (must have .id)
- *   onChange   — (newOrder: string[]) => void  — called on drag end with new id order
- *   onEdit     — (pkg) => void
- *   onDelete   — (pkg) => void
- *   onAddNew   — () => void
+ *   packages   - array of package objects (must have .id)
+ *   onChange   - (newOrder: string[]) => void  - called on drag end with new id order
+ *   onEdit     - (pkg) => void
+ *   onDelete   - (pkg) => void
+ *   onAddNew   - () => void
  */
 export default function DraggablePackageList({ packages = [], onChange, onEdit, onDelete, onAddNew }) {
   const [activeId, setActiveId] = useState(null);
@@ -109,7 +109,7 @@ export default function DraggablePackageList({ packages = [], onChange, onEdit, 
           </div>
         </SortableContext>
 
-        {/* Drag overlay — the floating card while dragging */}
+        {/* Drag overlay - the floating card while dragging */}
         <DragOverlay dropAnimation={null}>
           {activePackage ? (
             <PackageCard

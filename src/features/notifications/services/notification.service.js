@@ -5,7 +5,7 @@ export const notificationService = {
 
   markRead: (ids) => api.patch('/notifications/mark-read', { ids }).then((r) => r.data),
 
-  // No dedicated unread-count endpoint is documented — derive it from the list.
+  // No dedicated unread-count endpoint is documented - derive it from the list.
   getUnreadCount: () =>
     api.get('/notifications').then((r) => {
       const list = Array.isArray(r.data) ? r.data : r.data?.notifications ?? [];

@@ -7,7 +7,7 @@ const TILES = [
 
 /**
  * Status summary tiles. Expects to be rendered inside a grid whose areas are
- * named s1..s4 (see each page's own bento-grid layout CSS) — kept a plain
+ * named s1..s4 (see each page's own bento-grid layout CSS) - kept a plain
  * fragment rather than owning the grid itself so callers control layout.
  */
 export default function EnquiryPipeline({ pipelineCounts }) {

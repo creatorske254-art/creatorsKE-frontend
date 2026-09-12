@@ -5,13 +5,13 @@ import { cn } from '@/lib/utils';
 /**
  * RateCardTile
  *
- * Shown on the creator dashboard — one tile per rate card.
+ * Shown on the creator dashboard - one tile per rate card.
  *
  * Props:
- *   rateCard  — { id, title, isPublished, packages, views, clicks }
- *   onPublish  — () => void
- *   onUnpublish — () => void
- *   onDelete  — () => void
+ *   rateCard  - { id, title, isPublished, packages, views, clicks }
+ *   onPublish  - () => void
+ *   onUnpublish - () => void
+ *   onDelete  - () => void
  */
 export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelete }) {
   const { id, title, isPublished, packages = [], views = 0, clicks = 0 } = rateCard;
@@ -20,7 +20,7 @@ export default function RateCardTile({ rateCard, onPublish, onUnpublish, onDelet
     ? Math.min(...packages.map((p) => p.price || 0))
     : null;
 
-  const ctr = views > 0 ? ((clicks / views) * 100).toFixed(1) : '—';
+  const ctr = views > 0 ? ((clicks / views) * 100).toFixed(1) : '-';
 
   return (
     <div className={cn('rc-tile', isPublished && 'rc-tile--published')}>

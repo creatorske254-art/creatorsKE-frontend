@@ -50,7 +50,7 @@ const THREAD_CSS = `
 
 /**
  * Real-time-ish chat thread (15s poll, per useMessages). One enquiry = one
- * thread for its whole lifecycle — threadId is the enquiry's own id.
+ * thread for its whole lifecycle - threadId is the enquiry's own id.
  * @param {string|number} threadId
  */
 export default function MessageThread({ threadId }) {
@@ -87,7 +87,7 @@ export default function MessageThread({ threadId }) {
       setText('');
     } catch {
       // messageService/api.js already surfaces a toast via the interceptor's
-      // normalized error — nothing further to do here.
+      // normalized error - nothing further to do here.
     }
   };
 

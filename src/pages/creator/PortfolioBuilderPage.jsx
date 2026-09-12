@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/context/AuthContext';
 import { usePortfolio } from '@/features/portfolio/hooks/usePortfolio';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { useImageUpload } from '@/lib/useImageUpload';
 
 // Same as CreatorLayout.jsx: the component library loads icons via a <link>
 // tag in <head>, not a package import. This page normally renders inside
@@ -340,18 +341,10 @@ export default function PortfolioBuilderPage() {
     console.info('Manual save', data);
   }
 
-  const handlePhotoChange = useCallback(
-    (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setValue('photoUrl', ev.target.result, { shouldDirty: true });
-      };
-      reader.readAsDataURL(file);
-    },
-    [setValue]
-  );
+  const { uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
+    successMessage: 'Photo uploaded.',
+    onUploaded: ({ url }) => setValue('photoUrl', url, { shouldDirty: true }),
+  });
 
   function addNiche() {
     const val = nicheInput.trim();
@@ -465,10 +458,10 @@ export default function PortfolioBuilderPage() {
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-                  <label className="btn btn-ghost btn-sm" style={{ cursor: 'pointer', width: 'fit-content' }}>
+                  <label className={`btn btn-ghost btn-sm${photoUploading ? ' btn-loading' : ''}`} style={{ cursor: 'pointer', width: 'fit-content' }}>
                     <i className="ti ti-upload" style={{ fontSize: 12 }} aria-hidden="true" />
-                    Upload photo
-                    <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+                    {formValues.photoUrl ? 'Change photo' : 'Upload photo'}
+                    <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: 'none' }} />
                   </label>
                   <p className="hint" style={{ margin: 0 }}>
                     JPG, PNG &middot; max 5MB &middot; square works best
@@ -495,7 +488,7 @@ export default function PortfolioBuilderPage() {
                 <textarea
                   className="inp ta"
                   rows={4}
-                  placeholder="Tell brands about yourself..."
+                  placeholder="Tell brands about yourself…"
                   {...register('bio')}
                 />
               </Field>
@@ -591,7 +584,7 @@ export default function PortfolioBuilderPage() {
               <Field label="Instagram handle">
                 <div className="inp-wrap">
                   <span className="inp-pre">@</span>
-                  <input className="inp" style={{ paddingLeft: 20 }} placeholder="yourhandle" {...register('contact.instagramHandle')} />
+                  <input className="inp" style={{ paddingLeft: 20 }} placeholder="e.g. amaracreates" {...register('contact.instagramHandle')} />
                 </div>
               </Field>
               <Field label="Email">

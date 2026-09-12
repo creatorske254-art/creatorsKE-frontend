@@ -10,7 +10,7 @@ const EMPTY_COLLAB = {
 /**
  * CollaborationForm
  * Past brand partnerships. Each entry: brand name, campaign description,
- * optional result metric. No upper limit — brands love a long track record.
+ * optional result metric. No upper limit - brands love a long track record.
  */
 export function CollaborationForm({ control, register, errors }) {
   const { fields, append, remove } = useFieldArray({
@@ -23,7 +23,7 @@ export function CollaborationForm({ control, register, errors }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 2 }}>
-            Brands you've worked with before. Include results where you can — numbers build trust.
+            Brands you've worked with before. Include results where you can; numbers build trust.
           </p>
         </div>
         <button

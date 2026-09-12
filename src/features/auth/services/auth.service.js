@@ -5,7 +5,7 @@ export const authService = {
   login: (credentials) => api.post('/auth/login', credentials),
   refreshToken: (refreshToken) => api.post('/auth/refresh-token', { refreshToken }),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
-  // Not in the documented API — best-effort path, see BACKEND_API_SPEC.md.
+  // Not in the documented API - best-effort path, see BACKEND_API_SPEC.md.
   resendVerification: (email) => api.post('/auth/resend-verification', { email }),
   requestPasswordReset: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, password: newPassword }),
@@ -14,7 +14,7 @@ export const authService = {
   deleteAccount: () => api.delete('/auth/account'),
 };
 
-// Users & Profiles — no dedicated "users" feature exists, and this is the
+// Users & Profiles - no dedicated "users" feature exists, and this is the
 // closest home (auth already owns the authenticated-account lifecycle).
 export const userService = {
   getProfile: () => api.get('/users/profile').then((r) => r.data),

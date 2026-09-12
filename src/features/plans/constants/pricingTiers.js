@@ -1,4 +1,4 @@
-// Public marketing-page pricing content — transcribed 1:1 from the product
+// Public marketing-page pricing content - transcribed 1:1 from the product
 // team's pricing sheet. Kept separate from `plans.js`'s PLANS enum (which
 // tracks a user's actual account plan) since this is presentation copy, not
 // app state.

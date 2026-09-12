@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 /**
  * Theme + accent preference, persisted to localStorage and applied to
  * <html> so it survives reloads and covers every page (index.css already
- * ships a full `.dark` token set — this is what actually switches it on).
+ * ships a full `.dark` token set - this is what actually switches it on).
  *
  * Storage keys follow the existing `creatorske_*` convention from AuthContext.
  */

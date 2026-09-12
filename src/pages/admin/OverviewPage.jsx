@@ -8,7 +8,7 @@ import { formatCurrency, getInitials } from '@/lib/utils';
 import Modal from '@/components/ui/Modal';
 
 // A small "Demo data" tag for sections with no backing endpoint yet (see the
-// production-readiness plan's backend spec) — kept visible rather than
+// production-readiness plan's backend spec) - kept visible rather than
 // silently passed off as real.
 function DemoTag() {
   return <span className="tag tag-default" style={{ fontSize: 10 }}>Demo data</span>;
@@ -26,8 +26,8 @@ function useTablerIcons() {
   }, []);
 }
 
-// GET /admin/stats' response schema is undocumented — these are best-effort
-// field-name guesses with a "—" fallback rather than fabricated numbers.
+// GET /admin/stats' response schema is undocumented - these are best-effort
+// field-name guesses with a "-" fallback rather than fabricated numbers.
 // No delta/trend field exists on any documented response, so unlike the
 // original mock these show a plain value with no invented "+34 this week".
 const HEALTH_METRICS_DEF = [
@@ -42,7 +42,7 @@ const HEALTH_METRICS_DEF = [
 ];
 
 // Demo-only sections below (escrow queue, flagged reviews, draft/enquiry
-// charts, re-engagement queue) have no backing endpoint at all — see the
+// charts, re-engagement queue) have no backing endpoint at all - see the
 // production-readiness plan's backend spec. Left in place as illustrative
 // placeholders, clearly tagged, rather than removed or silently treated as real.
 const ABANDONED_DRAFTS = [48, 34, 29, 51, 38, 44, 57, 42, 36, 61, 53, 40, 29, 35];
@@ -85,7 +85,7 @@ function SectionHead({ title, action, actionLabel }) {
   );
 }
 
-// Mini bar chart — bespoke, no canonical equivalent
+// Mini bar chart - bespoke, no canonical equivalent
 function MiniBarChart({ data, labels, accentIndex, color = "var(--purple-300)", activeColor = "var(--purple-500)", height = 64 }) {
   const [hovered, setHovered] = useState(null);
   const max = Math.max(...data);
@@ -122,7 +122,7 @@ function MiniBarChart({ data, labels, accentIndex, color = "var(--purple-300)", 
   );
 }
 
-// Alert banner — bespoke, no canonical equivalent (closest is .alert in index.css
+// Alert banner - bespoke, no canonical equivalent (closest is .alert in index.css
 // but that's scoped to a different component; kept local, tokens fixed)
 function Alert({ type = "warning", icon, children }) {
   const styles = {
@@ -138,7 +138,7 @@ function Alert({ type = "warning", icon, children }) {
   );
 }
 
-// Initials avatar — dynamic per-item tint color, no fixed canonical variant
+// Initials avatar - dynamic per-item tint color, no fixed canonical variant
 // fits (unlike the small fixed --tint-* set), so this stays bespoke; base
 // shape/font now reuse .avatar.
 function Initials({ letters, color = "var(--purple-500)", size = 34 }) {
@@ -228,7 +228,7 @@ export default function OverviewPage() {
       <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: 14, marginBottom: 28 }}>
         {HEALTH_METRICS_DEF.map((m) => {
           const raw = stats?.[m.field];
-          const display = raw == null ? '—' : m.currency ? formatCurrency(raw) : raw.toLocaleString?.() ?? raw;
+          const display = raw == null ? '-' : m.currency ? formatCurrency(raw) : raw.toLocaleString?.() ?? raw;
           return (
             <div className="card card-p-md" key={m.label}>
               <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--grey-400)", marginBottom: 8 }}>{m.label}</div>
@@ -444,7 +444,7 @@ export default function OverviewPage() {
 
       <Modal open={emailCopyOpen} onClose={() => setEmailCopyOpen(false)} title="Re-engagement email" size="md">
         <p style={{ fontSize: 12.5, color: "var(--grey-500)", marginBottom: 14 }}>
-          Sent automatically 48 hours after a creator abandons their onboarding draft. Editing the copy needs a backend template endpoint — this shows what currently goes out.
+          Sent automatically 48 hours after a creator abandons their onboarding draft. Editing the copy needs a backend template endpoint; this shows what currently goes out.
         </p>
         <div style={{ border: "0.5px solid var(--grey-200)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
           <div style={{ padding: "10px 14px", background: "var(--grey-50)", borderBottom: "0.5px solid var(--grey-200)", fontSize: 12.5 }}>
@@ -453,7 +453,7 @@ export default function OverviewPage() {
           </div>
           <div style={{ padding: 16, fontSize: 13.5, lineHeight: 1.7, color: "var(--grey-700)" }}>
             <p>Hi {'{{firstName}}'},</p>
-            <p>You started building your rate card on Creatorske but didn't finish. It's saved exactly where you left it — {'{{packageCount}}'} package{'{{packageCount === 1 ? "" : "s"}}'} and counting.</p>
+            <p>You started building your rate card on Creatorske but didn't finish. It's saved exactly where you left it, with {'{{packageCount}}'} package{'{{packageCount === 1 ? "" : "s"}}'} and counting.</p>
             <p>Creators with a published card get their first brand enquiry within a median of 6 days. Pick up where you left off:</p>
             <p><span className="btn btn-purple btn-sm" style={{ pointerEvents: "none" }}>Finish my rate card</span></p>
             <p style={{ color: "var(--grey-400)", fontSize: 12 }}>Not interested anymore? <u>Delete my draft</u> · <u>Unsubscribe</u></p>

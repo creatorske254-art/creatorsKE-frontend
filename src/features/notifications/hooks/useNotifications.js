@@ -4,7 +4,7 @@ import { notificationService } from '../services/notification.service';
 const NOTIFICATIONS_KEY = ['notifications'];
 
 // Full notification list + mark-read, for NotificationList.jsx.
-// For the navbar bell's live unread count, see NotificationContext instead —
+// For the navbar bell's live unread count, see NotificationContext instead -
 // that one polls notificationService.getUnreadCount() independently of this
 // list query so the badge updates even on pages that don't mount this hook.
 export function useNotifications() {

@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/utils';
 
 const previewOnly = () =>
-  toast.info('This is a preview — brands will use this button on your published rate card.');
+  toast.info('This is a preview. Brands will use this button on your published rate card.');
 
 /**
  * RateCardPreview
@@ -11,8 +11,8 @@ const previewOnly = () =>
  * Fed live from the builder via react-hook-form's watch().
  *
  * Props:
- *   data — { title, tagline, handle, availability, packages: [...] }
- *   creatorName — string (from auth context or profile)
+ *   data - { title, tagline, handle, availability, packages: [...] }
+ *   creatorName - string (from auth context or profile)
  */
 export default function RateCardPreview({ data = {}, creatorName = '' }) {
   const { title, tagline, handle, availability, packages = [] } = data;
@@ -33,7 +33,7 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
       {/* ── Preview label ──────────────────────────────────────────────── */}
       <div className="rc-preview__badge">
         <i className="ti ti-eye" style={{ fontSize: 11 }} />
-        Preview — public view
+        Preview: public view
       </div>
 
       {/* ── Header ────────────────────────────────────────────────────── */}

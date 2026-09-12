@@ -24,7 +24,7 @@ const PLATFORM_ICONS = {
 
 function formatNumber(n) {
   const num = Number(n);
-  if (!n || isNaN(num)) return '—';
+  if (!n || isNaN(num)) return '-';
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
   return num.toLocaleString();
@@ -73,7 +73,7 @@ export function PortfolioPreview({ values, creatorName = 'Your Name', handle = '
             color: 'var(--purple-500)',
           }}
         >
-          Live preview — what brands see
+          Live preview: what brands see
         </span>
       </div>
 

@@ -24,12 +24,12 @@ export function useDisputes() {
     onError: () => toast.error('Could not resolve dispute.'),
   });
 
-  // No backend endpoint exists yet (see backend spec) — retry:false avoids
+  // No backend endpoint exists yet (see backend spec) - retry:false avoids
   // hammering a 404, and the seam is ready to work once it's built.
   const replyMutation = useMutation({
     mutationFn: ({ id, message }) => adminService.replyToDispute(id, message),
     retry: false,
-    onError: () => toast.error("Replying isn't available yet — this needs backend support."),
+    onError: () => toast.error("Replying isn't available yet. It needs backend support."),
   });
 
   return {

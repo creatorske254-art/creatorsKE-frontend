@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
  * QuickActions
  *
  * Props:
- *   publicUrl: string           — the creator's public profile URL
+ *   publicUrl: string           - the creator's public profile URL
  *   copyPublicLink: () => Promise<{ success: bool }>
  */
 export default function QuickActions({ publicUrl, copyPublicLink }) {

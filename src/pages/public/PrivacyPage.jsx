@@ -14,7 +14,7 @@ const SECTIONS = [
       'Account information: your name, email address, phone number, and password when you register, plus your role (creator, brand, or admin).',
       'Profile information: rate card details, portfolio content, social media statistics, business domain (for brands), and any other information you choose to add to your profile.',
       'Booking information: enquiries, messages, package selections, and delivery files exchanged through the platform.',
-      'Payment information: M-Pesa/Airtel Money transaction references and payout details, processed through our licensed payment partners — we do not store your full payment credentials ourselves.',
+      'Payment information: M-Pesa/Airtel Money transaction references and payout details, processed through our licensed payment partners. We do not store your full payment credentials ourselves.',
       'Usage information: log data such as IP address, browser type, device information, and how you interact with the platform, collected automatically.',
     ],
   },

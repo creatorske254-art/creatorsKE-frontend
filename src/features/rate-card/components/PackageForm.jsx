@@ -9,11 +9,11 @@ import { cn } from '@/lib/utils';
  * { register, control, formState } via props from the parent useForm() call.
  *
  * Props:
- *   index        — position of this package in the packages[] field array
- *   register     — from react-hook-form
- *   control      — from react-hook-form (needed for useFieldArray deliverables)
- *   errors       — formState.errors.packages?.[index]
- *   onRemove     — () => void — called when the creator removes this package
+ *   index        - position of this package in the packages[] field array
+ *   register     - from react-hook-form
+ *   control      - from react-hook-form (needed for useFieldArray deliverables)
+ *   errors       - formState.errors.packages?.[index]
+ *   onRemove     - () => void - called when the creator removes this package
  */
 export default function PackageForm({ index, register, control, errors, onRemove }) {
   const { fields: deliverables, append, remove } = useFieldArray({

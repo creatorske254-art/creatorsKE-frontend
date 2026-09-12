@@ -6,13 +6,13 @@ import Skeleton from '@/components/ui/Skeleton'
 import { useDisputes } from '@/features/admin/hooks/useDisputes'
 import { formatDate } from '@/lib/utils'
 
-// GET /admin/disputes' response schema is undocumented (see CLAUDE.md) — the
+// GET /admin/disputes' response schema is undocumented (see CLAUDE.md) - the
 // rich scope/evidence breakdown below has no confirmed backend counterpart,
 // so it's rendered only when a real dispute object actually carries it.
 function normalizeDispute(d) {
   return {
     id: d.id,
-    bookingId: d.bookingId ?? d.campaignId ?? '—',
+    bookingId: d.bookingId ?? d.campaignId ?? '-',
     creator: { name: d.creatorName ?? d.creator?.name ?? 'Unknown creator', handle: d.creatorHandle ?? d.creator?.handle ?? '' },
     brand: { name: d.brandName ?? d.brand?.name ?? 'Unknown brand' },
     package: d.packageName ?? d.package ?? 'Booking dispute',
@@ -316,8 +316,8 @@ export default function DisputesPage() {
                     <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 6 }}>Agreed scope</div>
                     {selected.scope ? (
                       <>
-                        <div className="detail-row"><span className="detail-label">Deliverables</span><span className="detail-value">{selected.scope.deliverables?.join(', ') ?? '—'}</span></div>
-                        <div className="detail-row"><span className="detail-label">Timeline</span><span className="detail-value">{selected.scope.timeline ?? '—'}</span></div>
+                        <div className="detail-row"><span className="detail-label">Deliverables</span><span className="detail-value">{selected.scope.deliverables?.join(', ') ?? '-'}</span></div>
+                        <div className="detail-row"><span className="detail-label">Timeline</span><span className="detail-value">{selected.scope.timeline ?? '-'}</span></div>
                       </>
                     ) : (
                       <div className="detail-row"><span className="detail-label">Deliverables</span><span className="detail-value">Not available</span></div>
@@ -415,7 +415,7 @@ export default function DisputesPage() {
                       <div>
                         <div style={{ fontSize: 11.5, color: 'var(--grey-500)', marginBottom: 6 }}>Reasoning (sent to both parties)</div>
                         <textarea
-                          placeholder="Explain how the evidence supports this decision..."
+                          placeholder="Explain how the evidence supports this decision…"
                           value={note}
                           onChange={e => setNote(e.target.value)}
                         />

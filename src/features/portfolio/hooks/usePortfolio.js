@@ -26,7 +26,7 @@ export function usePortfolio(creatorId) {
 
   const draftMutation = useMutation({
     mutationFn: ({ id, data }) => portfolioService.saveDraft(id, data),
-    // Silent — auto-save shouldn't toast on every keystroke
+    // Silent - auto-save shouldn't toast on every keystroke
   });
 
   const publishMutation = useMutation({
@@ -47,7 +47,7 @@ export function usePortfolio(creatorId) {
     onError: () => toast.error('Failed to unpublish portfolio'),
   });
 
-  // Debounced auto-save — fires 1.5s after the last change
+  // Debounced auto-save - fires 1.5s after the last change
   const autoSave = useCallback(
     (id, data) => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);

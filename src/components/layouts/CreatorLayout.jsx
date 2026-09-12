@@ -6,7 +6,7 @@ import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
 
-// The mockup loads icons via a <link> tag in <head>, not a package import —
+// The mockup loads icons via a <link> tag in <head>, not a package import -
 // this effect injects that same stylesheet once, so the "ti ti-*" classes
 // used below actually have glyphs to render. Safe to call from multiple
 // mounts; it no-ops if the link already exists.
@@ -24,13 +24,13 @@ function useTablerIcons() {
 
 // Component-library chrome (.navbar, .sidebar, .nav-link, .sidebar-link, ...)
 // lives in index.css, ported 1:1 from the Creatorske Component Library §05
-// (Navigation) — those are shared primitives other pages can reuse too.
+// (Navigation) - those are shared primitives other pages can reuse too.
 //
-// The rules below are NOT shared — they're this page's own layout plumbing
+// The rules below are NOT shared - they're this page's own layout plumbing
 // (sticky positioning, scroll regions, the 860px/600px breakpoints), so they
 // stay scoped here rather than polluting the global stylesheet. They still
 // pull from the shared token set (--navbar-height, --space-*, --z-navbar)
-// rather than repeating magic numbers — --navbar-height in particular was a
+// rather than repeating magic numbers - --navbar-height in particular was a
 // "hole": 60px used to be hand-typed in three separate places here.
 const DASHBOARD_SHELL_STYLES = `
 .dashboard-shell {
@@ -67,7 +67,7 @@ const DASHBOARD_SHELL_STYLES = `
   background: var(--page-bg);
 }
 
-/* Divider above Log out — the section labels above already separate those
+/* Divider above Log out - the section labels above already separate those
    groups, so this is the only divider the sidebar needs. */
 .dashboard-shell__sidebar-divider {
   height: 0.5px;
@@ -120,13 +120,13 @@ const DASHBOARD_SHELL_STYLES = `
 }
 `;
 
-// Sidebar — grouped sections. Per the library's "Dashboard Shell" pattern,
+// Sidebar - grouped sections. Per the library's "Dashboard Shell" pattern,
 // the logo lives in the navbar only and every nav link lives in the sidebar
-// only (the dashboard navbar itself carries no .nav-link items — just logo,
+// only (the dashboard navbar itself carries no .nav-link items - just logo,
 // search, bell, avatar).
 // `badgeKey` maps to a key on useEnquiries()'s pipelineCounts.
 // Items for pages that don't exist yet (Client list, Invoices) are left out
-// entirely rather than shown as disabled placeholders — add them back once
+// entirely rather than shown as disabled placeholders - add them back once
 // those routes exist.
 const SIDEBAR_SECTIONS = [
   {
@@ -196,7 +196,7 @@ export default function CreatorLayout() {
             Creatorske<span>.</span>
           </NavLink>
 
-          {/* Submits to the public creator directory, which reads ?q= — the
+          {/* Submits to the public creator directory, which reads ?q= - the
               same destination BrandLayout's search uses. */}
           <form
             role="search"
@@ -301,8 +301,8 @@ export default function CreatorLayout() {
               </div>
             ))}
 
-            {/* Log out — pinned to the bottom of the sidebar via the
-                divider's margin-top: auto — with the error-red treatment,
+            {/* Log out - pinned to the bottom of the sidebar via the
+                divider's margin-top: auto - with the error-red treatment,
                 matching the mockup. */}
             <div className="dashboard-shell__sidebar-divider" style={{ marginTop: 'auto' }} />
             <button

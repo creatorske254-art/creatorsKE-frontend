@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
 
 /**
- * PayoutForm — amount entry + destination summary for withdrawing to a
+ * PayoutForm - amount entry + destination summary for withdrawing to a
  * creator's primary payout method. The caller owns the modal chrome; this
  * is just the form body, calling onSubmit(amount) with a plain number.
  */

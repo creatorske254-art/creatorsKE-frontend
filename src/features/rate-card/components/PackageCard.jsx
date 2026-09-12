@@ -8,11 +8,11 @@ import { formatCurrency } from '@/lib/utils';
  * Receives drag handle props via `dragHandleProps` from the sortable wrapper.
  *
  * Props:
- *   pkg             — { id, name, price, description, deliverables, revisions }
- *   dragHandleProps — spread onto the drag handle element
- *   isActive        — true while this card is being dragged (dnd-kit)
- *   onEdit          — () => void
- *   onDelete        — () => void
+ *   pkg             - { id, name, price, description, deliverables, revisions }
+ *   dragHandleProps - spread onto the drag handle element
+ *   isActive        - true while this card is being dragged (dnd-kit)
+ *   onEdit          - () => void
+ *   onDelete        - () => void
  */
 export default function PackageCard({ pkg, dragHandleProps, isActive, onEdit, onDelete }) {
   const revisionLabel =

@@ -7,6 +7,7 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/features/auth/services/auth.service';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
+import { useImageUpload } from '@/lib/useImageUpload';
 
 // Page-scoped styles
 // Every value below reads from the global index.css tokens (--purple-*,
@@ -218,7 +219,7 @@ const css = `
   }
   .settings-savebar-hint { font-size: var(--text-body-sm-size); color: var(--grey-500); }
 
-  /* Responsive — same breakpoint as the creator settings page */
+  /* Responsive - same breakpoint as the creator settings page */
   @media (max-width: 640px) {
     .field-row { grid-template-columns: 1fr; }
     .settings-tabs { width: 100%; }
@@ -266,19 +267,14 @@ function SaveBar({ dirty, saving, onSave }) {
 
 // Profile tab
 function ProfileTab({ form, setForm, onDirty }) {
-  const [logoUrl, setLogoUrl] = useState(null);
-
   function upd(key) {
     return (e) => { setForm((f) => ({ ...f, [key]: e.target.value })); onDirty(); };
   }
 
-  function handleLogoChange(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => { setLogoUrl(ev.target.result); onDirty(); };
-    reader.readAsDataURL(file);
-  }
+  const { url: logoUrl, uploading: logoUploading, onChange: handleLogoChange } = useImageUpload({
+    successMessage: "Logo uploaded.",
+    onUploaded: ({ url }) => { setForm((f) => ({ ...f, logoUrl: url })); onDirty(); },
+  });
 
   const industryOptions = [
     { value: "fmcg", label: "FMCG / Consumer goods" },
@@ -307,10 +303,10 @@ function ProfileTab({ form, setForm, onDirty }) {
             </div>
           )}
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <label className="btn btn-ghost btn-sm" style={{ cursor: "pointer", width: "fit-content" }}>
+            <label className={`btn btn-ghost btn-sm${logoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
               <i className="ti ti-upload" style={{ fontSize: 12 }} />
-              Upload logo
-              <input type="file" accept="image/*" onChange={handleLogoChange} style={{ display: "none" }} />
+              {logoUrl ? "Change logo" : "Upload logo"}
+              <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handleLogoChange} disabled={logoUploading} style={{ display: "none" }} />
             </label>
             <span className="field-hint">PNG or SVG · max 2 MB · shown on invoices and scope confirmations</span>
           </div>
@@ -365,7 +361,7 @@ function ProfileTab({ form, setForm, onDirty }) {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">Contact name</label>
-              <input className="input input-md" value={form.contactName} onChange={upd("contactName")} placeholder="Your full name" />
+              <input className="input input-md" value={form.contactName} onChange={upd("contactName")} placeholder="e.g. Amara Osei" />
             </div>
             <div className="field">
               <label className="field-label">Job title</label>
@@ -422,7 +418,7 @@ function ProfileTab({ form, setForm, onDirty }) {
 }
 
 // Payments tab
-// Connecting opens a modal for real details rather than flipping a boolean —
+// Connecting opens a modal for real details rather than flipping a boolean -
 // there's no /payments/methods endpoint yet (see BACKEND_API_SPEC.md), so what
 // the brand enters is held here and labelled, not invented.
 const PAYMENT_METHODS = [
@@ -514,7 +510,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
     setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, connected: true, detail } : m)));
     setConnecting(null);
     onDirty();
-    toast.success(`${methods.find((m) => m.id === id)?.name} connected — saved locally until payment methods are supported on the backend.`);
+    toast.success(`${methods.find((m) => m.id === id)?.name} connected. Saved locally until payment methods are supported on the backend.`);
   }
 
   function handleDisconnect() {
@@ -742,16 +738,16 @@ function SecurityTab({ onDirty }) {
             <div className="settings-stack" style={{ gap: 12 }}>
               <div className="field">
                 <label className="field-label field-required">Current password</label>
-                <input className="input input-md" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="Enter current password" />
+                <input className="input input-md" type="password" value={pwForm.current} onChange={(e) => setPwForm((f) => ({ ...f, current: e.target.value }))} placeholder="••••••••" />
               </div>
               <div className="field-row">
                 <div className="field">
                   <label className="field-label field-required">New password</label>
-                  <input className="input input-md" type="password" value={pwForm.next} onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))} placeholder="Min 8 characters" />
+                  <input className="input input-md" type="password" value={pwForm.next} onChange={(e) => setPwForm((f) => ({ ...f, next: e.target.value }))} placeholder="At least 8 characters" />
                 </div>
                 <div className="field">
                   <label className="field-label field-required">Confirm new password</label>
-                  <input className="input input-md" type="password" value={pwForm.confirm} onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))} placeholder="Repeat new password" />
+                  <input className="input input-md" type="password" value={pwForm.confirm} onChange={(e) => setPwForm((f) => ({ ...f, confirm: e.target.value }))} placeholder="Re-enter your new password" />
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -827,7 +823,7 @@ function AccountTab() {
     try {
       await authService.deleteAccount();
     } catch {
-      // Best-effort — sign out locally even if the request fails, matching
+      // Best-effort - sign out locally even if the request fails, matching
       // logout()'s own best-effort pattern in AuthContext.
     }
     logout();
@@ -890,8 +886,8 @@ function AccountTab() {
 }
 
 /**
- * Brand deletion is gated on having no live campaigns — money is in escrow
- * against them — so the modal shows the real active-campaign count from
+ * Brand deletion is gated on having no live campaigns - money is in escrow
+ * against them - so the modal shows the real active-campaign count from
  * useBrandDashboard() and blocks until it's zero, instead of the old hardcoded
  * "You have 1 active booking" line.
  */
@@ -1000,6 +996,7 @@ export default function BrandSettingsPage() {
         email: form.email,
         phone: form.phone,
         location: form.location,
+        logoUrl: form.logoUrl,
         preferences: prefs,
         notificationPreferences: notifPrefs,
       },

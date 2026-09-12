@@ -6,7 +6,7 @@ import { IconRefresh, IconHome, IconAlertTriangle } from '@tabler/icons-react';
  * every top-level route group in routes/index.jsx, so a render crash or a
  * loader/action error anywhere in the tree shows this instead of a blank
  * white screen. Deliberately has no data fetching and as few dependencies as
- * possible — this is the last line of defense, it must not be able to throw
+ * possible - this is the last line of defense, it must not be able to throw
  * itself.
  */
 export default function ServerErrorPage() {
@@ -42,7 +42,7 @@ export default function ServerErrorPage() {
       <p style={{ fontSize: 14, color: 'var(--grey-500)', maxWidth: 380, lineHeight: 1.7, marginBottom: 32 }}>
         {isNotFound
           ? "The page you're looking for doesn't exist or may have moved."
-          : "We hit an unexpected error loading this page. Try reloading — if it keeps happening, let us know."}
+          : "We hit an unexpected error loading this page. Try reloading. If it keeps happening, let us know."}
       </p>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>

@@ -209,7 +209,7 @@ export default function DirectoryPage() {
             <input
               className="dir-search-input"
               type="text"
-              placeholder="Search creators, niches, platforms..."
+              placeholder="Search creators, niches, platforms…"
               value={query}
               onChange={e => setQuery(e.target.value)}
             />
@@ -230,7 +230,7 @@ export default function DirectoryPage() {
 
       {/* ══ GRID BODY ═════════════════════════════════════════════════════ */}
       <div className="dir-body" style={{ flex: 1, padding: '32px 56px', background: 'var(--page-bg)' }}>
-        {/* Result count — makes it obvious a search/filter actually ran */}
+        {/* Result count - makes it obvious a search/filter actually ran */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, color: 'var(--grey-600)' }}>
             <strong style={{ color: 'var(--black)' }}>{filtered.length}</strong>

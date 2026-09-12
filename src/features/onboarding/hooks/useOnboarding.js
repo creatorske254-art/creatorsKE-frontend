@@ -17,7 +17,7 @@ export function useOnboarding() {
         if (typeof data?.step === 'number') setStep(data.step);
       })
       .catch(() => {
-        // No draft yet, or resume failed — start fresh.
+        // No draft yet, or resume failed - start fresh.
       })
       .finally(() => setIsResuming(false));
   }, []);

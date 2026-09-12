@@ -2,7 +2,7 @@
  * EmptyState
  * Standard icon + title + description block for "nothing here yet" states
  * (empty lists, empty tables, empty search results). Uses the canonical
- * .empty-state/.empty-icon/.empty-title/.empty-desc classes from index.css —
+ * .empty-state/.empty-icon/.empty-title/.empty-desc classes from index.css -
  * wrap in .card or .card-dashed yourself where a bordered box is wanted,
  * this component is just the content.
  *

@@ -121,7 +121,7 @@ export default function MoneyPage() {
     paymentStatus, isPolling, stopPolling,
   } = usePayments({ period })
 
-  // GET /payments/earnings/timeline's response schema is undocumented —
+  // GET /payments/earnings/timeline's response schema is undocumented -
   // guessed as [{ period/label, amount }]. Bar heights are relative to the
   // max value in the returned series, not a fabricated scale.
   const chartBars = useMemo(() => {
@@ -138,8 +138,8 @@ export default function MoneyPage() {
     })
   }, [earningsTimeline])
 
-  // GET /payments/stats' response schema is undocumented — best-effort field
-  // guesses with a "—" fallback rather than fabricated numbers.
+  // GET /payments/stats' response schema is undocumented - best-effort field
+  // guesses with a "-" fallback rather than fabricated numbers.
   const availableBalance = stats?.availableBalance ?? 0
   const pendingBalance = stats?.pendingBalance ?? 0
   const totalEarnedThisPeriod = stats?.totalEarned ?? 0
@@ -150,7 +150,7 @@ export default function MoneyPage() {
   }
 
   // No /payments/methods endpoint exists yet (see BACKEND_API_SPEC.md), so the
-  // new method is held in page state and labelled as such — but the creator
+  // new method is held in page state and labelled as such - but the creator
   // still enters real details and sees them, instead of a dead-end toast.
   function handleAddPaymentMethod(method) {
     setPaymentMethods((prev) => [
@@ -165,7 +165,7 @@ export default function MoneyPage() {
       },
     ])
     setAddMethodOpen(false)
-    toast.success(`${method.name} added — saved locally until payout methods are supported on the backend.`)
+    toast.success(`${method.name} added. Saved locally until payout methods are supported on the backend.`)
   }
 
   function handleExportCsv() {
@@ -215,7 +215,7 @@ export default function MoneyPage() {
     : false
 
   // The modal deliberately stays open on a settled payment until the creator
-  // dismisses it — a withdrawal result that disappears on a timer gives them
+  // dismisses it - a withdrawal result that disappears on a timer gives them
   // no chance to read what actually happened.
   function closeWithdraw() {
     setWithdrawOpen(false)
@@ -251,7 +251,7 @@ export default function MoneyPage() {
         .money-page .hero-sub{font-size:12px;opacity:.5;margin-top:6px}
         .money-page .hero-actions{margin-top:auto;padding-top:20px;display:flex;gap:8px}
         /* The hero is an inverted tile (var(--black) bg, var(--white) text), so
-           its translucent buttons/rings mix from var(--white) too — that way
+           its translucent buttons/rings mix from var(--white) too - that way
            they stay visible when the tile flips to a light surface in dark mode. */
         .money-page .hero-btn{background:color-mix(in srgb, var(--white) 12%, transparent);color:var(--white);border:0.5px solid color-mix(in srgb, var(--white) 20%, transparent)}
         .money-page .hero-btn:hover{background:color-mix(in srgb, var(--white) 20%, transparent)}
@@ -452,27 +452,27 @@ export default function MoneyPage() {
             <div className="card card-p-md s-5">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <p className="card-title" style={{ fontSize: 15, marginBottom: 0 }}>Subscription</p>
-                <span className="tag tag-purple">{currentPlan?.name ?? currentPlan?.id ?? '—'}</span>
+                <span className="tag tag-purple">{currentPlan?.name ?? currentPlan?.id ?? '-'}</span>
               </div>
               {/* Billing/renewal/usage fields below have no confirmed backend
-                  shape yet (see production plan's backend spec) — shown as
+                  shape yet (see production plan's backend spec) - shown as
                   illustrative placeholders, not real numbers. */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Plan</span>
-                  <span style={{ fontWeight: 500 }}>{currentPlan?.name ?? currentPlan?.id ?? '—'}</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.name ?? currentPlan?.id ?? '-'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Billing</span>
-                  <span style={{ fontWeight: 500 }}>{currentPlan?.price != null ? `${formatCurrency(currentPlan.price)} / month` : '—'}</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.price != null ? `${formatCurrency(currentPlan.price)} / month` : '-'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Next renewal</span>
-                  <span style={{ fontWeight: 500 }}>{currentPlan?.renewsAt ? new Date(currentPlan.renewsAt).toLocaleDateString('en-KE') : '—'}</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.renewsAt ? new Date(currentPlan.renewsAt).toLocaleDateString('en-KE') : '-'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Rate cards</span>
-                  <span style={{ fontWeight: 500 }}>{currentPlan?.rateCardsUsed != null && currentPlan?.rateCardsMax != null ? `${currentPlan.rateCardsUsed} / ${currentPlan.rateCardsMax} used` : '—'}</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.rateCardsUsed != null && currentPlan?.rateCardsMax != null ? `${currentPlan.rateCardsUsed} / ${currentPlan.rateCardsMax} used` : '-'}</span>
                 </div>
               </div>
               {currentPlan?.rateCardsUsed != null && currentPlan?.rateCardsMax != null && (
@@ -563,7 +563,7 @@ export default function MoneyPage() {
             ) : isPolling ? (
               <div className="modal-footer">
                 <span style={{ fontSize: 12, color: 'var(--grey-500)', marginRight: 'auto' }}>
-                  Waiting for confirmation — keep this open.
+                  Waiting for confirmation. Keep this open.
                 </span>
                 <button className="btn btn-ghost" onClick={closeWithdraw}>Close</button>
               </div>

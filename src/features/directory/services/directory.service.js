@@ -28,7 +28,7 @@ export async function getFilterOptions() {
 }
 
 /**
- * Public creator listing (no auth) — used for the public directory browse.
+ * Public creator listing (no auth) - used for the public directory browse.
  * @param {Object} params - { page, limit, category, isVerified }
  */
 export async function listCreators(params = {}) {

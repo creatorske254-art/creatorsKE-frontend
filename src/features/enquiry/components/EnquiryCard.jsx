@@ -24,7 +24,7 @@ export function EnquiryCardSkeleton() {
 
 /**
  * Pipeline list item. `variant` picks which side of the enquiry to show as
- * the counterpart name — a creator sees the brand's name, a brand sees the
+ * the counterpart name - a creator sees the brand's name, a brand sees the
  * creator's.
  * @param {'creator'|'brand'} [variant]
  */

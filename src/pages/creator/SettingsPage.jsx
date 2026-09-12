@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/context/AuthContext';
-import { authService } from '@/features/auth/services/auth.service';
+import { authService, userService } from '@/features/auth/services/auth.service';
+import { useImageUpload } from '@/lib/useImageUpload';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import Modal from '@/components/ui/Modal';
 import { useTheme } from '@/context/ThemeContext';
@@ -282,20 +283,16 @@ function ToggleRow({ label, desc, on, onChange }) {
 
 function ProfileTab() {
   const [saved, setSaved] = useState(false);
-  const [photoUrl, setPhotoUrl] = useState(null);
 
   function handleSave() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
 
-  function handlePhotoChange(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setPhotoUrl(ev.target.result);
-    reader.readAsDataURL(file);
-  }
+  const { url: photoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
+    successMessage: "Profile photo updated.",
+    onUploaded: ({ url }) => userService.updateProfile({ avatar: url }).catch(() => {}),
+  });
 
   return (
     <div className="settings-stack">
@@ -322,10 +319,10 @@ function ProfileTab() {
               <div className="avatar avatar-lg avatar-purple">AO</div>
             )}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label className="btn btn-secondary btn-sm" style={{ cursor: "pointer", width: "fit-content" }}>
+              <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
                 <i className="ti ti-upload" style={{ fontSize: 12 }} />
-                Upload photo
-                <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: "none" }} />
+                {photoUrl ? "Change photo" : "Upload photo"}
+                <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: "none" }} />
               </label>
               <p className="field-hint" style={{ marginTop: 0 }}>JPG or PNG · max 2 MB</p>
             </div>
@@ -578,7 +575,7 @@ function NotificationsTab() {
 
 // Field sets for each payout provider's connect modal. There's no
 // /payments/methods endpoint yet (see BACKEND_API_SPEC.md), so connecting
-// stores what the creator actually typed and says so — rather than the old
+// stores what the creator actually typed and says so - rather than the old
 // behaviour of flipping a boolean and inventing "+254 712 345 678 · Till 123456".
 const PAY_PROVIDERS = {
   mpesa: {
@@ -666,7 +663,7 @@ function PaymentsTab() {
   function handleConnect(key, summary) {
     setConnected((prev) => ({ ...prev, [key]: summary }));
     setConnecting(null);
-    toast.success(`${PAY_PROVIDERS[key].name} connected — saved locally until payout methods are supported on the backend.`);
+    toast.success(`${PAY_PROVIDERS[key].name} connected. Saved locally until payout methods are supported on the backend.`);
   }
 
   function handleDisconnect() {
@@ -779,7 +776,7 @@ function PaymentsTab() {
 }
 
 function AppearanceTab() {
-  // Real, persisted preferences — ThemeContext applies these to <html>, so
+  // Real, persisted preferences - ThemeContext applies these to <html>, so
   // they take effect instantly across every page and survive a reload.
   const { theme, setTheme, accent, setAccent } = useTheme();
   const [layout, setLayout] = useState(() => {
@@ -921,7 +918,7 @@ function AccountTab() {
     try {
       await authService.deleteAccount();
     } catch {
-      // Best-effort — still sign the user out locally even if the request fails,
+      // Best-effort - still sign the user out locally even if the request fails,
       // consistent with logout()'s own best-effort pattern in AuthContext.
     }
     logout();
@@ -945,17 +942,17 @@ function AccountTab() {
             <label className="field-label">Current password</label>
             <div className="input-wrapper">
               <i className="ti ti-lock input-icon left" />
-              <input className="input input-md input-icon-left" type="password" placeholder="Enter current password" />
+              <input className="input input-md input-icon-left" type="password" placeholder="••••••••" />
             </div>
           </div>
           <div className="field-row">
             <div className="field">
               <label className="field-label">New password</label>
-              <input className="input input-md" type="password" placeholder="Min. 8 characters" />
+              <input className="input input-md" type="password" placeholder="At least 8 characters" />
             </div>
             <div className="field">
               <label className="field-label">Confirm new password</label>
-              <input className="input input-md" type="password" placeholder="Repeat password" />
+              <input className="input input-md" type="password" placeholder="Re-enter your password" />
             </div>
           </div>
         </div>
@@ -1134,7 +1131,7 @@ function TwoFactorDialog({ open, onClose, onEnabled }) {
           className="btn btn-primary btn-sm"
           disabled={code.length !== 6}
           onClick={() => {
-            toast.info("Two-factor enrolment needs backend support — your code wasn't verified.");
+            toast.info("Two-factor enrolment needs backend support, so your code wasn't verified.");
             onEnabled();
           }}
         >
@@ -1193,7 +1190,7 @@ function SaveBar({ saved, onSave }) {
 export default function SettingsPage() {
   usePageMeta('Settings', 'Manage your Creatorske account, profile, and payment settings.');
   const [activeTab, setActiveTab] = useState("profile");
-  // Bumping this remounts the active tab, resetting its fields — that's what
+  // Bumping this remounts the active tab, resetting its fields - that's what
   // the SaveBar's Discard button does.
   const [formEpoch, setFormEpoch] = useState(0);
   const discard = () => setFormEpoch((n) => n + 1);

@@ -24,9 +24,9 @@ async function sharePortfolio(name) {
   const url = window.location.href;
   if (navigator.share) {
     try {
-      await navigator.share({ title: `${name} — Portfolio`, url });
+      await navigator.share({ title: `${name} | Portfolio`, url });
     } catch {
-      // user cancelled the native share sheet — nothing to do
+      // user cancelled the native share sheet - nothing to do
     }
     return;
   }
@@ -131,7 +131,7 @@ export default function PortfolioPage() {
   });
 
   usePageMeta(
-    data?.creator?.displayName ? `${data.creator.displayName} — Portfolio` : 'Creator Portfolio',
+    data?.creator?.displayName ? `${data.creator.displayName} | Portfolio` : 'Creator Portfolio',
     "Explore this creator's past work, brand collaborations, and areas of expertise on Creatorske."
   );
 

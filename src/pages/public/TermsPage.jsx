@@ -12,14 +12,14 @@ const SECTIONS = [
   {
     title: '2. Description of the Service',
     body: [
-      'Creatorske provides a marketplace where creators publish rate cards and portfolios, and brands discover creators, send enquiries, and book paid collaborations. Creatorske facilitates the connection and, where applicable, the payment for these collaborations — it does not itself produce, endorse, or guarantee the content created between a brand and a creator.',
+      'Creatorske provides a marketplace where creators publish rate cards and portfolios, and brands discover creators, send enquiries, and book paid collaborations. Creatorske facilitates the connection and, where applicable, the payment for these collaborations - it does not itself produce, endorse, or guarantee the content created between a brand and a creator.',
     ],
   },
   {
     title: '3. Eligibility & Accounts',
     body: [
       'You must be at least 18 years old, or the age of legal majority in your jurisdiction, to create an account. You are responsible for maintaining the confidentiality of your login credentials and for all activity that occurs under your account.',
-      'You agree to provide accurate, current information when registering — including a verifiable business domain for brand accounts — and to keep that information up to date. We may suspend or terminate accounts that fail brand verification or are found to contain false information.',
+      'You agree to provide accurate, current information when registering, including a verifiable business domain for brand accounts, and to keep that information up to date. We may suspend or terminate accounts that fail brand verification or are found to contain false information.',
     ],
   },
   {
@@ -79,7 +79,7 @@ const SECTIONS = [
   {
     title: '12. Disclaimers & Limitation of Liability',
     body: [
-      'Creatorske is provided "as is." We do not guarantee the quality, timeliness, or outcome of any collaboration between a brand and a creator — we facilitate the connection and payment, we are not a party to the underlying creative agreement.',
+      'Creatorske is provided "as is." We do not guarantee the quality, timeliness, or outcome of any collaboration between a brand and a creator; we facilitate the connection and payment, we are not a party to the underlying creative agreement.',
       'To the fullest extent permitted by law, Creatorske\'s liability for any claim arising from your use of the platform is limited to the platform fees you paid in the three months preceding the claim.',
     ],
   },

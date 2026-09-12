@@ -2,7 +2,7 @@ import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
 /**
- * Merge Tailwind classes safely — combines clsx + tailwind-merge.
+ * Merge Tailwind classes safely - combines clsx + tailwind-merge.
  * shadcn/ui requires this. Use everywhere class names are composed.
  *
  * @example cn('px-4 py-2', isActive && 'bg-purple-500', className)
@@ -16,7 +16,7 @@ export function cn(...inputs) {
  * @example formatCurrency(22000) → "KES 22,000"
  */
 export function formatCurrency(amount) {
-  if (amount === null || amount === undefined) return '—'
+  if (amount === null || amount === undefined) return '-'
   return `KES ${Number(amount).toLocaleString('en-KE')}`
 }
 
@@ -25,7 +25,7 @@ export function formatCurrency(amount) {
  * @example formatDate('2025-06-01') → "1 Jun 2025"
  */
 export function formatDate(dateString) {
-  if (!dateString) return '—'
+  if (!dateString) return '-'
   return new Date(dateString).toLocaleDateString('en-KE', {
     day:   'numeric',
     month: 'short',
@@ -38,7 +38,7 @@ export function formatDate(dateString) {
  * @example formatRelativeDate('2025-05-31') → "2 days ago"
  */
 export function formatRelativeDate(dateString) {
-  if (!dateString) return '—'
+  if (!dateString) return '-'
   const date  = new Date(dateString)
   const now   = new Date()
   const diffMs = now - date
@@ -69,7 +69,7 @@ export function truncateText(text, maxLength = 60) {
  * @example formatCount(25000) → "25K"
  */
 export function formatCount(num) {
-  if (!num && num !== 0) return '—'
+  if (!num && num !== 0) return '-'
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`
   if (num >= 1_000)     return `${(num / 1_000).toFixed(0)}K`
   return String(num)
@@ -90,7 +90,7 @@ export function getInitials(name) {
 }
 
 /**
- * Delay execution — useful for debouncing or artificial loading states.
+ * Delay execution - useful for debouncing or artificial loading states.
  * @example await sleep(300)
  */
 export function sleep(ms) {
@@ -98,7 +98,7 @@ export function sleep(ms) {
 }
 
 /**
- * Simple debounce — returns a debounced version of the given function.
+ * Simple debounce - returns a debounced version of the given function.
  */
 export function debounce(fn, delay = 400) {
   let timer

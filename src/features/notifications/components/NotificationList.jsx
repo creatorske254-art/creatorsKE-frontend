@@ -16,7 +16,7 @@ const TYPE_ICON = {
 // Dropdown list of recent notifications, opened from the bell button in
 // CreatorLayout / BrandLayout / AdminLayout. Each layout owns its own open/
 // close state and positioning (same duplication-per-layout convention those
-// files already use for the mobile drawer) — this component is just the
+// files already use for the mobile drawer) - this component is just the
 // shared panel content.
 //
 // The API doc doesn't document a notification's exact fields beyond

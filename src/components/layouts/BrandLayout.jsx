@@ -7,7 +7,7 @@ import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
 
-// Injects Tabler Icons webfont once — same pattern as CreatorLayout.
+// Injects Tabler Icons webfont once - same pattern as CreatorLayout.
 const TABLER_ICONS_URL =
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css';
 
@@ -23,14 +23,14 @@ function useTablerIcons() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Navbar/sidebar shape and color both come from index.css as-is — no local
+// Navbar/sidebar shape and color both come from index.css as-is - no local
 // palette. This matches the component library's "Dashboard Navbar" pattern
 // exactly: logo · search · bell · avatar, with no nav links in the navbar
 // (Dashboard, Campaigns and Shortlist already live in the sidebar below,
 // so a duplicate set of top links isn't needed).
 //
-// What's scoped here is only page-level layout — sticky positioning, scroll
-// regions, responsive breakpoints — plus two small brand-only widgets that
+// What's scoped here is only page-level layout - sticky positioning, scroll
+// regions, responsive breakpoints - plus two small brand-only widgets that
 // have no equivalent in the library: the "Brand" role pill and the live
 // green status dot on "Active campaigns". Both reuse existing index.css
 // tokens (--purple-*, --status-success) rather than introducing new colors.
@@ -89,7 +89,7 @@ const LAYOUT_STYLES = `
   min-width: 0;
 }
 
-/* Divider above Log out — section labels already separate the groups
+/* Divider above Log out - section labels already separate the groups
    above it, so this is the only divider the sidebar needs. */
 .brand-layout__sidebar-divider {
   height: 0.5px;
@@ -97,7 +97,7 @@ const LAYOUT_STYLES = `
   margin: var(--space-10) var(--space-10) var(--space-4);
 }
 
-/* Live status dot for "Active campaigns" — distinct from .sidebar-badge
+/* Live status dot for "Active campaigns" - distinct from .sidebar-badge
    (a count, not a status indicator), so it's brand-only. Reuses the
    existing success token. */
 .brand-layout__sidebar-status {
@@ -157,10 +157,10 @@ const LAYOUT_STYLES = `
 }
 `;
 
-// Sidebar — grouped by workflow stage matching brand journeys in the product spec.
+// Sidebar - grouped by workflow stage matching brand journeys in the product spec.
 // Discovery → Campaigns → Payments → Account
 //
-// `disabled` items are stubs for pages not yet built — they keep the sidebar
+// `disabled` items are stubs for pages not yet built - they keep the sidebar
 // readable without creating dead links.
 // `hasActiveDot` renders a small green dot when the brand has live campaigns
 // (wire to `activeCampaignCount > 0` once useBrandDashboard exists).
@@ -216,7 +216,7 @@ export default function BrandLayout() {
     e.preventDefault();
     const query = searchValue.trim();
     if (!query) return;
-    // Reuses the public creator directory — there's no brand-only search route.
+    // Reuses the public creator directory - there's no brand-only search route.
     navigate(`/directory?q=${encodeURIComponent(query)}`);
   }
 
@@ -229,7 +229,7 @@ export default function BrandLayout() {
       <style>{LAYOUT_STYLES}</style>
       <div className="brand-layout">
 
-        {/* ── Navbar: logo · search · bell · avatar (no links — sidebar owns those) ── */}
+        {/* ── Navbar: logo · search · bell · avatar (no links - sidebar owns those) ── */}
         <nav className="navbar" aria-label="Primary">
           <button
             type="button"
@@ -250,7 +250,7 @@ export default function BrandLayout() {
               <input
                 className="search-input"
                 type="text"
-                placeholder="Search..."
+                placeholder="Search…"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 aria-label="Search"
@@ -317,7 +317,7 @@ export default function BrandLayout() {
 
                 {section.items.map((item) => {
 
-                  // Disabled stub — inert placeholder for pages not yet built
+                  // Disabled stub - inert placeholder for pages not yet built
                   if (item.disabled) {
                     return (
                       <span

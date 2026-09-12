@@ -3,7 +3,7 @@ import ErrorState from '@/components/shared/ErrorState';
 import Skeleton from '@/components/ui/Skeleton';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
-// GET /payments/transactions' response schema is undocumented — field names
+// GET /payments/transactions' response schema is undocumented - field names
 // below are best-effort guesses with graceful fallbacks (see CLAUDE.md).
 function normalizeTransaction(t) {
   const amount = Number(t.amount ?? 0);
@@ -18,7 +18,7 @@ function normalizeTransaction(t) {
 }
 
 /**
- * TransactionHistory — list of a creator's payments/payouts, backed by
+ * TransactionHistory - list of a creator's payments/payouts, backed by
  * usePayments(). `variant="table"` matches the compact dashboard-table look
  * (Description/Date/Amount columns); `variant="list"` matches a modal-style
  * full history list. Pass raw transactions from usePayments().transactions.

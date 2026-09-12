@@ -7,7 +7,7 @@ import EmptyState from '@/components/shared/EmptyState'
 import ErrorState from '@/components/shared/ErrorState'
 
 /**
- * EnquiriesPage — brand side. Mirrors the creator page structurally
+ * EnquiriesPage - brand side. Mirrors the creator page structurally
  * (same shared ENQUIRY_CSS/components), but read-only: a brand can't
  * accept/decline its own outgoing enquiry.
  */

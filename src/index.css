@@ -7,13 +7,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ══════════════════════════════════════════════════════════════════════════
-   CREATORS KE — DESIGN TOKENS
+   CREATORS KE - DESIGN TOKENS
    Source of truth: Creators KE Color Theory doc.
 
    Rules encoded here:
-   1. Structure is neutral — every background/border/body text color comes
+   1. Structure is neutral - every background/border/body text color comes
       from the true achromatic grey ramp (R = G = B, zero hue).
-   2. Purple is the accent — reserved for interactive/brand moments
+   2. Purple is the accent - reserved for interactive/brand moments
       (buttons, links, active states, focus rings). Never a surface fill.
    3. Status colors only ever communicate feedback (success/warning/error/info).
    ══════════════════════════════════════════════════════════════════════════ */
@@ -22,24 +22,24 @@
   --white:      #FFFFFF; /* navbar, sidebar, cards */
   --black:      #000000; /* primary text */
 
-  /* Content area sits one step darker than nav/sidebar/cards — never the
+  /* Content area sits one step darker than nav/sidebar/cards - never the
      other way round. This relationship is mirrored (not repeated) in dark
      mode below. */
   --page-bg:    var(--grey-50);
 
-  /* ─── Purple scale — accent only, never used as a surface fill ─────────── */
+  /* ─── Purple scale - accent only, never used as a surface fill ─────────── */
   --purple-50:  #EEEDFE;
   --purple-100: #CECBF6;
   --purple-200: #AFA9EC;
   --purple-300: #948CE3; /* interpolated, light-mode disabled/mid accent */
   --purple-400: #7F77DD;
   --purple-500: #665DC7; /* interpolated, mid-scale */
-  --purple-600: #534AB7; /* default accent — buttons, links, active icons */
+  --purple-600: #534AB7; /* default accent - buttons, links, active icons */
   --purple-700: #463D9E; /* interpolated, between 600/800 */
   --purple-800: #3C3489; /* hover state */
   --purple-900: #26215C; /* active/pressed state; dark-mode active bg */
 
-  /* ─── Grey scale — true achromatic, R = G = B, zero color cast ─────────── */
+  /* ─── Grey scale - true achromatic, R = G = B, zero color cast ─────────── */
   --grey-50:  #F2F2F2; /* content area background (light mode) */
   --grey-100: #E5E5E5; /* borders, dividers */
   --grey-200: #CCCCCC; /* disabled borders */
@@ -48,10 +48,10 @@
   --grey-500: #808080; /* inactive icons */
   --grey-600: #666666; /* secondary text */
   --grey-700: #4D4D4D;
-  --grey-800: #262626; /* dark-mode surfaces — nav, cards, content bg base */
+  --grey-800: #262626; /* dark-mode surfaces - nav, cards, content bg base */
   --grey-900: #1A1A1A; /* dark-mode content area background */
 
-  /* ─── Status colors — feedback only, never branding/structure ──────────── */
+  /* ─── Status colors - feedback only, never branding/structure ──────────── */
   --status-success:      #10B981;
   --status-success-bg:   #DCFCE7;
   --status-success-text: #047857; /* darker shade for AA contrast on tint */
@@ -68,13 +68,13 @@
   --status-info-bg:      #CFFAFE;
   --status-info-text:    #0E7490;
 
-  /* ─── Brand tints — decorative identity color only ──────────────────────
+  /* ─── Brand tints - decorative identity color only ──────────────────────
      NOT structure, NOT accent, NOT status. Purpose: let a list of external
      entities (brands, clients, companies) be visually told apart at a
-     glance — e.g. avatar initials in an enquiries/CRM list — the way a
+     glance - e.g. avatar initials in an enquiries/CRM list - the way a
      calendar app tints different calendars. Never used for surfaces,
      buttons, or feedback states; those stay neutral/purple/status per the
-     rules above. Small, fixed set — reach for --purple-* first for
+     rules above. Small, fixed set - reach for --purple-* first for
      anything brand/interactive. */
   --tint-amber-bg:     #FAEEDA;
   --tint-amber-border: #EF9F27;
@@ -94,11 +94,11 @@
 
   /* ─── Typography ──────────────────────────────────────────────────────── */
   /* Family */
-  --font-display: 'Archivo', sans-serif; /* h1–h4 only — bold display type */
+  --font-display: 'Archivo', sans-serif; /* h1–h4 only - bold display type */
   --font-body:    'Inter', sans-serif;   /* h5/h6, body, UI, buttons, inputs */
   --font-mono:    'SF Mono', 'Fira Code', monospace;
 
-  /* Type scale — standard/balanced. Format: size / line-height / tracking. */
+  /* Type scale - standard/balanced. Format: size / line-height / tracking. */
   --text-h1-size: 36px; --text-h1-lh: 44px; --text-h1-tracking: -0.02em; --text-h1-weight: 700;
   --text-h2-size: 28px; --text-h2-lh: 36px; --text-h2-tracking: -0.02em; --text-h2-weight: 700;
   --text-h3-size: 22px; --text-h3-lh: 30px; --text-h3-tracking: -0.01em; --text-h3-weight: 700;
@@ -107,7 +107,7 @@
 
   --text-body-lg-size: 16px; --text-body-lg-lh: 24px; --text-body-lg-weight: 400;
   --text-body-size:    14px; --text-body-lh:    20px; --text-body-weight:    400;
-  --text-body-md-weight: 500; /* medium body — buttons, form labels, same size/lh as body */
+  --text-body-md-weight: 500; /* medium body - buttons, form labels, same size/lh as body */
   --text-body-sm-size:  13px; --text-body-sm-lh:  18px; --text-body-sm-weight:  400;
 
   --text-caption-size: 11px; --text-caption-lh: 16px; --text-caption-tracking: 0.04em; --text-caption-weight: 500;
@@ -121,7 +121,7 @@
   --radius-pill: 999px;
 
   /* ─── Spacing ─────────────────────────────────────────────────────────── */
-  /* Named by pixel value rather than a strict *4 multiple — the interface
+  /* Named by pixel value rather than a strict *4 multiple - the interface
      is hand-tuned (hairline borders pull some paddings in/out by 1px), so
      the scale documents the values actually in use rather than forcing
      them onto a clean grid. This was previously a "hole": the navbar and
@@ -155,7 +155,7 @@
   --sidebar-width:  220px;
   --navbar-search-max-width: 360px;
 
-  /* Text sizes with no home in the h1–caption type scale — small uppercase
+  /* Text sizes with no home in the h1–caption type scale - small uppercase
      labels and badge digits sit below caption (11px). */
   --text-micro-size: 10px; /* sidebar section labels, badge digits */
   --text-avatar-size: 12px; /* navbar avatar initials */
@@ -203,7 +203,7 @@
    Toggle by adding class="dark" to <html> (standard shadcn/Tailwind pattern).
 
    Hierarchy rule: nav/sidebar/cards stay ONE STEP LIGHTER than the content
-   area background — mirroring light mode exactly, just inverted in
+   area background - mirroring light mode exactly, just inverted in
    direction. Do not make nav/sidebar darker than the content area; that
    breaks the mirrored hierarchy and looks inconsistent against light mode.
    ══════════════════════════════════════════════════════════════════════════ */
@@ -211,13 +211,13 @@
   /* Surfaces */
   --white:   #262626; /* stands in for "lightest surface" in dark mode: nav, sidebar, cards */
   --black:   #FFFFFF; /* primary text */
-  --page-bg: #141414; /* content area — darkest surface, sits behind nav/cards */
+  --page-bg: #141414; /* content area - darkest surface, sits behind nav/cards */
 
   /* The grey ramp inverts, exactly like --white/--black above: grey-50 is
      "the subtlest surface above the page background" and grey-900 is "the
      strongest contrast against it", so those roles have to swap in dark mode.
-     Without this every var(--grey-50)/var(--grey-100) fill — table headers,
-     input backgrounds, hover states, dividers — renders near-white on a dark
+     Without this every var(--grey-50)/var(--grey-100) fill - table headers,
+     input backgrounds, hover states, dividers - renders near-white on a dark
      page. Mid-tones stay near-neutral since they're used for muted text in
      both modes. */
   --grey-50:  #1F1F1F;
@@ -238,7 +238,7 @@
   --purple-900: #26215C; /* used as active-state background tint, not text */
 
   /* Light purple washes (featured cards, selected rows, .pay-row.connected)
-     become deep indigo tints — the same inversion --status-*-bg gets below.
+     become deep indigo tints - the same inversion --status-*-bg gets below.
      Left as-is they'd stay pale lavender under text that has flipped to white. */
   --purple-50:  #201C4F;
   --purple-100: #2B2568;
@@ -258,7 +258,7 @@
   --status-info-bg:      #042C36;
   --status-info-text:    #22D3EE;
 
-  /* Brand tints — same inversion pattern as status colors above */
+  /* Brand tints - same inversion pattern as status colors above */
   --tint-amber-bg:     #3A2504; --tint-amber-border: #BA7517; --tint-amber-text: #FAC775;
   --tint-green-bg:     #16240A; --tint-green-border: #639922;  --tint-green-text: #C0DD97;
   --tint-blue-bg:      #0C2038; --tint-blue-border:  #378ADD;  --tint-blue-text:  #B5D4F4;
@@ -287,7 +287,7 @@
   --input:                  #333333;
   --ring:                   var(--purple-600);
 
-  /* Shadows are barely visible on dark surfaces — soften them */
+  /* Shadows are barely visible on dark surfaces - soften them */
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.20);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.24);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.28);
@@ -330,7 +330,7 @@
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
-  /* h1–h4 use Archivo (display, bold). h5/h6 switch to Inter — a bold
+  /* h1–h4 use Archivo (display, bold). h5/h6 switch to Inter - a bold
      display font at small sizes just reads as heavy body text, so they
      match Inter 600 instead for better legibility. */
   h1, h2, h3, h4 {
@@ -377,7 +377,7 @@
     font-family: var(--font-body);
   }
 
-  /* Overlay-style scrollbars, app-wide (Claude/Vercel-style) — hairline width,
+  /* Overlay-style scrollbars, app-wide (Claude/Vercel-style) - hairline width,
      fully transparent at rest, and only fades in while hovering the
      scrollable element itself, so it never sits visible over content. */
   * {
@@ -402,7 +402,7 @@
     background: var(--grey-300);
   }
   /* Windows Chromium (Chrome/Edge) renders native up/down/left/right arrow
-     buttons at each end of a scrollbar unless they're explicitly zeroed out —
+     buttons at each end of a scrollbar unless they're explicitly zeroed out -
      styling the track/thumb alone doesn't remove them. */
   *::-webkit-scrollbar-button {
     display: none;
@@ -418,12 +418,12 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   COMPONENT LIBRARY — Navbar / Sidebar
+   COMPONENT LIBRARY - Navbar / Sidebar
    Ported 1:1 from Creatorske Component Library §05 (Navigation). Class names
    match the library exactly (.navbar, .sidebar, .nav-link, .sidebar-link,
    etc.) so any component-library markup can reuse these without rewriting
    styles. Page-level layout rules (sticky positioning, scroll regions,
-   responsive breakpoints for a specific page) are NOT here — those aren't
+   responsive breakpoints for a specific page) are NOT here - those aren't
    shared by other components, so they live scoped to the page that needs
    them (e.g. CreatorLayout.jsx).
    ══════════════════════════════════════════════════════════════════════════ */
@@ -605,9 +605,9 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   COMPONENT LIBRARY — Cards / Stat cards / Tags / Table / Buttons / Progress
+   COMPONENT LIBRARY - Cards / Stat cards / Tags / Table / Buttons / Progress
    Ported 1:1 from Creatorske Component Library §Cards, §Tags, §Table,
-   §Buttons, §Progress — class names match the library exactly so any
+   §Buttons, §Progress - class names match the library exactly so any
    component-library markup (or DashboardPage.jsx) can reuse these without
    rewriting styles. Rewritten to pull every value from the tokens above
    (--white, --grey-*, --purple-*, --radius-*, --space-*, --shadow-*,
@@ -671,7 +671,7 @@
   .card-p-md { padding: var(--space-20); }
   .card-p-lg { padding: var(--space-28); }
   .card-p-xl { padding: var(--space-32); }
-  /* Dashed variant — "add something" / empty-slot placeholders. Referenced by
+  /* Dashed variant - "add something" / empty-slot placeholders. Referenced by
      a few forms already; this was previously undefined so it rendered as a
      plain solid .card. */
   .card-dashed { background: transparent; border: 1.5px dashed var(--grey-200); }
@@ -832,7 +832,7 @@
      The spinner is drawn in currentColor, so it's automatically right on
      every variant (white on purple/primary, dark on secondary, red on danger)
      and in both themes. Add `btn-loading` alongside the variant class while a
-     request is in flight; keep the label constant — never swap it for
+     request is in flight; keep the label constant - never swap it for
      "Saving…" text. */
   .btn-loading { pointer-events: none; opacity: 0.85; }
   .btn-loading::before {
@@ -870,7 +870,7 @@
   .avatar-purple { background: var(--purple-100); color: var(--purple-800); border: 0.5px solid var(--purple-200); }
   .avatar-grey   { background: var(--grey-100);   color: var(--grey-600); }
   .avatar-dark   { background: var(--black);      color: var(--white); }
-  /* Brand-tint variants — decorative identity color, see --tint-* tokens */
+  /* Brand-tint variants - decorative identity color, see --tint-* tokens */
   .avatar-tint-amber { background: var(--tint-amber-bg); color: var(--tint-amber-text); border: 0.5px solid var(--tint-amber-border); }
   .avatar-tint-green { background: var(--tint-green-bg); color: var(--tint-green-text); border: 0.5px solid var(--tint-green-border); }
   .avatar-tint-blue  { background: var(--tint-blue-bg);  color: var(--tint-blue-text);  border: 0.5px solid var(--tint-blue-border); }
@@ -912,7 +912,7 @@
   .activity-line { width: 0.5px; background: var(--grey-100); flex-shrink: 0; margin: 0 3.5px; }
 
   /* ── Tabs (segmented control) ─────────────────────────────────────────── */
-  /* Ported 1:1 from the Creatorske Component Library — previously copied
+  /* Ported 1:1 from the Creatorske Component Library - previously copied
      locally into individual pages (e.g. CampaignsPage.jsx); centralized here. */
   .tabs { display: inline-flex; background: var(--white); border: 0.5px solid var(--grey-100); border-radius: var(--radius-lg); padding: 4px; gap: 2px; }
   .tab { margin: 0; padding: 8px 16px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; color: var(--grey-500); cursor: pointer; transition: all .15s; border: none; background: none; font-family: var(--font-body); white-space: nowrap; }
@@ -927,12 +927,12 @@
     font-family: var(--font-display);
   }
 
-  /* Skeleton shimmer — a fixed 300px gradient tile that repeats across the
+  /* Skeleton shimmer - a fixed 300px gradient tile that repeats across the
      element and travels exactly one tile-width per cycle, so the sweep moves
      at a constant 200px/second on a 40px avatar circle and an 800px-wide card
      alike. (A percentage background-size looks wrong here: the gradient would
-     scale with the element, making the sweep travel ~10x further — and so
-     appear ~10x faster — on a wide card than on a small one, which is what
+     scale with the element, making the sweep travel ~10x further - and so
+     appear ~10x faster - on a wide card than on a small one, which is what
      made the app feel like several different apps.) The gradient starts and
      ends on the same grey so the tile boundary is invisible as it loops. */
   .skeleton {
@@ -956,20 +956,20 @@
     }
   }
 
-  /* Focus ring using the accent token — resolves to purple-600 (light) / purple-400 (dark) */
+  /* Focus ring using the accent token - resolves to purple-600 (light) / purple-400 (dark) */
   .focus-purple:focus {
     outline: none;
     border-color: var(--ring);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 15%, transparent);
   }
 
-  /* Status badges — soft fill + colored text/icon, matches Creators KE badge spec */
+  /* Status badges - soft fill + colored text/icon, matches Creators KE badge spec */
   .badge-success { background: var(--status-success-bg); color: var(--status-success-text); }
   .badge-warning { background: var(--status-warning-bg); color: var(--status-warning-text); }
   .badge-error   { background: var(--status-error-bg);   color: var(--status-error-text); }
   .badge-info    { background: var(--status-info-bg);    color: var(--status-info-text); }
 
-  /* Body text variants — h1–h5 are handled by base element styles above;
+  /* Body text variants - h1–h5 are handled by base element styles above;
      these cover everything else in the type scale. */
   .text-body-lg {
     font-size: var(--text-body-lg-size);
@@ -1010,7 +1010,7 @@
 }
 
 /* ─── Keyframes ────────────────────────────────────────────────────────────── */
-/* Travels exactly one 300px tile per cycle — seamless loop, constant speed. */
+/* Travels exactly one 300px tile per cycle - seamless loop, constant speed. */
 @keyframes shimmer {
   0%   { background-position: 0 0; }
   100% { background-position: 300px 0; }

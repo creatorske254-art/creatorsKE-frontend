@@ -136,7 +136,7 @@ export default function DashboardPage() {
             <div className="stat-card-value" style={{ fontSize: 44 }}>
               {statsLoading
                 ? <Skeleton width={90} height={38} />
-                : statsError ? '—' : `${Math.round((stats?.earningsTotal ?? 0) / 1000)}K`}
+                : statsError ? '-' : `${Math.round((stats?.earningsTotal ?? 0) / 1000)}K`}
             </div>
             <div className="stat-card-delta up">
               <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+22% vs last month
@@ -148,7 +148,7 @@ export default function DashboardPage() {
         {/* Secondary stats */}
         <div className="bento-views stat-card">
           <div className="stat-card-label"><i className="ti ti-eye" style={{ fontSize: 14 }} /> Card views</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : statsError ? '—' : (stats?.profileViews ?? 0).toLocaleString('en-KE')}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : statsError ? '-' : (stats?.profileViews ?? 0).toLocaleString('en-KE')}</div>
           <div className="stat-card-delta up">
             <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+18% this month
           </div>
@@ -156,7 +156,7 @@ export default function DashboardPage() {
 
         <div className="bento-enq stat-card">
           <div className="stat-card-label"><i className="ti ti-inbox" style={{ fontSize: 14 }} /> Enquiries</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : statsError ? '—' : (stats?.enquiries?.total ?? 0)}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : statsError ? '-' : (stats?.enquiries?.total ?? 0)}</div>
           <div className="stat-card-delta up">
             <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+4 this week
           </div>
@@ -164,7 +164,7 @@ export default function DashboardPage() {
 
         <div className="bento-conv stat-card">
           <div className="stat-card-label"><i className="ti ti-star" style={{ fontSize: 14 }} /> Conversion</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={50} height={24} /> : statsError ? '—' : `${stats?.cardCtr ?? 0}%`}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={50} height={24} /> : statsError ? '-' : `${stats?.cardCtr ?? 0}%`}</div>
           <div className="stat-card-delta down">
             <i className="ti ti-trending-down" style={{ fontSize: 14 }} />-0.2% vs last month
           </div>

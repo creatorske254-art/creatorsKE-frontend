@@ -96,7 +96,7 @@ const css = `
   .ps-starter-note .ps-link-btn { color: var(--purple-600); font-weight: 500; cursor: pointer; text-decoration: none; background: none; border: none; padding: 0; font: inherit; }
   .ps-starter-note .ps-link-btn:hover { text-decoration: underline; }
 
-  /* CTA button — .btn/.btn-purple/.btn-lg/.btn-full/.btn-loading come from
+  /* CTA button - .btn/.btn-purple/.btn-lg/.btn-full/.btn-loading come from
      the shared index.css button system. Only the disabled-state dimming has
      no canonical equivalent, so it stays here, scoped to this page. */
   .ps-page .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
@@ -153,7 +153,7 @@ const css = `
 // Sourced from the canonical CREATOR_PRICING_TIERS (features/plans/constants/pricingTiers.js)
 // so pricing here never drifts from the marketing PricingPage. The "elite" tier id is
 // remapped to "business" to match the wire/gating convention used elsewhere
-// (plans.js's PLANS enum, ProtectedFeature.jsx's PLAN_RANK) — only its display name
+// (plans.js's PLANS enum, ProtectedFeature.jsx's PLAN_RANK) - only its display name
 // and price changed to "Elite" / KES 4,000, the identifier itself did not.
 const PLAN_DISPLAY = {
   starter: { label: 'Starter', cadence: 'forever', cardClass: '' },
@@ -187,7 +187,7 @@ const PLAN_WELCOME_LABELS = {
 
 /**
  * Collects a real payment method before a paid upgrade. POST /plans/upgrade
- * takes a paymentMethod, so what's entered here is what gets sent — Pro/Elite
+ * takes a paymentMethod, so what's entered here is what gets sent - Pro/Elite
  * no longer silently upgrade with `null`.
  */
 function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
@@ -248,7 +248,7 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
         style={{ width: '100%', marginBottom: 8 }}
       />
       <p style={{ fontSize: 12, color: 'var(--grey-400)', lineHeight: 1.6, marginBottom: 20 }}>
-        You'll get a prompt on this number to authorise the payment. Your 7-day trial starts today —
+        You'll get a prompt on this number to authorise the payment. Your 7-day trial starts today.
         you can cancel from Settings before it ends and you won't be charged.
       </p>
 
@@ -331,7 +331,7 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
         </h1>
         <p style={{ fontSize: 14, color: 'var(--grey-500)', lineHeight: 1.7 }}>
           Your <strong>{PLAN_WELCOME_LABELS[plan] || plan}</strong> account is active.
-          Here's a preview of what you'll build — then head into the builder to make it yours.
+          Here's a preview of what you'll build. Then head into the builder to make it yours.
         </p>
       </div>
 
@@ -390,11 +390,11 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
  * then reveals the "you're all set" welcome screen with a rate card preview.
  *
  * Props:
- *   firstName  — pre-filled from signup (string)
- *   onComplete(plan) — called when the user clicks "Start building my rate card"
+ *   firstName  - pre-filled from signup (string)
+ *   onComplete(plan) - called when the user clicks "Start building my rate card"
  */
 export default function PlanSelectionPage({ firstName, onComplete }) {
-  usePageMeta('Choose Your Plan', 'Pick the Creatorske plan that fits you — start free, upgrade anytime.');
+  usePageMeta('Choose Your Plan', 'Pick the Creatorske plan that fits you. Start free, upgrade anytime.');
   const navigate = useNavigate()
   const { upgrade, isUpgrading } = usePlan()
   const [selectedPlan, setSelectedPlan] = useState(null)
@@ -449,7 +449,7 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
             <div className="ps-inner">
               <div className="ps-eyebrow">One more step</div>
               <h1 className="ps-title">Choose your plan</h1>
-              <p className="ps-sub">Start free — upgrade whenever you're ready. You can change this anytime from Settings.</p>
+              <p className="ps-sub">Start free and upgrade whenever you're ready. You can change this anytime from Settings.</p>
 
               <div className="ps-grid">
                 {PLANS.map(plan => (

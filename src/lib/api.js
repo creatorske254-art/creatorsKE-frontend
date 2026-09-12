@@ -9,7 +9,7 @@ const apiClient = axios.create({
   timeout: 15000, // 15 seconds
 })
 
-// ─── Request interceptor — attach JWT ─────────────────────────────────────
+// ─── Request interceptor - attach JWT ─────────────────────────────────────
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('creatorske_token')
@@ -21,12 +21,12 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// ─── Response interceptor — handle errors globally ────────────────────────
+// ─── Response interceptor - handle errors globally ────────────────────────
 apiClient.interceptors.response.use(
-  // Success — just pass through
+  // Success - just pass through
   (response) => response,
 
-  // Error — normalise into a consistent shape
+  // Error - normalise into a consistent shape
   (error) => {
     const status  = error.response?.status
     const message = error.response?.data?.message
@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
       || error.message
       || 'Something went wrong'
 
-    // 401 — token expired or invalid; clear storage and redirect to login
+    // 401 - token expired or invalid; clear storage and redirect to login
     if (status === 401) {
       localStorage.removeItem('creatorske_token')
       localStorage.removeItem('creatorske_user')
@@ -53,7 +53,7 @@ apiClient.interceptors.response.use(
   }
 )
 
-// ─── Uploads — shared by any feature that needs to attach a file ──────────
+// ─── Uploads - shared by any feature that needs to attach a file ──────────
 export const uploadFile = (file) => {
   const formData = new FormData()
   formData.append('file', file)

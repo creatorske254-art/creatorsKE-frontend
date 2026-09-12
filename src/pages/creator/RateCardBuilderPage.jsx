@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useRateCard, useRateCards } from '@/features/rate-card/hooks/useRateCard';
+import { useImageUpload } from '@/lib/useImageUpload';
 import {
   IconArrowLeft, IconArrowRight, IconUpload, IconMapPin, IconBrandInstagram, IconBrandYoutube, IconBrandTiktok,
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
@@ -268,7 +269,7 @@ function Stepper({ current }) {
 /* The preview card's CTAs mirror what brands will see; clicking them in the
    builder gets a clear answer instead of silently doing nothing. */
 const previewOnly = () =>
-  toast.info("This is a preview — brands will use these buttons on your published rate card.");
+  toast.info("This is a preview. Brands will use these buttons on your published rate card.");
 
 /* live preview card */
 function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTime, availability }) {
@@ -276,7 +277,9 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
   return (
     <div className="rcp">
       <div className="rcp-top">
-        <div className="av av-md av-accent">{initials(profile.name)}</div>
+        {profile.photoUrl
+          ? <img src={profile.photoUrl} alt="" className="av av-md" style={{ objectFit: "cover" }} />
+          : <div className="av av-md av-accent">{initials(profile.name)}</div>}
         <div className="rcp-name">{headline || profile.name}</div>
         <div className="rcp-handle">@{profile.handle || "handle"} &middot; {profile.location}</div>
         {pitch && <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 5, lineHeight: 1.4 }}>{pitch}</div>}
@@ -364,9 +367,12 @@ export default function RateCardBuilderPage() {
     languages: "English, Swahili",
   });
   const [platforms, setPlatforms] = useState({ instagram: true, tiktok: true, youtube: false, twitter: false, podcast: false });
-  const [uploaded, setUploaded] = useState(false);
   const togglePlatform = (key) => setPlatforms((p) => ({ ...p, [key]: !p[key] }));
-  const simulateUpload = () => { setUploaded(true); setTimeout(() => setUploaded(false), 2000); };
+
+  const { url: photoUrl, setUrl: setPhotoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
+    successMessage: "Profile photo updated.",
+    onUploaded: ({ url, id }) => setProfile((p) => ({ ...p, photoUrl: url, photoUploadId: id })),
+  });
 
   // packages (step 2)
   const [packages, setPackages] = useState([
@@ -391,7 +397,7 @@ export default function RateCardBuilderPage() {
   const [requireDeposit, setRequireDeposit] = useState(false);
   const [whatsappReminder, setWhatsappReminder] = useState(true);
   // No backend endpoint exists yet for linking a payout method independent
-  // of a transaction (see production plan's backend spec) — this saves
+  // of a transaction (see production plan's backend spec) - this saves
   // locally as part of the rate card draft rather than pretending to be a
   // live Airtel connection.
   const connectAirtel = () => {
@@ -399,7 +405,7 @@ export default function RateCardBuilderPage() {
     setTimeout(() => {
       setAirtelLoading(false);
       setAirtelConnected(true);
-      toast.info("Saved to your draft — will sync automatically once Airtel payouts are supported on the backend.");
+      toast.info("Saved to your draft. It will sync automatically once Airtel payouts are supported on the backend.");
     }, 1200);
   };
 
@@ -419,6 +425,7 @@ export default function RateCardBuilderPage() {
     if (!cardId || !rateCard || hydrated.current) return;
     hydrated.current = true;
     if (rateCard.profile) setProfile((p) => ({ ...p, ...rateCard.profile }));
+    if (rateCard.profile?.photoUrl) setPhotoUrl(rateCard.profile.photoUrl);
     if (rateCard.platforms) setPlatforms((p) => ({ ...p, ...rateCard.platforms }));
     if (Array.isArray(rateCard.packages) && rateCard.packages.length > 0) setPackages(rateCard.packages);
     if (rateCard.headline) setHeadline(rateCard.headline);
@@ -431,7 +438,7 @@ export default function RateCardBuilderPage() {
     if (rateCard.published) setPublished(true);
   }, [cardId, rateCard]);
 
-  // Best-effort payload shape — POST /rate-cards' request body is documented
+  // Best-effort payload shape - POST /rate-cards' request body is documented
   // for creation but the wizard's fields (payment/edit-card steps) aren't
   // covered by any documented contract, so this bundles everything the
   // builder collects rather than guessing which subset the backend expects.
@@ -535,11 +542,16 @@ export default function RateCardBuilderPage() {
                 <div className="card card-p">
                   <p className="label" style={{ marginBottom: 12 }}>Profile photo</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                    <div className="av av-xl av-accent">{initials(profile.name)}</div>
+                    {photoUrl ? (
+                      <img src={photoUrl} alt="Profile photo" className="av av-xl" style={{ objectFit: "cover", border: "0.5px solid var(--bdr-tertiary)" }} />
+                    ) : (
+                      <div className="av av-xl av-accent">{initials(profile.name)}</div>
+                    )}
                     <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                      <button className="btn btn-secondary btn-sm" onClick={simulateUpload}>
-                        {uploaded ? <><IconCheck size={12} />Photo uploaded</> : <><IconUpload size={12} />IconUpload photo</>}
-                      </button>
+                      <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer" }}>
+                        <IconUpload size={12} />{photoUrl ? "Change photo" : "Upload photo"}
+                        <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: "none" }} />
+                      </label>
                       <p className="hint">JPG, PNG or GIF &middot; max 2 MB &middot; 400&times;400 px</p>
                     </div>
                   </div>
@@ -771,7 +783,7 @@ export default function RateCardBuilderPage() {
                       </div>
                       <div className="field"><label className="label">Account number</label><input className="inp" placeholder="e.g. 0123456789" /></div>
                     </div>
-                    <div className="field"><label className="label">Account name</label><input className="inp" placeholder="Full name as on the account" /></div>
+                    <div className="field"><label className="label">Account name</label><input className="inp" placeholder="e.g. Amara Osei" /></div>
                   </div>
                 )}
               </div>
@@ -920,7 +932,9 @@ export default function RateCardBuilderPage() {
                 <p className="label" style={{ marginBottom: 10 }}>Live preview</p>
                 <div className="rcp">
                   <div className="rcp-top">
-                    <div className="av av-md av-accent">{initials(profile.name)}</div>
+                    {profile.photoUrl
+          ? <img src={profile.photoUrl} alt="" className="av av-md" style={{ objectFit: "cover" }} />
+          : <div className="av av-md av-accent">{initials(profile.name)}</div>}
                     <div className="rcp-name" style={{ fontSize: 13.5 }}>{headline}</div>
                     <div className="rcp-handle">@{profile.handle} &middot; {profile.location}</div>
                     <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 5, lineHeight: 1.4 }}>{pitch}</div>

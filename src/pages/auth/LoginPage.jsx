@@ -131,7 +131,7 @@ export default function LoginPage() {
           </p>
 
           {/* Google sign-in intentionally absent until the backend has an OAuth
-              endpoint — a button that can only say "coming soon" is a mockup. */}
+              endpoint - a button that can only say "coming soon" is a mockup. */}
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -155,7 +155,7 @@ export default function LoginPage() {
                 <div style={{ position: 'relative' }}>
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Your password"
+                    placeholder="••••••••"
                     {...register('password')}
                     style={{ ...inputStyle(errors.password), paddingRight: '42px' }}
                   />

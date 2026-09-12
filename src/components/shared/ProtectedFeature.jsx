@@ -4,7 +4,7 @@ import UpgradePrompt from './UpgradePrompt';
 const PLAN_RANK = { starter: 0, pro: 1, business: 2 };
 
 /**
- * ProtectedFeature — renders children if user's plan meets the requirement,
+ * ProtectedFeature - renders children if user's plan meets the requirement,
  * otherwise shows UpgradePrompt.
  *
  * @param {'pro'|'business'} requiredPlan

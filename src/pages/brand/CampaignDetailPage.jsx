@@ -226,7 +226,7 @@ export default function CampaignDetailPage() {
   const { data: liveCampaign } = useCampaign(id)
   const { approve, isApproving, dispute, isDisputing } = useCampaignActions(id)
   const mock = MOCK_CAMPAIGNS[id] ?? Object.values(MOCK_CAMPAIGNS)[0]
-  // GET /brands/campaigns/:id's response schema is undocumented — prefer live
+  // GET /brands/campaigns/:id's response schema is undocumented - prefer live
   // fields where the API actually returns them, fall back to the matching
   // mock field rather than blanking the page out.
   const base = { ...mock, ...liveCampaign }
@@ -242,7 +242,7 @@ export default function CampaignDetailPage() {
 
   function handleDownloadInvoice() {
     const lines = [
-      'CREATORSKE — PAYMENT RECEIPT',
+      'CREATORSKE PAYMENT RECEIPT',
       '',
       `Campaign: ${base.package}`,
       `Creator: ${base.creator} (${base.handle})`,
@@ -265,7 +265,7 @@ export default function CampaignDetailPage() {
     URL.revokeObjectURL(url)
   }
 
-  // ASSUMPTION: no file-storage endpoint is documented — deliveredFiles are
+  // ASSUMPTION: no file-storage endpoint is documented - deliveredFiles are
   // mock filenames with no real content anywhere, so there's nothing to
   // download. Toast is honest about that rather than faking a file.
   function handleDownloadFile(name) {
@@ -440,7 +440,7 @@ export default function CampaignDetailPage() {
               </div>
             )}
 
-            {/* Messages — one persistent thread per enquiry, keyed by the
+            {/* Messages - one persistent thread per enquiry, keyed by the
                 enquiry's own id (see MessageThread). ASSUMPTION: the
                 campaign response isn't documented; assumed to carry
                 enquiryId, falling back to the campaign's own id. */}

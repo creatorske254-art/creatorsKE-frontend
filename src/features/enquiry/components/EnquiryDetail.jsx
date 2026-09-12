@@ -6,7 +6,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
 
 /**
- * Enquiry detail panel — package/message summary, accept/decline (creator
+ * Enquiry detail panel - package/message summary, accept/decline (creator
  * only, only while NEW), and the enquiry's chat thread. The thread id is the
  * enquiry's own id and stays the same for the enquiry's whole lifecycle.
  * @param {'creator'|'brand'} [variant]

@@ -31,9 +31,9 @@ async function shareRateCard(name) {
   const url = window.location.href;
   if (navigator.share) {
     try {
-      await navigator.share({ title: `${name} — Rate Card`, url });
+      await navigator.share({ title: `${name} | Rate Card`, url });
     } catch {
-      // user cancelled the native share sheet — nothing to do
+      // user cancelled the native share sheet - nothing to do
     }
     return;
   }
@@ -279,11 +279,11 @@ export default function RateCardPage() {
       queryClient.invalidateQueries({ queryKey: ['public-rate-card', handle] });
       toast.success('Reply posted.');
     },
-    onError: () => toast.error("Replying isn't available yet — this needs backend support."),
+    onError: () => toast.error("Replying isn't available yet. It needs backend support."),
   });
 
   usePageMeta(
-    data?.creator?.displayName ? `${data.creator.displayName} — Rate Card` : 'Creator Rate Card',
+    data?.creator?.displayName ? `${data.creator.displayName} | Rate Card` : 'Creator Rate Card',
     data?.creator?.bio || "View this creator's packages, pricing, and portfolio on Creatorske."
   );
 
@@ -489,7 +489,7 @@ export default function RateCardPage() {
                   size="sm"
                   icon={<IconPackage size={18} />}
                   title="No packages yet"
-                  description="This creator hasn't published any packages yet — check back soon."
+                  description="This creator hasn't published any packages yet. Check back soon."
                 />
               ) : (
                 <div className="flex flex-col gap-3">

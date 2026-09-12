@@ -21,7 +21,7 @@ export function NotificationProvider({ children }) {
       const count = await notificationService.getUnreadCount()
       setUnreadCount(count ?? 0)
     } catch {
-      // Silently ignore — bell badge just stays at last known value
+      // Silently ignore - bell badge just stays at last known value
     }
   }, [isAuthenticated])
 

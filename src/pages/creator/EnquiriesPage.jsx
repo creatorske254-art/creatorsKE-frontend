@@ -6,7 +6,7 @@ import EmptyState from '@/components/shared/EmptyState'
 import ErrorState from '@/components/shared/ErrorState'
 
 /**
- * EnquiriesPage — creator side. Layout/visual language kept from the
+ * EnquiriesPage - creator side. Layout/visual language kept from the
  * original prototype (bento grid, .enq-* classes); the data source and the
  * detail panel's internals are now real (useEnquiries + EnquiryDetail),
  * replacing the previous hardcoded mock list and static detail panel.

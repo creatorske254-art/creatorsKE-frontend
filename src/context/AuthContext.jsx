@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
     }
   })
 
-  // Derived — role comes from the user object
+  // Derived - role comes from the user object
   const role = user?.role ?? null
 
   // ── login ────────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
 
   // ── logout ───────────────────────────────────────────────────────────────
   const logout = useCallback(() => {
-    // Best-effort — revoke the session server-side, but don't block clearing
+    // Best-effort - revoke the session server-side, but don't block clearing
     // local state on it (the token may already be expired/invalid).
     authService.logout().catch(() => {})
     localStorage.removeItem(TOKEN_KEY)
@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
-  // ── updateUser — for profile edits that don't change the token ───────────
+  // ── updateUser - for profile edits that don't change the token ───────────
   const updateUser = useCallback((updatedFields) => {
     setUser((prev) => {
       const next = { ...prev, ...updatedFields }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -442,8 +442,12 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
 // Page shell
 export default function SignUpPage() {
   usePageMeta('Sign Up', 'Create a free Creatorske account as a creator or a brand.');
-  const [step, setStep] = useState(1);
-  const [role, setRole] = useState(null);
+  // /signup?role=brand (from the marketing page's role switch) skips the
+  // "who are you" step; the back button still returns to it.
+  const [searchParams] = useSearchParams();
+  const presetRole = ['creator', 'brand'].includes(searchParams.get('role')) ? searchParams.get('role') : null;
+  const [step, setStep] = useState(presetRole ? 2 : 1);
+  const [role, setRole] = useState(presetRole);
   const [loading, setLoading] = useState(false);
 
   const handleContinue = (selectedRole) => {

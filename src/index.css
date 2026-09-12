@@ -361,6 +361,15 @@
   --grey-800: #262626;
   --grey-900: #1A1A1A;
 }
+/* The inverse: a block that stays light on a dark-by-design surface (the
+   marketing hero's sample rate cards). */
+.theme-fixed-light {
+  --white: #FFFFFF; --black: #0D0D0D; --page-bg: #F2F2F2;
+  --grey-50: #F2F2F2; --grey-100: #E5E5E5; --grey-200: #CCCCCC; --grey-300: #B3B3B3; --grey-400: #999999;
+  --grey-500: #808080; --grey-600: #666666; --grey-700: #4D4D4D; --grey-800: #262626; --grey-900: #1A1A1A;
+  --purple-600: #534AB7;
+  color: var(--black);
+}
 
 /* ─── Base reset & global styles ───────────────────────────────────────────── */
 @layer base {

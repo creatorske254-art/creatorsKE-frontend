@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { usePlan } from '@/features/plans/hooks/usePlan'
+import { CREATOR_PRICING_TIERS } from '@/features/plans/constants/pricingTiers'
 
 // ─── CSS-in-JS tokens (shared subset matching auth.html) ─────────────────────
 const css = `
@@ -147,63 +149,37 @@ const css = `
 `
 
 // ─── Plan data ────────────────────────────────────────────────────────────────
+// Sourced from the canonical CREATOR_PRICING_TIERS (features/plans/constants/pricingTiers.js)
+// so pricing here never drifts from the marketing PricingPage. The "elite" tier id is
+// remapped to "business" to match the wire/gating convention used elsewhere
+// (plans.js's PLANS enum, ProtectedFeature.jsx's PLAN_RANK) — only its display name
+// and price changed to "Elite" / KES 4,000, the identifier itself did not.
+const PLAN_DISPLAY = {
+  starter: { label: 'Starter', cadence: 'forever', cardClass: '' },
+  pro:     { label: 'Pro', cadence: '/ month · 7-day free trial', cardClass: 'ps-card-pro' },
+  elite:   { label: 'Elite', cadence: '/ month · 7-day free trial', cardClass: 'ps-card-business' },
+}
 
-const PLANS = [
-  {
-    id: 'starter',
-    label: 'Starter',
-    price: 'Free',
-    cadence: 'forever',
-    cardClass: '',
-    features: [
-      '1 published rate card',
-      'Up to 3 packages per card',
-      'M-Pesa & Airtel payments',
-      'Enquiry form',
-      'Shareable link',
-    ],
-  },
-  {
-    id: 'pro',
-    label: 'Pro',
-    price: 'KES 1,200',
-    cadence: '/ month · 7-day free trial',
-    badge: 'Most popular',
-    cardClass: 'ps-card-pro',
-    features: [
-      'Unlimited rate cards',
-      'Up to 5 packages per card',
-      'Full analytics & insights',
-      'WhatsApp notifications',
-      'Custom card branding',
-    ],
-  },
-  {
-    id: 'business',
-    label: 'Business',
-    price: 'KES 3,500',
-    cadence: '/ month · 7-day free trial',
-    cardClass: 'ps-card-business',
-    features: [
-      'Up to 10 creators managed',
-      'Team logins (3 seats)',
-      'Agency branding on all cards',
-      'Advanced analytics',
-      'Custom invoices',
-    ],
-  },
-]
+const PLANS = CREATOR_PRICING_TIERS.map((tier) => ({
+  id: tier.id === 'elite' ? 'business' : tier.id,
+  label: PLAN_DISPLAY[tier.id]?.label ?? tier.name,
+  price: tier.price === 0 ? 'Free' : `KES ${tier.price.toLocaleString()}`,
+  cadence: PLAN_DISPLAY[tier.id]?.cadence ?? 'per month',
+  badge: tier.featured ? 'Most popular' : undefined,
+  cardClass: PLAN_DISPLAY[tier.id]?.cardClass ?? '',
+  features: tier.features.slice(0, 5),
+}))
 
 const PLAN_BTN_LABELS = {
   starter: 'Starter (Free)',
   pro: 'Pro',
-  business: 'Business',
+  business: 'Elite',
 }
 
 const PLAN_WELCOME_LABELS = {
   starter: 'Starter',
   pro: 'Pro (7-day trial)',
-  business: 'Business (7-day trial)',
+  business: 'Elite (7-day trial)',
 }
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -336,8 +312,8 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
 export default function PlanSelectionPage({ firstName, onComplete }) {
   usePageMeta('Choose Your Plan', 'Pick the Creatorske plan that fits you — start free, upgrade anytime.');
   const navigate = useNavigate()
+  const { upgrade, isUpgrading } = usePlan()
   const [selectedPlan, setSelectedPlan] = useState(null)
-  const [loading, setLoading] = useState(false)
   const [step, setStep] = useState('select') // 'select' | 'complete'
   const [confirmedPlan, setConfirmedPlan] = useState(null)
   const [toast, setToast] = useState('')
@@ -350,12 +326,18 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
   const handleContinue = (plan) => {
     const p = plan || selectedPlan
     if (!p) return
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setConfirmedPlan(p)
-      setStep('complete')
-    }, 1200)
+    // Starter needs no payment method; Pro/Elite get a real one once payment-method
+    // wiring lands (see production-readiness plan) — for now the backend decides
+    // whether an upgrade without one is acceptable, and we surface its response either way.
+    upgrade(
+      { planId: p, paymentMethod: null },
+      {
+        onSuccess: () => {
+          setConfirmedPlan(p)
+          setStep('complete')
+        },
+      }
+    )
   }
 
   const handleStartBuilding = () => {
@@ -395,9 +377,9 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
               </div>
 
               <button
-                className={`btn btn-purple btn-full btn-lg${loading ? ' btn-loading' : ''}`}
+                className={`btn btn-purple btn-full btn-lg${isUpgrading ? ' btn-loading' : ''}`}
                 onClick={() => handleContinue()}
-                disabled={!selectedPlan || loading}
+                disabled={!selectedPlan || isUpgrading}
               >
                 Continue with {selectedPlan ? PLAN_BTN_LABELS[selectedPlan] : 'selected plan'}{' '}
                 <i className="ti ti-arrow-right" style={{ fontSize: 14 }} />

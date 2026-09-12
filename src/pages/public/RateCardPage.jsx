@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { reviewService } from '@/features/reviews/services/review.service';
+import ReviewResponse from '@/features/reviews/components/ReviewResponse';
 import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
   IconMapPin, IconCheck, IconSend, IconShare, IconLayoutGrid,
@@ -230,7 +232,7 @@ function PackageCard({ pkg, onEnquire }) {
 
 // ─── Review card ────────────────────────────────────────────────────────────
 
-function ReviewCard({ review }) {
+function ReviewCard({ review, canReply, onReply, isReplying }) {
   return (
     <div className="bg-white border border-[0.5px] border-[var(--grey-100)] rounded-[12px] p-4 mb-2.5">
       <div className="flex items-center gap-2.5 mb-2">
@@ -244,6 +246,12 @@ function ReviewCard({ review }) {
         <div className="ml-auto"><StarRow value={review.rating} /></div>
       </div>
       <p className="text-[13px] text-[var(--grey-600)] leading-[1.65] m-0">{review.comment}</p>
+      <ReviewResponse
+        review={review}
+        canReply={canReply}
+        isSubmitting={isReplying}
+        onSubmit={(text) => onReply(review.id, text)}
+      />
     </div>
   );
 }
@@ -254,12 +262,24 @@ export default function RateCardPage() {
   const { handle } = useParams();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['public-rate-card', handle],
     queryFn: () => fetchRateCard(handle),
     staleTime: 60_000,
+  });
+
+  const isOwnCard = isAuthenticated && user?.role === 'creator' && user?.handle === handle;
+  const replyMutation = useMutation({
+    mutationFn: ({ reviewId, reply }) => reviewService.replyToReview(reviewId, reply),
+    retry: false,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['public-rate-card', handle] });
+      toast.success('Reply posted.');
+    },
+    onError: () => toast.error("Replying isn't available yet — this needs backend support."),
   });
 
   usePageMeta(
@@ -482,7 +502,15 @@ export default function RateCardPage() {
               {reviews.length > 0 && (
                 <div className="mt-8">
                   <div className="font-[var(--font-display)] text-[18px] font-semibold text-[var(--black)] mb-4">Client reviews</div>
-                  {reviews.map((r) => <ReviewCard key={r.id} review={r} />)}
+                  {reviews.map((r) => (
+                    <ReviewCard
+                      key={r.id}
+                      review={r}
+                      canReply={isOwnCard}
+                      isReplying={replyMutation.isPending}
+                      onReply={(reviewId, text) => replyMutation.mutate({ reviewId, reply: text })}
+                    />
+                  ))}
                 </div>
               )}
             </div>

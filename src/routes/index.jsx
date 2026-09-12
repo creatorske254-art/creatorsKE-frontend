@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute'
 
 // ── Layouts ────────────────────────────────────────────────────────────────
@@ -29,7 +29,6 @@ import VerifyEmailPage   from '@/pages/auth/VerifyEmailPage'
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage'
 
 // ── Onboarding pages ──────────────────────────────────────────────────────
-import OnboardingPage    from '@/pages/onboarding/OnboardingPage'
 import PlanSelectionPage from '@/pages/onboarding/PlanSelectionPage'
 
 // ── Creator pages ─────────────────────────────────────────────────────────
@@ -92,7 +91,7 @@ const router = createBrowserRouter([
       {
         element: <OnboardingLayout />,
         children: [
-          { path: 'onboarding',         element: <OnboardingPage /> },
+          { path: 'onboarding',         element: <Navigate to="/onboarding/plan" replace /> },
           { path: 'onboarding/plan',    element: <PlanSelectionPage /> },
         ],
       },

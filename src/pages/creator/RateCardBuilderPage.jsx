@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
+import { useRateCard, useRateCards } from '@/features/rate-card/hooks/useRateCard';
 import {
   IconArrowLeft, IconArrowRight, IconUpload, IconMapPin, IconBrandInstagram, IconBrandYoutube, IconBrandTiktok,
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
@@ -338,8 +339,12 @@ function launchConfetti() {
 export default function RateCardBuilderPage() {
   usePageMeta('Rate Card Builder', 'Build and publish your rate card on Creatorske.');
   const navigate = useNavigate();
+  const { id: cardId } = useParams();
+  const { rateCard, isLoading: cardLoading, saveDraft: saveDraftMutation, publish: publishMutation, isPublishing } = useRateCard(cardId);
+  const { create: createRateCard, isCreating } = useRateCards();
   const [step, setStep] = useState(1);
   const [savingDraft, setSavingDraft] = useState(false);
+  const hydrated = useRef(false);
 
   // profile (step 1)
   const [profile, setProfile] = useState({
@@ -380,9 +385,17 @@ export default function RateCardBuilderPage() {
   const [autoInvoice, setAutoInvoice] = useState(true);
   const [requireDeposit, setRequireDeposit] = useState(false);
   const [whatsappReminder, setWhatsappReminder] = useState(true);
+  // No backend endpoint exists yet for linking a payout method independent
+  // of a transaction (see production plan's backend spec) — this saves
+  // locally as part of the rate card draft rather than pretending to be a
+  // live Airtel connection.
   const connectAirtel = () => {
     setAirtelLoading(true);
-    setTimeout(() => { setAirtelLoading(false); setAirtelConnected(true); }, 1200);
+    setTimeout(() => {
+      setAirtelLoading(false);
+      setAirtelConnected(true);
+      toast.info("Saved to your draft — will sync automatically once Airtel payouts are supported on the backend.");
+    }, 1200);
   };
 
   // edit card (step 4)
@@ -394,35 +407,95 @@ export default function RateCardBuilderPage() {
   const [revisionPolicy, setRevisionPolicy] = useState("1 round of revisions included");
   const [showPricing, setShowPricing] = useState(true);
 
+  // Hydrate the wizard from a real rate card on edit (GET /rate-cards/:id has
+  // no documented response schema, so every field below falls back to the
+  // wizard's own default rather than assuming a shape and crashing).
+  useEffect(() => {
+    if (!cardId || !rateCard || hydrated.current) return;
+    hydrated.current = true;
+    if (rateCard.profile) setProfile((p) => ({ ...p, ...rateCard.profile }));
+    if (rateCard.platforms) setPlatforms((p) => ({ ...p, ...rateCard.platforms }));
+    if (Array.isArray(rateCard.packages) && rateCard.packages.length > 0) setPackages(rateCard.packages);
+    if (rateCard.headline) setHeadline(rateCard.headline);
+    if (rateCard.pitch) setPitch(rateCard.pitch);
+    if (rateCard.leadTime) setLeadTime(rateCard.leadTime);
+    if (rateCard.availability) setAvailability(rateCard.availability);
+    if (rateCard.usageNote) setUsageNote(rateCard.usageNote);
+    if (rateCard.revisionPolicy) setRevisionPolicy(rateCard.revisionPolicy);
+    if (rateCard.showPricing != null) setShowPricing(rateCard.showPricing);
+    if (rateCard.published) setPublished(true);
+  }, [cardId, rateCard]);
+
+  // Best-effort payload shape — POST /rate-cards' request body is documented
+  // for creation but the wizard's fields (payment/edit-card steps) aren't
+  // covered by any documented contract, so this bundles everything the
+  // builder collects rather than guessing which subset the backend expects.
+  const buildPayload = () => ({
+    profile,
+    platforms,
+    packages,
+    payment: { mpesaPhone, mpesaBusiness, airtelConnected, autoInvoice, requireDeposit, whatsappReminder },
+    headline,
+    pitch,
+    leadTime,
+    availability,
+    usageNote,
+    revisionPolicy,
+    showPricing,
+  });
+
   // publish (step 5)
   const [published, setPublished] = useState(false);
-  const [publishing, setPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
   const slug = `creatorske.com/${profile.handle.toLowerCase().replace(/\s/g, "")}`;
-  const doPublish = () => {
-    setPublishing(true);
-    setTimeout(() => { setPublishing(false); setPublished(true); launchConfetti(); }, 1600);
+
+  // Ensures a rate card exists (creating one on first save if the wizard was
+  // opened at /creator/rate-card with no :id yet), then navigates to its
+  // edit URL so subsequent saves target the created card.
+  const ensureCardId = async () => {
+    if (cardId) return cardId;
+    const created = await createRateCard(buildPayload());
+    const newId = created?.id;
+    if (newId) navigate(`/creator/rate-card/${newId}/edit`, { replace: true });
+    return newId;
+  };
+
+  const doPublish = async () => {
+    const id = await ensureCardId();
+    if (!id) return;
+    publishMutation(undefined, {
+      onSuccess: () => { setPublished(true); launchConfetti(); },
+    });
   };
   const copyLink = () => {
     navigator.clipboard?.writeText("https://" + slug);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };
-  // ASSUMPTION: this whole builder is local mock state (no rate-card.service.js
-  // call anywhere yet, see doPublish above) — matches that same fake-latency
-  // pattern rather than inventing a draft-persistence endpoint that isn't documented.
-  const handleSaveDraft = () => {
+  const handleSaveDraft = async () => {
     setSavingDraft(true);
-    setTimeout(() => {
-      setSavingDraft(false);
+    try {
+      const id = await ensureCardId();
+      if (id && cardId) saveDraftMutation(buildPayload());
       toast.success("Draft saved.");
-    }, 700);
+    } finally {
+      setSavingDraft(false);
+    }
   };
 
   const next = () => setStep((s) => Math.min(5, s + 1));
   const back = () => setStep((s) => Math.max(1, s - 1));
 
   const previewProps = { profile, platforms, packages, headline: undefined, pitch: undefined, leadTime: undefined, availability: undefined };
+
+  if (cardId && cardLoading) {
+    return (
+      <div className="rcb" style={{ minHeight: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Tokens />
+        <p className="hint">Loading your rate card…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="rcb" style={{ minHeight: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
@@ -940,8 +1013,8 @@ export default function RateCardBuilderPage() {
                   </div>
                 </div>
               ) : (
-                <button className="btn btn-accent btn-full" style={{ padding: 13 }} disabled={publishing} onClick={doPublish}>
-                  <IconRocket size={15} />{publishing ? "Publishing…" : "Publish rate card"}
+                <button className="btn btn-accent btn-full" style={{ padding: 13 }} disabled={isPublishing || isCreating} onClick={doPublish}>
+                  <IconRocket size={15} />{isPublishing || isCreating ? "Publishing…" : "Publish rate card"}
                 </button>
               )}
             </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
@@ -7,6 +7,10 @@ import {
   IconSearch, IconCircleCheck, IconHistory,
 } from '@tabler/icons-react';
 import EmptyState from '@/components/shared/EmptyState';
+import ErrorState from '@/components/shared/ErrorState';
+import Skeleton from '@/components/ui/Skeleton';
+import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
+import { getInitials, formatCurrency, formatDate, formatCount } from '@/lib/utils';
 
 // ─── Design tokens (pulled directly from Creatorske Component Library v2) ───
 // Fonts   : Archivo (display / h1–h4, bold) · Inter (body, everything else)
@@ -63,91 +67,61 @@ function shade(hex, percent) {
   return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
 }
 
-const CAMPAIGNS = [
-  {
-    id: 1,
-    creator: "Amara Osei",
-    handle: "@amaracreates",
-    initials: "AO",
-    package: "Reel + Caption",
-    platform: "Instagram",
-    status: "In Review",
-    deliveryDate: "28 Jun 2026",
-    amount: "KES 22,000",
-    unread: 2,
-    avatarColor: "#534AB7",
-  },
-  {
-    id: 2,
-    creator: "Kofi Mensah",
-    handle: "@koficontent",
-    initials: "KM",
-    package: "TikTok Bundle × 3",
-    platform: "TikTok",
-    status: "Booked",
-    deliveryDate: "5 Jul 2026",
-    amount: "KES 45,000",
-    unread: 0,
-    avatarColor: "#0E7490",
-  },
-  {
-    id: 3,
-    creator: "Zara Njoroge",
-    handle: "@zaralifestyle",
-    initials: "ZN",
-    package: "YouTube Integration",
-    platform: "YouTube",
-    status: "Awaiting Approval",
-    deliveryDate: "20 Jun 2026",
-    amount: "KES 60,000",
-    unread: 1,
-    avatarColor: "#B45309",
-  },
-];
+// Response schema for GET /brands/campaigns and GET /brands/shortlist is
+// undocumented (see CLAUDE.md) — field names below are best-effort guesses
+// with graceful fallbacks. Status vocabulary is shared with CampaignsPage.jsx
+// (in_progress/delivered/disputed/completed/refunded) since both pages read
+// the same underlying campaign resource.
+const STATUS_META = {
+  in_progress: { label: "In progress",        cls: "tag-purple"  },
+  delivered:   { label: "Awaiting approval",  cls: "tag-info"    },
+  disputed:    { label: "Disputed",           cls: "tag-error"   },
+  completed:   { label: "Completed",          cls: "tag-success" },
+  refunded:    { label: "Refunded",           cls: "tag-warning" },
+};
 
-const SHORTLISTED = [
-  {
-    id: 4,
-    creator: "Nia Kamau",
-    handle: "@niakamau",
-    initials: "NK",
-    niche: "Food & Lifestyle",
-    platform: "TikTok",
-    followers: "180K",
-    engagement: "6.1%",
-    rating: 4.9,
-    availability: "Open",
-    avatarColor: "#047857",
-  },
-  {
-    id: 5,
-    creator: "Jabari Otieno",
-    handle: "@jabarivibes",
-    initials: "JO",
-    niche: "Fashion",
-    platform: "Instagram",
-    followers: "92K",
-    engagement: "5.3%",
-    rating: 4.7,
-    availability: "Limited",
+function normalizeCampaign(c) {
+  const creatorName = c.creatorName ?? c.creator ?? "Unknown creator";
+  return {
+    id: c.id,
+    creator: creatorName,
+    handle: c.creatorHandle ?? c.handle ?? "",
+    initials: getInitials(creatorName),
+    package: c.packageName ?? c.package ?? "—",
+    platform: c.platform ?? "—",
+    status: c.status ?? "in_progress",
+    deliveryDate: formatDate(c.expectedDeliveryAt ?? c.deliveredAt),
+    amount: formatCurrency(c.price ?? c.amount),
+    rawAmount: Number(c.price ?? c.amount ?? 0),
+    unread: c.unreadMessageCount ?? 0,
     avatarColor: "#534AB7",
-  },
-];
+  };
+}
+
+function normalizeShortlistEntry(s) {
+  const creatorName = s.creatorName ?? s.name ?? s.creator ?? "Unknown creator";
+  return {
+    id: s.id ?? s.creatorId,
+    creator: creatorName,
+    handle: s.handle ?? s.creatorHandle ?? "",
+    initials: getInitials(creatorName),
+    niche: s.niche ?? s.category ?? "—",
+    platform: s.platform ?? "—",
+    followers: s.followers != null ? formatCount(s.followers) : "—",
+    engagement: s.engagementRate != null ? `${s.engagementRate}%` : "—",
+    rating: s.rating ?? "—",
+    availability: s.availability ?? "Open",
+    avatarColor: "#534AB7",
+  };
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
-  const map = {
-    "Booked":            "tag-purple",
-    "In Review":         "tag-warning",
-    "Awaiting Approval": "tag-info",
-    "Completed":         "tag-success",
-    "Cancelled":         "tag-error",
-  };
-  const cls = map[status] || map["Booked"];
+  const meta = STATUS_META[status] ?? STATUS_META.in_progress;
   return (
-    <span className={`tag ${cls}`} style={{ whiteSpace: "nowrap" }}>
+    <span className={`tag ${meta.cls}`} style={{ whiteSpace: "nowrap" }}>
       <span style={{ width: 5, height: 5, borderRadius: "50%", background: "currentColor", flexShrink: 0 }} />
-      {status}
+      {meta.label}
     </span>
   );
 }
@@ -325,7 +299,7 @@ function CampaignDrawer({ campaign, onClose }) {
           <Row label="Amount" value={campaign.amount} bold />
         </div>
 
-        {campaign.status === "Awaiting Approval" && !approved && (
+        {campaign.status === "delivered" && !approved && (
           <div style={{ background: C.infoBg, borderRadius: R.lg, padding: 16 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: C.infoText, marginBottom: 4 }}>Content delivered</div>
             <div style={{ fontSize: 12, color: C.infoText, marginBottom: 14, lineHeight: 1.55 }}>
@@ -435,10 +409,33 @@ export default function BrandDashboardPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("active");
   const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [shortlistRemoved, setShortlistRemoved] = useState([]);
 
-  const activeCampaigns = CAMPAIGNS;
-  const displayedShortlist = SHORTLISTED.filter(c => !shortlistRemoved.includes(c.id));
+  const {
+    campaigns: rawCampaigns,
+    isLoadingCampaigns,
+    isCampaignsError,
+    refetchCampaigns,
+    shortlist: rawShortlist,
+    isLoadingShortlist,
+    isShortlistError,
+    removeFromShortlist,
+  } = useBrandDashboard();
+
+  const campaigns = useMemo(() => rawCampaigns.map(normalizeCampaign), [rawCampaigns]);
+  const displayedShortlist = useMemo(() => rawShortlist.map(normalizeShortlistEntry), [rawShortlist]);
+
+  const activeCampaigns = campaigns.filter((c) => c.status === "in_progress" || c.status === "delivered");
+  const historyCampaigns = campaigns.filter((c) => c.status === "completed" || c.status === "refunded");
+  const deliveredCampaign = campaigns.find((c) => c.status === "delivered");
+
+  const stats = useMemo(() => {
+    const pendingApproval = campaigns.filter((c) => c.status === "delivered").length;
+    const totalSpent = campaigns
+      .filter((c) => c.status === "completed")
+      .reduce((sum, c) => sum + c.rawAmount, 0);
+    const uniqueCreators = new Set(campaigns.map((c) => c.handle || c.creator)).size;
+    return { active: activeCampaigns.length, totalSpent, pendingApproval, uniqueCreators };
+  }, [campaigns, activeCampaigns.length]);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -488,31 +485,33 @@ export default function BrandDashboardPage() {
         <div className="bento">
 
           {/* Stat cards */}
-          <div className="col-3"><StatCard label="Active campaigns" value="3" sub="this month" change="+1" changeUp /></div>
-          <div className="col-3"><StatCard label="Total spent" value="KES 127K" sub="all time" /></div>
-          <div className="col-3"><StatCard label="Pending approval" value="1" sub="needs action" /></div>
-          <div className="col-3"><StatCard label="Creators worked with" value="7" sub="all time" change="+2" changeUp /></div>
+          <div className="col-3"><StatCard label="Active campaigns" value={isLoadingCampaigns ? <Skeleton width={30} height={28} /> : stats.active} sub="right now" /></div>
+          <div className="col-3"><StatCard label="Total spent" value={isLoadingCampaigns ? <Skeleton width={70} height={28} /> : formatCurrency(stats.totalSpent)} sub="all time" /></div>
+          <div className="col-3"><StatCard label="Pending approval" value={isLoadingCampaigns ? <Skeleton width={20} height={28} /> : stats.pendingApproval} sub="needs action" /></div>
+          <div className="col-3"><StatCard label="Creators worked with" value={isLoadingCampaigns ? <Skeleton width={20} height={28} /> : stats.uniqueCreators} sub="all time" /></div>
 
           {/* Delivery alert */}
-          <div className="col-12" style={{
-            background: C.successBg, borderRadius: R.lg, padding: "14px 20px",
-            display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
-          }}>
-            <IconCircleCheck size={17} color={C.successText} strokeWidth={2} style={{ flexShrink: 0 }} />
-            <div style={{ flex: 1, minWidth: 200, fontSize: 13.5, color: C.successText }}>
-              <strong style={{ fontWeight: 600 }}>Zara Njoroge</strong> has marked your YouTube Integration as delivered. Review and approve to release payment.
+          {deliveredCampaign && (
+            <div className="col-12" style={{
+              background: C.successBg, borderRadius: R.lg, padding: "14px 20px",
+              display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap",
+            }}>
+              <IconCircleCheck size={17} color={C.successText} strokeWidth={2} style={{ flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 200, fontSize: 13.5, color: C.successText }}>
+                <strong style={{ fontWeight: 600 }}>{deliveredCampaign.creator}</strong> has marked your {deliveredCampaign.package} as delivered. Review and approve to release payment.
+              </div>
+              <button
+                onClick={() => setSelectedCampaign(deliveredCampaign)}
+                style={{
+                  background: C.black, color: C.white, border: "none",
+                  borderRadius: R.sm, padding: "8px 16px", fontSize: 12.5, fontWeight: 500,
+                  cursor: "pointer", whiteSpace: "nowrap", fontFamily: FONT_BODY,
+                }}
+              >
+                Review now
+              </button>
             </div>
-            <button
-              onClick={() => setSelectedCampaign(CAMPAIGNS.find(c => c.id === 3))}
-              style={{
-                background: C.black, color: C.white, border: "none",
-                borderRadius: R.sm, padding: "8px 16px", fontSize: 12.5, fontWeight: 500,
-                cursor: "pointer", whiteSpace: "nowrap", fontFamily: FONT_BODY,
-              }}
-            >
-              Review now
-            </button>
-          </div>
+          )}
 
           {/* Active campaigns table */}
           <div className="col-12" style={{ background: C.white, border: `0.5px solid ${C.grey100}`, borderRadius: R.xl, overflow: "hidden" }}>
@@ -547,7 +546,52 @@ export default function BrandDashboardPage() {
               </button>
             </div>
 
-            {tab === "active" ? (
+            {isCampaignsError ? (
+              <ErrorState size="sm" onRetry={refetchCampaigns} />
+            ) : isLoadingCampaigns ? (
+              <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={40} />)}
+              </div>
+            ) : tab === "active" ? (
+              activeCampaigns.length === 0 ? (
+                <EmptyState
+                  size="sm"
+                  icon={<IconHistory size={18} />}
+                  title="No active campaigns"
+                  description="Book a creator from the directory to start your first campaign."
+                />
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                    <thead>
+                      <tr>
+                        {["Creator", "Package", "Status", "Delivery date", "Amount", ""].map(h => (
+                          <th key={h} style={{
+                            padding: "10px 16px", textAlign: "left",
+                            fontSize: 10, fontWeight: 600, letterSpacing: ".08em",
+                            textTransform: "uppercase", color: C.grey400,
+                            borderBottom: `0.5px solid ${C.grey200}`, background: C.grey50,
+                            whiteSpace: "nowrap",
+                          }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activeCampaigns.map(c => (
+                        <CampaignRow key={c.id} c={c} onSelect={setSelectedCampaign} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            ) : historyCampaigns.length === 0 ? (
+              <EmptyState
+                size="sm"
+                icon={<IconHistory size={18} />}
+                title="No completed campaigns yet"
+                description="Campaigns move here once they're delivered and approved."
+              />
+            ) : (
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                   <thead>
@@ -564,19 +608,12 @@ export default function BrandDashboardPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {activeCampaigns.map(c => (
+                    {historyCampaigns.map(c => (
                       <CampaignRow key={c.id} c={c} onSelect={setSelectedCampaign} />
                     ))}
                   </tbody>
                 </table>
               </div>
-            ) : (
-              <EmptyState
-                size="sm"
-                icon={<IconHistory size={18} />}
-                title="No completed campaigns yet"
-                description="Campaigns move here once they're delivered and approved."
-              />
             )}
           </div>
 
@@ -589,7 +626,17 @@ export default function BrandDashboardPage() {
           </div>
 
           {/* Shortlist cards */}
-          {displayedShortlist.length === 0 ? (
+          {isShortlistError ? (
+            <div className="col-12"><ErrorState /></div>
+          ) : isLoadingShortlist ? (
+            <>
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="col-4">
+                  <Skeleton width="100%" height={230} style={{ borderRadius: 16 }} />
+                </div>
+              ))}
+            </>
+          ) : displayedShortlist.length === 0 ? (
             <div className="col-12" style={{
               background: C.white, border: `1.5px dashed ${C.grey200}`,
               borderRadius: R.lg, padding: 40, textAlign: "center",
@@ -662,7 +709,7 @@ export default function BrandDashboardPage() {
                       }}
                     >Send enquiry</button>
                     <button
-                      onClick={() => setShortlistRemoved(r => [...r, c.id])}
+                      onClick={() => removeFromShortlist(c.id)}
                       style={{
                         background: C.white, color: C.grey600,
                         border: `0.5px solid ${C.grey200}`, borderRadius: R.md,

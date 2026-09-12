@@ -12,4 +12,8 @@ export const brandService = {
   listCampaigns: (params) => api.get('/brands/campaigns', { params }).then((r) => r.data),
   getCampaign: (id) => api.get(`/brands/campaigns/${id}`).then((r) => r.data),
   updateCampaign: (id, data) => api.put(`/brands/campaigns/${id}`, data).then((r) => r.data),
+  // Not yet documented/built on the backend — see the production-readiness
+  // plan's backend spec. Paths are best-effort guesses.
+  approveCampaign: (id) => api.post(`/brands/campaigns/${id}/approve`).then((r) => r.data),
+  disputeCampaign: (id, evidence) => api.post(`/brands/campaigns/${id}/dispute`, { evidence }).then((r) => r.data),
 };

@@ -21,10 +21,24 @@ export function useReviews(creatorId) {
     onError: () => toast.error('Could not submit review.'),
   });
 
+  // No backend endpoint exists yet (see backend spec) — retry:false avoids
+  // hammering a 404, and the seam is ready to work once it's built.
+  const replyMutation = useMutation({
+    mutationFn: ({ reviewId, reply }) => reviewService.replyToReview(reviewId, reply),
+    retry: false,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: key });
+      toast.success('Reply posted.');
+    },
+    onError: () => toast.error("Replying isn't available yet — this needs backend support."),
+  });
+
   return {
     reviews: query.data?.reviews ?? query.data ?? [],
     isLoading: query.isLoading,
     submit: submitMutation.mutate,
     isSubmitting: submitMutation.isPending,
+    reply: replyMutation.mutate,
+    isReplying: replyMutation.isPending,
   };
 }

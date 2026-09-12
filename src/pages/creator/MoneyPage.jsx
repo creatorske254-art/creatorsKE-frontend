@@ -1,7 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { usePageMeta } from '@/lib/usePageMeta'
+import { usePayments } from '@/features/payments/hooks/usePayments'
+import TransactionHistory from '@/features/payments/components/TransactionHistory'
+import MpesaPrompt from '@/features/payments/components/MpesaPrompt'
+import { usePlan } from '@/features/plans/hooks/usePlan'
+import { formatCurrency } from '@/lib/utils'
 
 /*
    MoneyPage: content area only (sidebar/navbar live in the
@@ -12,28 +17,6 @@ import { usePageMeta } from '@/lib/usePageMeta'
    content-area background already comes from --page-bg on the
    shell, and only individual cards get a --white fill.
 */
-
-const CHART = [
-  { label: 'Mar', amount: 'KES 34,000', short: '34K', pct: 32 },
-  { label: 'Apr', amount: 'KES 68,000', short: '68K', pct: 64 },
-  { label: 'May', amount: 'KES 106,000', short: '106K', pct: 100, active: true },
-]
-
-const TRANSACTIONS = [
-  { name: 'Jumia Kenya', sub: 'Story Post · Paid via M-Pesa', date: '23 May', amount: '+KES 8,000', positive: true },
-  { name: 'KFC Kenya', sub: 'Reel + Caption · Paid via M-Pesa', date: '18 May', amount: '+KES 22,000', positive: true },
-  { name: 'Withdrawal', sub: 'To M-Pesa +254 712 345 678', date: '15 May', amount: '−KES 40,000', positive: false },
-  { name: 'Equity Bank', sub: 'Brand Partnership · Bank transfer', date: '9 May', amount: '+KES 55,000', positive: true },
-  { name: 'Creatorske Pro', sub: 'Monthly subscription', date: '1 May', amount: '−KES 1,200', positive: false },
-]
-
-const FULL_HISTORY = [
-  ...TRANSACTIONS,
-  { name: 'Safaricom PLC', sub: 'Carousel Post · Paid via M-Pesa', date: '27 Apr', amount: '+KES 30,000', positive: true },
-  { name: 'Withdrawal', sub: 'To M-Pesa +254 712 345 678', date: '20 Apr', amount: '−KES 25,000', positive: false },
-  { name: 'Naivas Supermarket', sub: 'Reel · Paid via Bank transfer', date: '11 Apr', amount: '+KES 18,500', positive: true },
-  { name: 'Creatorske Pro', sub: 'Monthly subscription', date: '1 Apr', amount: '−KES 1,200', positive: false },
-]
 
 const PAYMENT_METHODS = [
   { icon: 'ti-device-mobile', iconBg: '#00A651', name: 'M-Pesa', detail: '+254 712 345 678', primary: true },
@@ -46,9 +29,41 @@ export default function MoneyPage() {
   const [period, setPeriod] = useState('3m')
   const [withdrawOpen, setWithdrawOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
-  const [withdrawState, setWithdrawState] = useState('idle') // idle | loading | done
-  const [amount, setAmount] = useState('84,000')
+  const [amount, setAmount] = useState('')
   const [paymentMethods, setPaymentMethods] = useState(PAYMENT_METHODS)
+  const primaryMethod = paymentMethods.find((m) => m.primary)
+
+  const { currentPlan } = usePlan()
+  const {
+    stats, isStatsLoading,
+    earningsTimeline, isTimelineLoading,
+    transactions, isHistoryLoading, isHistoryError, refetchHistory,
+    requestPayout, isRequestingPayout,
+    paymentStatus, isPolling,
+  } = usePayments({ period })
+
+  // GET /payments/earnings/timeline's response schema is undocumented —
+  // guessed as [{ period/label, amount }]. Bar heights are relative to the
+  // max value in the returned series, not a fabricated scale.
+  const chartBars = useMemo(() => {
+    const points = Array.isArray(earningsTimeline) ? earningsTimeline : []
+    const max = Math.max(1, ...points.map((p) => Number(p.amount ?? p.total ?? 0)))
+    return points.map((p, i) => {
+      const value = Number(p.amount ?? p.total ?? 0)
+      return {
+        label: p.label ?? p.period ?? p.month ?? `#${i + 1}`,
+        amount: value,
+        pct: Math.round((value / max) * 100),
+        active: i === points.length - 1,
+      }
+    })
+  }, [earningsTimeline])
+
+  // GET /payments/stats' response schema is undocumented — best-effort field
+  // guesses with a "—" fallback rather than fabricated numbers.
+  const availableBalance = stats?.availableBalance ?? 0
+  const pendingBalance = stats?.pendingBalance ?? 0
+  const totalEarnedThisPeriod = stats?.totalEarned ?? 0
 
   function handleSetPrimary(name) {
     setPaymentMethods((prev) => prev.map((m) => ({ ...m, primary: m.name === name })))
@@ -61,7 +76,11 @@ export default function MoneyPage() {
 
   function handleExportCsv() {
     const header = ['Date', 'Description', 'Amount']
-    const rows = FULL_HISTORY.map((t) => [t.date, `${t.name} - ${t.sub}`, t.amount])
+    const rows = transactions.map((t) => [
+      t.date ?? t.createdAt ?? '',
+      `${t.counterpartyName ?? t.description ?? t.name ?? 'Transaction'} - ${t.note ?? t.method ?? t.sub ?? ''}`,
+      t.amount ?? 0,
+    ])
     const csv = [header, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
@@ -85,21 +104,28 @@ export default function MoneyPage() {
   }, [])
 
   function openWithdraw() {
-    setWithdrawState('idle')
+    setAmount(String(availableBalance || ''))
     setWithdrawOpen(true)
   }
 
   function confirmWithdraw() {
-    if (withdrawState !== 'idle') return
-    setWithdrawState('loading')
-    setTimeout(() => {
-      setWithdrawState('done')
-      setTimeout(() => {
-        setWithdrawOpen(false)
-        setWithdrawState('idle')
-      }, 1400)
-    }, 1300)
+    const numericAmount = Number(String(amount).replace(/,/g, '')) || 0
+    if (!numericAmount || !primaryMethod) return
+    requestPayout({ amount: numericAmount, method: primaryMethod.name })
   }
+
+  const isPaymentSettled = paymentStatus
+    ? ['completed', 'success', 'successful', 'failed', 'cancelled', 'canceled'].includes(
+        (paymentStatus.status ?? paymentStatus.resultCode ?? '').toString().toLowerCase()
+      )
+    : false
+
+  useEffect(() => {
+    if (isPaymentSettled) {
+      const t = setTimeout(() => setWithdrawOpen(false), 1600)
+      return () => clearTimeout(t)
+    }
+  }, [isPaymentSettled])
 
   return (
     <div className="money-page">
@@ -194,7 +220,7 @@ export default function MoneyPage() {
             {/* Balance hero */}
             <div className="hero s-7 r-2">
               <div className="hero-label">Available balance</div>
-              <div className="hero-amount">KES 84,000</div>
+              <div className="hero-amount">{isStatsLoading ? '···' : formatCurrency(availableBalance)}</div>
               <div className="hero-sub">Ready to withdraw</div>
               <div className="hero-actions">
                 <button className="btn btn-sm hero-btn hero-btn-solid" onClick={openWithdraw}>
@@ -211,16 +237,11 @@ export default function MoneyPage() {
             {/* Pending / Total earned stat cards */}
             <div className="stat-card s-5">
               <div className="stat-card-label">Pending</div>
-              <div className="stat-card-value" style={{ fontSize: 24 }}>KES 22,000</div>
-              <div style={{ fontSize: 11.5, color: 'var(--grey-500)' }}>1 payment in transit</div>
+              <div className="stat-card-value" style={{ fontSize: 24 }}>{isStatsLoading ? '···' : formatCurrency(pendingBalance)}</div>
             </div>
             <div className="stat-card s-5">
-              <div className="stat-card-label">Total earned (May)</div>
-              <div className="stat-card-value" style={{ fontSize: 24 }}>KES 106,000</div>
-              <div className="stat-card-delta up">
-                <span className="tag tag-success" style={{ fontSize: 11 }}>+22%</span>
-                <span style={{ color: 'var(--grey-500)' }}>vs April</span>
-              </div>
+              <div className="stat-card-label">Total earned</div>
+              <div className="stat-card-value" style={{ fontSize: 24 }}>{isStatsLoading ? '···' : formatCurrency(totalEarnedThisPeriod)}</div>
             </div>
 
             {/* Earnings chart */}
@@ -240,29 +261,39 @@ export default function MoneyPage() {
                   ))}
                 </div>
               </div>
-              <div className="chart-bars">
-                {CHART.map((bar) => (
-                  <div key={bar.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                    <div style={{ fontSize: 9, fontWeight: bar.active ? 600 : 400, color: bar.active ? 'var(--purple-600)' : 'var(--grey-400)' }}>{bar.short}</div>
-                    <div
-                      className="chart-bar"
-                      title={`${bar.label}: ${bar.amount}`}
-                      style={{
-                        background: bar.active ? 'var(--purple-600)' : 'var(--purple-50)',
-                        height: `${bar.pct}%`,
-                        border: bar.active ? '0.5px solid var(--purple-200)' : 'none',
-                      }}
-                    ></div>
+              {isTimelineLoading ? (
+                <div style={{ display: 'flex', gap: 6, height: 90, alignItems: 'flex-end' }}>
+                  {[0, 1, 2].map((i) => <div key={i} className="skeleton" style={{ flex: 1, height: `${40 + i * 20}%` }} />)}
+                </div>
+              ) : chartBars.length === 0 ? (
+                <div style={{ padding: '24px 0', textAlign: 'center', fontSize: 12.5, color: 'var(--grey-400)' }}>No earnings data for this period yet.</div>
+              ) : (
+                <>
+                  <div className="chart-bars">
+                    {chartBars.map((bar, i) => (
+                      <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                        <div style={{ fontSize: 9, fontWeight: bar.active ? 600 : 400, color: bar.active ? 'var(--purple-600)' : 'var(--grey-400)' }}>{formatCurrency(bar.amount)}</div>
+                        <div
+                          className="chart-bar"
+                          title={`${bar.label}: ${formatCurrency(bar.amount)}`}
+                          style={{
+                            background: bar.active ? 'var(--purple-600)' : 'var(--purple-50)',
+                            height: `${bar.pct}%`,
+                            border: bar.active ? '0.5px solid var(--purple-200)' : 'none',
+                          }}
+                        ></div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-              <div style={{ display: 'flex', gap: 6, marginTop: 5 }}>
-                {CHART.map((bar) => (
-                  <div key={bar.label} style={{ flex: 1, textAlign: 'center', fontSize: 10, fontWeight: bar.active ? 500 : 400, color: bar.active ? 'var(--purple-600)' : 'var(--grey-400)' }}>
-                    {bar.label}
+                  <div style={{ display: 'flex', gap: 6, marginTop: 5 }}>
+                    {chartBars.map((bar, i) => (
+                      <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, fontWeight: bar.active ? 500 : 400, color: bar.active ? 'var(--purple-600)' : 'var(--grey-400)' }}>
+                        {bar.label}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
 
             {/* Transactions */}
@@ -273,31 +304,14 @@ export default function MoneyPage() {
                   <i className="ti ti-history" style={{ fontSize: 11 }}></i>View all
                 </button>
               </div>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Description</th>
-                    <th>Date</th>
-                    <th style={{ textAlign: 'right' }}>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {TRANSACTIONS.map((t) => (
-                    <tr key={t.name + t.date}>
-                      <td>
-                        <div style={{ fontWeight: 500 }}>{t.name}</div>
-                        <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{t.sub}</div>
-                      </td>
-                      <td style={{ fontSize: 12, color: 'var(--grey-400)' }}>{t.date}</td>
-                      <td style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: t.positive ? 'var(--status-success-text)' : 'var(--status-error-text)' }}>
-                          {t.amount}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <TransactionHistory
+                transactions={transactions}
+                isLoading={isHistoryLoading}
+                isError={isHistoryError}
+                onRetry={refetchHistory}
+                variant="table"
+                limit={5}
+              />
             </div>
 
             {/* Payment methods */}
@@ -340,29 +354,34 @@ export default function MoneyPage() {
             <div className="card card-p-md s-5">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <p className="card-title" style={{ fontSize: 15, marginBottom: 0 }}>Subscription</p>
-                <span className="tag tag-purple">Pro</span>
+                <span className="tag tag-purple">{currentPlan?.name ?? currentPlan?.id ?? '—'}</span>
               </div>
+              {/* Billing/renewal/usage fields below have no confirmed backend
+                  shape yet (see production plan's backend spec) — shown as
+                  illustrative placeholders, not real numbers. */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Plan</span>
-                  <span style={{ fontWeight: 500 }}>Creatorske Pro</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.name ?? currentPlan?.id ?? '—'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Billing</span>
-                  <span style={{ fontWeight: 500 }}>KES 1,200 / month</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.price != null ? `${formatCurrency(currentPlan.price)} / month` : '—'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Next renewal</span>
-                  <span style={{ fontWeight: 500 }}>1 Jun 2026</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.renewsAt ? new Date(currentPlan.renewsAt).toLocaleDateString('en-KE') : '—'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Rate cards</span>
-                  <span style={{ fontWeight: 500 }}>3 / 5 used</span>
+                  <span style={{ fontWeight: 500 }}>{currentPlan?.rateCardsUsed != null && currentPlan?.rateCardsMax != null ? `${currentPlan.rateCardsUsed} / ${currentPlan.rateCardsMax} used` : '—'}</span>
                 </div>
               </div>
-              <div className="progress-bar-wrap progress-sm" style={{ marginTop: 10 }}>
-                <div className="progress-bar-fill progress-sm" style={{ width: '60%' }}></div>
-              </div>
+              {currentPlan?.rateCardsUsed != null && currentPlan?.rateCardsMax != null && (
+                <div className="progress-bar-wrap progress-sm" style={{ marginTop: 10 }}>
+                  <div className="progress-bar-fill progress-sm" style={{ width: `${Math.round((currentPlan.rateCardsUsed / currentPlan.rateCardsMax) * 100)}%` }}></div>
+                </div>
+              )}
               <div style={{ display: 'flex', gap: 7, marginTop: 12 }}>
                 <button className="btn btn-secondary btn-sm" onClick={() => navigate('/pricing')}>Manage plan</button>
                 <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOpen(true)}>View invoices</button>
@@ -377,7 +396,7 @@ export default function MoneyPage() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--status-success-text)' }}>Withdraw funds</div>
-                  <div style={{ fontSize: 11.5, color: 'var(--status-success-text)', opacity: 0.8 }}>KES 84,000 available</div>
+                  <div style={{ fontSize: 11.5, color: 'var(--status-success-text)', opacity: 0.8 }}>{isStatsLoading ? '···' : formatCurrency(availableBalance)} available</div>
                 </div>
                 <button
                   className="btn btn-sm"
@@ -395,23 +414,17 @@ export default function MoneyPage() {
 
       {/* Withdraw modal */}
       {withdrawOpen && (
-        <div className="modal-backdrop" onClick={() => withdrawState !== 'loading' && setWithdrawOpen(false)}>
+        <div className="modal-backdrop" onClick={() => !isPolling && !isRequestingPayout && setWithdrawOpen(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">Withdraw funds</div>
-              <button className="modal-close" onClick={() => withdrawState !== 'loading' && setWithdrawOpen(false)}>
+              <button className="modal-close" onClick={() => !isPolling && !isRequestingPayout && setWithdrawOpen(false)}>
                 <i className="ti ti-x" style={{ fontSize: 14 }}></i>
               </button>
             </div>
             <div className="modal-body">
-              {withdrawState === 'done' ? (
-                <div className="alert alert-success">
-                  <span className="alert-icon-badge"><i className="ti ti-check"></i></span>
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: 2 }}>Withdrawal sent</div>
-                    <div style={{ opacity: 0.8 }}>KES {amount} is on its way to M-Pesa +254 712 345 678.</div>
-                  </div>
-                </div>
+              {isPolling || isPaymentSettled ? (
+                <MpesaPrompt phone={primaryMethod?.detail} status={paymentStatus} isPolling={isPolling} />
               ) : (
                 <>
                   <div className="modal-body-text">Confirm how much you'd like to move to your primary payment method.</div>
@@ -424,15 +437,11 @@ export default function MoneyPage() {
                   <div style={{ marginBottom: 16 }}>
                     <div className="kv-row">
                       <span className="kv-label">To</span>
-                      <span className="kv-value">M-Pesa · +254 712 345 678</span>
-                    </div>
-                    <div className="kv-row">
-                      <span className="kv-label">Fee</span>
-                      <span className="kv-value">KES 0</span>
+                      <span className="kv-value">{primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'No payment method on file'}</span>
                     </div>
                     <div className="kv-row">
                       <span className="kv-label">You'll receive</span>
-                      <span className="kv-value">KES {amount}</span>
+                      <span className="kv-value">{formatCurrency(Number(String(amount).replace(/,/g, '')) || 0)}</span>
                     </div>
                   </div>
 
@@ -443,11 +452,12 @@ export default function MoneyPage() {
                 </>
               )}
             </div>
-            {withdrawState !== 'done' && (
+            {!isPolling && !isPaymentSettled && (
               <div className="modal-footer">
-                <button className="btn btn-ghost" onClick={() => setWithdrawOpen(false)} disabled={withdrawState === 'loading'}>Cancel</button>
+                <button className="btn btn-ghost" onClick={() => setWithdrawOpen(false)} disabled={isRequestingPayout}>Cancel</button>
                 <button
-                  className={`btn btn-purple${withdrawState === 'loading' ? ' btn-loading' : ''}`}
+                  className={`btn btn-purple${isRequestingPayout ? ' btn-loading' : ''}`}
+                  disabled={isRequestingPayout || !primaryMethod}
                   onClick={confirmWithdraw}
                 >
                   Confirm withdrawal
@@ -470,19 +480,13 @@ export default function MoneyPage() {
             </div>
             <div className="modal-body">
               <div className="modal-body-text">Every payout, payment, and charge on your account, most recent first.</div>
-              <div>
-                {FULL_HISTORY.map((t, i) => (
-                  <div className="history-row" key={t.name + t.date + i}>
-                    <div>
-                      <div style={{ fontWeight: 500, fontSize: 13 }}>{t.name}</div>
-                      <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{t.sub} · {t.date}</div>
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: t.positive ? 'var(--status-success-text)' : 'var(--status-error-text)', flexShrink: 0 }}>
-                      {t.amount}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <TransactionHistory
+                transactions={transactions}
+                isLoading={isHistoryLoading}
+                isError={isHistoryError}
+                onRetry={refetchHistory}
+                variant="list"
+              />
             </div>
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setHistoryOpen(false)}>Close</button>

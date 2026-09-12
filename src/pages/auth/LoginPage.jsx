@@ -69,6 +69,13 @@ export default function LoginPage() {
       // fallback for flows that hop through signup/verify-email first.
       const redirectTo = searchParams.get('redirect') || sessionStorage.getItem(POST_AUTH_REDIRECT_KEY);
       sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+
+      // Best-effort heuristic pending backend confirmation of the `user.plan` field:
+      // a creator who hasn't chosen a plan yet gets sent to pick one before their dashboard.
+      if (!redirectTo && res.data.user.role === 'creator' && !res.data.user.plan) {
+        navigate('/onboarding/plan');
+        return;
+      }
       navigate(redirectTo || ROLE_HOME[res.data.user.role] || '/');
     } catch (err) {
       toast.error(err.message ?? 'Login failed. Please try again.');

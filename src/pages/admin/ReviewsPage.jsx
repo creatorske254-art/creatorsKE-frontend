@@ -295,6 +295,9 @@ export default function ReviewsPage() {
         <p style={{ fontSize: 13, color: "var(--grey-500)", lineHeight: 1.6 }}>
           Moderate reviews flagged by creators or auto-detected for policy violations across the platform.
         </p>
+        <p style={{ fontSize: 12, color: "var(--grey-400)", lineHeight: 1.6, fontStyle: 'italic', marginTop: 4 }}>
+          Demo data — a cross-creator review moderation feed endpoint doesn't exist on the backend yet (reviewService only supports listing one creator's reviews at a time). See the production-readiness plan's backend spec.
+        </p>
       </div>
 
       {/* Summary row */}

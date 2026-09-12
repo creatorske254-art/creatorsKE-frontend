@@ -1,6 +1,17 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
+import { useAdmin } from '@/features/admin/hooks/useAdmin';
+import { useDisputes } from '@/features/admin/hooks/useDisputes';
+import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
+import { formatCurrency, getInitials } from '@/lib/utils';
+
+// A small "Demo data" tag for sections with no backing endpoint yet (see the
+// production-readiness plan's backend spec) — kept visible rather than
+// silently passed off as real.
+function DemoTag() {
+  return <span className="tag tag-default" style={{ fontSize: 10 }}>Demo data</span>;
+}
 
 // Pulls in the Tabler Icons webfont for every <i className="ti ti-*"> below.
 function useTablerIcons() {
@@ -14,29 +25,25 @@ function useTablerIcons() {
   }, []);
 }
 
-// Seed data
-const HEALTH_METRICS = [
-  { label: "Active creators", value: "1,284", delta: "+34 this week", up: true },
-  { label: "Registered brands", value: "392", delta: "+12 this week", up: true },
-  { label: "Live rate cards", value: "947", delta: "+21 this week", up: true },
-  { label: "Enquiries (7 days)", value: "218", delta: "−4 vs prior week", up: false },
-  { label: "Bookings in progress", value: "63", delta: "+8 this week", up: true },
-  { label: "Completed (month)", value: "141", delta: "+29 vs last month", up: true },
-  { label: "Transaction volume", value: "KES 2.4M", delta: "+18% vs last month", up: true },
-  { label: "Platform fees collected", value: "KES 240K", delta: "+18% vs last month", up: true },
+// GET /admin/stats' response schema is undocumented — these are best-effort
+// field-name guesses with a "—" fallback rather than fabricated numbers.
+// No delta/trend field exists on any documented response, so unlike the
+// original mock these show a plain value with no invented "+34 this week".
+const HEALTH_METRICS_DEF = [
+  { label: "Active creators", field: "activeCreators" },
+  { label: "Registered brands", field: "registeredBrands" },
+  { label: "Live rate cards", field: "liveRateCards" },
+  { label: "Enquiries (7 days)", field: "enquiriesLast7Days" },
+  { label: "Bookings in progress", field: "bookingsInProgress" },
+  { label: "Completed (month)", field: "completedThisMonth" },
+  { label: "Transaction volume", field: "transactionVolume", currency: true },
+  { label: "Platform fees collected", field: "platformFeesCollected", currency: true },
 ];
 
-const OPEN_DISPUTES = [
-  { id: "D-091", creator: "Mwangi Osei", brand: "Nala Foods", package: "IG Story Series", raised: "2 days ago", status: "evidence_open" },
-  { id: "D-088", creator: "Amara Muriithi", brand: "Kasha", package: "Full Campaign Bundle", raised: "4 days ago", status: "under_review" },
-  { id: "D-085", creator: "Zara Kipchoge", brand: "Equity Bank", package: "YouTube Integration", raised: "5 days ago", status: "under_review" },
-];
-
-const FLAGGED_ACCOUNTS = [
-  { name: "FastGrow Agency", type: "brand", reason: "Free email domain (gmail.com)", flagged: "1 day ago", initials: "FA", color: "var(--status-error)" },
-  { name: "BrandBoost Ltd", type: "brand", reason: "Duplicate company name detected", flagged: "3 days ago", initials: "BB", color: "var(--status-warning)" },
-];
-
+// Demo-only sections below (escrow queue, flagged reviews, draft/enquiry
+// charts, re-engagement queue) have no backing endpoint at all — see the
+// production-readiness plan's backend spec. Left in place as illustrative
+// placeholders, clearly tagged, rather than removed or silently treated as real.
 const ABANDONED_DRAFTS = [48, 34, 29, 51, 38, 44, 57, 42, 36, 61, 53, 40, 29, 35];
 const DRAFT_LABELS = ["Jun 15", "", "", "", "", "", "", "", "", "", "", "", "", "Jun 28"];
 const ENQUIRY_BARS = [31, 44, 38, 52, 48, 37, 61, 55, 42, 58, 63, 47, 51, 44];
@@ -162,6 +169,34 @@ export default function OverviewPage() {
   const navigate = useNavigate();
   const [period, setPeriod] = useState("7d");
 
+  const { stats, isLoading: statsLoading } = useAdmin();
+  const { disputes: rawDisputes, openDisputeCount, isLoading: disputesLoading } = useDisputes();
+  const { accounts: rawFlagged, flaggedAccountCount, isLoading: flaggedLoading } = useFlaggedAccounts();
+
+  const openDisputes = useMemo(() => rawDisputes
+    .filter((d) => (d.status ?? 'evidence') !== 'resolved' && (d.status ?? 'evidence') !== 'decided')
+    .slice(0, 3)
+    .map((d) => ({
+      id: d.id,
+      creator: d.creatorName ?? d.creator?.name ?? 'Unknown creator',
+      brand: d.brandName ?? d.brand?.name ?? 'Unknown brand',
+      package: d.packageName ?? d.package ?? 'Booking dispute',
+      raised: d.raisedAt ?? d.createdAt ?? '',
+      status: d.status === 'evidence' ? 'evidence_open' : 'under_review',
+    })), [rawDisputes]);
+
+  const flaggedAccounts = useMemo(() => rawFlagged.slice(0, 2).map((a) => {
+    const name = a.name ?? 'Unknown account';
+    return {
+      name,
+      type: a.type ?? 'brand',
+      reason: a.flag?.reason ?? a.flagReason ?? 'Flagged for review.',
+      flagged: a.flag?.flaggedOn ?? a.flaggedAt ?? '',
+      initials: getInitials(name),
+      color: "var(--status-warning)",
+    };
+  }), [rawFlagged]);
+
   return (
     <div style={{ padding: 28, background: "var(--page-bg)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
 
@@ -176,24 +211,31 @@ export default function OverviewPage() {
       </div>
 
       {/* Attention alerts */}
-      <Alert type="error" icon="ti-flag-3">
-        <strong>3 open disputes</strong>, 2 are currently under admin review. One has the evidence window open (closes in ~22 hours).
-      </Alert>
-      <Alert type="warning" icon="ti-alert-triangle">
-        <strong>2 flagged brand accounts</strong> pending verification review. Access to enquiry sending is suspended until resolved.
-      </Alert>
+      {!disputesLoading && openDisputeCount > 0 && (
+        <Alert type="error" icon="ti-flag-3">
+          <strong>{openDisputeCount} open {openDisputeCount === 1 ? 'dispute' : 'disputes'}</strong> awaiting review.
+        </Alert>
+      )}
+      {!flaggedLoading && flaggedAccountCount > 0 && (
+        <Alert type="warning" icon="ti-alert-triangle">
+          <strong>{flaggedAccountCount} flagged {flaggedAccountCount === 1 ? 'account' : 'accounts'}</strong> pending verification review.
+        </Alert>
+      )}
 
       {/* Health metric grid */}
       <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: 14, marginBottom: 28 }}>
-        {HEALTH_METRICS.map((m) => (
-          <div className="card card-p-md" key={m.label}>
-            <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--grey-400)", marginBottom: 8 }}>{m.label}</div>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--black)", lineHeight: 1, marginBottom: 6 }}>{m.value}</div>
-            <div style={{ fontSize: 11, color: m.up ? "var(--status-success-text)" : "var(--status-error-text)", display: "flex", alignItems: "center", gap: 4 }}>
-              <span><i className={`ti ${m.up ? "ti-trending-up" : "ti-trending-down"}`} /></span> {m.delta}
+        {HEALTH_METRICS_DEF.map((m) => {
+          const raw = stats?.[m.field];
+          const display = raw == null ? '—' : m.currency ? formatCurrency(raw) : raw.toLocaleString?.() ?? raw;
+          return (
+            <div className="card card-p-md" key={m.label}>
+              <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--grey-400)", marginBottom: 8 }}>{m.label}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--black)", lineHeight: 1 }}>
+                {statsLoading ? <span style={{ color: 'var(--grey-200)' }}>···</span> : display}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Charts row */}
@@ -203,7 +245,7 @@ export default function OverviewPage() {
         <div className="card card-p-md">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 3 }}>Abandoned onboarding drafts</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Abandoned onboarding drafts <DemoTag /></div>
               <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · re-engagement emails auto-sent at 48 h</div>
             </div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--black)", lineHeight: 1 }}>
@@ -221,7 +263,7 @@ export default function OverviewPage() {
         <div className="card card-p-md">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 3 }}>Enquiry volume</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Enquiry volume <DemoTag /></div>
               <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · all statuses</div>
             </div>
             <div className="tabs">
@@ -243,18 +285,23 @@ export default function OverviewPage() {
         <div className="card">
           <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Open disputes</h2>
-            <span className="tag tag-default">{OPEN_DISPUTES.length} open</span>
+            <span className="tag tag-default">{disputesLoading ? '···' : openDisputeCount} open</span>
           </div>
           <div style={{ padding: "4px 0" }}>
-            {OPEN_DISPUTES.map((d, i) => (
-              <div key={d.id} style={{ padding: "14px 20px", borderBottom: i < OPEN_DISPUTES.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
+            {disputesLoading ? (
+              <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[0, 1].map((i) => <div key={i} className="skeleton" style={{ height: 40, borderRadius: 'var(--radius-md)' }} />)}
+              </div>
+            ) : openDisputes.length === 0 ? (
+              <div style={{ padding: "32px 20px", textAlign: "center", fontSize: 13, color: "var(--grey-400)" }}>No open disputes.</div>
+            ) : openDisputes.map((d, i) => (
+              <div key={d.id} style={{ padding: "14px 20px", borderBottom: i < openDisputes.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "var(--black)" }}>{d.creator}</div>
                   <StatusPill status={d.status} />
                 </div>
                 <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 4 }}>{d.brand} · {d.package}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "var(--grey-300)" }}>Raised {d.raised}</span>
+                <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
                   <button className="btn btn-ghost btn-xs" style={{ border: "none", padding: 0 }} onClick={() => navigate('/admin/disputes')}>Review <i className="ti ti-arrow-right" style={{ fontSize: 12 }} /></button>
                 </div>
               </div>
@@ -266,28 +313,30 @@ export default function OverviewPage() {
         <div className="card">
           <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Flagged accounts</h2>
-            <span className="tag tag-error">{FLAGGED_ACCOUNTS.length} pending</span>
+            <span className="tag tag-error">{flaggedLoading ? '···' : flaggedAccountCount} pending</span>
           </div>
           <div style={{ padding: "4px 0" }}>
-            {FLAGGED_ACCOUNTS.map((a, i) => (
-              <div key={a.name} style={{ padding: "14px 20px", borderBottom: i < FLAGGED_ACCOUNTS.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
+            {flaggedLoading ? (
+              <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[0, 1].map((i) => <div key={i} className="skeleton" style={{ height: 40, borderRadius: 'var(--radius-md)' }} />)}
+              </div>
+            ) : flaggedAccounts.length === 0 ? (
+              <div style={{ padding: "32px 20px", textAlign: "center", fontSize: 13, color: "var(--grey-400)" }}>No flagged accounts.</div>
+            ) : flaggedAccounts.map((a, i) => (
+              <div key={a.name} style={{ padding: "14px 20px", borderBottom: i < flaggedAccounts.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                   <Initials letters={a.initials} color={a.color} />
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "var(--black)" }}>{a.name}</div>
-                    <div style={{ fontSize: 11, color: "var(--grey-400)" }}>Brand · flagged {a.flagged}</div>
+                    <div style={{ fontSize: 11, color: "var(--grey-400)", textTransform: 'capitalize' }}>{a.type}</div>
                   </div>
                 </div>
                 <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 10 }}>{a.reason}</div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button className="btn btn-primary btn-xs" style={{ flex: 1 }} onClick={() => navigate('/admin/accounts')}>Suspend</button>
-                  <button className="btn btn-ghost btn-xs" style={{ flex: 1 }} onClick={() => navigate('/admin/accounts')}>Restore</button>
+                  <button className="btn btn-primary btn-xs" style={{ flex: 1 }} onClick={() => navigate('/admin/accounts')}>Review</button>
                 </div>
               </div>
             ))}
-            {FLAGGED_ACCOUNTS.length === 0 && (
-              <div style={{ padding: "32px 20px", textAlign: "center", fontSize: 13, color: "var(--grey-400)" }}>No flagged accounts.</div>
-            )}
           </div>
         </div>
 
@@ -296,8 +345,9 @@ export default function OverviewPage() {
 
           {/* Escrow timeout queue */}
           <div className="card">
-            <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 8 }}>
               <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Escrow timeout queue</h2>
+              <DemoTag />
             </div>
             <div style={{ padding: "4px 0" }}>
               {ESCROW_QUEUE.map((e, i) => (
@@ -315,8 +365,9 @@ export default function OverviewPage() {
 
           {/* Flagged reviews */}
           <div className="card" style={{ flex: 1 }}>
-            <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)" }}>
+            <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 8 }}>
               <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Flagged reviews</h2>
+              <DemoTag />
             </div>
             <div style={{ padding: "4px 0" }}>
               {RECENT_REVIEWS.filter(r => r.flagged).map((r, i, arr) => (
@@ -343,7 +394,7 @@ export default function OverviewPage() {
       <div className="card">
         <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 2 }}>Re-engagement email queue</h2>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8 }}>Re-engagement email queue <DemoTag /></h2>
             <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Creators who abandoned their onboarding draft for 48+ hours. Emails sent automatically.</div>
           </div>
           <button className="btn btn-ghost btn-sm">

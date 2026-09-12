@@ -1,97 +1,31 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { usePageMeta } from '@/lib/usePageMeta'
 import EmptyState from '@/components/shared/EmptyState'
+import ErrorState from '@/components/shared/ErrorState'
+import Skeleton from '@/components/ui/Skeleton'
+import { useDisputes } from '@/features/admin/hooks/useDisputes'
+import { formatDate } from '@/lib/utils'
 
-// Mock data: wire up to admin.service.js (listDisputes/getCase/submitDecision)
-const DISPUTES = [
-  {
-    id: 'dsp_3301',
-    bookingId: 'bk_8841',
-    creator: { name: 'Amara Muriithi', handle: '@amara.creates' },
-    brand: { name: 'Kali Labs' },
-    package: 'Instagram + YouTube Short Bundle',
-    amount: 28000,
-    raisedBy: 'brand',
-    raisedOn: 'Jun 24, 2026',
-    status: 'evidence',
-    evidenceDeadline: 'Jun 26, 2026 · 18 hrs left',
-    scope: {
-      deliverables: ['1 Instagram feed post', '1 YouTube Short', '2-round revisions'],
-      timeline: 'Delivered by Jun 20, 2026',
-    },
-    evidence: [
-      { type: 'file', label: 'Original campaign brief.pdf', from: 'brand' },
-      { type: 'message', label: '"Posted on Instagram as agreed but no YouTube Short yet"', from: 'brand' },
-      { type: 'screenshot', label: 'Instagram post, delivered.png', from: 'creator' },
-    ],
-    decision: null,
-  },
-  {
-    id: 'dsp_3287',
-    bookingId: 'bk_8790',
-    creator: { name: 'Devon Okoth', handle: '@devonshoots' },
-    brand: { name: 'Glow & Co' },
-    package: 'TikTok Single Post',
-    amount: 9500,
-    raisedBy: 'creator',
-    raisedOn: 'Jun 22, 2026',
-    status: 'review',
-    evidenceDeadline: 'Evidence window closed',
-    scope: {
-      deliverables: ['1 TikTok video', '1 round revision'],
-      timeline: 'Delivered by Jun 18, 2026',
-    },
-    evidence: [
-      { type: 'screenshot', label: 'TikTok post, live.png', from: 'creator' },
-      { type: 'message', label: '"Content doesn\'t match the brief tone"', from: 'brand' },
-      { type: 'file', label: 'Approved concept thread.pdf', from: 'creator' },
-    ],
-    decision: null,
-  },
-  {
-    id: 'dsp_3254',
-    bookingId: 'bk_8702',
-    creator: { name: 'Naliaka Wekesa', handle: '@naliaka.style' },
-    brand: { name: 'Brightway Ventures' },
-    package: 'Full Campaign: IG + TikTok',
-    amount: 41000,
-    raisedBy: 'brand',
-    raisedOn: 'Jun 10, 2026',
-    status: 'decided',
-    evidenceDeadline: 'Evidence window closed',
-    scope: {
-      deliverables: ['2 Instagram posts', '1 TikTok video', 'Usage rights: 3 months'],
-      timeline: 'Delivered by Jun 5, 2026',
-    },
-    evidence: [
-      { type: 'file', label: 'Original campaign brief.pdf', from: 'brand' },
-      { type: 'screenshot', label: 'Delivered content, both platforms.png', from: 'creator' },
-      { type: 'message', label: 'Full message thread (44 messages)', from: 'system' },
-    ],
-    decision: { outcome: 'partial', creatorShare: 70, note: 'Instagram deliverables matched the brief in full. The TikTok video was posted but missed the agreed usage-rights window, so 30% is refunded to the brand.', decidedOn: 'Jun 15, 2026' },
-  },
-  {
-    id: 'dsp_3198',
-    bookingId: 'bk_8611',
-    creator: { name: 'Imani Choge', handle: '@imani.eats' },
-    brand: { name: 'Daily Harvest KE' },
-    package: 'Recipe Reel Package',
-    amount: 15000,
-    raisedBy: 'brand',
-    raisedOn: 'Jun 3, 2026',
-    status: 'decided',
-    evidenceDeadline: 'Evidence window closed',
-    scope: {
-      deliverables: ['3 Instagram Reels', 'Story shoutout'],
-      timeline: 'Delivered by May 29, 2026',
-    },
-    evidence: [
-      { type: 'screenshot', label: 'All 3 reels, live.png', from: 'creator' },
-      { type: 'message', label: 'Brand approval of concept (pre-delivery)', from: 'system' },
-    ],
-    decision: { outcome: 'full_approval', creatorShare: 100, note: 'All deliverables matched the agreed scope. Evidence supports full delivery.', decidedOn: 'Jun 6, 2026' },
-  },
-]
+// GET /admin/disputes' response schema is undocumented (see CLAUDE.md) — the
+// rich scope/evidence breakdown below has no confirmed backend counterpart,
+// so it's rendered only when a real dispute object actually carries it.
+function normalizeDispute(d) {
+  return {
+    id: d.id,
+    bookingId: d.bookingId ?? d.campaignId ?? '—',
+    creator: { name: d.creatorName ?? d.creator?.name ?? 'Unknown creator', handle: d.creatorHandle ?? d.creator?.handle ?? '' },
+    brand: { name: d.brandName ?? d.brand?.name ?? 'Unknown brand' },
+    package: d.packageName ?? d.package ?? 'Booking dispute',
+    amount: Number(d.amount ?? 0),
+    raisedBy: d.raisedBy ?? 'brand',
+    raisedOn: formatDate(d.raisedAt ?? d.createdAt),
+    status: d.status ?? 'evidence',
+    evidenceDeadline: d.evidenceDeadline ?? '',
+    scope: d.scope ?? null,
+    evidence: Array.isArray(d.evidence) ? d.evidence : [],
+    decision: d.decision ?? null,
+  }
+}
 
 const TABS = [
   { key: 'all', label: 'All cases' },
@@ -129,8 +63,14 @@ export default function DisputesPage() {
   usePageMeta('Disputes', 'Review and resolve open disputes between creators and brands on Creatorske.');
   const [activeTab, setActiveTab] = useState('all')
   const [query, setQuery] = useState('')
-  const [disputes, setDisputes] = useState(DISPUTES)
-  const [selectedId, setSelectedId] = useState(DISPUTES.find(d => d.status === 'evidence')?.id ?? null)
+  const { disputes: rawDisputes, isLoading, isError, resolve, isResolving, refetch } = useDisputes()
+  const disputes = useMemo(() => rawDisputes.map(normalizeDispute), [rawDisputes])
+  const [selectedId, setSelectedId] = useState(null)
+
+  useEffect(() => {
+    if (selectedId || disputes.length === 0) return
+    setSelectedId(disputes.find(d => d.status === 'evidence')?.id ?? null)
+  }, [disputes, selectedId])
 
   // decision form state
   const [outcome, setOutcome] = useState('full_approval')
@@ -168,16 +108,14 @@ export default function DisputesPage() {
 
   function submitDecision() {
     if (!selected) return
-    setDisputes(prev => prev.map(d => d.id === selected.id ? {
-      ...d,
-      status: 'decided',
+    resolve({
+      id: selected.id,
       decision: {
         outcome,
         creatorShare: outcome === 'full_approval' ? 100 : outcome === 'full_refund' ? 0 : creatorShare,
         note,
-        decidedOn: 'Today',
       },
-    } : d))
+    })
   }
 
   return (
@@ -285,50 +223,60 @@ export default function DisputesPage() {
         <div className="split-grid" style={{ gridTemplateColumns: selected ? '1.3fr 1fr' : '1fr' }}>
 
           <div className="table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Case</th>
-                  <th>Creator</th>
-                  <th>Brand</th>
-                  <th>Amount</th>
-                  <th>Raised by</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map(d => (
-                  <tr
-                    key={d.id}
-                    className={selectedId === d.id ? 'selected' : ''}
-                    onClick={() => selectCase(d)}
-                  >
-                    <td>
-                      <div style={{ fontWeight: 500, color: 'var(--black)' }}>{d.package}</div>
-                      <div style={{ fontSize: 11, color: 'var(--grey-400)' }}>{d.id} · {d.raisedOn}</div>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div className="avatar">{d.creator.name.split(' ').map(w => w[0]).slice(0, 2).join('')}</div>
-                        <span style={{ fontSize: 12.5 }}>{d.creator.name}</span>
-                      </div>
-                    </td>
-                    <td style={{ fontSize: 12.5 }}>{d.brand.name}</td>
-                    <td style={{ fontWeight: 500, color: 'var(--black)', whiteSpace: 'nowrap' }}>{fmt(d.amount)}</td>
-                    <td><span className="tag tag-grey" style={{ textTransform: 'capitalize' }}>{d.raisedBy}</span></td>
-                    <td>{statusTag(d.status)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {isError ? (
+              <ErrorState size="sm" onRetry={refetch} />
+            ) : isLoading ? (
+              <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={40} />)}
+              </div>
+            ) : (
+              <>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Case</th>
+                      <th>Creator</th>
+                      <th>Brand</th>
+                      <th>Amount</th>
+                      <th>Raised by</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map(d => (
+                      <tr
+                        key={d.id}
+                        className={selectedId === d.id ? 'selected' : ''}
+                        onClick={() => selectCase(d)}
+                      >
+                        <td>
+                          <div style={{ fontWeight: 500, color: 'var(--black)' }}>{d.package}</div>
+                          <div style={{ fontSize: 11, color: 'var(--grey-400)' }}>{d.id} · {d.raisedOn}</div>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div className="avatar">{d.creator.name.split(' ').map(w => w[0]).slice(0, 2).join('')}</div>
+                            <span style={{ fontSize: 12.5 }}>{d.creator.name}</span>
+                          </div>
+                        </td>
+                        <td style={{ fontSize: 12.5 }}>{d.brand.name}</td>
+                        <td style={{ fontWeight: 500, color: 'var(--black)', whiteSpace: 'nowrap' }}>{fmt(d.amount)}</td>
+                        <td><span className="tag tag-grey" style={{ textTransform: 'capitalize' }}>{d.raisedBy}</span></td>
+                        <td>{statusTag(d.status)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
 
-            {filtered.length === 0 && (
-              <EmptyState
-                size="sm"
-                icon={<i className="ti ti-gavel" aria-hidden="true" />}
-                title="No disputes here"
-                description="Try a different search term or switch tabs."
-              />
+                {filtered.length === 0 && (
+                  <EmptyState
+                    size="sm"
+                    icon={<i className="ti ti-gavel" aria-hidden="true" />}
+                    title={disputes.length === 0 ? 'No disputes' : 'No disputes here'}
+                    description={disputes.length === 0 ? 'Open disputes will show up here.' : 'Try a different search term or switch tabs.'}
+                  />
+                )}
+              </>
             )}
           </div>
 
@@ -366,14 +314,22 @@ export default function DisputesPage() {
 
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 6 }}>Agreed scope</div>
-                    <div className="detail-row"><span className="detail-label">Deliverables</span><span className="detail-value">{selected.scope.deliverables.join(', ')}</span></div>
-                    <div className="detail-row"><span className="detail-label">Timeline</span><span className="detail-value">{selected.scope.timeline}</span></div>
+                    {selected.scope ? (
+                      <>
+                        <div className="detail-row"><span className="detail-label">Deliverables</span><span className="detail-value">{selected.scope.deliverables?.join(', ') ?? '—'}</span></div>
+                        <div className="detail-row"><span className="detail-label">Timeline</span><span className="detail-value">{selected.scope.timeline ?? '—'}</span></div>
+                      </>
+                    ) : (
+                      <div className="detail-row"><span className="detail-label">Deliverables</span><span className="detail-value">Not available</span></div>
+                    )}
                     <div className="detail-row"><span className="detail-label">Amount in escrow</span><span className="detail-value">{fmt(selected.amount)}</span></div>
                   </div>
 
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--grey-400)', marginBottom: 4 }}>Evidence submitted</div>
-                    {selected.evidence.map((e, i) => (
+                    {selected.evidence.length === 0 ? (
+                      <div style={{ fontSize: 12.5, color: 'var(--grey-400)' }}>No evidence submitted yet.</div>
+                    ) : selected.evidence.map((e, i) => (
                       <div className="evidence-item" key={i}>
                         <div className="evidence-icon"><i className={`ti ${evidenceIcon(e.type)}`} /></div>
                         <div style={{ flex: 1 }}>
@@ -465,8 +421,8 @@ export default function DisputesPage() {
                         />
                       </div>
 
-                      <button className="btn btn-primary" disabled={!note.trim()} onClick={submitDecision}>
-                        <i className="ti ti-gavel" style={{ fontSize: 14 }} /> Issue binding decision
+                      <button className="btn btn-primary" disabled={!note.trim() || isResolving} onClick={submitDecision}>
+                        <i className="ti ti-gavel" style={{ fontSize: 14 }} /> {isResolving ? 'Submitting…' : 'Issue binding decision'}
                       </button>
                     </>
                   )}

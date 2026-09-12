@@ -12,14 +12,16 @@ import {
   IconClock,
   IconFileText,
 } from '@tabler/icons-react'
-import { useCampaign } from '@/features/brand-dashboard/hooks/useBrandDashboard'
+import { useCampaign, useCampaignActions } from '@/features/brand-dashboard/hooks/useBrandDashboard'
 import { MessageThread } from '@/features/messaging'
 import { usePageMeta } from '@/lib/usePageMeta'
 
-// NOTE: scope/delivery/dispute/invoice/review sections below still render
-// MOCK_CAMPAIGNS — only the Messages section is wired to live data. The API
-// doc gives no response schema for GET /brands/campaigns/:id, so swapping
-// the rest would mean guessing field names for a page that already works.
+// NOTE: `base` merges live GET /brands/campaigns/:id fields over MOCK_CAMPAIGNS
+// as a fallback, since that endpoint's response schema is undocumented and a
+// blind swap risks blanking fields the backend doesn't actually return.
+// Approve/dispute now call real mutations (useCampaignActions); their
+// backend endpoints don't exist yet either (see the production plan's
+// backend spec), so expect a graceful error toast until they do.
 
 // Status → tag variant (see index.css .tag-* + design tokens) and dot color.
 const STATUS = {
@@ -222,13 +224,17 @@ export default function CampaignDetailPage() {
   usePageMeta('Campaign Details', 'Review deliverables, messages, and payment details for this campaign on Creatorske.');
   const { id } = useParams()
   const { data: liveCampaign } = useCampaign(id)
-  const base = MOCK_CAMPAIGNS[id] ?? Object.values(MOCK_CAMPAIGNS)[0]
+  const { approve, isApproving, dispute, isDisputing } = useCampaignActions(id)
+  const mock = MOCK_CAMPAIGNS[id] ?? Object.values(MOCK_CAMPAIGNS)[0]
+  // GET /brands/campaigns/:id's response schema is undocumented — prefer live
+  // fields where the API actually returns them, fall back to the matching
+  // mock field rather than blanking the page out.
+  const base = { ...mock, ...liveCampaign }
 
   const [status, setStatus] = useState(base.status)
   const [activity, setActivity] = useState(base.activity)
   const [showDisputeForm, setShowDisputeForm] = useState(false)
   const [disputeEvidence, setDisputeEvidence] = useState('')
-  const [approving, setApproving] = useState(false)
   const [review, setReview] = useState(base.review)
 
   const platformFee = useMemo(() => Math.round(base.price * 0.1), [base.price])
@@ -267,25 +273,29 @@ export default function CampaignDetailPage() {
   }
 
   const handleApprove = () => {
-    setApproving(true)
-    setTimeout(() => {
-      setApproving(false)
-      setStatus('completed')
-      setActivity((prev) => [
-        ...prev.map((a) => ({ ...a, pending: false })),
-        { label: 'Delivery approved · escrow released', time: 'Just now', pending: true },
-      ])
-    }, 900)
+    approve(undefined, {
+      onSuccess: () => {
+        setStatus('completed')
+        setActivity((prev) => [
+          ...prev.map((a) => ({ ...a, pending: false })),
+          { label: 'Delivery approved · escrow released', time: 'Just now', pending: true },
+        ])
+      },
+    })
   }
 
   const handleRaiseDispute = () => {
     if (!disputeEvidence.trim()) return
-    setStatus('disputed')
-    setShowDisputeForm(false)
-    setActivity((prev) => [
-      ...prev.map((a) => ({ ...a, pending: false })),
-      { label: 'Dispute raised, evidence submitted', time: 'Just now', pending: true },
-    ])
+    dispute(disputeEvidence, {
+      onSuccess: () => {
+        setStatus('disputed')
+        setShowDisputeForm(false)
+        setActivity((prev) => [
+          ...prev.map((a) => ({ ...a, pending: false })),
+          { label: 'Dispute raised, evidence submitted', time: 'Just now', pending: true },
+        ])
+      },
+    })
   }
 
 
@@ -359,9 +369,9 @@ export default function CampaignDetailPage() {
 
                 {!showDisputeForm ? (
                   <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
-                    <button className="btn btn-purple" onClick={handleApprove} disabled={approving}>
+                    <button className="btn btn-purple" onClick={handleApprove} disabled={isApproving}>
                       <IconCheck size={14} />
-                      {approving ? 'Approving…' : 'Approve & release payment'}
+                      {isApproving ? 'Approving…' : 'Approve & release payment'}
                     </button>
                     <button className="btn btn-danger" onClick={() => setShowDisputeForm(true)}>
                       <IconScale size={14} />
@@ -380,7 +390,7 @@ export default function CampaignDetailPage() {
                       style={{ marginBottom: 'var(--space-10)', resize: 'vertical' }}
                     />
                     <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
-                      <button className="btn btn-danger" onClick={handleRaiseDispute}>Submit dispute</button>
+                      <button className="btn btn-danger" disabled={isDisputing} onClick={handleRaiseDispute}>{isDisputing ? 'Submitting…' : 'Submit dispute'}</button>
                       <button className="btn btn-ghost" onClick={() => setShowDisputeForm(false)}>Cancel</button>
                     </div>
                   </div>

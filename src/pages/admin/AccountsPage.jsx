@@ -1,105 +1,38 @@
 import { useMemo, useState } from 'react'
 import { usePageMeta } from '@/lib/usePageMeta'
 import EmptyState from '@/components/shared/EmptyState'
+import ErrorState from '@/components/shared/ErrorState'
+import Skeleton from '@/components/ui/Skeleton'
+import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts'
+import { formatDate } from '@/lib/utils'
 
-// Mock data: wire up to admin.service.js (list/review/suspend/restore)
-const ACCOUNTS = [
-  {
-    id: 'acc_1042',
-    type: 'brand',
-    name: 'Kali Labs',
-    handle: 'kalilabs.co',
-    email: 'hello@kalilabs.co',
-    domainVerified: true,
-    joined: 'Mar 14, 2026',
-    status: 'active',
-    stat: { label: 'Enquiries sent', value: 12 },
-  },
-  {
-    id: 'acc_1098',
-    type: 'creator',
-    name: 'Amara Muriithi',
-    handle: '@amara.creates',
-    email: 'amara@gmail.com',
-    domainVerified: null,
-    joined: 'Jan 28, 2026',
-    status: 'active',
-    stat: { label: 'Rating', value: '4.8' },
-  },
-  {
-    id: 'acc_1131',
-    type: 'brand',
-    name: 'Brightway Ventures',
-    handle: 'brightwayventures.com',
-    email: 'team@brightwayventures.com',
-    domainVerified: false,
-    joined: 'Jun 2, 2026',
-    status: 'flagged',
+// GET /admin/accounts/flagged is the only account-listing endpoint that
+// exists today (see CLAUDE.md / production plan's backend spec) — there is
+// no "list all accounts" endpoint yet, so this page only shows flagged
+// accounts rather than pretending to have the full directory.
+function normalizeAccount(a) {
+  const flagSource = a.flag ?? a
+  return {
+    id: a.id,
+    type: a.type ?? a.role ?? 'creator',
+    name: a.name ?? a.fullName ?? 'Unknown',
+    handle: a.handle ?? a.email ?? '',
+    email: a.email ?? '—',
+    domainVerified: a.domainVerified ?? null,
+    joined: formatDate(a.joinedAt ?? a.createdAt),
+    status: a.status ?? 'flagged',
     flag: {
-      reason: 'Company name and email domain could not be verified as a legitimate business.',
-      flaggedBy: 'Auto: brand verification check',
-      flaggedOn: 'Jun 24, 2026',
-      enquiriesSent: 2,
-      messagesSent: 1,
+      reason: flagSource.reason ?? a.flagReason ?? 'Flagged for review.',
+      flaggedBy: flagSource.flaggedBy ?? 'System',
+      flaggedOn: formatDate(flagSource.flaggedOn ?? flagSource.flaggedAt ?? a.flaggedAt),
+      enquiriesSent: flagSource.enquiriesSent ?? 0,
+      messagesSent: flagSource.messagesSent ?? 0,
     },
-    stat: { label: 'Enquiries sent', value: 2 },
-  },
-  {
-    id: 'acc_1156',
-    type: 'creator',
-    name: 'Devon Okoth',
-    handle: '@devonshoots',
-    email: 'devon.okoth@outlook.com',
-    domainVerified: null,
-    joined: 'Apr 9, 2026',
-    status: 'flagged',
-    flag: {
-      reason: 'Did not respond to a paid booking; brand requested a refund after grace period.',
-      flaggedBy: 'System: abandonment case',
-      flaggedOn: 'Jun 20, 2026',
-      enquiriesSent: 8,
-      messagesSent: 14,
-    },
-    stat: { label: 'Rating', value: '3.9' },
-  },
-  {
-    id: 'acc_0987',
-    type: 'brand',
-    name: 'Glow & Co',
-    handle: 'glowandco.fake-mail.io',
-    email: 'team@glowandco.fake-mail.io',
-    domainVerified: false,
-    joined: 'Jun 18, 2026',
-    status: 'suspended',
-    flag: {
-      reason: 'Free-domain email used in place of a verifiable business domain; no credentials provided after review window.',
-      flaggedBy: 'Creator report',
-      flaggedOn: 'Jun 19, 2026',
-      enquiriesSent: 1,
-      messagesSent: 0,
-    },
-    stat: { label: 'Enquiries sent', value: 1 },
-  },
-  {
-    id: 'acc_1203',
-    type: 'creator',
-    name: 'Naliaka Wekesa',
-    handle: '@naliaka.style',
-    email: 'naliaka@protonmail.com',
-    domainVerified: null,
-    joined: 'May 30, 2026',
-    status: 'active',
-    stat: { label: 'Rating', value: '5.0' },
-  },
-]
-
-const TABS = [
-  { key: 'all', label: 'All accounts' },
-  { key: 'creator', label: 'Creators' },
-  { key: 'brand', label: 'Brands' },
-  { key: 'flagged', label: 'Flagged' },
-  { key: 'suspended', label: 'Suspended' },
-]
+    stat: a.type === 'brand'
+      ? { label: 'Enquiries sent', value: flagSource.enquiriesSent ?? 0 }
+      : { label: 'Rating', value: a.rating ?? '—' },
+  }
+}
 
 function statusTag(status) {
   if (status === 'active') return <span className="tag tag-success"><i className="ti ti-circle-check" style={{ fontSize: 11 }} />Active</span>
@@ -115,37 +48,25 @@ function typeTag(type) {
 }
 
 export default function AccountsPage() {
-  usePageMeta('Accounts & Moderation', 'Review creator and brand accounts and resolve verification flags on Creatorske.');
-  const [activeTab, setActiveTab] = useState('all')
+  usePageMeta('Accounts & Moderation', 'Review flagged creator and brand accounts on Creatorske.');
   const [query, setQuery] = useState('')
-  const [selectedId, setSelectedId] = useState(ACCOUNTS.find(a => a.status === 'flagged')?.id ?? null)
-  const [accounts, setAccounts] = useState(ACCOUNTS)
+  const [selectedId, setSelectedId] = useState(null)
+  const { accounts: rawAccounts, isLoading, isError, refetch, takeAction, isTakingAction } = useFlaggedAccounts()
+  const accounts = useMemo(() => rawAccounts.map(normalizeAccount), [rawAccounts])
   const [confirmAction, setConfirmAction] = useState(null) // { type: 'suspend'|'restore'|'remove', account }
 
   const filtered = useMemo(() => {
-    return accounts.filter(a => {
-      const matchesTab =
-        activeTab === 'all' ? true :
-        activeTab === 'creator' || activeTab === 'brand' ? a.type === activeTab :
-        a.status === activeTab
-      const q = query.trim().toLowerCase()
-      const matchesQuery = !q || a.name.toLowerCase().includes(q) || a.handle.toLowerCase().includes(q) || a.email.toLowerCase().includes(q)
-      return matchesTab && matchesQuery
-    })
-  }, [accounts, activeTab, query])
+    const q = query.trim().toLowerCase()
+    if (!q) return accounts
+    return accounts.filter(a =>
+      a.name.toLowerCase().includes(q) || a.handle.toLowerCase().includes(q) || a.email.toLowerCase().includes(q)
+    )
+  }, [accounts, query])
 
   const selected = accounts.find(a => a.id === selectedId) || null
 
-  const counts = useMemo(() => ({
-    all: accounts.length,
-    creator: accounts.filter(a => a.type === 'creator').length,
-    brand: accounts.filter(a => a.type === 'brand').length,
-    flagged: accounts.filter(a => a.status === 'flagged').length,
-    suspended: accounts.filter(a => a.status === 'suspended').length,
-  }), [accounts])
-
-  function applyStatus(id, status) {
-    setAccounts(prev => prev.map(a => a.id === id ? { ...a, status } : a))
+  function applyStatus(id, action) {
+    takeAction({ id, action, reason: 'Reviewed via admin accounts panel' })
     setConfirmAction(null)
   }
 
@@ -215,23 +136,14 @@ export default function AccountsPage() {
         {/* Header */}
         <div>
           <div className="section-title">Accounts & Moderation</div>
-          <div className="section-desc">Review creator and brand accounts, resolve verification flags, and manage suspensions.</div>
+          <div className="section-desc">Review flagged creator and brand accounts and resolve verification issues.</div>
+          <div className="section-desc" style={{ marginTop: 4, fontStyle: 'italic' }}>
+            Showing flagged accounts only — a full account directory needs a backend endpoint that doesn't exist yet.
+          </div>
         </div>
 
-        {/* Tabs + search */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-          <div className="tabs">
-            {TABS.map(t => (
-              <button
-                key={t.key}
-                className={`tab ${activeTab === t.key ? 'active' : ''}`}
-                onClick={() => setActiveTab(t.key)}
-              >
-                {t.label}
-                <span className="tab-count">{counts[t.key]}</span>
-              </button>
-            ))}
-          </div>
+        {/* Search */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
           <div className="search-input">
             <i className="ti ti-search" />
             <input
@@ -246,6 +158,14 @@ export default function AccountsPage() {
         <div className="split-grid" style={{ gridTemplateColumns: selected ? '2fr 1fr' : '1fr' }}>
 
           <div className="table-wrap">
+            {isError ? (
+              <ErrorState size="sm" onRetry={refetch} />
+            ) : isLoading ? (
+              <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={40} />)}
+              </div>
+            ) : (
+              <>
             <table className="data-table">
               <thead>
                 <tr>
@@ -298,9 +218,11 @@ export default function AccountsPage() {
               <EmptyState
                 size="sm"
                 icon={<i className="ti ti-users" aria-hidden="true" />}
-                title="No accounts found"
-                description="Try a different search term or switch tabs."
+                title={accounts.length === 0 ? 'No flagged accounts' : 'No accounts found'}
+                description={accounts.length === 0 ? "There's nothing needing review right now." : 'Try a different search term.'}
               />
+            )}
+              </>
             )}
           </div>
 
@@ -399,14 +321,10 @@ export default function AccountsPage() {
               <button className="btn btn-ghost" onClick={() => setConfirmAction(null)}>Cancel</button>
               <button
                 className={confirmAction.type === 'restore' ? 'btn btn-primary' : 'btn btn-danger'}
-                onClick={() => applyStatus(
-                  confirmAction.account.id,
-                  confirmAction.type === 'suspend' ? 'suspended' : confirmAction.type === 'restore' ? 'active' : 'removed'
-                )}
+                disabled={isTakingAction}
+                onClick={() => applyStatus(confirmAction.account.id, confirmAction.type)}
               >
-                {confirmAction.type === 'suspend' && 'Suspend'}
-                {confirmAction.type === 'restore' && 'Restore'}
-                {confirmAction.type === 'remove' && 'Remove permanently'}
+                {isTakingAction ? 'Working…' : confirmAction.type === 'suspend' ? 'Suspend' : confirmAction.type === 'restore' ? 'Restore' : 'Remove permanently'}
               </button>
             </div>
           </div>

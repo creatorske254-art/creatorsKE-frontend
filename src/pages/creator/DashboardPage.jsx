@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCreatorDashboard } from '../../features/creator-dashboard/hooks/useCreatorDashboard';
 import { usePageMeta } from '@/lib/usePageMeta';
 import Skeleton from '@/components/ui/Skeleton';
+import EmptyState from '@/components/shared/EmptyState';
 
 /*
    Layout: Bento grid.
@@ -36,13 +37,6 @@ const STATUS_TAG = {
   booked:    { cls: 'tag-success', label: 'Booked'    },
   completed: { cls: 'tag-default', label: 'Completed' },
 };
-
-const MOCK_ENQUIRIES = [
-  { brand: 'Nairobi Brew Co.', ago: '2 hrs ago',  pkg: 'Reel + Caption',    status: 'new'       },
-  { brand: 'Safaricom',        ago: 'Yesterday',   pkg: 'Brand Partnership', status: 'in_review' },
-  { brand: 'Jumia Kenya',      ago: '3 days ago',  pkg: 'Story Post',        status: 'booked'    },
-  { brand: 'KFC Kenya',        ago: '1 week ago',  pkg: 'Reel + Caption',    status: 'completed' },
-];
 
 const BENTO_CSS = `
   .bento-grid {
@@ -92,21 +86,22 @@ export default function DashboardPage() {
   const {
     stats,
     statsLoading,
+    statsError,
     cardHealth,
     healthLoading,
     publicUrl,
     copyPublicLink,
   } = useCreatorDashboard();
 
-  const profilePct = cardHealth?.completeness            ?? 92;
-  const pkgCurrent  = cardHealth?.packages?.current       ?? 3;
-  const pkgMax      = cardHealth?.packages?.max           ?? 5;
-  const pkgPct      = Math.round((pkgCurrent / pkgMax) * 100);
-  const payCurrent  = cardHealth?.paymentMethods?.current ?? 1;
-  const payMax      = cardHealth?.paymentMethods?.max     ?? 3;
+  const profilePct = cardHealth?.completeness ?? 0;
+  const pkgCurrent  = cardHealth?.packages?.current ?? 0;
+  const pkgMax      = cardHealth?.packages?.max ?? null; // null = unlimited (Elite tier)
+  const pkgPct      = pkgMax ? Math.round((pkgCurrent / pkgMax) * 100) : 100;
+  const payCurrent  = cardHealth?.paymentMethods?.current ?? 0;
+  const payMax      = cardHealth?.paymentMethods?.max ?? 1;
   const payPct      = Math.round((payCurrent / payMax) * 100);
 
-  const rows = statsLoading ? [] : (stats?.recentEnquiries ?? MOCK_ENQUIRIES);
+  const rows = stats?.recentEnquiries ?? [];
 
   function shareWhatsApp() {
     const text = encodeURIComponent(`Check out my rate card: ${publicUrl}`);
@@ -139,7 +134,9 @@ export default function DashboardPage() {
           <div>
             <div className="stat-card-label"><i className="ti ti-cash" style={{ fontSize: 14 }} /> Earned (KES)</div>
             <div className="stat-card-value" style={{ fontSize: 44 }}>
-              {statsLoading ? <Skeleton width={90} height={38} /> : `${Math.round((stats?.earningsTotal ?? 84000) / 1000)}K`}
+              {statsLoading
+                ? <Skeleton width={90} height={38} />
+                : statsError ? '—' : `${Math.round((stats?.earningsTotal ?? 0) / 1000)}K`}
             </div>
             <div className="stat-card-delta up">
               <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+22% vs last month
@@ -151,7 +148,7 @@ export default function DashboardPage() {
         {/* Secondary stats */}
         <div className="bento-views stat-card">
           <div className="stat-card-label"><i className="ti ti-eye" style={{ fontSize: 14 }} /> Card views</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : (stats?.profileViews ?? 1248).toLocaleString('en-KE')}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : statsError ? '—' : (stats?.profileViews ?? 0).toLocaleString('en-KE')}</div>
           <div className="stat-card-delta up">
             <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+18% this month
           </div>
@@ -159,7 +156,7 @@ export default function DashboardPage() {
 
         <div className="bento-enq stat-card">
           <div className="stat-card-label"><i className="ti ti-inbox" style={{ fontSize: 14 }} /> Enquiries</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : (stats?.enquiries?.total ?? 12)}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : statsError ? '—' : (stats?.enquiries?.total ?? 0)}</div>
           <div className="stat-card-delta up">
             <i className="ti ti-trending-up" style={{ fontSize: 14 }} />+4 this week
           </div>
@@ -167,7 +164,7 @@ export default function DashboardPage() {
 
         <div className="bento-conv stat-card">
           <div className="stat-card-label"><i className="ti ti-star" style={{ fontSize: 14 }} /> Conversion</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={50} height={24} /> : `${stats?.cardCtr ?? 3.4}%`}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={50} height={24} /> : statsError ? '—' : `${stats?.cardCtr ?? 0}%`}</div>
           <div className="stat-card-delta down">
             <i className="ti ti-trending-down" style={{ fontSize: 14 }} />-0.2% vs last month
           </div>
@@ -179,39 +176,47 @@ export default function DashboardPage() {
             <h5 style={{ margin: 0 }}>Recent enquiries</h5>
             <Link to="/creator/enquiries" className="btn btn-ghost btn-xs">View all</Link>
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Brand</th>
-                <th>Package</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {statsLoading ? [0, 1, 2].map((i) => (
-                <tr key={i}>
-                  <td>
-                    <Skeleton width="70%" height={13} style={{ marginBottom: 5 }} />
-                    <Skeleton width="40%" height={11} />
-                  </td>
-                  <td><Skeleton width="80%" height={13} /></td>
-                  <td><Skeleton width={60} height={20} style={{ borderRadius: 'var(--radius-pill)' }} /></td>
+          {!statsLoading && rows.length === 0 ? (
+            <EmptyState
+              icon={<i className="ti ti-inbox" style={{ fontSize: 22 }} />}
+              title="No enquiries yet"
+              description="Share your rate card to start getting enquiries from brands."
+            />
+          ) : (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Brand</th>
+                  <th>Package</th>
+                  <th>Status</th>
                 </tr>
-              )) : rows.map((row, i) => {
-                const tag = STATUS_TAG[row.status] ?? STATUS_TAG.completed;
-                return (
-                  <tr key={i} style={{ cursor: 'pointer' }} onClick={() => navigate('/creator/enquiries')}>
+              </thead>
+              <tbody>
+                {statsLoading ? [0, 1, 2].map((i) => (
+                  <tr key={i}>
                     <td>
-                      <div style={{ fontWeight: 500, color: 'var(--black)' }}>{row.brand}</div>
-                      <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{row.ago}</div>
+                      <Skeleton width="70%" height={13} style={{ marginBottom: 5 }} />
+                      <Skeleton width="40%" height={11} />
                     </td>
-                    <td style={{ fontSize: 12 }}>{row.pkg}</td>
-                    <td><span className={`tag ${tag.cls}`}>{tag.label}</span></td>
+                    <td><Skeleton width="80%" height={13} /></td>
+                    <td><Skeleton width={60} height={20} style={{ borderRadius: 'var(--radius-pill)' }} /></td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                )) : rows.map((row, i) => {
+                  const tag = STATUS_TAG[row.status] ?? STATUS_TAG.completed;
+                  return (
+                    <tr key={i} style={{ cursor: 'pointer' }} onClick={() => navigate('/creator/enquiries')}>
+                      <td>
+                        <div style={{ fontWeight: 500, color: 'var(--black)' }}>{row.brand}</div>
+                        <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 1 }}>{row.ago}</div>
+                      </td>
+                      <td style={{ fontSize: 12 }}>{row.pkg}</td>
+                      <td><span className={`tag ${tag.cls}`}>{tag.label}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Side rail: quick actions + rate card health */}
@@ -260,7 +265,7 @@ export default function DashboardPage() {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                     <span style={{ fontSize: 12, color: 'var(--grey-600)' }}>Packages added</span>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--black)' }}>{pkgCurrent} / {pkgMax}</span>
+                    <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--black)' }}>{pkgCurrent} / {pkgMax ?? 'Unlimited'}</span>
                   </div>
                   <ProgressBar pct={pkgPct} />
                 </div>

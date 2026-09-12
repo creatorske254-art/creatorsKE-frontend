@@ -69,9 +69,12 @@ export function useBrandDashboard() {
   return {
     campaigns,
     isLoadingCampaigns: campaignsQuery.isLoading,
+    isCampaignsError: campaignsQuery.isError,
+    refetchCampaigns: campaignsQuery.refetch,
     activeCampaignCount,
     shortlist,
     isLoadingShortlist: shortlistQuery.isLoading,
+    isShortlistError: shortlistQuery.isError,
     profile: profileQuery.data,
     isLoadingProfile: profileQuery.isLoading,
     addToShortlist: addToShortlistMutation.mutate,
@@ -87,4 +90,39 @@ export function useCampaign(id) {
     queryFn: () => brandService.getCampaign(id),
     enabled: !!id,
   });
+}
+
+// Approve/dispute actions for a single campaign, kept separate from
+// useCampaign() since one is a query and these are mutations against a
+// backend contract that isn't documented yet (see production plan's spec).
+export function useCampaignActions(id) {
+  const queryClient = useQueryClient();
+  const CAMPAIGN_KEY = ['brand-campaign', id];
+
+  const approveMutation = useMutation({
+    mutationFn: () => brandService.approveCampaign(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEY });
+      queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY });
+      toast.success('Delivery approved, payment released.');
+    },
+    onError: () => toast.error('Could not approve delivery. Please try again.'),
+  });
+
+  const disputeMutation = useMutation({
+    mutationFn: (evidence) => brandService.disputeCampaign(id, evidence),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CAMPAIGN_KEY });
+      queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY });
+      toast.success('Dispute submitted.');
+    },
+    onError: () => toast.error('Could not submit dispute. Please try again.'),
+  });
+
+  return {
+    approve: approveMutation.mutate,
+    isApproving: approveMutation.isPending,
+    dispute: disputeMutation.mutate,
+    isDisputing: disputeMutation.isPending,
+  };
 }

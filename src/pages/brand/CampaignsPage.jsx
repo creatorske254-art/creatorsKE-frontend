@@ -3,9 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { IconFlame, IconClock, IconCheck, IconWallet, IconEye, IconScale, IconMessageCircle, IconBriefcase } from '@tabler/icons-react'
 import EmptyState from '@/components/shared/EmptyState'
-
-// TODO: swap mock data for features/brand-dashboard/hooks/useBrandDashboard.js
-// const { campaigns, isLoading } = useBrandDashboard()
+import ErrorState from '@/components/shared/ErrorState'
+import Skeleton from '@/components/ui/Skeleton'
+import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard'
+import { getInitials, formatCurrency, formatDate, formatRelativeDate } from '@/lib/utils'
 
 // This page uses the shared design tokens and component classes from the
 // Creatorske stylesheet (index.css) wherever they exist there: .card,
@@ -55,80 +56,36 @@ const FILTERS = [
   { key: 'history', label: 'History', match: (s) => s === 'completed' || s === 'refunded' },
 ]
 
-const MOCK_CAMPAIGNS = [
-  {
-    id: 'cmp_1',
-    creator: 'Amara Creates',
-    handle: '@amaracreates',
-    initials: 'AC',
+// Response schema for GET /brands/campaigns is undocumented (see CLAUDE.md) —
+// field names below are best-effort guesses with graceful fallbacks, not
+// confirmed contract. avatarClass is purely decorative (no such field exists
+// on any documented response) so every card uses the same accent.
+function describeDelivery(c) {
+  switch (c.status) {
+    case 'delivered': return `Marked delivered · ${formatRelativeDate(c.deliveredAt)}`
+    case 'disputed':  return `Dispute opened · ${formatRelativeDate(c.disputedAt)}`
+    case 'completed': return `Approved · ${formatRelativeDate(c.completedAt)}`
+    case 'refunded':  return `Refunded · ${formatRelativeDate(c.refundedAt)}`
+    default:          return c.expectedDeliveryAt ? `Expected ${formatDate(c.expectedDeliveryAt)}` : ''
+  }
+}
+
+function normalizeCampaign(c) {
+  const creatorName = c.creatorName ?? c.creator ?? 'Unknown creator'
+  return {
+    id: c.id,
+    creator: creatorName,
+    handle: c.creatorHandle ?? c.handle ?? '',
+    initials: getInitials(creatorName),
     avatarClass: 'avatar-purple',
-    package: 'Reel + Caption',
-    platform: 'Instagram',
-    price: 'KES 22,000',
-    status: 'delivered',
-    deliveryDate: 'Marked delivered · 2 days ago',
-  },
-  {
-    id: 'cmp_2',
-    creator: 'Zane Cooks',
-    handle: '@zanecooks',
-    initials: 'ZC',
-    avatarClass: 'avatar-tint-green',
-    package: 'Brand Partnership',
-    platform: 'TikTok',
-    price: 'KES 55,000',
-    status: 'in_progress',
-    deliveryDate: 'Expected 14 Jul',
-  },
-  {
-    id: 'cmp_3',
-    creator: 'Wanjiru Style',
-    handle: '@wanjirustyle',
-    initials: 'WS',
-    avatarClass: 'avatar-tint-blue',
-    package: 'Story Post',
-    platform: 'Instagram',
-    price: 'KES 8,000',
-    status: 'in_progress',
-    deliveryDate: 'Expected 9 Jul',
-  },
-  {
-    id: 'cmp_4',
-    creator: 'The Lens by Kev',
-    handle: '@lensbykev',
-    initials: 'LK',
-    avatarClass: 'avatar-tint-amber',
-    package: 'Product Unboxing',
-    platform: 'YouTube',
-    price: 'KES 38,000',
-    status: 'disputed',
-    deliveryDate: 'Dispute opened · 1 day ago',
-  },
-  {
-    id: 'cmp_5',
-    creator: 'Mwende Beauty',
-    handle: '@mwendebeauty',
-    initials: 'MB',
-    avatarClass: 'avatar-tint-pink',
-    package: 'Reel + Caption',
-    platform: 'Instagram',
-    price: 'KES 22,000',
-    status: 'completed',
-    deliveryDate: 'Approved · 1 week ago',
-  },
-  {
-    id: 'cmp_6',
-    creator: 'KFC Kenya Creator',
-    handle: '@kdotsofficial',
-    initials: 'KO',
-    avatarClass: 'avatar-grey',
-    package: 'Story Post',
-    platform: 'TikTok',
-    price: 'KES 8,000',
-    status: 'refunded',
-    deliveryDate: 'Refunded · 3 weeks ago',
-  },
-]
+    package: c.packageName ?? c.package ?? '—',
+    platform: c.platform ?? '—',
+    rawPrice: Number(c.price ?? c.amount ?? 0),
+    price: formatCurrency(c.price ?? c.amount),
+    status: c.status ?? 'in_progress',
+    deliveryDate: describeDelivery(c),
+  }
+}
 
 function StatusTag({ status }) {
   const meta = STATUS[status]
@@ -205,8 +162,8 @@ export default function CampaignsPage() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('all')
 
-  // TODO: replace with live data from useBrandDashboard()
-  const campaigns = MOCK_CAMPAIGNS
+  const { campaigns: rawCampaigns, isLoadingCampaigns, isCampaignsError, refetchCampaigns } = useBrandDashboard()
+  const campaigns = useMemo(() => rawCampaigns.map(normalizeCampaign), [rawCampaigns])
 
   const counts = useMemo(() => {
     const active = campaigns.filter((c) => c.status === 'in_progress' || c.status === 'delivered').length
@@ -214,7 +171,7 @@ export default function CampaignsPage() {
     const completed = campaigns.filter((c) => c.status === 'completed').length
     const spent = campaigns
       .filter((c) => c.status === 'completed')
-      .reduce((sum, c) => sum + Number(c.price.replace(/[^\d]/g, '')), 0)
+      .reduce((sum, c) => sum + c.rawPrice, 0)
     return { active, awaiting, completed, spent }
   }, [campaigns])
 
@@ -251,7 +208,9 @@ export default function CampaignsPage() {
             Total spent
           </div>
           <div>
-            <div className="stat-card-value" style={{ color: 'var(--white)' }}>KES {counts.spent.toLocaleString()}</div>
+            <div className="stat-card-value" style={{ color: 'var(--white)' }}>
+              {isLoadingCampaigns ? <Skeleton width={80} height={24} /> : formatCurrency(counts.spent)}
+            </div>
             <div className="text-body-sm" style={{ color: 'var(--purple-400)', marginTop: 4 }}>
               Across {counts.completed} completed {counts.completed === 1 ? 'campaign' : 'campaigns'}
             </div>
@@ -263,7 +222,7 @@ export default function CampaignsPage() {
             <IconFlame size={14} />
             Active campaigns
           </div>
-          <div className="stat-card-value">{counts.active}</div>
+          <div className="stat-card-value">{isLoadingCampaigns ? <Skeleton width={30} height={22} /> : counts.active}</div>
         </div>
 
         <div className="stat-card" style={{ gridArea: 'awaiting' }}>
@@ -271,7 +230,7 @@ export default function CampaignsPage() {
             <IconClock size={14} />
             Awaiting approval
           </div>
-          <div className="stat-card-value">{counts.awaiting}</div>
+          <div className="stat-card-value">{isLoadingCampaigns ? <Skeleton width={30} height={22} /> : counts.awaiting}</div>
         </div>
 
         <div className="stat-card" style={{ gridArea: 'completed' }}>
@@ -279,7 +238,7 @@ export default function CampaignsPage() {
             <IconCheck size={14} />
             Completed
           </div>
-          <div className="stat-card-value">{counts.completed}</div>
+          <div className="stat-card-value">{isLoadingCampaigns ? <Skeleton width={30} height={22} /> : counts.completed}</div>
         </div>
       </div>
 
@@ -297,7 +256,15 @@ export default function CampaignsPage() {
       </div>
 
       {/* Campaign list */}
-      {filtered.length > 0 ? (
+      {isCampaignsError ? (
+        <div className="card">
+          <ErrorState onRetry={refetchCampaigns} />
+        </div>
+      ) : isLoadingCampaigns ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={92} style={{ borderRadius: 'var(--radius-lg)' }} />)}
+        </div>
+      ) : filtered.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {filtered.map((c) => (
             <CampaignCard key={c.id} campaign={c} onOpen={handleOpen} />
@@ -307,12 +274,16 @@ export default function CampaignsPage() {
         <div className="card">
           <EmptyState
             icon={<IconBriefcase size={22} />}
-            title="No campaigns match your filters"
-            description="Try a different status filter or clear your search."
+            title={campaigns.length === 0 ? 'No campaigns yet' : 'No campaigns match your filters'}
+            description={campaigns.length === 0 ? 'Book a creator from the directory to start your first campaign.' : 'Try a different status filter or clear your search.'}
             action={
-              <button className="btn btn-secondary btn-sm" onClick={clearFilters}>
-                Clear filters
-              </button>
+              campaigns.length === 0 ? (
+                <Link to="/directory" className="btn btn-secondary btn-sm">Browse creators</Link>
+              ) : (
+                <button className="btn btn-secondary btn-sm" onClick={clearFilters}>
+                  Clear filters
+                </button>
+              )
             }
           />
         </div>

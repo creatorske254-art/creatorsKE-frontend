@@ -29,13 +29,6 @@ const resetSchema = z
   });
 
 // Shared styles
-const labelStyle = {
-  fontSize: '11px',
-  fontWeight: 500,
-  letterSpacing: '0.07em',
-  textTransform: 'uppercase',
-  color: 'var(--grey-600)',
-};
 const inputStyle = (hasError) => ({
   width: '100%',
   padding: '10px 14px',
@@ -76,7 +69,7 @@ function RequestResetForm() {
           <IconCircleCheck size={28} style={{ color: 'var(--purple-500)' }} />
         </div>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Check your email</div>
-        <div style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '28px' }}>
+        <div className="page-subtitle" style={{ marginBottom: '28px' }}>
           If an account exists for that email, we've sent a reset link. It expires in 1 hour.
         </div>
         <Link to="/login" style={{ fontSize: '13px', color: 'var(--purple-500)', fontWeight: 500, textDecoration: 'none' }}>
@@ -98,7 +91,7 @@ function RequestResetForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Email address</label>
+            <label className="field-label">Email address</label>
             <div style={{ position: 'relative' }}>
               <IconMail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input
@@ -178,7 +171,7 @@ function SetNewPasswordForm({ token }) {
           <IconCircleCheck size={28} style={{ color: 'var(--status-success)' }} />
         </div>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Password updated</div>
-        <div style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '28px' }}>
+        <div className="page-subtitle" style={{ marginBottom: '28px' }}>
           Your password has been changed. You can now sign in.
         </div>
         <Link
@@ -215,7 +208,7 @@ function SetNewPasswordForm({ token }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
           {/* New password */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>New password</label>
+            <label className="field-label">New password</label>
             <div style={{ position: 'relative' }}>
               <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input
@@ -236,7 +229,7 @@ function SetNewPasswordForm({ token }) {
 
           {/* Confirm */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Confirm password</label>
+            <label className="field-label">Confirm password</label>
             <div style={{ position: 'relative' }}>
               <IconLock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--grey-400)', pointerEvents: 'none' }} />
               <input

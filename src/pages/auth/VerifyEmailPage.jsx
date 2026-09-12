@@ -88,7 +88,7 @@ export default function VerifyEmailPage() {
               <IconMailCheck size={28} style={{ color: 'var(--purple-500)' }} />
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Check your email</div>
-            <div style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '28px' }}>
+            <div className="page-subtitle" style={{ marginBottom: '28px' }}>
               We sent a verification link to your email address. Click it to activate your account.
             </div>
             <div style={{ fontSize: '13px', color: 'var(--grey-400)' }}>
@@ -126,7 +126,7 @@ export default function VerifyEmailPage() {
               <IconCircleCheck size={28} style={{ color: 'var(--status-success)' }} />
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Email verified</div>
-            <div style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '28px' }}>
+            <div className="page-subtitle" style={{ marginBottom: '28px' }}>
               Your account is active. You can now sign in.
             </div>
             <Link
@@ -156,7 +156,7 @@ export default function VerifyEmailPage() {
               <IconCircleX size={28} style={{ color: 'var(--status-error)' }} />
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: '8px' }}>Verification failed</div>
-            <div style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '28px' }}>
+            <div className="page-subtitle" style={{ marginBottom: '28px' }}>
               {errorMsg}
             </div>
             <Link

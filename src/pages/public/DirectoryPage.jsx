@@ -188,8 +188,8 @@ export default function DirectoryPage() {
         {/* top row */}
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--black)' }}>Browse creators</div>
-            <div style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 4 }}>Find the right creator for your campaign: browse niches, engagement, and availability.</div>
+            <div className="hero-title">Browse creators</div>
+            <div className="page-subtitle">Find the right creator for your campaign: browse niches, engagement, and availability.</div>
           </div>
           <div style={{ fontSize: 13, color: 'var(--grey-600)', whiteSpace: 'nowrap' }}>
             Are you a creator?{' '}

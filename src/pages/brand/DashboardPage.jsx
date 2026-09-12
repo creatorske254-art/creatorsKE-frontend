@@ -280,7 +280,7 @@ function CampaignDrawer({ campaign, onClose }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Avatar initials={campaign.initials} color={campaign.avatarColor} size={44} />
             <div>
-              <div style={{ fontFamily: FONT_DISPLAY, fontSize: 17, fontWeight: 700, color: C.black }}>{campaign.creator}</div>
+              <div className="card-title" style={{ marginBottom: 0 }}>{campaign.creator}</div>
               <div style={{ fontSize: 12, color: C.grey500 }}>{campaign.handle}</div>
             </div>
           </div>
@@ -444,10 +444,10 @@ export default function BrandDashboardPage() {
           flexWrap: "wrap", gap: 16, marginBottom: 28,
         }}>
           <div>
-            <div style={{ fontFamily: FONT_DISPLAY, fontWeight: 700, fontSize: 30, lineHeight: "36px", letterSpacing: "-0.02em", color: C.black }}>
+            <div className="page-title">
               {greeting}, Nairobi Brew Co.
             </div>
-            <div style={{ fontSize: 14, color: C.grey600, marginTop: 6 }}>
+            <div className="page-subtitle">
               Here's what's happening with your creator campaigns today.
             </div>
           </div>
@@ -604,8 +604,8 @@ export default function BrandDashboardPage() {
           {/* Shortlist heading */}
           <div className="col-12" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8 }}>
             <div>
-              <div style={{ fontFamily: FONT_DISPLAY, fontSize: 18, fontWeight: 700, color: C.black }}>Shortlisted creators</div>
-              <div style={{ fontSize: 12.5, color: C.grey500, marginTop: 2 }}>Creators you've saved for comparison</div>
+              <div className="card-title" style={{ marginBottom: 0 }}>Shortlisted creators</div>
+              <div className="page-subtitle">Creators you've saved for comparison</div>
             </div>
           </div>
 

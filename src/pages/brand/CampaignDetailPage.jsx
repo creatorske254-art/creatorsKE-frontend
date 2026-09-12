@@ -129,11 +129,6 @@ const PAGE_STYLES = `
 .campaign-detail-page .row-between { display: flex; justify-content: space-between; align-items: center; gap: var(--space-8); }
 .campaign-detail-page .hr { height: 0.5px; background: var(--grey-100); margin: var(--space-16) 0; }
 
-.campaign-detail-page .section-label {
-  font-size: var(--text-caption-size); font-weight: var(--text-caption-weight);
-  letter-spacing: var(--text-caption-tracking); text-transform: uppercase;
-  color: var(--grey-400); margin-bottom: var(--space-10);
-}
 
 /* Delivered-file chip */
 .campaign-detail-page .file-chip {
@@ -197,7 +192,7 @@ function ReviewForm({ onSubmit }) {
 
   return (
     <div>
-      <div className="section-label">Leave a review</div>
+      <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Leave a review</div>
       <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-10)' }}>
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} type="button" className={`star-btn${n <= rating ? ' filled' : ''}`} onClick={() => setRating(n)}>
@@ -327,7 +322,7 @@ export default function CampaignDetailPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
             {/* Scope */}
             <div className="card card-p-md">
-              <div className="section-label">Agreed scope</div>
+              <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Agreed scope</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-7)', marginBottom: 'var(--space-16)' }}>
                 {base.deliverables.map((d, i) => (
                   <div key={i} className="text-body" style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-8)' }}>
@@ -347,7 +342,7 @@ export default function CampaignDetailPage() {
             {/* Delivery & approval (status-dependent) */}
             {status === 'delivered' && (
               <div className="card card-p-md">
-                <div className="section-label">Delivery</div>
+                <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Delivery</div>
                 <div className="alert alert-warning" style={{ marginBottom: 'var(--space-16)' }}>
                   <IconClock size={15} />
                   <div>The creator has marked this as delivered. Review the files below, then approve or raise a dispute within 48 hours.</div>
@@ -380,7 +375,7 @@ export default function CampaignDetailPage() {
                   </div>
                 ) : (
                   <div>
-                    <div className="section-label">Submit evidence</div>
+                    <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Submit evidence</div>
                     <textarea
                       className="input input-md"
                       rows={3}
@@ -400,7 +395,7 @@ export default function CampaignDetailPage() {
 
             {status === 'disputed' && (
               <div className="card card-p-md">
-                <div className="section-label">Dispute</div>
+                <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Dispute</div>
                 <div className="alert alert-error">
                   <IconScale size={15} />
                   <div>Your evidence has been submitted. Platform admin is reviewing both sides and will issue a binding decision within 5 business days.</div>
@@ -410,7 +405,7 @@ export default function CampaignDetailPage() {
 
             {status === 'completed' && (
               <div className="card card-p-md">
-                <div className="section-label">Delivery</div>
+                <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Delivery</div>
                 <div className="alert alert-success" style={{ marginBottom: review ? 'var(--space-16)' : 0 }}>
                   <IconCheck size={15} />
                   <div>Delivery approved. KES {netPayout.toLocaleString()} released to the creator, net of the platform fee.</div>
@@ -419,7 +414,7 @@ export default function CampaignDetailPage() {
                   <ReviewForm onSubmit={(r) => setReview(r)} />
                 ) : (
                   <div>
-                    <div className="section-label">Your review</div>
+                    <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Your review</div>
                     <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-6)' }}>
                       {[1, 2, 3, 4, 5].map((n) => (
                         <IconStar key={n} size={15} fill={n <= review.rating ? 'var(--status-warning)' : 'none'} stroke="var(--status-warning)" />
@@ -445,13 +440,13 @@ export default function CampaignDetailPage() {
                 campaign response isn't documented; assumed to carry
                 enquiryId, falling back to the campaign's own id. */}
             <div className="card card-p-md">
-              <div className="section-label">Messages</div>
+              <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Messages</div>
               <MessageThread threadId={liveCampaign?.enquiryId ?? id} />
             </div>
 
             {/* Activity */}
             <div className="card card-p-md">
-              <div className="section-label">Activity</div>
+              <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Activity</div>
               <ActivityLog items={activity} />
             </div>
           </div>
@@ -476,7 +471,7 @@ export default function CampaignDetailPage() {
             </div>
 
             <div className="card card-p-md">
-              <div className="section-label">Invoice summary</div>
+              <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Invoice summary</div>
               <div className="text-body-sm" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
                 <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>{base.package}</span><span style={{ fontWeight: 500 }}>KES {base.price.toLocaleString()}</span></div>
                 <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>Platform fee (10%)</span><span style={{ fontWeight: 500 }}>– KES {platformFee.toLocaleString()}</span></div>
@@ -494,7 +489,7 @@ export default function CampaignDetailPage() {
             </div>
 
             <div className="card card-p-md">
-              <div className="section-label">Need help?</div>
+              <div className="section-title" style={{ marginBottom: 'var(--space-10)' }}>Need help?</div>
               <p className="text-body-sm" style={{ color: 'var(--grey-600)', marginBottom: 'var(--space-10)' }}>
                 If something doesn't look right, you have 48 hours after delivery to raise a dispute.
               </p>

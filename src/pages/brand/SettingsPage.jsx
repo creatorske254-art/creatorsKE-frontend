@@ -32,7 +32,6 @@ const css = `
 
   /* Header */
   .settings-header { margin-bottom: var(--space-24); }
-  .settings-sub { font-size: var(--text-body-sm-size); color: var(--grey-500); margin-top: var(--space-2); }
 
   /* Tabs (pill track, per component library §Navigation) */
   .settings-tabs {
@@ -73,14 +72,6 @@ const css = `
 
   /* Field */
   .field { display: flex; flex-direction: column; gap: var(--space-6); }
-  .field-label {
-    font-size: var(--text-caption-size);
-    font-weight: 500;
-    letter-spacing: var(--text-caption-tracking);
-    text-transform: uppercase;
-    color: var(--grey-600);
-  }
-  .field-required::after { content: ' *'; color: var(--status-error); }
   .field-hint { margin-top: var(--space-2); } /* base styling + icon come from index.css */
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); }
   .field-divider { height: 0.5px; background: var(--grey-100); margin: var(--space-2) 0; }
@@ -1029,8 +1020,8 @@ export default function BrandSettingsPage() {
       />
       <div className="settings-page">
         <div className="settings-header">
-          <h3>Settings</h3>
-          <p className="settings-sub">Manage your company profile, payments, and account preferences.</p>
+          <h3 className="page-title">Settings</h3>
+          <p className="page-subtitle">Manage your company profile, payments, and account preferences.</p>
         </div>
 
         <div className="settings-tabs">

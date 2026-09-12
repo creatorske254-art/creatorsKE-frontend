@@ -29,9 +29,9 @@ const css = `
   .ps-shell { flex: 1; background: var(--page-bg); padding: 48px 24px; }
   .ps-inner { max-width: 780px; margin: 0 auto; }
 
-  .ps-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--purple-600); margin-bottom: 8px; }
-  .ps-title { font-family: var(--font-display); font-size: 28px; font-weight: 600; letter-spacing: -.02em; color: var(--black); margin-bottom: 6px; }
-  .ps-sub { font-size: 14px; color: var(--grey-500); line-height: 1.65; margin-bottom: 36px; }
+  .ps-eyebrow { margin-bottom: 8px; }
+  .ps-title { margin-bottom: 6px; }
+  .ps-sub { margin-bottom: 36px; }
 
   /* Plan grid */
   .ps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
@@ -326,10 +326,7 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
     <div className="ps-complete-shell">
       <div style={{ textAlign: 'center', maxWidth: 480 }}>
         <div style={{ fontSize: 32, marginBottom: 12 }}>🎉</div>
-        <h1 style={{
-          fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 600,
-          letterSpacing: '-.02em', color: 'var(--black)', marginBottom: 8,
-        }}>
+        <h1 className="hero-title" style={{ marginBottom: 8 }}>
           You're all set, <span>{firstName || 'there'}</span>!
         </h1>
         <p style={{ fontSize: 14, color: 'var(--grey-500)', lineHeight: 1.7 }}>
@@ -450,9 +447,9 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
         {step === 'select' && (
           <div className="ps-shell">
             <div className="ps-inner">
-              <div className="ps-eyebrow">One more step</div>
-              <h1 className="ps-title">Choose your plan</h1>
-              <p className="ps-sub">Start free and upgrade whenever you're ready. You can change this anytime from Settings.</p>
+              <div className="eyebrow ps-eyebrow">One more step</div>
+              <h1 className="hero-title ps-title">Choose your plan</h1>
+              <p className="page-subtitle ps-sub">Start free and upgrade whenever you're ready. You can change this anytime from Settings.</p>
 
               <div className="ps-grid">
                 {PLANS.map(plan => (

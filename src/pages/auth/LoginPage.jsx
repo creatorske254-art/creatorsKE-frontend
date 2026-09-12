@@ -15,13 +15,6 @@ const schema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-const labelStyle = {
-  fontSize: '11px',
-  fontWeight: 600,
-  letterSpacing: '0.07em',
-  textTransform: 'uppercase',
-  color: 'var(--grey-600)',
-};
 
 const inputStyle = (hasError) => ({
   width: '100%',
@@ -118,10 +111,10 @@ export default function LoginPage() {
           padding: '40px 36px 36px',
           boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--black)', marginBottom: '6px' }}>
+          <h1 className="hero-title" style={{ marginBottom: '6px' }}>
             Welcome back
           </h1>
-          <p style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '24px' }}>
+          <p className="page-subtitle" style={{ marginBottom: '24px' }}>
             Sign in to your account.
           </p>
 
@@ -134,7 +127,7 @@ export default function LoginPage() {
 
               {/* Email */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={labelStyle}>Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
+                <label className="field-label">Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
                 <div className="input-wrapper">
                   <IconMail className="input-icon left" aria-hidden="true" />
                   <input
@@ -149,7 +142,7 @@ export default function LoginPage() {
 
               {/* Password */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={labelStyle}>Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
+                <label className="field-label">Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
                 <div className="input-wrapper">
                   <IconLock className="input-icon left" aria-hidden="true" />
                   <input

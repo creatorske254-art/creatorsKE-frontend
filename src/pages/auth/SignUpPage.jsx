@@ -85,13 +85,6 @@ function PasswordStrengthBars({ score }) {
 }
 
 // Shared styles
-const labelStyle = {
-  fontSize: '11px',
-  fontWeight: 600,
-  letterSpacing: '0.07em',
-  textTransform: 'uppercase',
-  color: 'var(--grey-600)',
-};
 
 const inputStyle = (hasError) => ({
   width: '100%',
@@ -152,10 +145,10 @@ function StepChooseType({ onContinue }) {
 
   return (
     <>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--black)', marginBottom: '6px' }}>
+      <h1 className="hero-title" style={{ marginBottom: '6px' }}>
         Join Creatorske
       </h1>
-      <p style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '24px' }}>
+      <p className="page-subtitle" style={{ marginBottom: '24px' }}>
         Are you a creator or a brand? We'll tailor your setup.
       </p>
 
@@ -254,10 +247,10 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
       <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--purple-600)', marginBottom: '8px' }}>
         Creator account
       </div>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--black)', marginBottom: '6px' }}>
+      <h1 className="hero-title" style={{ marginBottom: '6px' }}>
         Create your account
       </h1>
-      <p style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '24px' }}>
+      <p className="page-subtitle" style={{ marginBottom: '24px' }}>
         Build your rate card and start getting booked.
       </p>
 
@@ -265,25 +258,25 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
           <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={labelStyle}>First name <span style={{ color: 'var(--status-error)' }}>*</span></label>
+              <label className="field-label">First name <span style={{ color: 'var(--status-error)' }}>*</span></label>
               <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Amara" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: '38px' }} /></div>
               {errors.firstName && <span className="field-hint error">{errors.firstName.message}</span>}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={labelStyle}>Last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
+              <label className="field-label">Last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
               <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Osei" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: '38px' }} /></div>
               {errors.lastName && <span className="field-hint error">{errors.lastName.message}</span>}
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
+            <label className="field-label">Email <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@email.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: '38px' }} /></div>
             {errors.email && <span className="field-hint error">{errors.email.message}</span>}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
+            <label className="field-label">Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconLock className="input-icon left" aria-hidden="true" />
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -360,36 +353,36 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
       <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--purple-600)', marginBottom: '8px' }}>
         Brand account
       </div>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--black)', marginBottom: '6px' }}>
+      <h1 className="hero-title" style={{ marginBottom: '6px' }}>
         Create your account
       </h1>
-      <p style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '24px' }}>
+      <p className="page-subtitle" style={{ marginBottom: '24px' }}>
         Find and book creators for your next campaign.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Company name <span style={{ color: 'var(--status-error)' }}>*</span></label>
+            <label className="field-label">Company name <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconBuildingStore className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Acme Kenya Ltd" {...register('companyName')} style={{ ...inputStyle(errors.companyName), paddingLeft: '38px' }} /></div>
             {errors.companyName && <span className="field-hint error">{errors.companyName.message}</span>}
           </div>
 
           <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={labelStyle}>Contact first name <span style={{ color: 'var(--status-error)' }}>*</span></label>
+              <label className="field-label">Contact first name <span style={{ color: 'var(--status-error)' }}>*</span></label>
               <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Jane" {...register('firstName')} style={{ ...inputStyle(errors.firstName), paddingLeft: '38px' }} /></div>
               {errors.firstName && <span className="field-hint error">{errors.firstName.message}</span>}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={labelStyle}>Contact last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
+              <label className="field-label">Contact last name <span style={{ color: 'var(--status-error)' }}>*</span></label>
               <div className="input-wrapper"><IconUser className="input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Kariuki" {...register('lastName')} style={{ ...inputStyle(errors.lastName), paddingLeft: '38px' }} /></div>
               {errors.lastName && <span className="field-hint error">{errors.lastName.message}</span>}
             </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Business email <span style={{ color: 'var(--status-error)' }}>*</span></label>
+            <label className="field-label">Business email <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconMail className="input-icon left" aria-hidden="true" /><input type="email" placeholder="you@company.com" {...register('email')} style={{ ...inputStyle(errors.email), paddingLeft: '38px' }} /></div>
             {errors.email && <span className="field-hint error">{errors.email.message}</span>}
             <span style={{ fontSize: '12px', color: 'var(--grey-400)', lineHeight: 1.5 }}>
@@ -398,7 +391,7 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label style={labelStyle}>Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
+            <label className="field-label">Password <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconLock className="input-icon left" aria-hidden="true" />
               <input
                 type={showPassword ? 'text' : 'password'}

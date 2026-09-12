@@ -199,8 +199,8 @@ export default function CampaignsPage() {
       {/* Page header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h2 style={{ marginBottom: 2 }}>Campaigns</h2>
-          <p className="text-body-sm" style={{ color: 'var(--grey-600)' }}>
+          <h2 className="page-title" style={{ marginBottom: 2 }}>Campaigns</h2>
+          <p className="page-subtitle">
             Track every booking from in-progress to completed.
           </p>
         </div>

@@ -309,8 +309,8 @@ export default function MoneyPage() {
           {/* Header: no redundant top-level withdraw button; the balance
               tile and the CTA card below both already offer one. */}
           <div style={{ marginBottom: 24 }}>
-            <h3 style={{ margin: 0 }}>Money account</h3>
-            <p style={{ fontSize: 13, color: 'var(--grey-500)', marginTop: 4 }}>Your earnings, payouts, and payment methods.</p>
+            <h3 className="page-title">Money account</h3>
+            <p className="page-subtitle">Your earnings, payouts, and payment methods.</p>
           </div>
 
           <div className="bento">
@@ -345,7 +345,7 @@ export default function MoneyPage() {
             {/* Earnings chart */}
             <div className="card card-p-md s-12">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-                <p className="card-title" style={{ marginBottom: 0, fontSize: 16 }}>Earnings overview</p>
+                <p className="section-title">Earnings overview</p>
                 <div style={{ display: 'flex', gap: 5 }}>
                   {['3m', '6m', '1y'].map((p) => (
                     <button
@@ -397,7 +397,7 @@ export default function MoneyPage() {
             {/* Transactions */}
             <div className="table-wrap s-7 r-3">
               <div style={{ padding: '16px 18px', borderBottom: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700 }}>Transactions</span>
+                <span className="section-title">Transactions</span>
                 <button className="btn btn-ghost btn-xs" onClick={() => setHistoryOpen(true)}>
                   <i className="ti ti-history" style={{ fontSize: 11 }}></i>View all
                 </button>
@@ -414,7 +414,7 @@ export default function MoneyPage() {
 
             {/* Payment methods */}
             <div className="card card-p-md s-5">
-              <p className="card-title" style={{ fontSize: 15, marginBottom: 14 }}>Payment methods</p>
+              <p className="section-title" style={{ marginBottom: 14 }}>Payment methods</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {paymentMethods.map((m) => (
                   <div
@@ -451,7 +451,7 @@ export default function MoneyPage() {
             {/* Subscription */}
             <div className="card card-p-md s-5">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <p className="card-title" style={{ fontSize: 15, marginBottom: 0 }}>Subscription</p>
+                <p className="section-title">Subscription</p>
                 <span className="tag tag-purple">{currentPlan?.name ?? currentPlan?.id ?? '-'}</span>
               </div>
               {/* Billing/renewal/usage fields below have no confirmed backend

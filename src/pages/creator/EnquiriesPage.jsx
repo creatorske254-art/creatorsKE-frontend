@@ -79,8 +79,8 @@ export default function EnquiriesPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-24)', flexWrap: 'wrap', gap: 'var(--space-12)' }}>
         <div>
-          <h3 style={{ margin: 0 }}>Enquiries</h3>
-          <p className="text-body-sm" style={{ color: 'var(--grey-600)', marginTop: 2 }}>
+          <h3 className="page-title">Enquiries</h3>
+          <p className="page-subtitle">
             Manage incoming brand requests and bookings.
           </p>
         </div>

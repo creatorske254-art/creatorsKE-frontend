@@ -301,10 +301,10 @@ export default function ReviewsPage() {
 
       {/* Page heading */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--black)", letterSpacing: "-0.01em", marginBottom: 4 }}>
+        <h1 className="page-title" style={{ marginBottom: 4 }}>
           Flagged Reviews
         </h1>
-        <p style={{ fontSize: 13, color: "var(--grey-500)", lineHeight: 1.6 }}>
+        <p className="page-subtitle">
           Moderate reviews flagged by creators or auto-detected for policy violations across the platform.
         </p>
         <p style={{ fontSize: 12, color: "var(--grey-400)", lineHeight: 1.6, fontStyle: 'italic', marginTop: 4 }}>

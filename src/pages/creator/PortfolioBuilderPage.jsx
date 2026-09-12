@@ -40,8 +40,6 @@ function useTablerIcons() {
 // that isn't already a token).
 const PORTFOLIO_BUILDER_STYLES = `
 .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: var(--space-12); }
-.field .label { font-size: var(--text-caption-size); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--grey-600); }
-.field .label.req::after { content: ' *'; color: var(--status-error); }
 .field .hint { font-size: 12px; color: var(--grey-400); line-height: 1.5; margin-top: 2px; }
 .inp {
   width: 100%;
@@ -89,18 +87,9 @@ const PORTFOLIO_BUILDER_STYLES = `
   .pb-preview-col { display: none; }
 }
 
-.pb-section-head { display: flex; align-items: center; gap: var(--space-8); margin-bottom: var(--space-14); }
+.pb-section-head { margin-bottom: var(--space-14); }
 .pb-section-head.has-hint { margin-bottom: var(--space-4); }
-.pb-section-icon {
-  width: 26px; height: 26px;
-  border-radius: var(--radius-md);
-  background: var(--page-bg);
-  border: 0.5px solid var(--grey-100);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; color: var(--grey-500); flex-shrink: 0;
-}
-.pb-section-title { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--black); }
-.pb-section-hint { font-size: 12px; color: var(--grey-400); margin: 0 0 var(--space-14); }
+.pb-section-hint { margin: 0 0 var(--space-14); }
 
 .pb-g2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-10); }
 
@@ -173,16 +162,13 @@ function getInitials(name) {
 
 /* shared field bits */
 
-function SectionCard({ icon, title, hint, children }) {
+function SectionCard({ title, hint, children }) {
   return (
     <div className="card card-p-md">
       <div className={`pb-section-head${hint ? ' has-hint' : ''}`}>
-        <div className="pb-section-icon">
-          <i className={`ti ${icon}`} aria-hidden="true" />
-        </div>
-        <span className="pb-section-title">{title}</span>
+        <h2 className="section-title">{title}</h2>
       </div>
-      {hint && <p className="pb-section-hint">{hint}</p>}
+      {hint && <p className="text-hint pb-section-hint">{hint}</p>}
       {children}
     </div>
   );
@@ -191,7 +177,7 @@ function SectionCard({ icon, title, hint, children }) {
 function Field({ label, required, hint, children }) {
   return (
     <div className="field">
-      <label className={`label${required ? ' req' : ''}`}>{label}</label>
+      <label className={`field-label${required ? ' field-required' : ''}`}>{label}</label>
       {children}
       {hint && <p className="hint">{hint}</p>}
     </div>
@@ -430,7 +416,7 @@ export default function PortfolioBuilderPage() {
         <div className="pb-form-col">
           {/* Header + progress */}
           <div>
-            <h4 style={{ marginBottom: 4 }}>Build your portfolio</h4>
+            <h4 className="page-title" style={{ marginBottom: 4 }}>Build your portfolio</h4>
             <div className="text-body-sm" style={{ color: 'var(--grey-400)', marginBottom: 14 }}>
               This appears on your public portfolio, make it count.
             </div>

@@ -84,8 +84,6 @@ const Tokens = () => (
   .rcb .bs{flex:1;display:flex;flex-direction:column;width:100%;min-height:100%}
   .rcb .btop{background:var(--bg-primary);border-bottom:0.5px solid var(--bdr-tertiary);padding:var(--space-16) var(--space-28);border-radius:var(--r-xl) var(--r-xl) 0 0}
   .rcb .btop-inner{max-width:1080px;margin:0 auto}
-  .rcb .bptitle{font-family:var(--f-head);font-size:22px;font-weight:600;color:var(--txt-primary);margin-bottom:2px;letter-spacing:-.01em}
-  .rcb .bpsub{font-size:13px;color:var(--txt-secondary)}
   .rcb .bbody{flex:1;padding:var(--space-28) 0;width:100%;display:flex;flex-direction:column;gap:var(--space-16)}
   .rcb .bfooter{background:var(--bg-primary);border-top:0.5px solid var(--bdr-tertiary);padding:var(--space-12) var(--space-28);position:sticky;bottom:0;z-index:100;border-radius:0 0 var(--r-xl) var(--r-xl)}
   .rcb .bfooter-inner{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:var(--space-8)}
@@ -122,9 +120,7 @@ const Tokens = () => (
   .rcb .btn:disabled{pointer-events:none;opacity:.6}
 
   .rcb .field{display:flex;flex-direction:column;gap:5px}
-  .rcb .label{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--txt-secondary)}
-  .rcb .label.req::after{content:' *';color:var(--red-400)}
-  .rcb .hint{font-size:12px;color:var(--txt-tertiary);line-height:1.5}
+    .rcb .hint{font-size:12px;color:var(--txt-tertiary);line-height:1.5}
   .rcb .inp{width:100%;font-family:var(--f-body);font-size:13.5px;color:var(--txt-primary);background:var(--bg-secondary);border:0.5px solid var(--bdr-tertiary);outline:none;transition:border-color .12s,background-color .12s,box-shadow .12s;padding:8.5px 12px;border-radius:var(--r-md)}
   .rcb .inp::placeholder{color:var(--txt-tertiary)}
   .rcb .inp:hover{border-color:var(--bdr-secondary)}
@@ -517,10 +513,10 @@ export default function RateCardBuilderPage() {
         {/* header / stepper */}
         <div className="btop">
           <div className="btop-inner">
-            <div className="bptitle">
+            <div className="page-title">
               {["Set up your profile", "Your packages", "Payment setup", "Edit rate card", "Preview & publish"][step - 1]}
             </div>
-            <div className="bpsub">
+            <div className="page-subtitle">
               {[
                 "This appears on your public rate card, make it count.",
                 "Define what you offer. Add up to 5 packages. Brands will compare and pick.",
@@ -541,7 +537,7 @@ export default function RateCardBuilderPage() {
             <div className="bsplit">
               <div className="bento">
                 <div className="card card-p">
-                  <p className="label" style={{ marginBottom: 12 }}>Profile photo</p>
+                  <p className="section-title" style={{ marginBottom: 12 }}>Profile photo</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                     {photoUrl ? (
                       <img src={photoUrl} alt="Profile photo" className="av av-xl" style={{ objectFit: "cover", border: "0.5px solid var(--bdr-tertiary)" }} />
@@ -559,7 +555,7 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p">
-                  <p className="label">Your platforms</p>
+                  <p className="section-title">Your platforms</p>
                   <p className="hint" style={{ margin: "4px 0 12px" }}>Select all platforms you are active on</p>
                   <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
                     {[
@@ -577,15 +573,15 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p span2">
-                  <p className="label" style={{ marginBottom: 14 }}>Basic info</p>
+                  <p className="section-title" style={{ marginBottom: 14 }}>Basic info</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     <div className="g2">
                       <div className="field">
-                        <label className="label req">Display name</label>
+                        <label className="field-label field-required">Display name</label>
                         <div className="inp-wrap"><span className="inp-icon l"><IconUser size={14} /></span><input className="inp inp-icon-l" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} /></div>
                       </div>
                       <div className="field">
-                        <label className="label req">Handle</label>
+                        <label className="field-label field-required">Handle</label>
                         <div className="inp-wrap">
                           <span className="inp-pre">@</span>
                           <input className="inp" style={{ paddingLeft: 20 }} value={profile.handle} onChange={(e) => setProfile({ ...profile, handle: e.target.value })} />
@@ -593,12 +589,12 @@ export default function RateCardBuilderPage() {
                       </div>
                     </div>
                     <div className="field">
-                      <label className="label req">Bio / tagline</label>
+                      <label className="field-label field-required">Bio / tagline</label>
                       <textarea className="inp ta" rows={3} value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} />
                       <p className="hint">140 characters max</p>
                     </div>
                     <div className="field">
-                      <label className="label">Location</label>
+                      <label className="field-label">Location</label>
                       <div className="inp-wrap">
                         <span className="inp-icon l"><IconMapPin size={14} /></span>
                         <input className="inp inp-icon-l" value={profile.location} onChange={(e) => setProfile({ ...profile, location: e.target.value })} />
@@ -608,32 +604,32 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p span2">
-                  <p className="label">Audience stats</p>
+                  <p className="section-title">Audience stats</p>
                   <p className="hint" style={{ margin: "4px 0 14px" }}>Shown on your rate card to build trust with brands</p>
                   <div className="g3">
                     <div className="field">
-                      <label className="label">Total followers</label>
+                      <label className="field-label">Total followers</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconUsers size={14} /></span><input className="inp inp-icon-l" value={profile.followers} onChange={(e) => setProfile({ ...profile, followers: e.target.value })} /></div>
                     </div>
                     <div className="field">
-                      <label className="label">Avg engagement</label>
+                      <label className="field-label">Avg engagement</label>
                       <div className="inp-wrap">
                         <input className="inp inp-icon-r" value={profile.engagement} onChange={(e) => setProfile({ ...profile, engagement: e.target.value })} />
                         <span className="inp-icon r" style={{ fontSize: 12, fontWeight: 600 }}>%</span>
                       </div>
                     </div>
                     <div className="field">
-                      <label className="label">Monthly reach</label>
+                      <label className="field-label">Monthly reach</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconEye size={14} /></span><input className="inp inp-icon-l" value={profile.reach} onChange={(e) => setProfile({ ...profile, reach: e.target.value })} /></div>
                     </div>
                   </div>
                 </div>
 
                 <div className="card card-p span2">
-                  <p className="label" style={{ marginBottom: 12 }}>Niche &amp; content</p>
+                  <p className="section-title" style={{ marginBottom: 12 }}>Niche &amp; content</p>
                   <div className="g2">
                     <div className="field">
-                      <label className="label req">Primary niche</label>
+                      <label className="field-label field-required">Primary niche</label>
                       <div className="sel-wrap">
                         <select className="inp" value={profile.niche} onChange={(e) => setProfile({ ...profile, niche: e.target.value })}>
                           {["Lifestyle", "Travel", "Fashion & Beauty", "Tech", "Food & Beverage", "Fitness & Health", "Finance", "Gaming", "Education"].map((o) => <option key={o}>{o}</option>)}
@@ -642,7 +638,7 @@ export default function RateCardBuilderPage() {
                       </div>
                     </div>
                     <div className="field">
-                      <label className="label">Content languages</label>
+                      <label className="field-label">Content languages</label>
                       <div className="inp-wrap">
                         <span className="inp-icon l"><IconLanguage size={14} /></span>
                         <input className="inp inp-icon-l" value={profile.languages} onChange={(e) => setProfile({ ...profile, languages: e.target.value })} />
@@ -653,7 +649,7 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="rcp-preview-col">
-                <p className="label" style={{ marginBottom: 10 }}>Live preview</p>
+                <p className="section-title" style={{ marginBottom: 10 }}>Live preview</p>
                 <RateCardPreview profile={profile} platforms={platforms} packages={packages} />
                 <p className="hint" style={{ marginTop: 7, textAlign: "center" }}>Updates as you type</p>
               </div>
@@ -669,7 +665,7 @@ export default function RateCardBuilderPage() {
                     <div className={`pkg-card${pkg.feat ? " feat-card" : ""}`} key={pkg.id}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                         <span className="pkg-drag-handle"><IconGripVertical size={14} /></span>
-                        <div style={{ flex: 1, fontFamily: "var(--f-head)", fontSize: 14, fontWeight: 600 }}>{pkg.name}</div>
+                        <div className="section-title" style={{ flex: 1 }}>{pkg.name}</div>
                         {pkg.feat && <span className="tag tag-accent">Featured</span>}
                         <button className="icon-btn icon-btn-sm" onClick={() => removePackage(pkg.id)}>
                           <IconTrash size={12} color="var(--red-400)" />
@@ -678,11 +674,11 @@ export default function RateCardBuilderPage() {
                       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                         <div className="g2">
                           <div className="field">
-                            <label className="label req">Package name</label>
+                            <label className="field-label field-required">Package name</label>
                             <div className="inp-wrap"><span className="inp-icon l"><IconPackage size={14} /></span><input className="inp inp-icon-l" value={pkg.name} onChange={(e) => updatePackage(pkg.id, "name", e.target.value)} /></div>
                           </div>
                           <div className="field">
-                            <label className="label req">Price (KES)</label>
+                            <label className="field-label field-required">Price (KES)</label>
                             <div className="inp-wrap">
                               <span className="inp-pre">KES</span>
                               <input className="inp" style={{ paddingLeft: 40 }} value={pkg.price} onChange={(e) => updatePackage(pkg.id, "price", e.target.value)} />
@@ -690,7 +686,7 @@ export default function RateCardBuilderPage() {
                           </div>
                         </div>
                         <div className="field">
-                          <label className="label">Description</label>
+                          <label className="field-label">Description</label>
                           <div className="inp-wrap"><span className="inp-icon l"><IconAlignLeft size={14} /></span><input className="inp inp-icon-l" value={pkg.desc} onChange={(e) => updatePackage(pkg.id, "desc", e.target.value)} /></div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -714,7 +710,7 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="rcp-preview-col">
-                <p className="label" style={{ marginBottom: 10 }}>Live preview</p>
+                <p className="section-title" style={{ marginBottom: 10 }}>Live preview</p>
                 <RateCardPreview profile={profile} platforms={platforms} packages={packages} />
               </div>
             </div>
@@ -731,16 +727,16 @@ export default function RateCardBuilderPage() {
               <div className="pay-method active-method">
                 <div className="pay-method-header">
                   <div className="pay-icon" style={{ background: "#00a651" }}><IconDeviceMobile size={17} color="#fff" /></div>
-                  <div style={{ flex: 1 }}><div style={{ fontFamily: "var(--f-head)", fontSize: 14, fontWeight: 600 }}>M-Pesa</div><p className="hint">Safaricom mobile money</p></div>
+                  <div style={{ flex: 1 }}><div className="section-title">M-Pesa</div><p className="hint">Safaricom mobile money</p></div>
                   <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                   <div className="field">
-                    <label className="label req">M-Pesa phone number</label>
+                    <label className="field-label field-required">M-Pesa phone number</label>
                     <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 44 }} value={mpesaPhone} onChange={(e) => setMpesaPhone(e.target.value)} /></div>
                   </div>
                   <div className="field">
-                    <label className="label">Business name on M-Pesa</label>
+                    <label className="field-label">Business name on M-Pesa</label>
                     <div className="inp-wrap"><span className="inp-icon l"><IconBuildingStore size={14} /></span><input className="inp inp-icon-l" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} /></div>
                     <p className="hint">Displayed to clients when they pay</p>
                   </div>
@@ -750,7 +746,7 @@ export default function RateCardBuilderPage() {
               <div className={`pay-method${airtelConnected ? " active-method" : ""}`}>
                 <div className="pay-method-header">
                   <div className="pay-icon" style={{ background: "#e40000" }}><IconDeviceMobile size={17} color="#fff" /></div>
-                  <div style={{ flex: 1 }}><div style={{ fontFamily: "var(--f-head)", fontSize: 14, fontWeight: 600 }}>Airtel Money</div><p className="hint">Airtel mobile money</p></div>
+                  <div style={{ flex: 1 }}><div className="section-title">Airtel Money</div><p className="hint">Airtel mobile money</p></div>
                   {airtelConnected ? (
                     <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
                   ) : (
@@ -758,7 +754,7 @@ export default function RateCardBuilderPage() {
                   )}
                 </div>
                 <div className="field">
-                  <label className="label">Airtel phone number</label>
+                  <label className="field-label">Airtel phone number</label>
                   <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 44 }} placeholder="7XX XXX XXX" /></div>
                 </div>
               </div>
@@ -766,14 +762,14 @@ export default function RateCardBuilderPage() {
               <div className="pay-method">
                 <div className="pay-method-header">
                   <div className="pay-icon" style={{ background: "var(--bg-secondary)" }}><IconBuilding size={17} color="var(--txt-secondary)" /></div>
-                  <div style={{ flex: 1 }}><div style={{ fontFamily: "var(--f-head)", fontSize: 14, fontWeight: 600 }}>Bank transfer</div><p className="hint">Local &amp; international wire</p></div>
+                  <div style={{ flex: 1 }}><div className="section-title">Bank transfer</div><p className="hint">Local &amp; international wire</p></div>
                   <button className="btn btn-ghost btn-sm" onClick={() => setBankOpen((o) => !o)}>{bankOpen ? "Hide" : "Add details"}</button>
                 </div>
                 {bankOpen && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                     <div className="g2">
                       <div className="field">
-                        <label className="label">Bank name</label>
+                        <label className="field-label">Bank name</label>
                         <div className="sel-wrap">
                           <select className="inp" defaultValue="">
                             <option value="" disabled>Select bank</option>
@@ -782,15 +778,15 @@ export default function RateCardBuilderPage() {
                           <span className="chev"><IconChevronDown size={13} /></span>
                         </div>
                       </div>
-                      <div className="field"><label className="label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" /></div></div>
+                      <div className="field"><label className="field-label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" /></div></div>
                     </div>
-                    <div className="field"><label className="label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" /></div></div>
+                    <div className="field"><label className="field-label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser size={14} /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" /></div></div>
                   </div>
                 )}
               </div>
 
               <div className="card card-p">
-                <p className="label" style={{ marginBottom: 14 }}>Invoice preferences</p>
+                <p className="section-title" style={{ marginBottom: 14 }}>Invoice preferences</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                     <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Auto-send invoice on booking</div><p className="hint">Automatically email invoice when a client books</p></div>
@@ -816,20 +812,20 @@ export default function RateCardBuilderPage() {
             <div className="bsplit">
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <div className="card card-p">
-                  <p className="label" style={{ marginBottom: 14 }}>Card header</p>
+                  <p className="section-title" style={{ marginBottom: 14 }}>Card header</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     <div className="field">
-                      <label className="label">Headline</label>
+                      <label className="field-label">Headline</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconHeading size={14} /></span><input className="inp inp-icon-l" value={headline} onChange={(e) => setHeadline(e.target.value)} /></div>
                       <p className="hint">Appears at the top of your published card</p>
                     </div>
                     <div className="field">
-                      <label className="label">Short pitch</label>
+                      <label className="field-label">Short pitch</label>
                       <textarea className="inp ta" rows={2} value={pitch} onChange={(e) => setPitch(e.target.value)} />
                     </div>
                     <div className="g2">
                       <div className="field">
-                        <label className="label">Booking lead time</label>
+                        <label className="field-label">Booking lead time</label>
                         <div className="sel-wrap">
                           <select className="inp" value={leadTime} onChange={(e) => setLeadTime(e.target.value)}>
                             {["3–5 business days", "1 week", "2 weeks", "1 month"].map((o) => <option key={o}>{o}</option>)}
@@ -838,7 +834,7 @@ export default function RateCardBuilderPage() {
                         </div>
                       </div>
                       <div className="field">
-                        <label className="label">Availability</label>
+                        <label className="field-label">Availability</label>
                         <div className="sel-wrap">
                           <select className="inp" value={availability} onChange={(e) => setAvailability(e.target.value)}>
                             {["Open for collabs", "Limited slots", "Fully booked"].map((o) => <option key={o}>{o}</option>)}
@@ -852,7 +848,7 @@ export default function RateCardBuilderPage() {
 
                 <div className="card card-p">
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                    <p className="label">Package order &amp; visibility</p>
+                    <p className="section-title">Package order &amp; visibility</p>
                     <button className="btn btn-ghost btn-xs" onClick={() => setStep(2)}><IconPencil size={11} />Edit packages</button>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -878,27 +874,27 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p">
-                  <p className="label" style={{ marginBottom: 14 }}>Contact &amp; social links</p>
+                  <p className="section-title" style={{ marginBottom: 14 }}>Contact &amp; social links</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                     <div className="field">
-                      <label className="label">WhatsApp business number</label>
+                      <label className="field-label">WhatsApp business number</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconMessageCircle size={14} color="#25D366" /></span><input className="inp inp-icon-l" defaultValue="+254 712 345 678" /></div>
                     </div>
                     <div className="field">
-                      <label className="label">Instagram</label>
+                      <label className="field-label">Instagram</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconBrandInstagram size={14} /></span><input className="inp inp-icon-l" defaultValue="instagram.com/amaracreates" /></div>
                     </div>
                     <div className="field">
-                      <label className="label">TikTok</label>
+                      <label className="field-label">TikTok</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconBrandTiktok size={14} /></span><input className="inp inp-icon-l" defaultValue="tiktok.com/@amaracreates" /></div>
                     </div>
                     <div className="g2">
                       <div className="field">
-                        <label className="label">YouTube</label>
+                        <label className="field-label">YouTube</label>
                         <div className="inp-wrap"><span className="inp-icon l"><IconBrandYoutube size={14} /></span><input className="inp inp-icon-l" placeholder="youtube.com/…" /></div>
                       </div>
                       <div className="field">
-                        <label className="label">Twitter / X</label>
+                        <label className="field-label">Twitter / X</label>
                         <div className="inp-wrap"><span className="inp-icon l"><IconBrandX size={14} /></span><input className="inp inp-icon-l" placeholder="x.com/…" /></div>
                       </div>
                     </div>
@@ -906,14 +902,14 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p">
-                  <p className="label" style={{ marginBottom: 14 }}>Terms &amp; conditions</p>
+                  <p className="section-title" style={{ marginBottom: 14 }}>Terms &amp; conditions</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                     <div className="field">
-                      <label className="label">Custom usage rights note</label>
+                      <label className="field-label">Custom usage rights note</label>
                       <textarea className="inp ta" rows={2} value={usageNote} onChange={(e) => setUsageNote(e.target.value)} />
                     </div>
                     <div className="field">
-                      <label className="label">Revision policy</label>
+                      <label className="field-label">Revision policy</label>
                       <div className="sel-wrap">
                         <select className="inp" value={revisionPolicy} onChange={(e) => setRevisionPolicy(e.target.value)}>
                           {["1 round of revisions included", "2 rounds included", "No revisions", "Unlimited revisions"].map((o) => <option key={o}>{o}</option>)}
@@ -930,7 +926,7 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="rcp-preview-col">
-                <p className="label" style={{ marginBottom: 10 }}>Live preview</p>
+                <p className="section-title" style={{ marginBottom: 10 }}>Live preview</p>
                 <div className="rcp">
                   <div className="rcp-top">
                     {profile.photoUrl
@@ -984,7 +980,7 @@ export default function RateCardBuilderPage() {
           {step === 5 && (
             <div style={{ maxWidth: 720, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 16 }}>
               <div className="card card-p">
-                <p className="label" style={{ marginBottom: 14 }}>Readiness check</p>
+                <p className="section-title" style={{ marginBottom: 14 }}>Readiness check</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {[
                     "Profile setup complete",
@@ -1005,7 +1001,7 @@ export default function RateCardBuilderPage() {
               </div>
 
               <div className="card card-p">
-                <p className="label" style={{ marginBottom: 12 }}>Your public link</p>
+                <p className="section-title" style={{ marginBottom: 12 }}>Your public link</p>
                 <div className="share-box">
                   <IconLink size={14} color="var(--txt-tertiary)" />
                   <span className="share-url">{slug}</span>
@@ -1024,7 +1020,7 @@ export default function RateCardBuilderPage() {
                     <IconCheck size={24} color="var(--txt-success)" />
                   </div>
                   <div>
-                    <div style={{ fontFamily: "var(--f-head)", fontSize: 20, fontWeight: 600, marginBottom: 4 }}>You're live!</div>
+                    <div className="page-title" style={{ marginBottom: 4 }}>You're live!</div>
                     <p style={{ fontSize: 13, color: "var(--txt-secondary)" }}>Your rate card is published and ready to share with brands.</p>
                   </div>
                   <div style={{ display: "flex", gap: 7, flexWrap: "wrap", justifyContent: "center" }}>

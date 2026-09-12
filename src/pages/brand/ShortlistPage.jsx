@@ -291,7 +291,7 @@ export default function ShortlistPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
         <div>
-          <h3 style={{ margin: 0 }}>Your shortlist</h3>
+          <h3 className="page-title">Your shortlist</h3>
           <p className="text-body-sm" style={{ color: 'var(--grey-500)', marginTop: 6, maxWidth: 520 }}>
             Creators you've saved while browsing. Reach out whenever you're ready to book.
           </p>

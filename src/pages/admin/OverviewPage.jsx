@@ -75,7 +75,7 @@ function Stars({ n }) {
 function SectionHead({ title, action, actionLabel }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-      <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>{title}</h2>
+      <h2 className="section-title">{title}</h2>
       {action && (
         <button className="btn btn-ghost btn-xs" onClick={action}>
           {actionLabel}
@@ -204,10 +204,10 @@ export default function OverviewPage() {
 
       {/* Page heading */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--black)", letterSpacing: "-0.01em", marginBottom: 4 }}>
+        <h1 className="page-title" style={{ marginBottom: 4 }}>
           Platform Overview
         </h1>
-        <p style={{ fontSize: 13, color: "var(--grey-500)", lineHeight: 1.6 }}>
+        <p className="page-subtitle">
           Platform health, open items requiring attention, and activity across all users.
         </p>
       </div>
@@ -247,7 +247,7 @@ export default function OverviewPage() {
         <div className="card card-p-md">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Abandoned onboarding drafts <DemoTag /></div>
+              <div className="section-title" style={{ marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Abandoned onboarding drafts <DemoTag /></div>
               <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · re-engagement emails auto-sent at 48 h</div>
             </div>
             <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--black)", lineHeight: 1 }}>
@@ -265,7 +265,7 @@ export default function OverviewPage() {
         <div className="card card-p-md">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Enquiry volume <DemoTag /></div>
+              <div className="section-title" style={{ marginBottom: 3, display: 'flex', alignItems: 'center', gap: 8 }}>Enquiry volume <DemoTag /></div>
               <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · all statuses</div>
             </div>
             <div className="tabs">
@@ -286,7 +286,7 @@ export default function OverviewPage() {
         {/* Open disputes */}
         <div className="card">
           <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Open disputes</h2>
+            <h2 className="section-title">Open disputes</h2>
             <span className="tag tag-default">{disputesLoading ? '···' : openDisputeCount} open</span>
           </div>
           <div style={{ padding: "4px 0" }}>
@@ -314,7 +314,7 @@ export default function OverviewPage() {
         {/* Flagged accounts */}
         <div className="card">
           <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Flagged accounts</h2>
+            <h2 className="section-title">Flagged accounts</h2>
             <span className="tag tag-error">{flaggedLoading ? '···' : flaggedAccountCount} pending</span>
           </div>
           <div style={{ padding: "4px 0" }}>
@@ -348,7 +348,7 @@ export default function OverviewPage() {
           {/* Escrow timeout queue */}
           <div className="card">
             <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Escrow timeout queue</h2>
+              <h2 className="section-title">Escrow timeout queue</h2>
               <DemoTag />
             </div>
             <div style={{ padding: "4px 0" }}>
@@ -368,7 +368,7 @@ export default function OverviewPage() {
           {/* Flagged reviews */}
           <div className="card" style={{ flex: 1 }}>
             <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)" }}>Flagged reviews</h2>
+              <h2 className="section-title">Flagged reviews</h2>
               <DemoTag />
             </div>
             <div style={{ padding: "4px 0" }}>
@@ -396,7 +396,7 @@ export default function OverviewPage() {
       <div className="card">
         <div style={{ padding: "16px 20px", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8 }}>Re-engagement email queue <DemoTag /></h2>
+            <h2 className="section-title" style={{ marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8 }}>Re-engagement email queue <DemoTag /></h2>
             <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Creators who abandoned their onboarding draft for 48+ hours. Emails sent automatically.</div>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={() => setEmailCopyOpen(true)}>

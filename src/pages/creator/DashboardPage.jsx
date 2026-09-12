@@ -115,8 +115,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-24)', flexWrap: 'wrap', gap: 'var(--space-12)' }}>
         <div>
-          <h3 style={{ margin: 0 }}>Good morning, Amara</h3>
-          <p className="text-body-sm" style={{ color: 'var(--grey-600)', marginTop: 2 }}>
+          <h3 className="page-title">Good morning, Amara</h3>
+          <p className="page-subtitle">
             Here&rsquo;s what&rsquo;s happening with your rate card today.
           </p>
         </div>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
         {/* Recent enquiries table */}
         <div className="bento-table table-wrap">
           <div style={{ padding: '16px 18px', borderBottom: '0.5px solid var(--grey-100)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h5 style={{ margin: 0 }}>Recent enquiries</h5>
+            <h5 className="section-title">Recent enquiries</h5>
             <Link to="/creator/enquiries" className="btn btn-ghost btn-xs">View all</Link>
           </div>
           {!statsLoading && rows.length === 0 ? (
@@ -222,7 +222,7 @@ export default function DashboardPage() {
         {/* Side rail: quick actions + rate card health */}
         <div className="bento-side">
           <div className="card card-p-md">
-            <p className="card-title" style={{ fontSize: 15, marginBottom: 14 }}>Quick actions</p>
+            <p className="section-title" style={{ marginBottom: 14 }}>Quick actions</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               <Link to="/creator/rate-card" className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }}>
                 <i className="ti ti-edit" style={{ fontSize: 14 }} />Edit rate card
@@ -240,7 +240,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="card card-p-md">
-            <p className="card-title" style={{ fontSize: 15, marginBottom: 14 }}>Rate card health</p>
+            <p className="section-title" style={{ marginBottom: 14 }}>Rate card health</p>
             {healthLoading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {[0, 1, 2].map((i) => (

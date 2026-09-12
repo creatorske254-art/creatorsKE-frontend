@@ -125,8 +125,6 @@ export default function DisputesPage() {
         .dsp-page{
           font-family:var(--font-body);color:var(--black);
         }
-        .dsp-page .section-title{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--black);margin-bottom:6px;letter-spacing:-0.01em}
-        .dsp-page .section-desc{font-size:13px;color:var(--grey-500);line-height:1.6}
         .dsp-page .tabs{display:flex;background:var(--grey-50);border-radius:var(--radius-lg);padding:4px;gap:2px;width:fit-content;flex-wrap:wrap}
         .dsp-page .tab{padding:7px 14px;border-radius:var(--radius-md);font-size:13px;font-weight:500;color:var(--grey-500);cursor:pointer;transition:all .15s;border:none;background:none;font-family:var(--font-body);display:flex;align-items:center;gap:6px}
         .dsp-page .tab:hover{color:var(--black)}
@@ -161,7 +159,6 @@ export default function DisputesPage() {
         .dsp-page .btn-ghost{background:transparent;color:var(--grey-600);font-size:12px;padding:6.5px 14px;border:0.5px solid var(--grey-200)}
         .dsp-page .btn-ghost:hover{color:var(--black);border-color:var(--grey-400)}
         .dsp-page .card-header{padding:16px 20px;border-bottom:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between}
-        .dsp-page .card-header-title{font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--black)}
         .dsp-page .card-body{padding:20px}
         .dsp-page .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--radius-md);font-size:12.5px;line-height:1.55}
         .dsp-page .alert-warning{background:var(--status-warning-bg);color:var(--status-warning-text);border:0.5px solid rgba(245,166,35,0.2)}
@@ -191,8 +188,8 @@ export default function DisputesPage() {
 
         {/* Header */}
         <div>
-          <div className="section-title">Disputes</div>
-          <div className="section-desc">Review evidence from both parties and issue binding decisions on escrow release.</div>
+          <div className="page-title">Disputes</div>
+          <div className="page-subtitle">Review evidence from both parties and issue binding decisions on escrow release.</div>
         </div>
 
         {/* Tabs + search */}
@@ -286,7 +283,7 @@ export default function DisputesPage() {
 
               <div className="card">
                 <div className="card-header">
-                  <div className="card-header-title">Case {selected.id}</div>
+                  <div className="section-title">Case {selected.id}</div>
                   <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)' }} onClick={() => setSelectedId(null)}>
                     <i className="ti ti-x" />
                   </button>
@@ -345,7 +342,7 @@ export default function DisputesPage() {
               {/* Decision card */}
               <div className="card">
                 <div className="card-header">
-                  <div className="card-header-title">{selected.decision ? 'Decision issued' : 'Issue binding decision'}</div>
+                  <div className="section-title">{selected.decision ? 'Decision issued' : 'Issue binding decision'}</div>
                 </div>
                 <div className="card-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 

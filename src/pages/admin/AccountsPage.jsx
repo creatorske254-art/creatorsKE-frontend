@@ -85,9 +85,6 @@ export default function AccountsPage() {
         .acc-page{
           font-family:var(--font-body);color:var(--black);
         }
-        .acc-page .section-eyebrow{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--purple-500);font-weight:600;margin-bottom:4px}
-        .acc-page .section-title{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--black);margin-bottom:6px;letter-spacing:-0.01em}
-        .acc-page .section-desc{font-size:13px;color:var(--grey-500);line-height:1.6}
         .acc-page .tabs{display:flex;background:var(--grey-50);border-radius:var(--radius-lg);padding:4px;gap:2px;width:fit-content;flex-wrap:wrap}
         .acc-page .tab{padding:7px 14px;border-radius:var(--radius-md);font-size:13px;font-weight:500;color:var(--grey-500);cursor:pointer;transition:all .15s;border:none;background:none;font-family:var(--font-body);display:flex;align-items:center;gap:6px}
         .acc-page .tab:hover{color:var(--black)}
@@ -124,7 +121,6 @@ export default function AccountsPage() {
         .acc-page .btn-ghost{background:transparent;color:var(--grey-600);font-size:12px;padding:6.5px 14px;border:0.5px solid var(--grey-200)}
         .acc-page .btn-ghost:hover{color:var(--black);border-color:var(--grey-400)}
         .acc-page .card-header{padding:16px 20px;border-bottom:0.5px solid var(--grey-100);display:flex;align-items:center;justify-content:space-between}
-        .acc-page .card-header-title{font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--black)}
         .acc-page .card-body{padding:20px}
         .acc-page .alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:var(--radius-md);font-size:12.5px;line-height:1.55}
         .acc-page .alert-warning{background:var(--status-warning-bg);color:var(--status-warning-text);border:0.5px solid rgba(245,166,35,0.2)}
@@ -143,9 +139,9 @@ export default function AccountsPage() {
 
         {/* Header */}
         <div>
-          <div className="section-title">Accounts & Moderation</div>
-          <div className="section-desc">Review flagged creator and brand accounts and resolve verification issues.</div>
-          <div className="section-desc" style={{ marginTop: 4, fontStyle: 'italic' }}>
+          <div className="page-title">Accounts & Moderation</div>
+          <div className="page-subtitle">Review flagged creator and brand accounts and resolve verification issues.</div>
+          <div className="page-subtitle" style={{ marginTop: 4, fontStyle: 'italic' }}>
             Showing flagged accounts only. A full account directory needs a backend endpoint that doesn't exist yet.
           </div>
         </div>
@@ -252,7 +248,7 @@ export default function AccountsPage() {
           {selected && (
             <div className="card" style={{ alignSelf: 'flex-start' }}>
               <div className="card-header">
-                <div className="card-header-title">Account detail</div>
+                <div className="section-title">Account detail</div>
                 <button className="btn-ghost" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)' }} onClick={() => setSelectedId(null)}>
                   <i className="ti ti-x" />
                 </button>
@@ -328,7 +324,7 @@ export default function AccountsPage() {
         <div className="acc-page modal-overlay" onClick={() => setConfirmAction(null)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="card-header">
-              <div className="card-header-title">
+              <div className="section-title">
                 {confirmAction.type === 'suspend' && 'Suspend this account?'}
                 {confirmAction.type === 'restore' && 'Restore account access?'}
                 {confirmAction.type === 'remove' && 'Permanently remove account?'}

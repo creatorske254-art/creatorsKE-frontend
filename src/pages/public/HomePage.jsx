@@ -277,7 +277,7 @@ export default function HomePage() {
         <div className="how-right-panel" style={{ padding: '72px 64px', display: 'flex', flexDirection: 'column', gap: 0 }}>
           {steps.map((s, i) => (
             <div key={i} style={{ display: 'flex', gap: 16, padding: '20px 0', borderBottom: i < steps.length - 1 ? '0.5px solid var(--grey-100)' : 'none' }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--grey-200)', minWidth: 28, lineHeight: 1.2, flexShrink: 0 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'color-mix(in srgb, var(--black) 24%, var(--white))', minWidth: 28, lineHeight: 1.2, flexShrink: 0 }}>
                 {String(i + 1).padStart(2, '0')}
               </div>
               <div>
@@ -295,7 +295,7 @@ export default function HomePage() {
       </div>
 
       {/* ══ FOOTER ══════════════════════════════════════════════════════════ */}
-      <footer style={{ background: 'var(--black)', flexShrink: 0 }}>
+      <footer className="theme-fixed-dark" style={{ background: 'var(--black)', flexShrink: 0 }}>
         <div className="footer-top-grid" style={{ padding: '48px 80px 40px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 40, alignItems: 'start' }}>
           {/* brand col */}
           <div>

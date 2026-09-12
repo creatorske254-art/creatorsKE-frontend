@@ -233,8 +233,16 @@
 
   /* Purple accent shifts one step lighter for readability against dark surfaces */
   --purple-600: #7F77DD; /* default accent in dark mode */
+  --purple-700: #8A82E0; /* text on purple tints (tab counts, selected states) */
   --purple-800: #948CE3; /* hover, lighter than default */
   --purple-900: #26215C; /* used as active-state background tint, not text */
+
+  /* Light purple washes (featured cards, selected rows, .pay-row.connected)
+     become deep indigo tints — the same inversion --status-*-bg gets below.
+     Left as-is they'd stay pale lavender under text that has flipped to white. */
+  --purple-50:  #201C4F;
+  --purple-100: #2B2568;
+  --purple-200: #3A338A;
 
   /* Status colors keep their base hues (they're already saturated enough to
      read on dark surfaces); only their soft-fill/text pairs invert */
@@ -285,6 +293,25 @@
   --shadow-md: 0 4px 16px rgba(0,0,0,0.28);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.32);
   --shadow-xl: 0 16px 48px rgba(0,0,0,0.36);
+}
+
+/* Blocks that are dark BY DESIGN in both themes (the marketing footer). Pins the
+   surface + grey tokens back to their light-mode values inside the block, so
+   its "light text on black" reads the same whichever theme is active instead
+   of flipping to light-grey-on-white when the rest of the page goes dark. */
+.theme-fixed-dark {
+  --white: #FFFFFF;
+  --black: #000000;
+  --grey-50:  #F2F2F2;
+  --grey-100: #E5E5E5;
+  --grey-200: #CCCCCC;
+  --grey-300: #B3B3B3;
+  --grey-400: #999999;
+  --grey-500: #808080;
+  --grey-600: #666666;
+  --grey-700: #4D4D4D;
+  --grey-800: #262626;
+  --grey-900: #1A1A1A;
 }
 
 /* ─── Base reset & global styles ───────────────────────────────────────────── */

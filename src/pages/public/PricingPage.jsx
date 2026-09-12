@@ -23,7 +23,7 @@ function PricingCard({ tier }) {
       }`}
     >
       {tier.featured && (
-        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-2.5 py-1 rounded-[999px] bg-[var(--purple-500)] text-white mb-3">
+        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-2.5 py-1 rounded-[999px] bg-[var(--purple-500)] text-on-accent mb-3">
           Most popular
         </span>
       )}
@@ -45,7 +45,7 @@ function PricingCard({ tier }) {
         onClick={() => navigate('/signup')}
         className={`w-full mb-6 flex items-center justify-center gap-1.5 px-5 py-3 rounded-[8px] text-[13.5px] font-medium transition-all ${
           tier.featured
-            ? 'bg-[var(--purple-600)] text-white hover:bg-[var(--purple-700)]'
+            ? 'bg-[var(--purple-600)] text-on-accent hover:bg-[var(--purple-700)]'
             : 'bg-[var(--black)] text-white hover:opacity-90'
         }`}
       >
@@ -88,7 +88,7 @@ export default function PricingPage() {
         .pr-btn-purple:hover { background:var(--purple-700); }
         .pr-toggle { display:inline-flex; background:var(--white); border:0.5px solid var(--grey-200); border-radius:999px; padding:4px; gap:2px; }
         .pr-toggle-btn { border:none; background:none; padding:9px 22px; border-radius:999px; font-size:13.5px; font-weight:500; color:var(--grey-500); cursor:pointer; font-family:var(--font-body); transition:all .15s; }
-        .pr-toggle-btn.active { background:var(--black); color:#fff; }
+        .pr-toggle-btn.active { background:var(--black); color:var(--white); }
       `}</style>
 
       {/* Nav */}

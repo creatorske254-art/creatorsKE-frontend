@@ -212,7 +212,9 @@ export default function CampaignsPage() {
           className="card-dark card-p-lg"
           style={{ gridArea: 'hero', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
         >
-          <div className="stat-card-label" style={{ color: 'var(--grey-400)' }}>
+          {/* Mixed from the tile's own text colour so it stays legible when the
+              inverted tile flips to a light surface in dark mode. */}
+          <div className="stat-card-label" style={{ color: 'color-mix(in srgb, var(--white) 60%, var(--black))' }}>
             <IconWallet size={14} />
             Total spent
           </div>

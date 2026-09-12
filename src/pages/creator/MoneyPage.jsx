@@ -250,12 +250,15 @@ export default function MoneyPage() {
         .money-page .hero-amount{font-family:var(--font-display);font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1}
         .money-page .hero-sub{font-size:12px;opacity:.5;margin-top:6px}
         .money-page .hero-actions{margin-top:auto;padding-top:20px;display:flex;gap:8px}
-        .money-page .hero-btn{background:rgba(255,255,255,.12);color:#fff;border:0.5px solid rgba(255,255,255,.2)}
-        .money-page .hero-btn:hover{background:rgba(255,255,255,.2)}
-        .money-page .hero-btn-solid{background:var(--purple-600);border-color:var(--purple-600)}
+        /* The hero is an inverted tile (var(--black) bg, var(--white) text), so
+           its translucent buttons/rings mix from var(--white) too — that way
+           they stay visible when the tile flips to a light surface in dark mode. */
+        .money-page .hero-btn{background:color-mix(in srgb, var(--white) 12%, transparent);color:var(--white);border:0.5px solid color-mix(in srgb, var(--white) 20%, transparent)}
+        .money-page .hero-btn:hover{background:color-mix(in srgb, var(--white) 20%, transparent)}
+        .money-page .hero-btn-solid{background:var(--purple-600);border-color:var(--purple-600);color:#fff}
         .money-page .hero-btn-solid:hover{background:var(--purple-800)}
-        .money-page .hero-ring-a{position:absolute;right:-20px;top:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none}
-        .money-page .hero-ring-b{position:absolute;right:30px;bottom:-30px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+        .money-page .hero-ring-a{position:absolute;right:-20px;top:-20px;width:110px;height:110px;border-radius:50%;background:color-mix(in srgb, var(--white) 6%, transparent);pointer-events:none}
+        .money-page .hero-ring-b{position:absolute;right:30px;bottom:-30px;width:80px;height:80px;border-radius:50%;background:color-mix(in srgb, var(--white) 4%, transparent);pointer-events:none}
 
         /* Chart */
         .money-page .chart-bars{display:flex;align-items:flex-end;gap:6px;height:90px;padding-bottom:2px}

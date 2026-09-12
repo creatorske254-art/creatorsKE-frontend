@@ -179,7 +179,7 @@ export default function PortfolioPage() {
           </Link>
           <Link
             to={`/c/${handle}`}
-            className="inline-flex items-center gap-1.5 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--purple-500)] text-white hover:opacity-90"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent hover:opacity-90"
           >
             <IconCurrencyDollar size={13} /> View rate card
           </Link>

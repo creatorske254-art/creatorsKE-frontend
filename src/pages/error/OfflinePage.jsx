@@ -37,7 +37,7 @@ export default function OfflinePage() {
         onClick={() => window.location.reload()}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px',
-          borderRadius: 8, background: 'var(--black)', color: 'white', fontSize: 13.5,
+          borderRadius: 8, background: 'var(--black)', color: 'var(--white)', fontSize: 13.5,
           fontWeight: 500, border: 'none', cursor: 'pointer',
         }}
       >

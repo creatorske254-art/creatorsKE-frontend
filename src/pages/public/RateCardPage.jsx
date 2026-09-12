@@ -171,7 +171,7 @@ function PackageCard({ pkg, onEnquire }) {
       }`}
     >
       {pkg.featured && (
-        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-2 py-1 rounded-[999px] bg-[var(--purple-500)] text-white mb-2.5">
+        <span className="self-start text-[9px] font-bold tracking-[0.1em] uppercase px-2 py-1 rounded-[999px] bg-[var(--purple-500)] text-on-accent mb-2.5">
           Most popular
         </span>
       )}
@@ -220,7 +220,7 @@ function PackageCard({ pkg, onEnquire }) {
           className={`mt-3 self-start inline-flex items-center gap-1.5 text-[12.5px] font-medium px-3 py-1.5 rounded-[8px] transition-all ${
             dark
               ? 'bg-white/[0.1] text-white hover:bg-white/[0.16]'
-              : 'bg-[var(--purple-500)] text-white hover:opacity-90'
+              : 'bg-[var(--purple-500)] text-on-accent hover:opacity-90'
           }`}
         >
           <IconSend size={12} /> Enquire about this
@@ -374,11 +374,11 @@ export default function RateCardPage() {
             <div className="max-w-[1000px] mx-auto px-8">
               <div className="flex items-start gap-6 flex-wrap mb-8">
                 <div className="relative flex-shrink-0">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[var(--purple-400)] to-[var(--purple-800)] flex items-center justify-center text-[28px] font-semibold text-white border-[2.5px] border-white/20">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[var(--purple-400)] to-[var(--purple-800)] flex items-center justify-center text-[28px] font-semibold text-on-accent border-[2.5px] border-white/20">
                     {creator.initials}
                   </div>
                   <div className="absolute bottom-0 right-0 w-[22px] h-[22px] rounded-full bg-[var(--status-success)] border-2 border-[var(--black)] flex items-center justify-center">
-                    <IconCheck size={11} className="text-white" />
+                    <IconCheck size={11} className="text-on-accent" />
                   </div>
                 </div>
 
@@ -410,7 +410,7 @@ export default function RateCardPage() {
                     type="button"
                     onClick={() => handleSendEnquiryClick(selectedPackage ?? packages.find((p) => p.featured) ?? packages[0])}
                     disabled={!packages.length}
-                    className="inline-flex items-center justify-center gap-1.5 px-[18px] py-[9px] rounded-[8px] bg-[var(--purple-500)] text-white text-[13px] font-medium hover:opacity-90 hover:-translate-y-px transition-all whitespace-nowrap disabled:opacity-50"
+                    className="inline-flex items-center justify-center gap-1.5 px-[18px] py-[9px] rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[13px] font-medium hover:opacity-90 hover:-translate-y-px transition-all whitespace-nowrap disabled:opacity-50"
                   >
                     <IconSend size={14} /> Send enquiry
                   </button>
@@ -527,13 +527,13 @@ export default function RateCardPage() {
                   type="button"
                   onClick={() => handleSendEnquiryClick(selectedPackage ?? packages.find((p) => p.featured) ?? packages[0])}
                   disabled={!packages.length}
-                  className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-[8px] bg-[var(--purple-500)] text-white text-[14px] font-medium hover:opacity-90 transition-all disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[14px] font-medium hover:opacity-90 transition-all disabled:opacity-50"
                 >
                   <IconSend size={15} /> Send enquiry
                 </button>
                 <button
                   onClick={() => openWhatsApp(creator.phone)}
-                  className="flex items-center justify-center gap-2 w-full mt-2 px-6 py-3 rounded-[8px] bg-[#25D366] text-white text-[13px] font-medium hover:opacity-90 transition-all"
+                  className="flex items-center justify-center gap-2 w-full mt-2 px-6 py-3 rounded-[8px] bg-[#25D366] text-on-accent text-[13px] font-medium hover:opacity-90 transition-all"
                 >
                   <IconBrandWhatsapp size={14} /> Chat on WhatsApp
                 </button>

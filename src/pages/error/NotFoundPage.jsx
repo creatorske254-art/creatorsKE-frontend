@@ -17,7 +17,7 @@ export default function NotFoundPage() {
         Creatorske<span className="text-[var(--purple-500)]">.</span>
       </Link>
 
-      <div className="font-[var(--font-display)] text-[88px] font-semibold tracking-[-0.03em] leading-none text-[var(--purple-200)] mb-2">
+      <div className="font-[var(--font-display)] text-[88px] font-semibold tracking-[-0.03em] leading-none text-[var(--purple-300)] mb-2">
         404
       </div>
       <h1 className="font-[var(--font-display)] text-[24px] font-semibold text-[var(--black)] mb-3">

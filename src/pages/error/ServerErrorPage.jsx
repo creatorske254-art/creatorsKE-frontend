@@ -51,7 +51,7 @@ export default function ServerErrorPage() {
           onClick={() => window.location.reload()}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px',
-            borderRadius: 8, border: '0.5px solid var(--grey-200)', background: 'white',
+            borderRadius: 8, border: '0.5px solid var(--grey-200)', background: 'var(--white)',
             color: 'var(--black)', fontSize: 13.5, fontWeight: 500, cursor: 'pointer',
           }}
         >
@@ -61,7 +61,7 @@ export default function ServerErrorPage() {
           to="/"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px',
-            borderRadius: 8, background: 'var(--black)', color: 'white', fontSize: 13.5,
+            borderRadius: 8, background: 'var(--black)', color: 'var(--white)', fontSize: 13.5,
             fontWeight: 500, textDecoration: 'none',
           }}
         >

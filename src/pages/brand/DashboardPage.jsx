@@ -19,38 +19,41 @@ import { getInitials, formatCurrency, formatDate, formatCount } from '@/lib/util
 // Borders : 0.5px grey-100/200 hairlines, per component-library conventions
 // ─────────────────────────────────────────────────────────────────────────────
 
-const FONT_DISPLAY = "'Archivo', sans-serif";
-const FONT_BODY = "'Inter', system-ui, sans-serif";
+const FONT_DISPLAY = "var(--font-display)";
+const FONT_BODY = "var(--font-body)";
 
+// Aliases into the shared index.css tokens. These used to be copied hex
+// values, which meant the whole page ignored dark mode and rendered as a
+// bright island inside the dark shell.
 const C = {
-  black: "#000000",
-  white: "#FFFFFF",
-  grey50: "#F2F2F2",
-  grey100: "#E5E5E5",
-  grey200: "#CCCCCC",
-  grey300: "#B3B3B3",
-  grey400: "#999999",
-  grey500: "#808080",
-  grey600: "#666666",
-  grey700: "#4D4D4D",
-  purple50: "#EEEDFE",
-  purple100: "#CECBF6",
-  purple200: "#AFA9EC",
-  purple400: "#7F77DD",
-  purple600: "#534AB7",
-  purple800: "#3C3489",
-  success: "#10B981",
-  successBg: "#DCFCE7",
-  successText: "#047857",
-  warning: "#F59E0B",
-  warningBg: "#FEF3C7",
-  warningText: "#B45309",
-  error: "#EF4444",
-  errorBg: "#FEE2E2",
-  errorText: "#B91C1C",
-  info: "#06B6D4",
-  infoBg: "#CFFAFE",
-  infoText: "#0E7490",
+  black: "var(--black)",
+  white: "var(--white)",
+  grey50: "var(--grey-50)",
+  grey100: "var(--grey-100)",
+  grey200: "var(--grey-200)",
+  grey300: "var(--grey-300)",
+  grey400: "var(--grey-400)",
+  grey500: "var(--grey-500)",
+  grey600: "var(--grey-600)",
+  grey700: "var(--grey-700)",
+  purple50: "var(--purple-50)",
+  purple100: "var(--purple-100)",
+  purple200: "var(--purple-200)",
+  purple400: "var(--purple-400)",
+  purple600: "var(--purple-600)",
+  purple800: "var(--purple-800)",
+  success: "var(--status-success)",
+  successBg: "var(--status-success-bg)",
+  successText: "var(--status-success-text)",
+  warning: "var(--status-warning)",
+  warningBg: "var(--status-warning-bg)",
+  warningText: "var(--status-warning-text)",
+  error: "var(--status-error)",
+  errorBg: "var(--status-error-bg)",
+  errorText: "var(--status-error-text)",
+  info: "var(--status-info)",
+  infoBg: "var(--status-info-bg)",
+  infoText: "var(--status-info-text)",
 };
 
 const R = { sm: 4, md: 8, lg: 12, xl: 16, xxl: 24, pill: 999 };

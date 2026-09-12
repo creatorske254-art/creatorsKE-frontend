@@ -1,3 +1,24 @@
+// Every colour utility resolves to the matching CSS custom property from
+// src/index.css rather than a copied hex value, so `bg-white`, `text-grey-600`,
+// `bg-purple-50` etc. follow the `.dark` token set exactly like `var(--white)`
+// does. (Hardcoded hex here was why dark mode produced white text on white
+// cards: `text-[var(--black)]` flipped to white while Tailwind's `bg-white`
+// stayed #FFFFFF.) Opacity modifiers like `text-white/60` still work — the
+// alpha is applied with color-mix, which this codebase already relies on.
+const token = (cssVar) => ({ opacityValue }) =>
+  opacityValue === undefined
+    ? `var(${cssVar})`
+    : `color-mix(in srgb, var(${cssVar}) calc(${opacityValue} * 100%), transparent)`;
+
+const scale = (prefix, steps) =>
+  Object.fromEntries(steps.map((s) => [s, token(`--${prefix}-${s}`)]));
+
+const status = (name) => ({
+  DEFAULT: token(`--status-${name}`),
+  bg:      token(`--status-${name}-bg`),
+  text:    token(`--status-${name}-text`),
+});
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ['class'],
@@ -9,62 +30,22 @@ export default {
     extend: {
       // ─── Colors ────────────────────────────────────────────────────────────
       colors: {
-        // Base — black/page-bg match src/index.css's --black/--page-bg
-        white:      '#FFFFFF',
-        'off-white':'#F8F7FF',
-        black:      '#000000',
-        'near-black':'#111111',
-        'page-bg':  '#F2F2F2',
+        white:     token('--white'),
+        black:     token('--black'),
+        'page-bg': token('--page-bg'),
+        // Deliberately literal: text sitting on a fixed brand/status hue
+        // (purple buttons, green WhatsApp button, gradient avatars) must stay
+        // white in both themes, because that surface never flips. Use this
+        // instead of `text-white` there — `text-white` follows the theme.
+        'on-accent': '#FFFFFF',
 
-        // Purple scale (brand primary) — matches src/index.css's --purple-*
-        purple: {
-          50:  '#EEEDFE',
-          100: '#CECBF6',
-          200: '#AFA9EC',
-          300: '#948CE3',
-          400: '#7F77DD',
-          500: '#665DC7',
-          600: '#534AB7',   // ← primary brand color
-          700: '#463D9E',
-          800: '#3C3489',
-          900: '#26215C',
-        },
+        purple: scale('purple', [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]),
+        grey:   scale('grey',   [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]),
 
-        // Grey scale — matches src/index.css's --grey-*
-        grey: {
-          50:  '#F2F2F2',
-          100: '#E5E5E5',
-          200: '#CCCCCC',
-          300: '#B3B3B3',
-          400: '#999999',
-          500: '#808080',
-          600: '#666666',
-          700: '#4D4D4D',
-          800: '#262626',
-          900: '#1A1A1A',
-        },
-
-        // Status colors — matches src/index.css's --status-*
-        success: {
-          DEFAULT: '#10B981',
-          bg:      '#DCFCE7',
-          text:    '#047857',
-        },
-        warning: {
-          DEFAULT: '#F59E0B',
-          bg:      '#FEF3C7',
-          text:    '#B45309',
-        },
-        error: {
-          DEFAULT: '#EF4444',
-          bg:      '#FEE2E2',
-          text:    '#B91C1C',
-        },
-        info: {
-          DEFAULT: '#06B6D4',
-          bg:      '#CFFAFE',
-          text:    '#0E7490',
-        },
+        success: status('success'),
+        warning: status('warning'),
+        error:   status('error'),
+        info:    status('info'),
       },
 
       // ─── Typography ────────────────────────────────────────────────────────
@@ -140,11 +121,9 @@ export default {
       },
 
       // ─── Animation ──────────────────────────────────────────────────────────
+      // Skeleton shimmer lives solely in src/index.css (.skeleton) so there is
+      // exactly one definition of its speed app-wide — don't re-add one here.
       keyframes: {
-        shimmer: {
-          '0%':   { backgroundPosition: '-200px 0' },
-          '100%': { backgroundPosition: 'calc(200px + 100%) 0' },
-        },
         spin: {
           to: { transform: 'rotate(360deg)' },
         },
@@ -158,7 +137,6 @@ export default {
         },
       },
       animation: {
-        shimmer:     'shimmer 1.4s infinite linear',
         'spin-fast': 'spin 0.7s linear infinite',
         'slide-up':  'slide-in-up 0.2s ease-out',
         'fade-in':   'fade-in 0.2s ease-out',

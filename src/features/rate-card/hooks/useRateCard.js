@@ -155,3 +155,31 @@ export function useRateCards() {
     isDeleting: deleteMutation.isPending,
   };
 }
+
+// ─── Bulk unpublish (settings "Unpublish all cards") ────────────────────────
+// There's no bulk endpoint, so this fans out over the creator's own cards and
+// unpublishes each published one, returning how many were actually affected.
+export function useUnpublishAllRateCards() {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: RATE_CARDS_KEY,
+    queryFn: rateCardService.listRateCards,
+  });
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const cards = query.data ?? [];
+      const published = cards.filter((c) => c.published ?? c.status === 'published');
+      await Promise.all(published.map((c) => rateCardService.unpublishRateCard(c.id)));
+      return published.length;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: RATE_CARDS_KEY }),
+  });
+
+  return {
+    rateCards: query.data ?? [],
+    unpublishAll: mutation.mutateAsync,
+    isUnpublishingAll: mutation.isPending,
+  };
+}

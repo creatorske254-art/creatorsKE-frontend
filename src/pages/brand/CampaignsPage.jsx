@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { IconFlame, IconClock, IconCheck, IconWallet, IconEye, IconScale, IconMessageCircle, IconBriefcase } from '@tabler/icons-react'
 import EmptyState from '@/components/shared/EmptyState'
@@ -160,7 +160,16 @@ function CampaignCard({ campaign, onOpen }) {
 export default function CampaignsPage() {
   usePageMeta('Campaigns', 'Track every booking from in-progress to completed on Creatorske.');
   const navigate = useNavigate()
-  const [activeFilter, setActiveFilter] = useState('all')
+  // ?filter= lets other pages (the sidebar's "Campaign history" entry) deep-link
+  // straight to a tab instead of dumping the user on "All".
+  const [searchParams, setSearchParams] = useSearchParams()
+  const filterParam = searchParams.get('filter')
+  const activeFilter = FILTERS.some((f) => f.key === filterParam) ? filterParam : 'all'
+  const setActiveFilter = (key) => {
+    const next = new URLSearchParams(searchParams)
+    if (key && key !== 'all') next.set('filter', key); else next.delete('filter')
+    setSearchParams(next, { replace: true })
+  }
 
   const { campaigns: rawCampaigns, isLoadingCampaigns, isCampaignsError, refetchCampaigns } = useBrandDashboard()
   const campaigns = useMemo(() => rawCampaigns.map(normalizeCampaign), [rawCampaigns])

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useDisputes } from '@/features/admin/hooks/useDisputes';
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
@@ -217,6 +217,15 @@ export default function AdminLayout() {
   const badgeCounts = { openDisputeCount, flaggedAccountCount, flaggedReviewCount };
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
+
+  function handleSearchSubmit(e) {
+    e.preventDefault();
+    const q = searchValue.trim();
+    if (!q) return;
+    navigate(`/admin/accounts?q=${encodeURIComponent(q)}`);
+  }
 
   const initials = getInitials(
     user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
@@ -246,17 +255,20 @@ export default function AdminLayout() {
             Creatorske<span>.</span>
           </NavLink>
 
-          <div className="admin-layout__search">
+          {/* Submits to the accounts moderation list, which reads ?q= */}
+          <form className="admin-layout__search" role="search" onSubmit={handleSearchSubmit}>
             <div className="input-wrapper">
               <i className="ti ti-search input-icon left" aria-hidden="true" />
               <input
                 className="search-input"
                 type="text"
-                placeholder="Search..."
-                aria-label="Search"
+                placeholder="Search accounts…"
+                aria-label="Search accounts"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
               />
             </div>
-          </div>
+          </form>
 
           <div className="navbar-actions">
             <div style={{ position: 'relative' }}>

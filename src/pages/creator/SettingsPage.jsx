@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/features/auth/services/auth.service';
+import ConfirmDialog from '@/components/shared/ConfirmDialog';
+import Modal from '@/components/ui/Modal';
+import { useTheme } from '@/context/ThemeContext';
+import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
 
 // Page-scoped styles
 // Every value below reads from the global index.css tokens (--purple-*,
@@ -572,13 +576,109 @@ function NotificationsTab() {
   );
 }
 
+// Field sets for each payout provider's connect modal. There's no
+// /payments/methods endpoint yet (see BACKEND_API_SPEC.md), so connecting
+// stores what the creator actually typed and says so — rather than the old
+// behaviour of flipping a boolean and inventing "+254 712 345 678 · Till 123456".
+const PAY_PROVIDERS = {
+  mpesa: {
+    name: "M-Pesa",
+    icon: "ti-device-mobile",
+    iconStyle: { background: "var(--tint-green-bg)", color: "var(--tint-green-text)" },
+    blurb: "Connect your M-Pesa till or paybill",
+    fields: [
+      { key: "phone", label: "M-Pesa phone number", placeholder: "+254 7XX XXX XXX", required: true },
+      { key: "till", label: "Till / paybill number", placeholder: "e.g. 123456" },
+    ],
+    summary: (v) => [v.phone, v.till && `Till ${v.till}`].filter(Boolean).join(" · "),
+  },
+  stripe: {
+    name: "Stripe",
+    icon: "ti-credit-card",
+    iconStyle: { background: "var(--purple-50)", color: "var(--purple-600)" },
+    blurb: "Accept card payments internationally",
+    fields: [
+      { key: "email", label: "Stripe account email", placeholder: "you@email.com", required: true, type: "email" },
+    ],
+    summary: (v) => `${v.email} · Visa / Mastercard`,
+  },
+  bank: {
+    name: "Bank transfer",
+    icon: "ti-building-bank",
+    iconStyle: { background: "var(--page-bg)", color: "var(--grey-600)" },
+    blurb: "Local bank account (KES)",
+    fields: [
+      { key: "bank", label: "Bank name", placeholder: "e.g. Equity Bank", required: true },
+      { key: "account", label: "Account number", placeholder: "0123456789", required: true },
+      { key: "holder", label: "Account holder name", placeholder: "Full name as on the account" },
+    ],
+    summary: (v) => `${v.bank} · ****${String(v.account).slice(-4)}`,
+  },
+};
+
+function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
+  const provider = providerKey ? PAY_PROVIDERS[providerKey] : null;
+  const [values, setValues] = useState({});
+
+  if (!provider) return null;
+
+  const missing = provider.fields.some((f) => f.required && !String(values[f.key] ?? "").trim());
+
+  return (
+    <Modal open onClose={onClose} title={`Connect ${provider.name}`} size="sm">
+      <p style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 16 }}>
+        {provider.blurb}. These details are shown to brands when they pay you.
+      </p>
+      <div className="settings-stack" style={{ gap: 12, marginBottom: 18 }}>
+        {provider.fields.map((f) => (
+          <div className="field" key={f.key}>
+            <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
+            <input
+              className="input input-md"
+              type={f.type ?? "text"}
+              placeholder={f.placeholder}
+              value={values[f.key] ?? ""}
+              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+            />
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+        <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
+        <button
+          className="btn btn-primary btn-sm"
+          disabled={missing}
+          onClick={() => onConnect(providerKey, provider.summary(values))}
+        >
+          Connect {provider.name}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 function PaymentsTab() {
-  const [methods, setMethods] = useState({
-    mpesa: true,
-    stripe: false,
-    bank: false,
-  });
+  const [connected, setConnected] = useState({});
+  const [connecting, setConnecting] = useState(null); // provider key
   const [autoWithdraw, setAutoWithdraw] = useState(true);
+  const [disconnecting, setDisconnecting] = useState(null);
+
+  function handleConnect(key, summary) {
+    setConnected((prev) => ({ ...prev, [key]: summary }));
+    setConnecting(null);
+    toast.success(`${PAY_PROVIDERS[key].name} connected — saved locally until payout methods are supported on the backend.`);
+  }
+
+  function handleDisconnect() {
+    const key = disconnecting;
+    setConnected((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+    setDisconnecting(null);
+    toast.success(`${PAY_PROVIDERS[key].name} disconnected.`);
+  }
 
   return (
     <div className="settings-stack">
@@ -588,76 +688,51 @@ function PaymentsTab() {
           <p className="field-hint" style={{ margin: 0 }}>Accept payments from brands directly</p>
         </div>
         <div className="settings-stack" style={{ gap: 12, marginTop: 16 }}>
-          {/* M-Pesa */}
-          <div className={`pay-row${methods.mpesa ? " connected" : ""}`}>
-            <div className="pay-icon" style={{ background: "var(--tint-green-bg)", color: "var(--tint-green-text)" }}>
-              <i className="ti ti-device-mobile" />
-            </div>
-            <div className="pay-info">
-              <div className="pay-name">M-Pesa</div>
-              <div className="pay-desc">
-                {methods.mpesa ? "+254 712 345 678 · Till 123456" : "Connect your M-Pesa till or paybill"}
+          {Object.entries(PAY_PROVIDERS).map(([key, provider]) => {
+            const summary = connected[key];
+            return (
+              <div key={key} className={`pay-row${summary ? " connected" : ""}`}>
+                <div className="pay-icon" style={provider.iconStyle}>
+                  <i className={`ti ${provider.icon}`} />
+                </div>
+                <div className="pay-info">
+                  <div className="pay-name">{provider.name}</div>
+                  <div className="pay-desc">{summary ?? provider.blurb}</div>
+                </div>
+                {summary ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span className="tag tag-success">
+                      <span className="sdot" style={{ background: "var(--status-success)" }} />
+                      Connected
+                    </span>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(key)}>Disconnect</button>
+                  </div>
+                ) : (
+                  <button className="btn btn-secondary btn-sm" onClick={() => setConnecting(key)}>
+                    Connect
+                  </button>
+                )}
               </div>
-            </div>
-            {methods.mpesa ? (
-              <span className="tag tag-success">
-                <span className="sdot" style={{ background: "var(--status-success)" }} />
-                Connected
-              </span>
-            ) : (
-              <button className="btn btn-secondary btn-sm" onClick={() => setMethods((p) => ({ ...p, mpesa: true }))}>
-                Connect
-              </button>
-            )}
-          </div>
-
-          {/* Stripe */}
-          <div className={`pay-row${methods.stripe ? " connected" : ""}`}>
-            <div className="pay-icon" style={{ background: "var(--purple-50)", color: "var(--purple-600)" }}>
-              <i className="ti ti-credit-card" />
-            </div>
-            <div className="pay-info">
-              <div className="pay-name">Stripe</div>
-              <div className="pay-desc">
-                {methods.stripe ? "Account connected · Visa / Mastercard" : "Accept card payments internationally"}
-              </div>
-            </div>
-            {methods.stripe ? (
-              <span className="tag tag-success">
-                <span className="sdot" style={{ background: "var(--status-success)" }} />
-                Connected
-              </span>
-            ) : (
-              <button className="btn btn-secondary btn-sm" onClick={() => setMethods((p) => ({ ...p, stripe: true }))}>
-                Connect
-              </button>
-            )}
-          </div>
-
-          {/* Bank */}
-          <div className={`pay-row${methods.bank ? " connected" : ""}`}>
-            <div className="pay-icon" style={{ background: "var(--page-bg)", color: "var(--grey-600)" }}>
-              <i className="ti ti-building-bank" />
-            </div>
-            <div className="pay-info">
-              <div className="pay-name">Bank transfer</div>
-              <div className="pay-desc">
-                {methods.bank ? "Equity Bank · ****4821" : "Local bank account (KES)"}
-              </div>
-            </div>
-            {methods.bank ? (
-              <span className="tag tag-success">
-                <span className="sdot" style={{ background: "var(--status-success)" }} />
-                Connected
-              </span>
-            ) : (
-              <button className="btn btn-secondary btn-sm" onClick={() => setMethods((p) => ({ ...p, bank: true }))}>
-                Connect
-              </button>
-            )}
-          </div>
+            );
+          })}
         </div>
       </div>
+
+      <ConnectPayoutModal
+        providerKey={connecting}
+        onClose={() => setConnecting(null)}
+        onConnect={handleConnect}
+      />
+
+      <ConfirmDialog
+        open={!!disconnecting}
+        variant="danger"
+        title={`Disconnect ${disconnecting ? PAY_PROVIDERS[disconnecting].name : ""}?`}
+        message="Brands won't be able to pay you through this method until you reconnect it. Your existing transactions are unaffected."
+        confirmLabel="Disconnect"
+        onConfirm={handleDisconnect}
+        onCancel={() => setDisconnecting(null)}
+      />
 
       <div className="card card-p-lg">
         <span className="card-title">Payout settings</span>
@@ -666,12 +741,19 @@ function PaymentsTab() {
             <div className="field">
               <label className="field-label">Default payout method</label>
               <div className="select-wrapper">
-                <select className="input input-md">
-                  <option>M-Pesa</option>
-                  <option>Bank transfer</option>
-                  <option>Stripe</option>
+                <select className="input input-md" disabled={Object.keys(connected).length === 0}>
+                  {Object.keys(connected).length === 0 ? (
+                    <option>No methods connected yet</option>
+                  ) : (
+                    Object.keys(connected).map((key) => (
+                      <option key={key}>{PAY_PROVIDERS[key].name}</option>
+                    ))
+                  )}
                 </select>
               </div>
+              {Object.keys(connected).length === 0 && (
+                <p className="field-hint">Connect a payment method above to choose a default.</p>
+              )}
             </div>
             <div className="field">
               <label className="field-label">Payout currency</label>
@@ -697,12 +779,22 @@ function PaymentsTab() {
 }
 
 function AppearanceTab() {
-  const [selectedAccent, setSelectedAccent] = useState("#534AB7");
-  const [theme, setTheme] = useState("light");
+  // Real, persisted preferences — ThemeContext applies these to <html>, so
+  // they take effect instantly across every page and survive a reload.
+  const { theme, setTheme, accent, setAccent } = useTheme();
+  const [layout, setLayout] = useState(() => {
+    try { return localStorage.getItem('creatorske_card_layout') ?? 'Classic'; } catch { return 'Classic'; }
+  });
   const [saved, setSaved] = useState(false);
+
+  function handleLayout(next) {
+    setLayout(next);
+    try { localStorage.setItem('creatorske_card_layout', next); } catch { /* storage unavailable */ }
+  }
 
   function handleSave() {
     setSaved(true);
+    toast.success('Appearance preferences saved.');
     setTimeout(() => setSaved(false), 2000);
   }
 
@@ -735,11 +827,14 @@ function AppearanceTab() {
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {ACCENT_COLORS.map(({ hex, label }) => (
               <div key={hex} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
-                <div
-                  className={`accent-swatch${selectedAccent === hex ? " selected" : ""}`}
-                  style={{ background: hex }}
-                  onClick={() => setSelectedAccent(hex)}
+                <button
+                  type="button"
+                  className={`accent-swatch${accent === hex ? " selected" : ""}`}
+                  style={{ background: hex, border: "none", padding: 0, cursor: "pointer" }}
+                  onClick={() => setAccent(hex)}
                   title={label}
+                  aria-label={`Use ${label} accent`}
+                  aria-pressed={accent === hex}
                 />
                 <span style={{ fontSize: 10, color: "var(--grey-400)" }}>{label}</span>
               </div>
@@ -750,11 +845,14 @@ function AppearanceTab() {
         <div className="card card-p-lg">
           <span className="card-title">Rate card layout</span>
           <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
-            {["Classic", "Minimal"].map((layout) => (
-              <div
-                key={layout}
-                className={`option-card${layout === "Classic" ? " selected" : ""}`}
-                style={{ flex: 1, alignItems: "stretch" }}
+            {["Classic", "Minimal"].map((option) => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => handleLayout(option)}
+                aria-pressed={layout === option}
+                className={`option-card${layout === option ? " selected" : ""}`}
+                style={{ flex: 1, alignItems: "stretch", cursor: "pointer" }}
               >
                 <div
                   style={{
@@ -773,8 +871,8 @@ function AppearanceTab() {
                   <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2, width: "75%" }} />
                   <div style={{ height: 3, background: "var(--grey-100)", borderRadius: 2, width: "50%" }} />
                 </div>
-                <span className="option-card-label" style={{ textAlign: "center", width: "100%" }}>{layout}</span>
-              </div>
+                <span className="option-card-label" style={{ textAlign: "center", width: "100%" }}>{option}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -789,32 +887,37 @@ function AccountTab() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [saved, setSaved] = useState(false);
-  const [deleteStep, setDeleteStep] = useState(0); // 0 idle · 1 confirm · 2 deleting
+  const [confirmUnpublish, setConfirmUnpublish] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [unpublishing, setUnpublishing] = useState(false);
+  const [twoFAOpen, setTwoFAOpen] = useState(false);
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
   const [showInDirectory, setShowInDirectory] = useState(true);
   const [shareAnalytics, setShareAnalytics] = useState(false);
 
-  function handleSetUpAuthenticator() {
-    toast.info('Authenticator app setup is coming soon.');
-  }
+  const { rateCards, unpublishAll, isUnpublishingAll } = useUnpublishAllRateCards();
 
   function handleSave() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
 
-  function handleUnpublishAll() {
-    if (!window.confirm("Unpublish all your rate cards? Brands won't be able to view or book them until you republish.")) return;
+  async function handleUnpublishAll() {
+    setConfirmUnpublish(false);
     setUnpublishing(true);
-    setTimeout(() => {
+    try {
+      const count = await unpublishAll();
+      toast.success(count === 0 ? 'No published rate cards to unpublish.' : `${count} rate card${count === 1 ? '' : 's'} unpublished.`);
+    } catch {
+      toast.error('Could not unpublish your rate cards. Please try again.');
+    } finally {
       setUnpublishing(false);
-      toast.success("All rate cards unpublished.");
-    }, 700);
+    }
   }
 
   async function handleConfirmDelete() {
-    setDeleteStep(2);
+    setDeleting(true);
     try {
       await authService.deleteAccount();
     } catch {
@@ -870,7 +973,7 @@ function AccountTab() {
             />
           </div>
           <div style={{ marginTop: 12 }}>
-            <button className="btn btn-ghost btn-sm" onClick={handleSetUpAuthenticator}>
+            <button className="btn btn-ghost btn-sm" onClick={() => setTwoFAOpen(true)}>
               <i className="ti ti-shield-check" style={{ fontSize: 13 }} />
               Set up authenticator
             </button>
@@ -902,42 +1005,156 @@ function AccountTab() {
         <div className="danger-zone-desc">
           These actions are permanent and cannot be undone.
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: deleteStep > 0 ? 14 : 0 }}>
-          <button className="btn btn-danger btn-sm" disabled={unpublishing} onClick={handleUnpublishAll}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button
+            className="btn btn-danger btn-sm"
+            disabled={unpublishing || isUnpublishingAll}
+            onClick={() => setConfirmUnpublish(true)}
+          >
             <i className="ti ti-eye-off" style={{ fontSize: 12 }} />
-            {unpublishing ? "Unpublishing…" : "Unpublish all cards"}
+            {unpublishing || isUnpublishingAll ? "Unpublishing…" : "Unpublish all cards"}
           </button>
-          {deleteStep === 0 && (
-            <button className="btn btn-danger btn-sm" onClick={() => setDeleteStep(1)}>
-              <i className="ti ti-trash" style={{ fontSize: 12 }} />
-              Delete account
-            </button>
-          )}
+          <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
+            <i className="ti ti-trash" style={{ fontSize: 12 }} />
+            Delete account
+          </button>
         </div>
-
-        {deleteStep === 1 && (
-          <div className="settings-stack" style={{ gap: 12 }}>
-            <div style={{ fontSize: 12.5, color: "var(--status-error-text)", lineHeight: 1.6 }}>
-              This permanently deletes your creator profile, rate cards, portfolio, and booking history. This cannot be undone.
-            </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => setDeleteStep(0)}>Cancel</button>
-              <button className="btn btn-danger btn-sm" onClick={handleConfirmDelete}>Yes, delete my account</button>
-            </div>
-          </div>
-        )}
-
-        {deleteStep === 2 && (
-          <div style={{ fontSize: 12.5, color: "var(--status-error-text)" }}>Deleting your account…</div>
-        )}
       </div>
+
+      <ConfirmDialog
+        open={confirmUnpublish}
+        variant="danger"
+        title="Unpublish all rate cards?"
+        message={`Brands won't be able to view or book ${rateCards.length ? `your ${rateCards.length} rate card${rateCards.length === 1 ? '' : 's'}` : 'your rate cards'} until you republish. Your content and pricing are kept.`}
+        confirmLabel="Unpublish all"
+        onConfirm={handleUnpublishAll}
+        onCancel={() => setConfirmUnpublish(false)}
+      />
+
+      <DeleteAccountDialog
+        open={confirmDelete}
+        deleting={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDelete(false)}
+      />
+
+      <TwoFactorDialog
+        open={twoFAOpen}
+        onClose={() => setTwoFAOpen(false)}
+        onEnabled={() => { setTwoFAEnabled(true); setTwoFAOpen(false); }}
+      />
 
       <SaveBar saved={saved} onSave={handleSave} />
     </div>
   );
 }
 
+/**
+ * Delete-account confirmation. Deliberately heavier than ConfirmDialog: the
+ * user must type DELETE to arm the button, since this is irreversible and
+ * takes the rate cards, portfolio, and booking history with it.
+ */
+function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
+  const [typed, setTyped] = useState("");
+  const armed = typed.trim().toUpperCase() === "DELETE";
+
+  return (
+    <Modal open={open} onClose={deleting ? () => {} : onCancel} title="Delete your account?" size="sm">
+      <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 14 }}>
+        This permanently deletes your creator profile, rate cards, portfolio, and booking history.
+        Pending payouts are forfeited. This cannot be undone.
+      </p>
+      <label className="field-label" style={{ display: "block", marginBottom: 6 }}>
+        Type <strong>DELETE</strong> to confirm
+      </label>
+      <input
+        className="input input-md"
+        value={typed}
+        onChange={(e) => setTyped(e.target.value)}
+        placeholder="DELETE"
+        disabled={deleting}
+        style={{ marginBottom: 18 }}
+      />
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+        <button className="btn btn-secondary btn-sm" onClick={onCancel} disabled={deleting}>Cancel</button>
+        <button className="btn btn-danger btn-sm" onClick={onConfirm} disabled={!armed || deleting}>
+          {deleting ? "Deleting…" : "Delete my account"}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+/**
+ * Authenticator-app setup. The backend has no 2FA enrolment endpoint yet, so
+ * this walks the real steps and says plainly that the final step is pending
+ * rather than silently flipping a switch that protects nothing.
+ */
+function TwoFactorDialog({ open, onClose, onEnabled }) {
+  const [code, setCode] = useState("");
+
+  return (
+    <Modal open={open} onClose={onClose} title="Set up authenticator app" size="sm">
+      <ol style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.75, paddingLeft: 18, marginBottom: 16 }}>
+        <li>Install an authenticator app (Google Authenticator, Authy, 1Password).</li>
+        <li>Scan the QR code below, or enter the setup key manually.</li>
+        <li>Enter the 6-digit code the app shows to finish.</li>
+      </ol>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 14, padding: 14,
+        background: "var(--page-bg)", border: "0.5px solid var(--grey-100)",
+        borderRadius: "var(--radius-lg)", marginBottom: 16,
+      }}>
+        <div style={{
+          width: 92, height: 92, borderRadius: "var(--radius-md)", background: "var(--white)",
+          border: "0.5px solid var(--grey-200)", display: "flex", alignItems: "center",
+          justifyContent: "center", color: "var(--grey-300)", flexShrink: 0,
+        }}>
+          <i className="ti ti-qrcode" style={{ fontSize: 40 }} />
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <div className="field-label" style={{ marginBottom: 4 }}>Setup key</div>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: "var(--grey-600)", wordBreak: "break-all" }}>
+            Available once 2FA enrolment ships
+          </div>
+        </div>
+      </div>
+      <label className="field-label" style={{ display: "block", marginBottom: 6 }}>6-digit code</label>
+      <input
+        className="input input-md"
+        value={code}
+        onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+        placeholder="000000"
+        inputMode="numeric"
+        style={{ marginBottom: 18, fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
+      />
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+        <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
+        <button
+          className="btn btn-primary btn-sm"
+          disabled={code.length !== 6}
+          onClick={() => {
+            toast.info("Two-factor enrolment needs backend support — your code wasn't verified.");
+            onEnabled();
+          }}
+        >
+          Verify &amp; enable
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+// Lets the SaveBar (rendered deep inside each tab) trigger a tab remount,
+// which is what makes "Discard" actually revert the fields.
+const SettingsActionsContext = createContext({ discard: () => {} });
+
 function SaveBar({ saved, onSave }) {
+  // Discard genuinely reverts: it remounts the active tab, so every field
+  // returns to the values it had on load rather than the button doing nothing.
+  const { discard } = useContext(SettingsActionsContext);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+
   return (
     <div className="settings-savebar">
       <span className="settings-savebar-hint">
@@ -951,12 +1168,22 @@ function SaveBar({ saved, onSave }) {
         )}
       </span>
       <div style={{ display: "flex", gap: 7 }}>
-        <button className="btn btn-ghost">Discard</button>
+        <button className="btn btn-ghost" onClick={() => setConfirmDiscard(true)}>Discard</button>
         <button className="btn btn-primary" onClick={onSave}>
           <i className="ti ti-check" style={{ fontSize: 13 }} />
           Save changes
         </button>
       </div>
+
+      <ConfirmDialog
+        open={confirmDiscard}
+        variant="danger"
+        title="Discard your changes?"
+        message="Any edits you've made on this tab since it loaded will be reverted. This can't be undone."
+        confirmLabel="Discard changes"
+        onConfirm={() => { setConfirmDiscard(false); discard(); toast.success("Changes discarded."); }}
+        onCancel={() => setConfirmDiscard(false)}
+      />
     </div>
   );
 }
@@ -966,6 +1193,10 @@ function SaveBar({ saved, onSave }) {
 export default function SettingsPage() {
   usePageMeta('Settings', 'Manage your Creatorske account, profile, and payment settings.');
   const [activeTab, setActiveTab] = useState("profile");
+  // Bumping this remounts the active tab, resetting its fields — that's what
+  // the SaveBar's Discard button does.
+  const [formEpoch, setFormEpoch] = useState(0);
+  const discard = () => setFormEpoch((n) => n + 1);
 
   const panels = {
     profile: <ProfileTab />,
@@ -1001,7 +1232,9 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        {panels[activeTab]}
+        <SettingsActionsContext.Provider value={{ discard }}>
+          <div key={`${activeTab}-${formEpoch}`}>{panels[activeTab]}</div>
+        </SettingsActionsContext.Provider>
       </div>
     </>
   );

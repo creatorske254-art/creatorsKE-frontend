@@ -170,7 +170,7 @@ const SIDEBAR_SECTIONS = [
     items: [
       { to: '/brand/dashboard',  label: 'Dashboard',  icon: 'ti-layout-dashboard', end: true },
       { to: '/brand/shortlist',  label: 'Shortlist',  icon: 'ti-bookmark' },
-      { label: 'Creator directory', icon: 'ti-world-search', disabled: true },
+      { to: '/directory', label: 'Creator directory', icon: 'ti-world-search' },
     ],
   },
   {
@@ -178,7 +178,7 @@ const SIDEBAR_SECTIONS = [
     items: [
       { to: '/brand/enquiries',         label: 'Enquiries',          icon: 'ti-inbox',         badgeKey: 'new' },
       { to: '/brand/campaigns',         label: 'Active campaigns',   icon: 'ti-rocket',        hasActiveDot: true },
-      { label: 'Campaign history', icon: 'ti-clock-hour-4', disabled: true },
+      { to: '/brand/campaigns?filter=history', label: 'Campaign history', icon: 'ti-clock-hour-4' },
     ],
   },
   {

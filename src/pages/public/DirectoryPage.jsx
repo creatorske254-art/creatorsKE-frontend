@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { usePageMeta } from '@/lib/usePageMeta';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IconSearch, IconCheck, IconArrowRight, IconStarFilled } from '@tabler/icons-react';
 import { EmptyDirectoryState } from '@/features/directory';
 
@@ -116,7 +116,16 @@ function CreatorCard({ creator, index, onOpen, onEnquire }) {
 export default function DirectoryPage() {
   usePageMeta('Browse Creators', 'Browse verified Kenyan content creators by niche, platform, and follower size, then send an enquiry directly.');
   const navigate = useNavigate();
-  const [query, setQuery]         = useState('');
+  // ?q= is the source of truth so a search from anywhere in the app (the
+  // dashboard navbars all navigate here with ?q=) lands on real filtered
+  // results, and so a search is shareable/bookmarkable.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('q') ?? '';
+  const setQuery = (value) => {
+    const next = new URLSearchParams(searchParams);
+    if (value) next.set('q', value); else next.delete('q');
+    setSearchParams(next, { replace: true });
+  };
   const [activeNiche, setNiche]   = useState('All');
 
   const filtered = useMemo(() => {
@@ -157,7 +166,7 @@ export default function DirectoryPage() {
       `}</style>
 
       {/* ══ NAVBAR ════════════════════════════════════════════════════════ */}
-      <nav className="dir-navbar" style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(14px)', borderBottom: '0.5px solid var(--grey-100)', height: 60, display: 'flex', alignItems: 'center', padding: '0 40px', position: 'sticky', top: 0, zIndex: 100, justifyContent: 'space-between', flexShrink: 0 }}>
+      <nav className="dir-navbar" style={{ background: 'color-mix(in srgb, var(--white) 92%, transparent)', backdropFilter: 'blur(14px)', borderBottom: '0.5px solid var(--grey-100)', height: 60, display: 'flex', alignItems: 'center', padding: '0 40px', position: 'sticky', top: 0, zIndex: 100, justifyContent: 'space-between', flexShrink: 0 }}>
         <span onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, letterSpacing: '-0.01em', cursor: 'pointer', color: 'var(--black)' }}>
           Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
         </span>
@@ -221,6 +230,25 @@ export default function DirectoryPage() {
 
       {/* ══ GRID BODY ═════════════════════════════════════════════════════ */}
       <div className="dir-body" style={{ flex: 1, padding: '32px 56px', background: 'var(--page-bg)' }}>
+        {/* Result count — makes it obvious a search/filter actually ran */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, color: 'var(--grey-600)' }}>
+            <strong style={{ color: 'var(--black)' }}>{filtered.length}</strong>
+            {' '}{filtered.length === 1 ? 'creator' : 'creators'}
+            {query && <> matching “{query}”</>}
+            {activeNiche !== 'All' && <> in {activeNiche}</>}
+          </span>
+          {(query || activeNiche !== 'All') && (
+            <button
+              className="dir-btn-ghost"
+              style={{ padding: '4px 12px', fontSize: 12 }}
+              onClick={() => { setQuery(''); setNiche('All'); }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
         {filtered.length === 0 ? (
           <EmptyDirectoryState onReset={() => { setQuery(''); setNiche('All'); }} />
         ) : (

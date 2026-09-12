@@ -15,7 +15,7 @@ import {
 const css = {
   // Navbar
   navbar: {
-    background: 'rgba(255,255,255,0.92)',
+    background: 'color-mix(in srgb, var(--white) 92%, transparent)',
     backdropFilter: 'blur(14px)',
     borderBottom: '0.5px solid var(--grey-100)',
     height: 60,

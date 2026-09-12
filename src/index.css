@@ -211,7 +211,25 @@
   /* Surfaces */
   --white:   #262626; /* stands in for "lightest surface" in dark mode: nav, sidebar, cards */
   --black:   #FFFFFF; /* primary text */
-  --page-bg: var(--grey-900); /* content area — darkest surface, sits behind nav/cards */
+  --page-bg: #141414; /* content area — darkest surface, sits behind nav/cards */
+
+  /* The grey ramp inverts, exactly like --white/--black above: grey-50 is
+     "the subtlest surface above the page background" and grey-900 is "the
+     strongest contrast against it", so those roles have to swap in dark mode.
+     Without this every var(--grey-50)/var(--grey-100) fill — table headers,
+     input backgrounds, hover states, dividers — renders near-white on a dark
+     page. Mid-tones stay near-neutral since they're used for muted text in
+     both modes. */
+  --grey-50:  #1F1F1F;
+  --grey-100: #2B2B2B;
+  --grey-200: #3A3A3A;
+  --grey-300: #4D4D4D;
+  --grey-400: #8A8A8A;
+  --grey-500: #A0A0A0;
+  --grey-600: #B8B8B8;
+  --grey-700: #D4D4D4;
+  --grey-800: #E8E8E8;
+  --grey-900: #F5F5F5;
 
   /* Purple accent shifts one step lighter for readability against dark surfaces */
   --purple-600: #7F77DD; /* default accent in dark mode */
@@ -246,11 +264,13 @@
   --popover:                var(--white);
   --popover-foreground:     var(--black);
   --primary:                var(--purple-600);
-  --primary-foreground:     var(--grey-900);
-  --secondary:              var(--grey-800);
+  --primary-foreground:     #FFFFFF;
+  /* Literal dark values: the grey ramp above now reads light-side-up, so
+     these can't reference grey-800 the way they did before the inversion. */
+  --secondary:              #2B2B2B;
   --secondary-foreground:   var(--black);
-  --muted:                  var(--grey-800);
-  --muted-foreground:       var(--grey-300);
+  --muted:                  #2B2B2B;
+  --muted-foreground:       var(--grey-500);
   --accent:                 var(--purple-900);
   --accent-foreground:      var(--purple-400);
   --destructive:            var(--status-error);
@@ -866,22 +886,33 @@
     font-family: var(--font-display);
   }
 
-  /* Skeleton shimmer — two distinct greys so the sweep is actually visible
-     (the shadcn --muted/--secondary tokens this used to reference resolve to
-     the exact same grey, so the "shimmer" never showed any motion).
-     background-size/position are in %, not a fixed px band, so the sweep
-     covers the same relative distance — and so looks like the same speed —
-     on a 40px avatar circle and an 800px-wide card alike. */
+  /* Skeleton shimmer — a fixed 300px gradient tile that repeats across the
+     element and travels exactly one tile-width per cycle, so the sweep moves
+     at a constant 200px/second on a 40px avatar circle and an 800px-wide card
+     alike. (A percentage background-size looks wrong here: the gradient would
+     scale with the element, making the sweep travel ~10x further — and so
+     appear ~10x faster — on a wide card than on a small one, which is what
+     made the app feel like several different apps.) The gradient starts and
+     ends on the same grey so the tile boundary is invisible as it loops. */
   .skeleton {
     background: linear-gradient(
       90deg,
-      var(--grey-50) 25%,
+      var(--grey-50) 0%,
       var(--grey-100) 50%,
-      var(--grey-50) 75%
+      var(--grey-50) 100%
     );
-    background-size: 400% 100%;
-    animation: shimmer 1.4s infinite linear;
+    background-size: 300px 100%;
+    background-repeat: repeat-x;
+    animation: shimmer 1.5s infinite linear;
     border-radius: var(--radius-md);
+  }
+
+  /* Respect reduced-motion: hold a steady tint instead of sweeping. */
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton {
+      animation: none;
+      background: var(--grey-100);
+    }
   }
 
   /* Focus ring using the accent token — resolves to purple-600 (light) / purple-400 (dark) */
@@ -938,9 +969,10 @@
 }
 
 /* ─── Keyframes ────────────────────────────────────────────────────────────── */
+/* Travels exactly one 300px tile per cycle — seamless loop, constant speed. */
 @keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0%   { background-position: 0 0; }
+  100% { background-position: 300px 0; }
 }
 
 @keyframes spin {

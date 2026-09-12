@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
+import { useNavigate } from 'react-router-dom';
+import Modal from '@/components/ui/Modal';
+import ConfirmDialog from '@/components/shared/ConfirmDialog';
+import { useAuth } from '@/context/AuthContext';
+import { authService } from '@/features/auth/services/auth.service';
+import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
 
 // Page-scoped styles
 // Every value below reads from the global index.css tokens (--purple-*,
@@ -416,6 +422,9 @@ function ProfileTab({ form, setForm, onDirty }) {
 }
 
 // Payments tab
+// Connecting opens a modal for real details rather than flipping a boolean —
+// there's no /payments/methods endpoint yet (see BACKEND_API_SPEC.md), so what
+// the brand enters is held here and labelled, not invented.
 const PAYMENT_METHODS = [
   {
     id: "mpesa",
@@ -423,8 +432,9 @@ const PAYMENT_METHODS = [
     sub: "Safaricom mobile money · STK push at checkout",
     iconBg: "#00A651",
     icon: "ti-device-mobile",
-    connected: true,
-    detail: "+254 712 345 678",
+    connected: false,
+    fields: [{ key: "phone", label: "M-Pesa phone number", placeholder: "+254 7XX XXX XXX", required: true }],
+    summary: (v) => v.phone,
   },
   {
     id: "airtel",
@@ -433,6 +443,8 @@ const PAYMENT_METHODS = [
     iconBg: "#E40000",
     icon: "ti-device-mobile",
     connected: false,
+    fields: [{ key: "phone", label: "Airtel phone number", placeholder: "+254 7XX XXX XXX", required: true }],
+    summary: (v) => v.phone,
   },
   {
     id: "bank",
@@ -442,21 +454,75 @@ const PAYMENT_METHODS = [
     iconColor: "var(--grey-600)",
     icon: "ti-building-bank",
     connected: false,
+    fields: [
+      { key: "bank", label: "Bank name", placeholder: "e.g. Equity Bank", required: true },
+      { key: "account", label: "Account number", placeholder: "0123456789", required: true },
+    ],
+    summary: (v) => `${v.bank} ····${String(v.account).slice(-4)}`,
   },
 ];
 
+function ConnectMethodModal({ method, onClose, onConnect }) {
+  const [values, setValues] = useState({});
+  if (!method) return null;
+
+  const missing = method.fields.some((f) => f.required && !String(values[f.key] ?? "").trim());
+
+  return (
+    <Modal open onClose={onClose} title={`Connect ${method.name}`} size="sm">
+      <p style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 16 }}>
+        {method.sub}. This is charged when you confirm a booking.
+      </p>
+      <div className="settings-stack" style={{ gap: 12, marginBottom: 18 }}>
+        {method.fields.map((f) => (
+          <div className="field" key={f.key}>
+            <label className={`field-label${f.required ? " field-required" : ""}`}>{f.label}</label>
+            <input
+              className="input input-md"
+              placeholder={f.placeholder}
+              value={values[f.key] ?? ""}
+              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
+            />
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+        <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
+        <button
+          className="btn btn-primary btn-sm"
+          disabled={missing}
+          onClick={() => onConnect(method.id, method.summary(values))}
+        >
+          Connect {method.name}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 function PaymentsTab({ prefs, setPrefs, onDirty }) {
   const [methods, setMethods] = useState(PAYMENT_METHODS);
+  const [connecting, setConnecting] = useState(null);
+  const [disconnecting, setDisconnecting] = useState(null);
 
   function toggle(key) {
     setPrefs((p) => ({ ...p, [key]: !p[key] }));
     onDirty();
   }
 
-  function handleConnect(id, name) {
-    setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, connected: true } : m)));
+  function handleConnect(id, detail) {
+    setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, connected: true, detail } : m)));
+    setConnecting(null);
     onDirty();
-    toast.success(`${name} connected.`);
+    toast.success(`${methods.find((m) => m.id === id)?.name} connected — saved locally until payment methods are supported on the backend.`);
+  }
+
+  function handleDisconnect() {
+    const id = disconnecting;
+    setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, connected: false, detail: undefined } : m)));
+    setDisconnecting(null);
+    onDirty();
+    toast.success(`${methods.find((m) => m.id === id)?.name} disconnected.`);
   }
 
   return (
@@ -478,17 +544,36 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
                 <div className="pay-desc">{m.sub}</div>
               </div>
               {m.connected ? (
-                <span className="tag tag-success">
-                  <i className="ti ti-circle-check" style={{ fontSize: 12 }} />
-                  Connected · {m.detail}
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className="tag tag-success">
+                    <i className="ti ti-circle-check" style={{ fontSize: 12 }} />
+                    Connected · {m.detail}
+                  </span>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(m.id)}>Disconnect</button>
+                </div>
               ) : (
-                <button className="btn btn-ghost btn-sm" onClick={() => handleConnect(m.id, m.name)}>Connect</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setConnecting(m)}>Connect</button>
               )}
             </div>
           ))}
         </div>
       </div>
+
+      <ConnectMethodModal
+        method={connecting}
+        onClose={() => setConnecting(null)}
+        onConnect={handleConnect}
+      />
+
+      <ConfirmDialog
+        open={!!disconnecting}
+        variant="danger"
+        title={`Disconnect ${methods.find((m) => m.id === disconnecting)?.name ?? ""}?`}
+        message="You won't be able to pay creators with this method until you reconnect it. Campaigns already paid for are unaffected."
+        confirmLabel="Disconnect"
+        onConfirm={handleDisconnect}
+        onCancel={() => setDisconnecting(null)}
+      />
 
       {/* Invoice preferences */}
       <div className="card card-p-lg">
@@ -731,7 +816,23 @@ function SecurityTab({ onDirty }) {
 
 // Account tab
 function AccountTab() {
-  const [deleteStep, setDeleteStep] = useState(0); // 0 idle · 1 confirm · 2 blocked
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { activeCampaignCount } = useBrandDashboard();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleConfirmDelete() {
+    setDeleting(true);
+    try {
+      await authService.deleteAccount();
+    } catch {
+      // Best-effort — sign out locally even if the request fails, matching
+      // logout()'s own best-effort pattern in AuthContext.
+    }
+    logout();
+    navigate('/');
+  }
 
   return (
     <div className="settings-stack">
@@ -771,33 +872,75 @@ function AccountTab() {
         <div className="danger-zone-desc">
           Permanently remove your company profile, campaign history, and all data. This cannot be undone.
         </div>
+        <button className="btn btn-danger" onClick={() => setDeleteOpen(true)}>
+          <i className="ti ti-trash" style={{ fontSize: 13 }} />
+          Request account deletion
+        </button>
+      </div>
 
-        {deleteStep === 0 && (
-          <button className="btn btn-danger" onClick={() => setDeleteStep(1)}>
-            <i className="ti ti-trash" style={{ fontSize: 13 }} />
-            Request account deletion
+      <DeleteBrandAccountModal
+        open={deleteOpen}
+        activeBookings={activeCampaignCount}
+        deleting={deleting}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
+    </div>
+  );
+}
+
+/**
+ * Brand deletion is gated on having no live campaigns — money is in escrow
+ * against them — so the modal shows the real active-campaign count from
+ * useBrandDashboard() and blocks until it's zero, instead of the old hardcoded
+ * "You have 1 active booking" line.
+ */
+function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onConfirm }) {
+  const [typed, setTyped] = useState("");
+  const blocked = activeBookings > 0;
+  const armed = !blocked && typed.trim().toUpperCase() === "DELETE";
+
+  return (
+    <Modal open={open} onClose={deleting ? () => {} : onClose} title="Delete your brand account?" size="sm">
+      {blocked ? (
+        <div className="warning-banner" style={{ marginBottom: 18 }}>
+          You have {activeBookings} active {activeBookings === 1 ? "campaign" : "campaigns"} that must be completed
+          or cancelled before deletion can proceed. Funds in escrow are released when each campaign is approved.
+        </div>
+      ) : (
+        <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 14 }}>
+          This permanently removes your company profile, shortlist, and campaign history.
+          Your data is fully removed within 30 days. This cannot be undone.
+        </p>
+      )}
+
+      {!blocked && (
+        <>
+          <label className="field-label" style={{ display: "block", marginBottom: 6 }}>
+            Type <strong>DELETE</strong> to confirm
+          </label>
+          <input
+            className="input input-md"
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            placeholder="DELETE"
+            disabled={deleting}
+            style={{ marginBottom: 18, width: "100%" }}
+          />
+        </>
+      )}
+
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+        <button className="btn btn-secondary btn-sm" onClick={onClose} disabled={deleting}>
+          {blocked ? "Close" : "Cancel"}
+        </button>
+        {!blocked && (
+          <button className="btn btn-danger btn-sm" onClick={onConfirm} disabled={!armed || deleting}>
+            {deleting ? "Deleting…" : "Delete my account"}
           </button>
         )}
-
-        {deleteStep === 1 && (
-          <div className="settings-stack" style={{ gap: 12 }}>
-            <div className="danger-zone-banner">
-              Before deletion can proceed, all active bookings must be completed or cancelled. Your data will be fully removed within 30 days of confirmation.
-            </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-ghost" onClick={() => setDeleteStep(0)}>Cancel</button>
-              <button className="btn btn-danger" onClick={() => setDeleteStep(2)}>Yes, delete my account</button>
-            </div>
-          </div>
-        )}
-
-        {deleteStep === 2 && (
-          <div className="warning-banner">
-            You have 1 active booking that must be completed first. Return here once it's done to confirm deletion.
-          </div>
-        )}
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -807,6 +950,7 @@ export default function BrandSettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { updateProfile } = useBrandDashboard();
 
   const [form, setForm] = useState({
     companyName: "Nairobi Brew Co.",
@@ -841,9 +985,29 @@ export default function BrandSettingsPage() {
 
   function onDirty() { setDirty(true); }
 
+  // Real PUT /brands/profile via useBrandDashboard's mutation (which owns the
+  // success/error toasts), rather than a timer that pretends the save landed.
   function handleSave() {
     setSaving(true);
-    setTimeout(() => { setSaving(false); setDirty(false); }, 1200);
+    updateProfile(
+      {
+        companyName: form.companyName,
+        industry: form.industry,
+        website: form.website,
+        description: form.description,
+        contactName: form.contactName,
+        jobTitle: form.jobTitle,
+        email: form.email,
+        phone: form.phone,
+        location: form.location,
+        preferences: prefs,
+        notificationPreferences: notifPrefs,
+      },
+      {
+        onSuccess: () => setDirty(false),
+        onSettled: () => setSaving(false),
+      }
+    );
   }
 
   const panels = {

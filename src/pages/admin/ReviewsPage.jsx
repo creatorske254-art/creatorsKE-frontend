@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { usePageMeta } from '@/lib/usePageMeta';
 import EmptyState from '@/components/shared/EmptyState';
+import ConfirmDialog from '@/components/shared/ConfirmDialog';
 
 const reviews = [
   {
@@ -107,6 +108,7 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [replyText, setReplyText] = useState(review.reply || "");
   const [saved, setSaved] = useState(review.replied);
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   function handleSave() {
     if (!replyText.trim()) return;
@@ -116,7 +118,7 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
   }
 
   function handleRemove() {
-    if (!window.confirm(`Permanently remove this review of ${review.creatorName}? This cannot be undone.`)) return;
+    setConfirmRemove(false);
     onRemove(review.id);
   }
 
@@ -171,11 +173,21 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
         >
           <div style={{ fontSize: 12.5, color: "var(--status-error-text)", lineHeight: 1.55, marginBottom: 10 }}>{review.flagReason}</div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button type="button" className="btn btn-danger btn-xs" onClick={handleRemove}>Remove review</button>
+            <button type="button" className="btn btn-danger btn-xs" onClick={() => setConfirmRemove(true)}>Remove review</button>
             <button type="button" className="btn btn-ghost btn-xs" onClick={() => onDismiss(review.id)}>Dismiss flag</button>
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmRemove}
+        variant="danger"
+        title="Remove this review?"
+        message={`This permanently removes ${review.brand}'s review of ${review.creatorName}. The creator's rating is recalculated without it. This cannot be undone.`}
+        confirmLabel="Remove review"
+        onConfirm={handleRemove}
+        onCancel={() => setConfirmRemove(false)}
+      />
 
       {/* Existing reply */}
       {saved && replyText && (

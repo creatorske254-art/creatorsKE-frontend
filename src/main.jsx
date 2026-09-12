@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 
 import { AuthProvider } from '@/context/AuthContext'
 import { NotificationProvider } from '@/context/NotificationContext'
+import { ThemeProvider } from '@/context/ThemeContext'
 import AppRouter from '@/routes/index'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import OfflinePage from '@/pages/error/OfflinePage'
@@ -49,6 +50,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
           {/* Auth must wrap everything — contexts below it may read auth state */}
           <AuthProvider>
+            <ThemeProvider>
             <NotificationProvider>
 
               {/* Single Toaster instance — all features call toast() from sonner */}
@@ -62,6 +64,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <AppRouter />
 
             </NotificationProvider>
+            </ThemeProvider>
           </AuthProvider>
 
         </OnlineGate>

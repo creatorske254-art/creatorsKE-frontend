@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 import EmptyState from '@/components/shared/EmptyState'
 import ErrorState from '@/components/shared/ErrorState'
@@ -49,7 +50,14 @@ function typeTag(type) {
 
 export default function AccountsPage() {
   usePageMeta('Accounts & Moderation', 'Review flagged creator and brand accounts on Creatorske.');
-  const [query, setQuery] = useState('')
+  // ?q= is the source of truth so the navbar search lands on real results here.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const query = searchParams.get('q') ?? ''
+  const setQuery = (value) => {
+    const next = new URLSearchParams(searchParams)
+    if (value) next.set('q', value); else next.delete('q')
+    setSearchParams(next, { replace: true })
+  }
   const [selectedId, setSelectedId] = useState(null)
   const { accounts: rawAccounts, isLoading, isError, refetch, takeAction, isTakingAction } = useFlaggedAccounts()
   const accounts = useMemo(() => rawAccounts.map(normalizeAccount), [rawAccounts])
@@ -143,14 +151,28 @@ export default function AccountsPage() {
         </div>
 
         {/* Search */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
-          <div className="search-input">
-            <i className="ti ti-search" />
-            <input
-              placeholder="Search by name, handle, or email"
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-            />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 13, color: 'var(--grey-500)' }}>
+            {isLoading ? 'Loading accounts…' : (
+              <>
+                <strong style={{ color: 'var(--black)' }}>{filtered.length}</strong>
+                {' '}flagged {filtered.length === 1 ? 'account' : 'accounts'}
+                {query && <> matching “{query}”</>}
+              </>
+            )}
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="search-input">
+              <i className="ti ti-search" />
+              <input
+                placeholder="Search by name, handle, or email"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+              />
+            </div>
+            {query && (
+              <button className="btn btn-ghost" onClick={() => setQuery('')}>Clear</button>
+            )}
           </div>
         </div>
 

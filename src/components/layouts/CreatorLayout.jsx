@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
 import { useNotifications } from '@/context/NotificationContext';
@@ -164,6 +164,15 @@ export default function CreatorLayout() {
   const { unreadCount } = useNotifications();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const navigate = useNavigate();
+
+  function handleSearchSubmit(e) {
+    e.preventDefault();
+    const q = searchValue.trim();
+    if (!q) return;
+    navigate(`/directory?q=${encodeURIComponent(q)}`);
+  }
 
   const initials = getInitials(
     user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
@@ -187,15 +196,22 @@ export default function CreatorLayout() {
             Creatorske<span>.</span>
           </NavLink>
 
-          {/* Visual-only: no search.service.js exists yet in the codebase.
-              Wire up onSubmit/onChange once directory search lands. */}
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          {/* Submits to the public creator directory, which reads ?q= — the
+              same destination BrandLayout's search uses. */}
+          <form
+            role="search"
+            onSubmit={handleSearchSubmit}
+            style={{ flex: 1, display: 'flex', justifyContent: 'center' }}
+          >
             <div className="input-wrapper" style={{ maxWidth: 'var(--navbar-search-max-width)', width: '100%' }}>
               <i className="ti ti-search input-icon left" style={{ fontSize: 'var(--size-icon-sm)' }} aria-hidden="true" />
               <input
                 type="text"
-                placeholder="Search…"
+                placeholder="Search creators…"
                 className="search-input"
+                aria-label="Search creators"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
                 style={{
                   width: '100%',
                   fontSize: 'var(--text-body-sm-size)',
@@ -204,7 +220,7 @@ export default function CreatorLayout() {
                 }}
               />
             </div>
-          </div>
+          </form>
 
           {/* Swapped in literal component-library markup here instead of
               abstracted NotificationBell/Avatar components so the topbar

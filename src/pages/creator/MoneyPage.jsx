@@ -6,6 +6,7 @@ import { usePayments } from '@/features/payments/hooks/usePayments'
 import TransactionHistory from '@/features/payments/components/TransactionHistory'
 import MpesaPrompt from '@/features/payments/components/MpesaPrompt'
 import { usePlan } from '@/features/plans/hooks/usePlan'
+import Modal from '@/components/ui/Modal'
 import { formatCurrency } from '@/lib/utils'
 
 /*
@@ -18,6 +19,83 @@ import { formatCurrency } from '@/lib/utils'
    shell, and only individual cards get a --white fill.
 */
 
+const METHOD_TYPES = [
+  { key: 'mpesa', label: 'M-Pesa', icon: 'ti-device-mobile', field: 'M-Pesa phone number', placeholder: '+254 7XX XXX XXX' },
+  { key: 'airtel', label: 'Airtel Money', icon: 'ti-device-mobile', field: 'Airtel phone number', placeholder: '+254 7XX XXX XXX' },
+  { key: 'bank', label: 'Bank account', icon: 'ti-building-bank', field: 'Account number', placeholder: '0123456789' },
+]
+
+function AddPaymentMethodModal({ open, onClose, onAdd }) {
+  const [type, setType] = useState('mpesa')
+  const [detail, setDetail] = useState('')
+  const [bankName, setBankName] = useState('')
+  const [makePrimary, setMakePrimary] = useState(false)
+
+  const selected = METHOD_TYPES.find((m) => m.key === type)
+  const valid = detail.trim() && (type !== 'bank' || bankName.trim())
+
+  function submit() {
+    onAdd({
+      type,
+      name: type === 'bank' ? bankName.trim() : selected.label,
+      detail: type === 'bank' ? `···· ···· ${detail.trim().slice(-4)}` : detail.trim(),
+      makePrimary,
+    })
+    setDetail(''); setBankName(''); setMakePrimary(false); setType('mpesa')
+  }
+
+  return (
+    <Modal open={open} onClose={onClose} title="Add payment method" size="sm">
+      <label className="field-label" style={{ display: 'block', marginBottom: 8, fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--grey-600)' }}>
+        Method type
+      </label>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        {METHOD_TYPES.map((m) => (
+          <button
+            key={m.key}
+            type="button"
+            onClick={() => setType(m.key)}
+            aria-pressed={type === m.key}
+            style={{
+              flex: 1, padding: '11px 8px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
+              background: type === m.key ? 'var(--purple-50)' : 'var(--white)',
+              border: `1px solid ${type === m.key ? 'var(--purple-400)' : 'var(--grey-200)'}`,
+              color: type === m.key ? 'var(--purple-700)' : 'var(--grey-600)',
+              fontFamily: 'var(--font-body)', fontSize: 12.5, fontWeight: 500,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
+            }}
+          >
+            <i className={`ti ${m.icon}`} style={{ fontSize: 17 }} />
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {type === 'bank' && (
+        <div style={{ marginBottom: 14 }}>
+          <label className="field-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, color: 'var(--grey-600)' }}>Bank name</label>
+          <input className="input input-md" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. Equity Bank" style={{ width: '100%' }} />
+        </div>
+      )}
+
+      <div style={{ marginBottom: 16 }}>
+        <label className="field-label" style={{ display: 'block', marginBottom: 6, fontSize: 12, color: 'var(--grey-600)' }}>{selected.field}</label>
+        <input className="input input-md" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder={selected.placeholder} style={{ width: '100%' }} />
+      </div>
+
+      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--grey-600)', marginBottom: 20, cursor: 'pointer' }}>
+        <input type="checkbox" checked={makePrimary} onChange={(e) => setMakePrimary(e.target.checked)} />
+        Make this my primary payout method
+      </label>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+        <button className="btn btn-ghost btn-sm" onClick={onClose}>Cancel</button>
+        <button className="btn btn-purple btn-sm" disabled={!valid} onClick={submit}>Add method</button>
+      </div>
+    </Modal>
+  )
+}
+
 const PAYMENT_METHODS = [
   { icon: 'ti-device-mobile', iconBg: '#00A651', name: 'M-Pesa', detail: '+254 712 345 678', primary: true },
   { icon: 'ti-building-bank', iconBg: 'var(--grey-100)', iconColor: 'var(--grey-600)', name: 'Equity Bank', detail: '···· ···· 4521', primary: false },
@@ -29,6 +107,7 @@ export default function MoneyPage() {
   const [period, setPeriod] = useState('3m')
   const [withdrawOpen, setWithdrawOpen] = useState(false)
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [addMethodOpen, setAddMethodOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [paymentMethods, setPaymentMethods] = useState(PAYMENT_METHODS)
   const primaryMethod = paymentMethods.find((m) => m.primary)
@@ -39,7 +118,7 @@ export default function MoneyPage() {
     earningsTimeline, isTimelineLoading,
     transactions, isHistoryLoading, isHistoryError, refetchHistory,
     requestPayout, isRequestingPayout,
-    paymentStatus, isPolling,
+    paymentStatus, isPolling, stopPolling,
   } = usePayments({ period })
 
   // GET /payments/earnings/timeline's response schema is undocumented —
@@ -70,8 +149,23 @@ export default function MoneyPage() {
     toast.success(`${name} set as your primary payout method.`)
   }
 
-  function handleAddPaymentMethod() {
-    toast.info('Adding new payment methods is coming soon.')
+  // No /payments/methods endpoint exists yet (see BACKEND_API_SPEC.md), so the
+  // new method is held in page state and labelled as such — but the creator
+  // still enters real details and sees them, instead of a dead-end toast.
+  function handleAddPaymentMethod(method) {
+    setPaymentMethods((prev) => [
+      ...prev.map((m) => ({ ...m, primary: method.makePrimary ? false : m.primary })),
+      {
+        icon: method.type === 'bank' ? 'ti-building-bank' : 'ti-device-mobile',
+        iconBg: method.type === 'mpesa' ? '#00A651' : method.type === 'airtel' ? '#E40000' : 'var(--grey-100)',
+        iconColor: method.type === 'bank' ? 'var(--grey-600)' : undefined,
+        name: method.name,
+        detail: method.detail,
+        primary: !!method.makePrimary || prev.length === 0,
+      },
+    ])
+    setAddMethodOpen(false)
+    toast.success(`${method.name} added — saved locally until payout methods are supported on the backend.`)
   }
 
   function handleExportCsv() {
@@ -120,12 +214,13 @@ export default function MoneyPage() {
       )
     : false
 
-  useEffect(() => {
-    if (isPaymentSettled) {
-      const t = setTimeout(() => setWithdrawOpen(false), 1600)
-      return () => clearTimeout(t)
-    }
-  }, [isPaymentSettled])
+  // The modal deliberately stays open on a settled payment until the creator
+  // dismisses it — a withdrawal result that disappears on a timer gives them
+  // no chance to read what actually happened.
+  function closeWithdraw() {
+    setWithdrawOpen(false)
+    stopPolling()
+  }
 
   return (
     <div className="money-page">
@@ -344,7 +439,7 @@ export default function MoneyPage() {
                     )}
                   </div>
                 ))}
-                <button className="btn btn-secondary btn-full btn-sm" style={{ marginTop: 2 }} onClick={handleAddPaymentMethod}>
+                <button className="btn btn-secondary btn-full btn-sm" style={{ marginTop: 2 }} onClick={() => setAddMethodOpen(true)}>
                   <i className="ti ti-plus" style={{ fontSize: 13 }}></i>Add payment method
                 </button>
               </div>
@@ -412,13 +507,19 @@ export default function MoneyPage() {
         </div>
       </div>
 
+      <AddPaymentMethodModal
+        open={addMethodOpen}
+        onClose={() => setAddMethodOpen(false)}
+        onAdd={handleAddPaymentMethod}
+      />
+
       {/* Withdraw modal */}
       {withdrawOpen && (
-        <div className="modal-backdrop" onClick={() => !isPolling && !isRequestingPayout && setWithdrawOpen(false)}>
+        <div className="modal-backdrop" onClick={() => !isPolling && !isRequestingPayout && closeWithdraw()}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">Withdraw funds</div>
-              <button className="modal-close" onClick={() => !isPolling && !isRequestingPayout && setWithdrawOpen(false)}>
+              <button className="modal-close" onClick={() => !isPolling && !isRequestingPayout && closeWithdraw()}>
                 <i className="ti ti-x" style={{ fontSize: 14 }}></i>
               </button>
             </div>
@@ -452,9 +553,20 @@ export default function MoneyPage() {
                 </>
               )}
             </div>
-            {!isPolling && !isPaymentSettled && (
+            {isPaymentSettled ? (
               <div className="modal-footer">
-                <button className="btn btn-ghost" onClick={() => setWithdrawOpen(false)} disabled={isRequestingPayout}>Cancel</button>
+                <button className="btn btn-purple" onClick={closeWithdraw}>Done</button>
+              </div>
+            ) : isPolling ? (
+              <div className="modal-footer">
+                <span style={{ fontSize: 12, color: 'var(--grey-500)', marginRight: 'auto' }}>
+                  Waiting for confirmation — keep this open.
+                </span>
+                <button className="btn btn-ghost" onClick={closeWithdraw}>Close</button>
+              </div>
+            ) : (
+              <div className="modal-footer">
+                <button className="btn btn-ghost" onClick={closeWithdraw} disabled={isRequestingPayout}>Cancel</button>
                 <button
                   className={`btn btn-purple${isRequestingPayout ? ' btn-loading' : ''}`}
                   disabled={isRequestingPayout || !primaryMethod}

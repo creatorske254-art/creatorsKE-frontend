@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { usePlan } from '@/features/plans/hooks/usePlan'
 import { CREATOR_PRICING_TIERS } from '@/features/plans/constants/pricingTiers'
+import Modal from '@/components/ui/Modal'
 
 // ─── CSS-in-JS tokens (shared subset matching auth.html) ─────────────────────
 const css = `
@@ -16,7 +17,7 @@ const css = `
   @keyframes psFadeUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
 
   .ps-navbar {
-    background: rgba(255,255,255,.92); backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--white) 92%, transparent); backdrop-filter: blur(14px);
     border-bottom: 0.5px solid var(--grey-100); height: 60px;
     display: flex; align-items: center; padding: 0 40px;
     position: sticky; top: 0; z-index: 100; justify-content: space-between; flex-shrink: 0;
@@ -182,6 +183,89 @@ const PLAN_WELCOME_LABELS = {
   business: 'Elite (7-day trial)',
 }
 
+// ─── Payment details (paid plans) ─────────────────────────────────────────────
+
+/**
+ * Collects a real payment method before a paid upgrade. POST /plans/upgrade
+ * takes a paymentMethod, so what's entered here is what gets sent — Pro/Elite
+ * no longer silently upgrade with `null`.
+ */
+function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
+  const [provider, setProvider] = useState('mpesa')
+  const [phone, setPhone] = useState('')
+
+  if (!plan) return null
+
+  const digits = phone.replace(/\D/g, '')
+  const valid = digits.length >= 9
+
+  return (
+    <Modal open onClose={isSubmitting ? () => {} : onCancel} title={`Subscribe to ${plan.label}`} size="sm">
+      <div style={{
+        display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+        padding: '12px 14px', background: 'var(--purple-50)', border: '0.5px solid var(--purple-100)',
+        borderRadius: 'var(--radius-lg)', marginBottom: 18,
+      }}>
+        <span style={{ fontSize: 13, color: 'var(--purple-700)' }}>{plan.label} plan</span>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: 'var(--purple-800)' }}>
+          {plan.price}<span style={{ fontSize: 11, fontWeight: 400 }}> {plan.cadence}</span>
+        </span>
+      </div>
+
+      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--grey-600)', marginBottom: 8 }}>
+        Pay with
+      </label>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        {[{ key: 'mpesa', label: 'M-Pesa' }, { key: 'airtel', label: 'Airtel Money' }].map((p) => (
+          <button
+            key={p.key}
+            type="button"
+            onClick={() => setProvider(p.key)}
+            aria-pressed={provider === p.key}
+            style={{
+              flex: 1, padding: '10px 8px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
+              background: provider === p.key ? 'var(--purple-50)' : 'var(--white)',
+              border: `1px solid ${provider === p.key ? 'var(--purple-400)' : 'var(--grey-200)'}`,
+              color: provider === p.key ? 'var(--purple-700)' : 'var(--grey-600)',
+              fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
+            }}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      <label style={{ display: 'block', fontSize: 12, color: 'var(--grey-600)', marginBottom: 6 }}>
+        Phone number
+      </label>
+      <input
+        className="input input-md"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder="+254 7XX XXX XXX"
+        inputMode="tel"
+        disabled={isSubmitting}
+        style={{ width: '100%', marginBottom: 8 }}
+      />
+      <p style={{ fontSize: 12, color: 'var(--grey-400)', lineHeight: 1.6, marginBottom: 20 }}>
+        You'll get a prompt on this number to authorise the payment. Your 7-day trial starts today —
+        you can cancel from Settings before it ends and you won't be charged.
+      </p>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+        <button className="btn btn-ghost btn-sm" onClick={onCancel} disabled={isSubmitting}>Cancel</button>
+        <button
+          className={`btn btn-purple btn-sm${isSubmitting ? ' btn-loading' : ''}`}
+          disabled={!valid || isSubmitting}
+          onClick={() => onConfirm({ provider, phone: phone.trim() })}
+        >
+          {isSubmitting ? 'Starting…' : 'Start trial'}
+        </button>
+      </div>
+    </Modal>
+  )
+}
+
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
 function Navbar({ onLogoClick }) {
@@ -314,6 +398,7 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
   const navigate = useNavigate()
   const { upgrade, isUpgrading } = usePlan()
   const [selectedPlan, setSelectedPlan] = useState(null)
+  const [pendingPlan, setPendingPlan] = useState(null) // paid plan awaiting payment details
   const [step, setStep] = useState('select') // 'select' | 'complete'
   const [confirmedPlan, setConfirmedPlan] = useState(null)
   const [toast, setToast] = useState('')
@@ -323,17 +408,25 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
     setTimeout(() => setToast(''), 2800)
   }
 
+  // Starter is free, so it upgrades straight away. Pro/Elite are paid, so they
+  // collect a real payment method first instead of silently sending null.
   const handleContinue = (plan) => {
     const p = plan || selectedPlan
     if (!p) return
-    // Starter needs no payment method; Pro/Elite get a real one once payment-method
-    // wiring lands (see production-readiness plan) — for now the backend decides
-    // whether an upgrade without one is acceptable, and we surface its response either way.
+    if (p === 'starter') {
+      commitPlan(p, null)
+      return
+    }
+    setPendingPlan(p)
+  }
+
+  const commitPlan = (planId, paymentMethod) => {
     upgrade(
-      { planId: p, paymentMethod: null },
+      { planId, paymentMethod },
       {
         onSuccess: () => {
-          setConfirmedPlan(p)
+          setPendingPlan(null)
+          setConfirmedPlan(planId)
           setStep('complete')
         },
       }
@@ -395,6 +488,13 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
             onStartBuilding={handleStartBuilding}
           />
         )}
+
+        <PaymentDetailsModal
+          plan={pendingPlan ? PLANS.find((p) => p.id === pendingPlan) : null}
+          isSubmitting={isUpgrading}
+          onCancel={() => setPendingPlan(null)}
+          onConfirm={(paymentMethod) => commitPlan(pendingPlan, paymentMethod)}
+        />
 
         <Toast message={toast} />
       </div>

@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
   IconX, IconCheck, IconStarFilled, IconStar,
-  IconTrendingUp, IconTrendingDown, IconPaperclip,
+  IconTrendingUp, IconTrendingDown,
   IconSearch, IconCircleCheck, IconHistory,
 } from '@tabler/icons-react';
 import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
 import Skeleton from '@/components/ui/Skeleton';
-import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
+import { useBrandDashboard, useCampaignActions } from '@/features/brand-dashboard/hooks/useBrandDashboard';
 import { getInitials, formatCurrency, formatDate, formatCount } from '@/lib/utils';
 
 // ─── Design tokens (pulled directly from Creatorske Component Library v2) ───
@@ -236,32 +236,30 @@ function CampaignRow({ c, onSelect }) {
 // ─── Campaign Detail Drawer ────────────────────────────────────────────────────
 function CampaignDrawer({ campaign, onClose }) {
   const navigate = useNavigate();
-  const [approveLoading, setApproveLoading] = useState(false);
+  // Same real mutation the full campaign page uses, so approving from the
+  // drawer isn't a different (fake) code path to approving from the page.
+  const { approve, isApproving } = useCampaignActions(campaign?.id);
   const [approved, setApproved] = useState(false);
-  const [messages, setMessages] = useState([
-    { text: "Hi! We'd love to feature your seasonal menu for the June campaign.", sender: "You", time: "Jun 15", align: "right" },
-    { text: "Sounds great, I'll start on the reel this week and send a draft for your review.", sender: campaign?.creator, time: "Jun 15", align: "left" },
-    { text: "Draft attached. Let me know if you'd like any changes!", sender: campaign?.creator, time: "Jun 18", align: "left", attachment: true },
-  ]);
   const [reply, setReply] = useState("");
 
   if (!campaign) return null;
 
   function handleApprove() {
-    setApproveLoading(true);
-    setTimeout(() => { setApproveLoading(false); setApproved(true); }, 1400);
+    approve(undefined, { onSuccess: () => setApproved(true) });
   }
 
   function handleSendReply() {
     const trimmed = reply.trim();
     if (!trimmed) return;
-    setMessages((prev) => [...prev, { text: trimmed, sender: "You", time: "Just now", align: "right" }]);
-    setReply("");
+    // The thread itself lives on the campaign page, which is wired to the real
+    // messaging endpoint — send the brand there rather than faking a bubble here.
+    onClose();
+    navigate(`/brand/campaigns/${campaign.id}#messages`);
   }
 
   function handleRaiseDispute() {
     onClose();
-    navigate('/brand/campaigns');
+    navigate(`/brand/campaigns/${campaign.id}`);
   }
 
   return (
@@ -308,14 +306,14 @@ function CampaignDrawer({ campaign, onClose }) {
             <div style={{ display: "flex", gap: 8 }}>
               <button
                 onClick={handleApprove}
-                disabled={approveLoading}
+                disabled={isApproving}
                 style={{
                   flex: 1, background: C.black, color: C.white, border: "none",
                   borderRadius: R.md, padding: "10px 0", fontSize: 13, fontWeight: 500,
-                  cursor: "pointer", opacity: approveLoading ? .7 : 1, fontFamily: FONT_BODY,
+                  cursor: "pointer", opacity: isApproving ? .7 : 1, fontFamily: FONT_BODY,
                 }}
               >
-                {approveLoading ? "Approving…" : "Approve delivery"}
+                {isApproving ? "Approving…" : "Approve delivery"}
               </button>
               <button
                 onClick={handleRaiseDispute}
@@ -339,11 +337,6 @@ function CampaignDrawer({ campaign, onClose }) {
 
         <div>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".06em", textTransform: "uppercase", color: C.grey400, marginBottom: 10 }}>Messages</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {messages.map((m, i) => (
-              <MessageBubble key={i} text={m.text} sender={m.sender} time={m.time} align={m.align} attachment={m.attachment} />
-            ))}
-          </div>
           <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
             <input
               placeholder="Reply…"
@@ -365,6 +358,15 @@ function CampaignDrawer({ campaign, onClose }) {
               }}
             >Send</button>
           </div>
+          <button
+            onClick={() => { onClose(); navigate(`/brand/campaigns/${campaign.id}#messages`); }}
+            style={{
+              marginTop: 10, background: "none", border: "none", padding: 0, cursor: "pointer",
+              fontFamily: FONT_BODY, fontSize: 12.5, fontWeight: 500, color: C.purple600,
+            }}
+          >
+            Open full conversation →
+          </button>
         </div>
       </div>
     </div>
@@ -380,28 +382,6 @@ function Row({ label, value, bold }) {
   );
 }
 
-function MessageBubble({ text, sender, time, align, attachment }) {
-  const isRight = align === "right";
-  return (
-    <div style={{ display: "flex", justifyContent: isRight ? "flex-end" : "flex-start" }}>
-      <div style={{
-        maxWidth: "80%", background: isRight ? C.black : C.grey50,
-        color: isRight ? C.white : C.black,
-        borderRadius: isRight ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
-        padding: "9px 12px", fontSize: 12.5, lineHeight: 1.5,
-      }}>
-        {text}
-        {attachment && (
-          <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: isRight ? "rgba(255,255,255,.6)" : C.grey500 }}>
-            <IconPaperclip size={12} />
-            content-draft.mp4
-          </div>
-        )}
-        <div style={{ fontSize: 10, color: isRight ? "rgba(255,255,255,.4)" : C.grey400, marginTop: 4, textAlign: "right" }}>{time}</div>
-      </div>
-    </div>
-  );
-}
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function BrandDashboardPage() {

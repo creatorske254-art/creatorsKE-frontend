@@ -106,7 +106,7 @@ export default function CreatorCard({ creator }) {
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-[0.5px] border-[var(--grey-100)]">
+        <div className="flex items-center justify-between pt-4 border-t border-[var(--grey-100)]">
           <div>
             <div className="text-[10px] uppercase tracking-[0.08em] text-[var(--grey-400)] font-medium mb-0.5">
               Starting from

@@ -98,7 +98,7 @@ export default function PrivacyPage() {
       `}</style>
 
       {/* Nav */}
-      <nav className="h-[60px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[0.5px] border-[var(--grey-100)] bg-white/[0.92] backdrop-blur-md sticky top-0 z-10">
+      <nav className="h-[60px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[var(--grey-100)] bg-white/[0.92] backdrop-blur-md sticky top-0 z-10">
         <button
           type="button"
           onClick={() => navigate('/')}
@@ -144,7 +144,7 @@ export default function PrivacyPage() {
       </div>
 
       {/* Footer */}
-      <footer className="px-[var(--gutter-public)] py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)]">
+      <footer className="px-[var(--gutter-public)] py-5 border-t border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)]">
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </div>

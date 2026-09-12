@@ -166,7 +166,7 @@ export default function PortfolioPage() {
     <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
 
       {/* Public nav */}
-      <nav className="h-[52px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[0.5px] border-[var(--grey-100)] bg-white sticky top-0 z-10">
+      <nav className="h-[52px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[var(--grey-100)] bg-white sticky top-0 z-10">
         <Link to="/" className="font-[var(--font-display)] text-[19px] font-semibold tracking-[-0.01em] text-[var(--black)]">
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </Link>
@@ -467,7 +467,7 @@ export default function PortfolioPage() {
         </>
       )}
 
-      <footer className="px-[var(--gutter-public)] py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
+      <footer className="px-[var(--gutter-public)] py-5 border-t border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">Creatorske<span className="text-[var(--purple-500)]">.</span></div>
         <div>© 2026 Creatorske. All rights reserved.</div>
         <div className="flex gap-4">

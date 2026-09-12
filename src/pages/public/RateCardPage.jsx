@@ -344,7 +344,7 @@ export default function RateCardPage() {
     <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
 
       {/* Public nav */}
-      <nav className="h-[52px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[0.5px] border-[var(--grey-100)] bg-white sticky top-0 z-10">
+      <nav className="h-[52px] flex items-center justify-between px-[var(--gutter-public)] border-b border-[var(--grey-100)] bg-white sticky top-0 z-10">
         <Link to="/" className="font-[var(--font-display)] text-[19px] font-semibold tracking-[-0.01em] text-[var(--black)]">
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </Link>
@@ -432,7 +432,7 @@ export default function RateCardPage() {
 
             {/* Stats band */}
             <div className="max-w-[1000px] mx-auto px-[var(--gutter-public)] pb-0">
-              <div className="flex border-t border-[0.5px] border-white/10 flex-wrap">
+              <div className="flex border-t border-white/10 flex-wrap">
                 {[
                   { label: 'Avg. engagement', value: stats.avgEngagement },
                   { label: 'Total reach', value: stats.totalReach },
@@ -440,7 +440,7 @@ export default function RateCardPage() {
                   { label: 'Campaigns done', value: stats.campaignsDone },
                   { label: 'Turnaround', value: stats.turnaroundDays },
                 ].filter((s) => s.value).map((s) => (
-                  <div key={s.label} className="flex-1 min-w-[50%] sm:min-w-0 py-4 text-center border-r border-[0.5px] border-white/10 last:border-r-0">
+                  <div key={s.label} className="flex-1 min-w-[50%] sm:min-w-0 py-4 text-center border-r border-white/10 last:border-r-0">
                     <div className="font-[var(--font-display)] text-[22px] font-semibold text-white leading-none flex items-center justify-center gap-1">
                       {s.value}
                       {s.icon && <s.icon size={15} fill="currentColor" />}
@@ -538,7 +538,7 @@ export default function RateCardPage() {
                   <IconBrandWhatsapp className="icon-sm" /> Chat on WhatsApp
                 </button>
 
-                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[0.5px] border-[var(--grey-100)]">
+                <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[var(--grey-100)]">
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconShieldCheck className="text-[var(--status-success)] icon-sm" /> Secure</span>
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconCircleCheck className="text-[var(--status-success)] icon-sm" /> No spam</span>
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconClock className="text-[var(--status-success)] icon-sm" /> Replies in 24hrs</span>
@@ -554,7 +554,7 @@ export default function RateCardPage() {
                   { label: 'Payment', value: creator.paymentMethods },
                   { label: 'On Creatorske', value: creator.memberSince ? `Since ${creator.memberSince}` : null },
                 ].filter((row) => row.value).map((row) => (
-                  <div key={row.label} className="flex items-center justify-between py-2 border-b border-[0.5px] border-[var(--grey-100)] last:border-b-0">
+                  <div key={row.label} className="flex items-center justify-between py-2 border-b border-[var(--grey-100)] last:border-b-0">
                     <span className="text-[12px] text-[var(--grey-600)]">{row.label}</span>
                     <span className="text-[12px] font-medium text-[var(--black)]">{row.value}</span>
                   </div>
@@ -584,7 +584,7 @@ export default function RateCardPage() {
         </>
       )}
 
-      <footer className="px-[var(--gutter-public)] py-5 border-t border-[0.5px] border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
+      <footer className="px-[var(--gutter-public)] py-5 border-t border-[var(--grey-100)] bg-white flex items-center justify-between flex-wrap gap-2 text-[12px] text-[var(--grey-400)] mt-auto">
         <div className="font-[var(--font-display)] text-[14px] text-[var(--black)]">Creatorske<span className="text-[var(--purple-500)]">.</span></div>
         <div>© 2026 Creatorske. All rights reserved.</div>
         <div className="flex gap-4">

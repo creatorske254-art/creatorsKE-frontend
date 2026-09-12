@@ -430,9 +430,8 @@ export default function HomePage() {
           <div className="hp-cta hp-reveal" key={`cta-${role}`}>
             <h2>{c.ctaTitle}</h2>
             <p>{c.ctaSub}</p>
-            <div style={{ display: 'flex', gap: 'var(--space-12)', flexWrap: 'wrap', justifyContent: 'center', marginTop: 'var(--space-8)' }}>
+            <div style={{ marginTop: 'var(--space-8)' }}>
               <button className="hp-btn-primary" onClick={() => navigate(c.primary.to)}>{c.ctaLabel} <IconArrowRight className="icon-sm nudge" aria-hidden="true" /></button>
-              <RoleSwitch role={role} onChange={setRole} dark />
             </div>
           </div>
         </div>

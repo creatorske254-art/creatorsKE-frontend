@@ -2,6 +2,10 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAdmin } from '@/features/admin/hooks/useAdmin';
+import DemoTag from '@/components/shared/DemoTag';
+import { useDemoFallback } from '@/lib/useDemoFallback';
+import { DEMO_ADMIN_STATS, DEMO_PLATFORM_GROWTH, DEMO_ENQUIRY_VOLUME, DEMO_ABANDONED_DRAFTS, DEMO_ESCROW_AGING, DEMO_DISPUTES_BY_OUTCOME } from '@/lib/demoData';
+import { ChartFrame, ChartPeriod, TrendChart, BarChart, SERIES } from '@/components/charts';
 import { useDisputes } from '@/features/admin/hooks/useDisputes';
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
 import { formatCurrency, getInitials } from '@/lib/utils';
@@ -11,9 +15,6 @@ import { IconAlertTriangle, IconArrowRight, IconFlag3, IconStarFilled } from '@t
 // A small "Demo data" tag for sections with no backing endpoint yet (see the
 // production-readiness plan's backend spec) - kept visible rather than
 // silently passed off as real.
-function DemoTag() {
-  return <span className="tag tag-default" style={{ fontSize: 10 }}>Demo data</span>;
-}
 
 // GET /admin/stats' response schema is undocumented - these are best-effort
 // field-name guesses with a "-" fallback rather than fabricated numbers.
@@ -34,9 +35,6 @@ const HEALTH_METRICS_DEF = [
 // charts, re-engagement queue) have no backing endpoint at all - see the
 // production-readiness plan's backend spec. Left in place as illustrative
 // placeholders, clearly tagged, rather than removed or silently treated as real.
-const ABANDONED_DRAFTS = [48, 34, 29, 51, 38, 44, 57, 42, 36, 61, 53, 40, 29, 35];
-const DRAFT_LABELS = ["Jun 15", "", "", "", "", "", "", "", "", "", "", "", "", "Jun 28"];
-const ENQUIRY_BARS = [31, 44, 38, 52, 48, 37, 61, 55, 42, 58, 63, 47, 51, 44];
 
 const ESCROW_QUEUE = [
   { id: "B-204", creator: "Lena Wachira", brand: "Jumia Kenya", amount: "KES 18,500", overdue: "2 days", initials: "LW" },
@@ -73,42 +71,6 @@ function SectionHead({ title, action, actionLabel }) {
 }
 
 // Mini bar chart - bespoke, no canonical equivalent
-function MiniBarChart({ data, labels, accentIndex, color = "var(--purple-300)", activeColor = "var(--purple-500)", height = 64 }) {
-  const [hovered, setHovered] = useState(null);
-  const max = Math.max(...data);
-  return (
-    <div>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 'var(--space-4)', height }}>
-        {data.map((v, i) => {
-          const pct = Math.round((v / max) * 100);
-          const isActive = i === (accentIndex ?? data.length - 1);
-          const isHov = hovered === i;
-          return (
-            <div
-              key={i}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-              style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%", cursor: "default", position: "relative" }}
-            >
-              {isHov && (
-                <div style={{ position: "absolute", bottom: "calc(100% + 4px)", left: "50%", transform: "translateX(-50%)", background: "var(--black)", color: "var(--white)", fontSize: 10, padding: "var(--space-4) var(--space-8)", borderRadius: "var(--radius-sm)", whiteSpace: "nowrap", zIndex: 10 }}>
-                  {v}
-                </div>
-              )}
-              <div style={{ width: "100%", height: `${pct}%`, borderRadius: "2px 2px 0 0", background: isHov ? activeColor : isActive ? activeColor : color, transition: "background 0.12s" }} />
-            </div>
-          );
-        })}
-      </div>
-      <div style={{ display: "flex", gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
-        {labels.map((l, i) => (
-          <div key={i} style={{ flex: 1, textAlign: "center", fontSize: 9, color: "var(--grey-300)" }}>{l}</div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // Alert banner - bespoke, no canonical equivalent (closest is .alert in index.css
 // but that's scoped to a different component; kept local, tokens fixed)
 function Alert({ type = "warning", icon: Icon, children }) {
@@ -157,8 +119,47 @@ export default function OverviewPage() {
   const [period, setPeriod] = useState("7d");
   const [emailCopyOpen, setEmailCopyOpen] = useState(false);
 
-  const { stats, isLoading: statsLoading } = useAdmin();
-  const { disputes: rawDisputes, openDisputeCount, isLoading: disputesLoading } = useDisputes();
+  const { stats, isLoading: statsLoading, isError: statsError } = useAdmin();
+  const { disputes: rawDisputes, openDisputeCount, isLoading: disputesLoading, isError: disputesError } = useDisputes();
+
+  // ── Charts ───────────────────────────────────────────────────────────────
+  // GET /admin/stats is expected to carry these series (see BACKEND_API_SPEC.md);
+  // until it does, dev builds show the tagged samples.
+  const statsFallback = useDemoFallback({ data: stats, isError: statsError, isLoading: statsLoading }, null);
+  const growthRows = statsFallback.isDemo ? DEMO_PLATFORM_GROWTH : (stats?.growth ?? []);
+  const enquiryRows = useMemo(() => {
+    const raw = statsFallback.isDemo ? DEMO_ENQUIRY_VOLUME : (stats?.enquiryTimeline ?? []);
+    const n = period === '7d' ? 7 : period === '90d' ? 90 : 30;
+    return raw.slice(-n).map((d) => ({
+      label: d.label ?? (d.date ? new Date(`${d.date}T00:00:00`).toLocaleDateString('en-KE', { month: 'short', day: 'numeric' }) : ''),
+      count: Number(d.count ?? d.value ?? 0),
+    }));
+  }, [statsFallback.isDemo, stats, period]);
+  const enquiryTotal = enquiryRows.reduce((a, r) => a + r.count, 0);
+  const draftRows = statsFallback.isDemo ? DEMO_ABANDONED_DRAFTS : (stats?.abandonedDraftsByStep ?? []);
+  const escrowRows = statsFallback.isDemo ? DEMO_ESCROW_AGING : (stats?.escrowAging ?? []);
+
+  // Disputes by outcome per month, grouped from the dispute list itself.
+  const disputesFallback = useDemoFallback({ data: rawDisputes, isError: disputesError, isLoading: disputesLoading }, null);
+  const disputeRows = useMemo(() => {
+    if (disputesFallback.isDemo) return DEMO_DISPUTES_BY_OUTCOME;
+    const months = new Map();
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.set(`${d.getFullYear()}-${d.getMonth()}`, { label: d.toLocaleDateString('en-KE', { month: 'short' }), creator: 0, brand: 0, split: 0 });
+    }
+    for (const d of rawDisputes) {
+      const at = new Date(d.resolvedAt ?? d.decidedAt ?? d.raisedAt ?? d.createdAt ?? NaN);
+      const row = Number.isNaN(at.getTime()) ? null : months.get(`${at.getFullYear()}-${at.getMonth()}`);
+      if (!row) continue;
+      const outcome = (d.decision ?? d.outcome ?? '').toString().toLowerCase();
+      if (outcome.includes('creator')) row.creator += 1;
+      else if (outcome.includes('brand')) row.brand += 1;
+      else if (outcome) row.split += 1;
+    }
+    return [...months.values()];
+  }, [rawDisputes, disputesFallback.isDemo]);
   const { accounts: rawFlagged, flaggedAccountCount, isLoading: flaggedLoading } = useFlaggedAccounts();
 
   const openDisputes = useMemo(() => rawDisputes
@@ -186,12 +187,12 @@ export default function OverviewPage() {
   }), [rawFlagged]);
 
   return (
-    <div style={{ padding: 'var(--space-32)', background: "var(--page-bg)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
+    <div style={{ fontFamily: "var(--font-body)" }}>
 
       {/* Page heading */}
       <div style={{ marginBottom: 'var(--space-32)' }}>
         <h1 className="page-title" style={{ marginBottom: 'var(--space-4)' }}>
-          Platform Overview
+          Platform Overview{statsFallback.isDemo && <> <DemoTag /></>}
         </h1>
         <p className="page-subtitle">
           Platform health, open items requiring attention, and activity across all users.
@@ -213,7 +214,7 @@ export default function OverviewPage() {
       {/* Health metric grid */}
       <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: 'var(--space-16)', marginBottom: 'var(--space-32)' }}>
         {HEALTH_METRICS_DEF.map((m) => {
-          const raw = stats?.[m.field];
+          const raw = (statsFallback.isDemo ? DEMO_ADMIN_STATS : stats)?.[m.field];
           const display = raw == null ? '-' : m.currency ? formatCurrency(raw) : raw.toLocaleString?.() ?? raw;
           return (
             <div className="card card-p-md" key={m.label}>
@@ -226,44 +227,75 @@ export default function OverviewPage() {
         })}
       </div>
 
-      {/* Charts row */}
-      <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-20)', marginBottom: 'var(--space-32)' }}>
+      {/* Charts row 1: growth (two series, lines) + enquiry volume (columns) */}
+      <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-20)', marginBottom: 'var(--space-20)' }}>
+        <ChartFrame
+          title="Platform growth"
+          subtitle="Accounts on the platform, month by month"
+          legend={[{ label: 'Creators', color: SERIES[0] }, { label: 'Brands', color: SERIES[1] }]}
+          loading={statsFallback.isLoading}
+          empty={growthRows.length === 0}
+          emptyTitle="No growth data yet"
+          demo={statsFallback.isDemo}
+          height={200}
+        >
+          <TrendChart data={growthRows} series={[{ key: 'creators', label: 'Creators' }, { key: 'brands', label: 'Brands' }]} height={200} />
+        </ChartFrame>
 
-        {/* Abandoned drafts */}
-        <div className="card card-p-md">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 'var(--space-16)' }}>
-            <div>
-              <div className="section-title" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Abandoned onboarding drafts <DemoTag /></div>
-              <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · re-engagement emails auto-sent at 48 h</div>
-            </div>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--black)", lineHeight: 1 }}>
-              {ABANDONED_DRAFTS[ABANDONED_DRAFTS.length - 1]}
-              <span style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--grey-400)", fontWeight: 400, marginLeft: 'var(--space-4)' }}>today</span>
-            </div>
-          </div>
-          <MiniBarChart data={ABANDONED_DRAFTS} labels={DRAFT_LABELS} height={72} color="var(--grey-100)" activeColor="var(--grey-700)" />
-          <div style={{ marginTop: 'var(--space-16)', display: "flex", alignItems: "center", gap: 'var(--space-8)', fontSize: 12, color: "var(--status-warning-text)", background: "var(--status-warning-bg)", border: "0.5px solid rgba(245,158,11,0.2)", borderRadius: "var(--radius-md)", padding: "var(--space-8) var(--space-12)" }}>
-            <IconAlertTriangle className="icon-sm" aria-hidden="true" /> Open rate on re-engagement emails is 21%, below the 30% target. Consider reviewing copy.
-          </div>
-        </div>
+        <ChartFrame
+          title="Enquiry volume"
+          subtitle={enquiryRows.length > 0 && <><strong>{enquiryTotal.toLocaleString('en-KE')}</strong> enquiries, all statuses</>}
+          right={<ChartPeriod options={[{ value: '7d', label: '7D' }, { value: '30d', label: '30D' }, { value: '90d', label: '90D' }]} value={period} onChange={setPeriod} />}
+          loading={statsFallback.isLoading}
+          empty={enquiryRows.length === 0}
+          emptyTitle="No enquiries in this period"
+          demo={statsFallback.isDemo}
+          height={200}
+        >
+          <BarChart data={enquiryRows} series={[{ key: 'count', label: 'Enquiries' }]} height={200} />
+        </ChartFrame>
+      </div>
 
-        {/* Enquiry volume */}
-        <div className="card card-p-md">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 'var(--space-16)' }}>
-            <div>
-              <div className="section-title" style={{ marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Enquiry volume <DemoTag /></div>
-              <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Last 14 days · all statuses</div>
-            </div>
-            <div className="tabs">
-              {["7d", "30d", "90d"].map(p => (
-                <button key={p} className={`tab${period === p ? ' active' : ''}`} onClick={() => setPeriod(p)}>
-                  {p}
-                </button>
-              ))}
-            </div>
-          </div>
-          <MiniBarChart data={ENQUIRY_BARS} labels={DRAFT_LABELS} height={72} color="var(--purple-100)" activeColor="var(--purple-500)" />
-        </div>
+      {/* Charts row 2: where drafts die (bars) · escrow aging (columns) · dispute outcomes (stacked) */}
+      <div className="grid grid-cols-1 md:grid-cols-3" style={{ gap: 'var(--space-20)', marginBottom: 'var(--space-32)' }}>
+        <ChartFrame
+          title="Abandoned drafts by step"
+          subtitle="Where onboarding stalls"
+          right={<button className="btn btn-ghost btn-xs" onClick={() => navigate('/admin/re-engagement')}>Re-engage</button>}
+          loading={statsFallback.isLoading}
+          empty={draftRows.length === 0}
+          emptyTitle="No abandoned drafts"
+          demo={statsFallback.isDemo}
+          height={180}
+        >
+          <BarChart data={draftRows} series={[{ key: 'value', label: 'Drafts' }]} layout="horizontal" labels height={180} />
+        </ChartFrame>
+
+        <ChartFrame
+          title="Escrow aging"
+          subtitle="Bookings held, by days in escrow"
+          right={<button className="btn btn-ghost btn-xs" onClick={() => navigate('/admin/escrow')}>Open cases</button>}
+          loading={statsFallback.isLoading}
+          empty={escrowRows.length === 0}
+          emptyTitle="Nothing in escrow"
+          demo={statsFallback.isDemo}
+          height={180}
+        >
+          <BarChart data={escrowRows} series={[{ key: 'value', label: 'Bookings' }]} emphasis={(r) => /30\+/.test(r.label)} height={180} />
+        </ChartFrame>
+
+        <ChartFrame
+          title="Dispute outcomes"
+          subtitle="Decisions per month"
+          legend={[{ label: 'For creator', color: SERIES[0] }, { label: 'For brand', color: SERIES[1] }, { label: 'Split', color: SERIES[2] }]}
+          loading={disputesFallback.isLoading}
+          empty={disputeRows.every((r) => !r.creator && !r.brand && !r.split)}
+          emptyTitle="No decisions yet"
+          demo={disputesFallback.isDemo}
+          height={180}
+        >
+          <BarChart data={disputeRows} series={[{ key: 'creator', label: 'For creator' }, { key: 'brand', label: 'For brand' }, { key: 'split', label: 'Split' }]} stacked height={180} />
+        </ChartFrame>
       </div>
 
       {/* Bottom three-col */}

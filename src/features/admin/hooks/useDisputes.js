@@ -34,6 +34,7 @@ export function useDisputes() {
 
   return {
     disputes,
+    isError: query.isError,
     openDisputeCount,
     isLoading: query.isLoading,
     resolve: resolveMutation.mutate,

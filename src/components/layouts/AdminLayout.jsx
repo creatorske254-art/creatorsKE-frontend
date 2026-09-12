@@ -179,12 +179,9 @@ const SIDEBAR_SECTIONS = [
   {
     label: 'Operations',
     items: [
-      // Placeholder items for operational views that sit outside the four
-      // MVP pages but are referenced in the admin journeys (escaped escrow,
-      // creator abandonment cases, deletion request queue).
-      { label: 'Escrow cases',      icon: IconLockDollar,   disabled: true },
-      { label: 'Deletion requests', icon: IconUserMinus,    disabled: true },
-      { label: 'Re-engagement',     icon: IconMailForward,  disabled: true },
+      { to: '/admin/escrow',            label: 'Escrow cases',      icon: IconLockDollar },
+      { to: '/admin/deletion-requests', label: 'Deletion requests', icon: IconUserMinus },
+      { to: '/admin/re-engagement',     label: 'Re-engagement',     icon: IconMailForward },
     ],
   },
 ];

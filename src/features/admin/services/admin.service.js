@@ -21,4 +21,14 @@ export const adminService = {
     api.post('/admin/moderation', { targetId, action, reason }).then((r) => r.data),
 
   getStats: () => api.get('/admin/stats').then((r) => r.data),
+
+  // Operations pages - specified in BACKEND_API_SPEC.md, not yet built.
+  listEscrow: (params) => api.get('/admin/escrow', { params }).then((r) => r.data),
+  escrowAction: (id, action, note) => api.post(`/admin/escrow/${id}/${action}`, { note }).then((r) => r.data),
+  listDeletionRequests: (params) => api.get('/admin/deletion-requests', { params }).then((r) => r.data),
+  resolveDeletionRequest: (id, decision, reason) =>
+    api.post(`/admin/deletion-requests/${id}/${decision}`, { reason }).then((r) => r.data),
+  getReengagement: () => api.get('/admin/re-engagement').then((r) => r.data),
+  sendReengagement: (segmentId, options) =>
+    api.post('/admin/re-engagement/send', { segmentId, ...options }).then((r) => r.data),
 };

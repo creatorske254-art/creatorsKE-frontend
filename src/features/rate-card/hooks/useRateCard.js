@@ -105,6 +105,7 @@ export function useRateCard(id) {
     isLoading: query.isLoading,
     isError: query.isError,
     analytics: analyticsQuery.data,
+    analyticsQuery,
     saveDraft,
     update: updateMutation.mutate,
     publish: publishMutation.mutate,

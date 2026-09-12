@@ -143,6 +143,7 @@ export function useCreatorDashboard() {
     cardHealth,
     healthLoading: rateCardsLoading,
     healthError,
+    primaryCardId: rateCards?.[0]?.id ?? null,
 
     publicUrl,
     copyPublicLink,

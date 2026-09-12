@@ -8,6 +8,9 @@ import MpesaPrompt from '@/features/payments/components/MpesaPrompt'
 import { usePlan } from '@/features/plans/hooks/usePlan'
 import Modal from '@/components/ui/Modal'
 import { formatCurrency } from '@/lib/utils'
+import { useDemoFallback } from '@/lib/useDemoFallback'
+import { demoEarningsTimeline, DEMO_EARNINGS_BY_PACKAGE } from '@/lib/demoData'
+import { ChartFrame, ChartPeriod, BarChart, kes } from '@/components/charts'
 import { IconBuildingBank, IconDeviceMobile, IconDownload, IconHistory, IconInfoCircle, IconPlus, IconX } from '@tabler/icons-react';
 
 /*
@@ -116,28 +119,45 @@ export default function MoneyPage() {
   const { currentPlan } = usePlan()
   const {
     stats, isStatsLoading,
-    earningsTimeline, isTimelineLoading,
+    earningsTimeline, isTimelineLoading, isTimelineError,
     transactions, isHistoryLoading, isHistoryError, refetchHistory,
     requestPayout, isRequestingPayout,
     paymentStatus, isPolling, stopPolling,
   } = usePayments({ period })
 
   // GET /payments/earnings/timeline's response schema is undocumented -
-  // guessed as [{ period/label, amount }]. Bar heights are relative to the
-  // max value in the returned series, not a fabricated scale.
-  const chartBars = useMemo(() => {
-    const points = Array.isArray(earningsTimeline) ? earningsTimeline : []
-    const max = Math.max(1, ...points.map((p) => Number(p.amount ?? p.total ?? 0)))
-    return points.map((p, i) => {
-      const value = Number(p.amount ?? p.total ?? 0)
-      return {
-        label: p.label ?? p.period ?? p.month ?? `#${i + 1}`,
-        amount: value,
-        pct: Math.round((value / max) * 100),
-        active: i === points.length - 1,
-      }
-    })
-  }, [earningsTimeline])
+  // guessed as [{ period/label/date, amount }]. Columns; the latest period is
+  // the emphasised one.
+  const timeline = useDemoFallback(
+    { data: earningsTimeline, isError: isTimelineError, isLoading: isTimelineLoading },
+    demoEarningsTimeline(period),
+  )
+  const chartRows = useMemo(() => {
+    const points = Array.isArray(timeline.data) ? timeline.data : []
+    return points.map((p, i) => ({
+      label: p.label ?? p.period ?? p.month ?? (p.date ? new Date(`${p.date}T00:00:00`).toLocaleDateString('en-KE', { month: 'short', day: 'numeric' }) : `#${i + 1}`),
+      amount: Number(p.amount ?? p.total ?? 0),
+      latest: i === points.length - 1,
+    }))
+  }, [timeline.data])
+  const chartTotal = chartRows.reduce((a, r) => a + r.amount, 0)
+
+  // Earnings by package: grouped client-side from the transaction history
+  // (GET /payments/transactions rows carry `package`/`packageName` - unconfirmed).
+  const byPackage = useDemoFallback(
+    { data: transactions, isError: isHistoryError, isLoading: isHistoryLoading },
+    null,
+  )
+  const packageRows = useMemo(() => {
+    if (byPackage.isDemo) return DEMO_EARNINGS_BY_PACKAGE
+    const totals = new Map()
+    for (const t of Array.isArray(byPackage.data) ? byPackage.data : []) {
+      const name = t.package ?? t.packageName ?? t.description
+      if (!name || (t.type && !/earn|payment|booking/i.test(t.type))) continue
+      totals.set(name, (totals.get(name) ?? 0) + Number(t.amount ?? 0))
+    }
+    return [...totals].map(([label, amount]) => ({ label, amount })).sort((a, b) => b.amount - a.amount).slice(0, 6)
+  }, [byPackage.data, byPackage.isDemo])
 
   // GET /payments/stats' response schema is undocumented - best-effort field
   // guesses with a "-" fallback rather than fabricated numbers.
@@ -250,8 +270,6 @@ export default function MoneyPage() {
         .money-page .hero-ring-b{position:absolute;right:30px;bottom:-30px;width:80px;height:80px;border-radius:50%;background:color-mix(in srgb, var(--white) 4%, transparent);pointer-events:none}
 
         /* Chart */
-        .money-page .chart-bars{display:flex;align-items:flex-end;gap:var(--space-8);height:90px;padding-bottom:var(--space-2)}
-        .money-page .chart-bar{width:100%;border-radius:3px 3px 0 0}
 
         /* Payment method row */
         .money-page .pay-icon{border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -331,57 +349,36 @@ export default function MoneyPage() {
               <div className="stat-card-value" style={{ fontSize: 24 }}>{isStatsLoading ? '···' : formatCurrency(totalEarnedThisPeriod)}</div>
             </div>
 
-            {/* Earnings chart */}
-            <div className="card card-p-md s-12">
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-16)', flexWrap: 'wrap', gap: 'var(--space-8)' }}>
-                <p className="section-title">Earnings overview</p>
-                <div style={{ display: 'flex', gap: 'var(--space-4)' }}>
-                  {['3m', '6m', '1y'].map((p) => (
-                    <button
-                      key={p}
-                      className="btn btn-ghost btn-xs"
-                      style={p === period ? { background: 'var(--page-bg)', color: 'var(--black)', borderColor: 'var(--grey-300)' } : undefined}
-                      onClick={() => setPeriod(p)}
-                    >
-                      {p.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {isTimelineLoading ? (
-                <div style={{ display: 'flex', gap: 'var(--space-8)', height: 90, alignItems: 'flex-end' }}>
-                  {[0, 1, 2].map((i) => <div key={i} className="skeleton" style={{ flex: 1, height: `${40 + i * 20}%` }} />)}
-                </div>
-              ) : chartBars.length === 0 ? (
-                <div style={{ padding: 'var(--space-24) 0', textAlign: 'center', fontSize: 12.5, color: 'var(--grey-400)' }}>No earnings data for this period yet.</div>
-              ) : (
-                <>
-                  <div className="chart-bars">
-                    {chartBars.map((bar, i) => (
-                      <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-4)' }}>
-                        <div style={{ fontSize: 9, fontWeight: bar.active ? 600 : 400, color: bar.active ? 'var(--purple-600)' : 'var(--grey-400)' }}>{formatCurrency(bar.amount)}</div>
-                        <div
-                          className="chart-bar"
-                          title={`${bar.label}: ${formatCurrency(bar.amount)}`}
-                          style={{
-                            background: bar.active ? 'var(--purple-600)' : 'var(--purple-50)',
-                            height: `${bar.pct}%`,
-                            border: bar.active ? '0.5px solid var(--purple-200)' : 'none',
-                          }}
-                        ></div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ display: 'flex', gap: 'var(--space-8)', marginTop: 'var(--space-4)' }}>
-                    {chartBars.map((bar, i) => (
-                      <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, fontWeight: bar.active ? 500 : 400, color: bar.active ? 'var(--purple-600)' : 'var(--grey-400)' }}>
-                        {bar.label}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            {/* Earnings over the period - columns, latest emphasised */}
+            <ChartFrame
+              className="s-7"
+              title="Earnings overview"
+              subtitle={!timeline.isLoading && chartRows.length > 0 && <><strong>{kes(chartTotal)}</strong> over the last {period === '1y' ? 'year' : period.replace('m', ' months')}</>}
+              right={<ChartPeriod options={['3m', '6m', '1y']} value={period} onChange={setPeriod} />}
+              loading={timeline.isLoading}
+              empty={chartRows.length === 0}
+              emptyTitle="No earnings yet"
+              emptyDescription="No earnings data for this period yet."
+              demo={timeline.isDemo}
+              height={200}
+            >
+              <BarChart data={chartRows} series={[{ key: 'amount', label: 'Earnings' }]} emphasis={(r) => r.latest} format={kes} height={200} />
+            </ChartFrame>
+
+            {/* Which packages earn - horizontal bars, value at the tip */}
+            <ChartFrame
+              className="s-5"
+              title="Earnings by package"
+              subtitle="What brands book most"
+              loading={byPackage.isLoading}
+              empty={packageRows.length === 0}
+              emptyTitle="Nothing booked yet"
+              emptyDescription="Completed bookings will rank your packages here."
+              demo={byPackage.isDemo}
+              height={200}
+            >
+              <BarChart data={packageRows} series={[{ key: 'amount', label: 'Earned' }]} layout="horizontal" labels format={kes} height={200} />
+            </ChartFrame>
 
             {/* Transactions */}
             <div className="table-wrap s-7 r-3">

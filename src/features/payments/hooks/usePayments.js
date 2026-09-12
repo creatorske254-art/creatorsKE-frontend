@@ -101,6 +101,7 @@ export function usePayments({ period = '30d' } = {}) {
 
     earningsTimeline: timelineQuery.data ?? [],
     isTimelineLoading: timelineQuery.isLoading,
+    isTimelineError: timelineQuery.isError,
 
     transactions: historyQuery.data?.transactions ?? historyQuery.data ?? [],
     isHistoryLoading: historyQuery.isLoading,

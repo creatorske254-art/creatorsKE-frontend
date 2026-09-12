@@ -16,4 +16,11 @@ export const brandService = {
   // plan's backend spec. Paths are best-effort guesses.
   approveCampaign: (id) => api.post(`/brands/campaigns/${id}/approve`).then((r) => r.data),
   disputeCampaign: (id, evidence) => api.post(`/brands/campaigns/${id}/dispute`, { evidence }).then((r) => r.data),
+
+  // Billing & invoices, transaction history - specified in BACKEND_API_SPEC.md,
+  // not yet built. Paths are the spec's.
+  getBilling: () => api.get('/brands/billing').then((r) => r.data),
+  listInvoices: (params) => api.get('/brands/invoices', { params }).then((r) => r.data),
+  getInvoicePdfUrl: (id) => `${api.defaults.baseURL}/brands/invoices/${id}/pdf`,
+  listTransactions: (params) => api.get('/brands/transactions', { params }).then((r) => r.data),
 };

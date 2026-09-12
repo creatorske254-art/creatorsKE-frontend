@@ -63,7 +63,7 @@ export default function EnquiriesPage() {
   const selectedEnquiry = enquiries.find((e) => e.id === selectedId) ?? null
 
   return (
-    <div style={{ flex: 1, padding: 'var(--space-32)', overflowY: 'auto', minWidth: 0, width: '100%' }}>
+    <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
       <style>{ENQUIRY_CSS}</style>
       <style>{PAGE_CSS}</style>
 

@@ -10,6 +10,11 @@ import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
 import Skeleton from '@/components/ui/Skeleton';
 import { useBrandDashboard, useCampaignActions } from '@/features/brand-dashboard/hooks/useBrandDashboard';
+import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useDemoFallback } from '@/lib/useDemoFallback';
+import { DEMO_SPEND_BY_MONTH, DEMO_CAMPAIGN_STATUS, DEMO_BRAND_FUNNEL } from '@/lib/demoData';
+import { ChartFrame, BarChart, DonutChart, SERIES, kes } from '@/components/charts';
 import { getInitials, formatCurrency, formatDate, formatCount } from '@/lib/utils';
 
 // ─── Design tokens (pulled directly from Creatorske Component Library v2) ───
@@ -96,6 +101,7 @@ function normalizeCampaign(c) {
     deliveryDate: formatDate(c.expectedDeliveryAt ?? c.deliveredAt),
     amount: formatCurrency(c.price ?? c.amount),
     rawAmount: Number(c.price ?? c.amount ?? 0),
+    at: c.completedAt ?? c.deliveredAt ?? c.createdAt ?? null,
     unread: c.unreadMessageCount ?? 0,
     avatarColor: "#534AB7",
   };
@@ -424,6 +430,65 @@ export default function BrandDashboardPage() {
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const { user } = useAuth();
+  const brandName = user?.companyName ?? user?.brandName ?? user?.firstName ?? 'there';
+
+  // ── Charts ───────────────────────────────────────────────────────────────
+  // Spend by month: released (completed) vs still in escrow (in progress /
+  // awaiting approval), grouped client-side from the campaign list.
+  const campaignsFallback = useDemoFallback(
+    { data: campaigns, isError: isCampaignsError, isLoading: isLoadingCampaigns },
+    null,
+  );
+  const spendRows = useMemo(() => {
+    if (campaignsFallback.isDemo) return DEMO_SPEND_BY_MONTH;
+    const months = new Map();
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.set(`${d.getFullYear()}-${d.getMonth()}`, { label: d.toLocaleDateString('en-KE', { month: 'short' }), released: 0, escrow: 0 });
+    }
+    for (const c of campaigns) {
+      const d = c.at ? new Date(c.at) : null;
+      const key = d && !Number.isNaN(d.getTime()) ? `${d.getFullYear()}-${d.getMonth()}` : null;
+      const row = key ? months.get(key) : null;
+      if (!row) continue;
+      if (c.status === 'completed') row.released += c.rawAmount;
+      else if (c.status === 'in_progress' || c.status === 'delivered' || c.status === 'disputed') row.escrow += c.rawAmount;
+    }
+    return [...months.values()];
+  }, [campaigns, campaignsFallback.isDemo]);
+  const spendHasData = spendRows.some((r) => r.released || r.escrow);
+
+  const statusRows = useMemo(() => {
+    if (campaignsFallback.isDemo) return DEMO_CAMPAIGN_STATUS;
+    const count = (pred) => campaigns.filter(pred).length;
+    return [
+      { label: 'Active', value: count((c) => c.status === 'in_progress') },
+      { label: 'Awaiting approval', value: count((c) => c.status === 'delivered') },
+      { label: 'Completed', value: count((c) => c.status === 'completed') },
+      { label: 'Disputed', value: count((c) => c.status === 'disputed' || c.status === 'refunded') },
+    ];
+  }, [campaigns, campaignsFallback.isDemo]);
+
+  // Booking funnel: shortlist -> enquiries -> replies -> bookings -> delivered.
+  const enquiries = useEnquiries();
+  const funnelFallback = useDemoFallback(
+    { data: enquiries.pipelineCounts, isError: !!enquiries.error || isShortlistError, isLoading: enquiries.isLoading || isLoadingShortlist },
+    null,
+  );
+  const funnelRows = useMemo(() => {
+    if (funnelFallback.isDemo) return DEMO_BRAND_FUNNEL;
+    const pc = enquiries.pipelineCounts ?? {};
+    const sent = (pc.new ?? 0) + (pc.in_review ?? 0) + (pc.booked ?? 0) + (pc.completed ?? 0);
+    return [
+      { label: 'Creators shortlisted', value: rawShortlist.length },
+      { label: 'Enquiries sent', value: sent },
+      { label: 'Replied', value: (pc.in_review ?? 0) + (pc.booked ?? 0) + (pc.completed ?? 0) },
+      { label: 'Booked', value: (pc.booked ?? 0) + (pc.completed ?? 0) },
+      { label: 'Delivered', value: campaigns.filter((c) => c.status === 'completed').length },
+    ];
+  }, [funnelFallback.isDemo, enquiries.pipelineCounts, rawShortlist.length, campaigns]);
 
   return (
     <div style={{ fontFamily: FONT_BODY, background: C.grey50, minHeight: "100%", color: C.black }}>
@@ -437,7 +502,7 @@ export default function BrandDashboardPage() {
         @media (max-width:600px){.col-3,.col-4,.col-6,.col-8{grid-column:span 12}}
       `}</style>
 
-      <div style={{ padding: "var(--space-32) var(--space-32) var(--space-48)", width: "100%", maxWidth: "none", margin: 0, boxSizing: "border-box" }}>
+      <div style={{ width: "100%", maxWidth: "none", margin: 0, boxSizing: "border-box" }}>
 
         {/* ── Hello message (replaces nav) ── */}
         <div style={{
@@ -446,7 +511,7 @@ export default function BrandDashboardPage() {
         }}>
           <div>
             <div className="page-title">
-              {greeting}, Nairobi Brew Co.
+              {greeting}, {brandName}
             </div>
             <div className="page-subtitle">
               Here's what's happening with your creator campaigns today.
@@ -497,6 +562,53 @@ export default function BrandDashboardPage() {
               </button>
             </div>
           )}
+
+          {/* Spend by month - released vs held in escrow (stacked, two series) */}
+          <ChartFrame
+            className="col-8"
+            title="Spend by month"
+            subtitle={spendHasData && <><strong>{kes(spendRows.reduce((a, r) => a + r.released + r.escrow, 0))}</strong> last 6 months</>}
+            legend={[{ label: 'Released to creators', color: SERIES[0] }, { label: 'Held in escrow', color: SERIES[1] }]}
+            loading={campaignsFallback.isLoading}
+            error={!campaignsFallback.isDemo && isCampaignsError}
+            empty={!spendHasData}
+            emptyTitle="No spend yet"
+            emptyDescription="Booked campaigns will chart here month by month."
+            demo={campaignsFallback.isDemo}
+            height={220}
+          >
+            <BarChart data={spendRows} series={[{ key: 'released', label: 'Released to creators' }, { key: 'escrow', label: 'Held in escrow' }]} stacked format={kes} height={220} />
+          </ChartFrame>
+
+          {/* Campaign status - part-to-whole */}
+          <ChartFrame
+            className="col-4"
+            title="Campaigns by status"
+            loading={campaignsFallback.isLoading}
+            error={!campaignsFallback.isDemo && isCampaignsError}
+            empty={statusRows.every((r) => !r.value)}
+            emptyTitle="No campaigns yet"
+            emptyDescription="Your first booking will show up here."
+            demo={campaignsFallback.isDemo}
+            height={220}
+          >
+            <DonutChart data={statusRows} centerLabel="Campaigns" size={132} />
+          </ChartFrame>
+
+          {/* Booking funnel - horizontal bars, value at the tip */}
+          <ChartFrame
+            className="col-12"
+            title="Booking funnel"
+            subtitle="From shortlist to delivered work"
+            loading={funnelFallback.isLoading}
+            empty={funnelRows.every((r) => !r.value)}
+            emptyTitle="Nothing in the funnel yet"
+            emptyDescription="Shortlist creators and send an enquiry to start one."
+            demo={funnelFallback.isDemo}
+            height={180}
+          >
+            <BarChart data={funnelRows} series={[{ key: 'value', label: 'Count' }]} layout="horizontal" labels height={180} />
+          </ChartFrame>
 
           {/* Active campaigns table */}
           <div className="col-12" style={{ background: C.white, border: `0.5px solid ${C.grey100}`, borderRadius: R.xl, overflow: "hidden" }}>

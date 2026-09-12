@@ -167,8 +167,8 @@ const SIDEBAR_SECTIONS = [
   {
     label: 'Payments',
     items: [
-      { label: 'Billing & invoices', icon: IconReceipt2,  disabled: true },
-      { label: 'Transaction history', icon: IconReportMoney, disabled: true },
+      { to: '/brand/billing',      label: 'Billing & invoices',  icon: IconReceipt2 },
+      { to: '/brand/transactions', label: 'Transaction history', icon: IconReportMoney },
     ],
   },
   {

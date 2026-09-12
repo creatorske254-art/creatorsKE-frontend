@@ -68,6 +68,22 @@
   --status-info-bg:      #CFFAFE;
   --status-info-text:    #0E7490;
 
+  /* ─── Charts (Recharts, src/components/charts) ───────────────────────────
+     Categorical series in FIXED order - a series keeps its slot no matter how
+     many are shown. Validated (dataviz six checks) for light and dark: worst
+     adjacent CVD dE 9.1 light / 8.4 dark. Slots 3-4 sit under 3:1 on white,
+     so every multi-series chart carries a legend + tooltip (the relief rule).
+     Sequential magnitude uses the purple ramp; status colours stay reserved
+     for status. Text in charts wears text tokens, never a series colour. */
+  --chart-1:      var(--purple-600); /* brand: the primary / "this one" series */
+  --chart-2:      #EB6834;           /* orange */
+  --chart-3:      #1BAF7A;           /* aqua */
+  --chart-4:      #EDA100;           /* yellow */
+  --chart-muted:  var(--grey-200);   /* de-emphasised context series, empty track */
+  --chart-grid:   var(--grey-100);   /* hairline gridlines */
+  --chart-axis:   var(--grey-400);   /* tick labels */
+  --chart-surface: var(--white);     /* the card the chart sits on: gaps, rings, tooltip bg */
+
   /* ─── Brand tints - decorative identity color only ──────────────────────
      NOT structure, NOT accent, NOT status. Purpose: let a list of external
      entities (brands, clients, companies) be visually told apart at a
@@ -283,6 +299,12 @@
 
   --status-info-bg:      #042C36;
   --status-info-text:    #22D3EE;
+
+  /* Charts - same four hues re-stepped for the dark card surface (#262626) */
+  --chart-1: var(--purple-600); /* #7F77DD in dark */
+  --chart-2: #D95926;
+  --chart-3: #199E70;
+  --chart-4: #C98500;
 
   /* Brand tints - same inversion pattern as status colors above */
   --tint-amber-bg:     #3A2504; --tint-amber-border: #BA7517; --tint-amber-text: #FAC775;
@@ -935,6 +957,54 @@
   .data-table tr:last-child td { border-bottom: none; }
 
   /* ── Progress bars ────────────────────────────────────────────────────── */
+  /* ─── Charts (src/components/charts) ────────────────────────────────────
+     Recharts draws the marks; everything around them - frame, legend,
+     tooltip, donut list, meter, sparkline - is styled here so every chart on
+     every dashboard shares one look. Colours come from --chart-*. */
+  .chart-frame { display: flex; flex-direction: column; min-width: 0; }
+  .chart-frame__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-12); margin-bottom: var(--space-12); flex-wrap: wrap; }
+  .chart-frame__subtitle { font-size: 12px; color: var(--grey-500); margin-top: var(--space-2); }
+  .chart-frame__subtitle strong { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--black); margin-right: var(--space-4); }
+  .chart-frame__right { display: flex; align-items: center; gap: var(--space-4); flex-shrink: 0; }
+  .chart-frame__body { position: relative; min-width: 0; }
+  .chart-frame .recharts-wrapper, .chart-frame .recharts-surface { outline: none; }
+  .chart-frame .recharts-cartesian-grid line { shape-rendering: crispEdges; }
+
+  .chart-legend { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-16); list-style: none; margin: 0 0 var(--space-12); padding: 0; }
+  .chart-legend li { display: inline-flex; align-items: center; gap: var(--space-8); font-size: 12px; color: var(--grey-600); }
+  .chart-legend__swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .chart-tooltip { background: var(--chart-surface); border: 0.5px solid var(--grey-200); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: var(--space-8) var(--space-12); font-size: 12px; color: var(--grey-600); min-width: 120px; }
+  .chart-tooltip__label { font-weight: 500; color: var(--black); margin-bottom: var(--space-4); }
+  .chart-tooltip__row { display: flex; align-items: center; gap: var(--space-8); }
+  .chart-tooltip__row + .chart-tooltip__row { margin-top: var(--space-2); }
+  .chart-tooltip__name { flex: 1; }
+  .chart-tooltip__value { font-weight: 600; color: var(--black); font-variant-numeric: tabular-nums; }
+
+  .chart-period { display: inline-flex; gap: var(--space-2); background: var(--grey-50); border-radius: var(--radius-md); padding: var(--space-2); }
+  .chart-period button { background: none; border: none; font: inherit; font-size: 11px; font-weight: 500; color: var(--grey-500); padding: var(--space-4) var(--space-8); border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition-fast); }
+  .chart-period button:hover { color: var(--black); }
+  .chart-period button[aria-pressed="true"] { background: var(--white); color: var(--black); box-shadow: var(--shadow-sm); }
+
+  .donut { display: flex; align-items: center; gap: var(--space-24); flex-wrap: wrap; }
+  .donut__ring { position: relative; flex-shrink: 0; }
+  .donut__center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+  .donut__hero { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: var(--black); line-height: 1; }
+  .donut__caption { font-size: 11px; color: var(--grey-400); margin-top: var(--space-4); }
+  .donut__list { flex: 1; min-width: 160px; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-8); }
+  .donut__list li { display: grid; grid-template-columns: 10px 1fr auto auto; align-items: center; gap: var(--space-8); font-size: 12.5px; color: var(--grey-600); }
+  .donut__value { font-weight: 600; color: var(--black); font-variant-numeric: tabular-nums; }
+  .donut__pct { color: var(--grey-400); min-width: 32px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .sparkline { width: 100%; min-width: 0; }
+  .sparkline .recharts-wrapper { cursor: default; }
+
+  .meter { display: flex; flex-direction: column; gap: var(--space-4); }
+  .meter__row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--grey-600); }
+  .meter__detail { font-weight: 600; color: var(--black); font-variant-numeric: tabular-nums; }
+  .meter__track { height: 6px; background: var(--grey-100); border-radius: var(--radius-pill); overflow: hidden; }
+  .meter__fill { height: 100%; border-radius: var(--radius-pill); transition: width 0.3s; }
+
   .progress-bar-wrap { background: var(--grey-100); border-radius: var(--radius-pill); overflow: hidden; }
   .progress-bar-fill { background: var(--purple-600); border-radius: var(--radius-pill); transition: width 0.3s; }
   .progress-xs { height: 4px; }

@@ -295,7 +295,7 @@ export default function ReviewsPage() {
     data.filter((r) => r.replied);
 
   return (
-    <div style={{ padding: 'var(--space-32)', background: "var(--page-bg)", minHeight: "100vh", fontFamily: "var(--font-body)" }}>
+    <div style={{ fontFamily: "var(--font-body)" }}>
 
       {/* Page heading */}
       <div style={{ marginBottom: 'var(--space-32)' }}>

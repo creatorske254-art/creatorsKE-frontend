@@ -10,6 +10,7 @@ export function useAdmin() {
   return {
     stats: query.data,
     isLoading: query.isLoading,
+    isError: query.isError,
     flaggedReviewCount: query.data?.flaggedReviewCount ?? null,
   };
 }

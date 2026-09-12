@@ -46,12 +46,17 @@ import CampaignDetailPage   from '@/pages/brand/CampaignDetailPage'
 import ShortlistPage        from '@/pages/brand/ShortlistPage'
 import BrandSettingsPage    from '@/pages/brand/SettingsPage'
 import BrandEnquiriesPage   from '@/pages/brand/EnquiriesPage'
+import BrandBillingPage     from '@/pages/brand/BillingPage'
+import BrandTransactionsPage from '@/pages/brand/TransactionsPage'
 
 // ── Admin pages ───────────────────────────────────────────────────────────
 import AdminOverviewPage  from '@/pages/admin/OverviewPage'
 import AdminDisputesPage  from '@/pages/admin/DisputesPage'
 import AdminAccountsPage  from '@/pages/admin/AccountsPage'
 import AdminReviewsPage   from '@/pages/admin/ReviewsPage'
+import AdminEscrowPage    from '@/pages/admin/EscrowPage'
+import AdminDeletionRequestsPage from '@/pages/admin/DeletionRequestsPage'
+import AdminReEngagementPage from '@/pages/admin/ReEngagementPage'
 
 // ─────────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
@@ -132,6 +137,8 @@ const router = createBrowserRouter([
           { path: 'brand/campaigns/:id',element: <CampaignDetailPage /> },
           { path: 'brand/shortlist',    element: <ShortlistPage /> },
           { path: 'brand/settings',     element: <BrandSettingsPage /> },
+          { path: 'brand/billing',      element: <BrandBillingPage /> },
+          { path: 'brand/transactions', element: <BrandTransactionsPage /> },
         ],
       },
     ],
@@ -149,6 +156,9 @@ const router = createBrowserRouter([
           { path: 'admin/disputes',     element: <AdminDisputesPage /> },
           { path: 'admin/accounts',     element: <AdminAccountsPage /> },
           { path: 'admin/reviews',      element: <AdminReviewsPage /> },
+          { path: 'admin/escrow',       element: <AdminEscrowPage /> },
+          { path: 'admin/deletion-requests', element: <AdminDeletionRequestsPage /> },
+          { path: 'admin/re-engagement', element: <AdminReEngagementPage /> },
         ],
       },
     ],

@@ -265,6 +265,11 @@ function Stepper({ current }) {
   );
 }
 
+/* The preview card's CTAs mirror what brands will see; clicking them in the
+   builder gets a clear answer instead of silently doing nothing. */
+const previewOnly = () =>
+  toast.info("This is a preview — brands will use these buttons on your published rate card.");
+
 /* live preview card */
 function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTime, availability }) {
   const activePlats = Object.entries(platforms).filter(([, on]) => on).map(([k]) => k);
@@ -314,8 +319,8 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
         </div>
       </div>
       <div className="rcp-footer">
-        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }}><IconMessageCircle size={12} />Enquire</button>
-        <button className="btn btn-accent btn-sm" style={{ flex: 1 }}>Book now</button>
+        <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={previewOnly}><IconMessageCircle size={12} />Enquire</button>
+        <button className="btn btn-accent btn-sm" style={{ flex: 1 }} onClick={previewOnly}>Book now</button>
       </div>
     </div>
   );
@@ -736,7 +741,7 @@ export default function RateCardBuilderPage() {
                   {airtelConnected ? (
                     <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
                   ) : (
-                    <button className="btn btn-ghost btn-sm" disabled={airtelLoading} onClick={connectAirtel}>{airtelLoading ? "Connecting…" : "Connect"}</button>
+                    <button className={`btn btn-ghost btn-sm${airtelLoading ? " btn-loading" : ""}`} disabled={airtelLoading} onClick={connectAirtel}>Connect</button>
                   )}
                 </div>
                 <div className="field">
@@ -951,8 +956,8 @@ export default function RateCardBuilderPage() {
                     <span style={{ fontSize: 10, color: "var(--txt-tertiary)", marginLeft: 4 }}>Usage rights &middot; {revisionPolicy.split(" ").slice(0, 2).join(" ")}</span>
                   </div>
                   <div className="rcp-footer">
-                    <button className="btn btn-secondary btn-sm" style={{ flex: 1 }}><IconMessageCircle size={12} />Enquire</button>
-                    <button className="btn btn-accent btn-sm" style={{ flex: 1 }}>Book now</button>
+                    <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={previewOnly}><IconMessageCircle size={12} />Enquire</button>
+                    <button className="btn btn-accent btn-sm" style={{ flex: 1 }} onClick={previewOnly}>Book now</button>
                   </div>
                 </div>
                 <p className="hint" style={{ marginTop: 7, textAlign: "center" }}>Updates as you type</p>
@@ -1013,8 +1018,8 @@ export default function RateCardBuilderPage() {
                   </div>
                 </div>
               ) : (
-                <button className="btn btn-accent btn-full" style={{ padding: 13 }} disabled={isPublishing || isCreating} onClick={doPublish}>
-                  <IconRocket size={15} />{isPublishing || isCreating ? "Publishing…" : "Publish rate card"}
+                <button className={`btn btn-accent btn-full${isPublishing || isCreating ? " btn-loading" : ""}`} style={{ padding: 13 }} disabled={isPublishing || isCreating} onClick={doPublish}>
+                  <IconRocket size={15} />Publish rate card
                 </button>
               )}
             </div>
@@ -1028,9 +1033,9 @@ export default function RateCardBuilderPage() {
               <button className="btn btn-ghost" onClick={back}><IconArrowLeft size={13} />Back</button>
             ) : <div />}
             <div style={{ display: "flex", gap: 7 }}>
-              {step < 5 && <button className="btn btn-ghost" disabled={savingDraft} onClick={handleSaveDraft}>{savingDraft ? "Saving…" : "Save draft"}</button>}
+              {step < 5 && <button className={`btn btn-ghost${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={handleSaveDraft}>Save draft</button>}
               {step === 5 ? (
-                <button className="btn btn-ghost" disabled={savingDraft} onClick={handleSaveDraft}>{savingDraft ? "Saving…" : "Save draft"}</button>
+                <button className={`btn btn-ghost${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={handleSaveDraft}>Save draft</button>
               ) : (
                 <button className="btn btn-primary" onClick={next}>Save &amp; continue<IconArrowRight size={13} /></button>
               )}

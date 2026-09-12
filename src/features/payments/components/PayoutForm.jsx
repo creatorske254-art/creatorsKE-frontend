@@ -57,7 +57,7 @@ export default function PayoutForm({
         disabled={!canSubmit || !primaryMethod}
         onClick={() => onSubmit(numericAmount)}
       >
-        {isSubmitting ? 'Sending…' : 'Confirm withdrawal'}
+        Confirm withdrawal
       </button>
     </div>
   );

@@ -342,11 +342,11 @@ export default function AccountsPage() {
             <div style={{ padding: '14px 20px', borderTop: '0.5px solid var(--grey-100)', display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button className="btn btn-ghost" onClick={() => setConfirmAction(null)}>Cancel</button>
               <button
-                className={confirmAction.type === 'restore' ? 'btn btn-primary' : 'btn btn-danger'}
+                className={`${confirmAction.type === 'restore' ? 'btn btn-primary' : 'btn btn-danger'}${isTakingAction ? ' btn-loading' : ''}`}
                 disabled={isTakingAction}
                 onClick={() => applyStatus(confirmAction.account.id, confirmAction.type)}
               >
-                {isTakingAction ? 'Working…' : confirmAction.type === 'suspend' ? 'Suspend' : confirmAction.type === 'restore' ? 'Restore' : 'Remove permanently'}
+                {confirmAction.type === 'suspend' ? 'Suspend' : confirmAction.type === 'restore' ? 'Restore' : 'Remove permanently'}
               </button>
             </div>
           </div>

@@ -1007,12 +1007,12 @@ function AccountTab() {
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button
-            className="btn btn-danger btn-sm"
+            className={`btn btn-danger btn-sm${unpublishing || isUnpublishingAll ? " btn-loading" : ""}`}
             disabled={unpublishing || isUnpublishingAll}
             onClick={() => setConfirmUnpublish(true)}
           >
             <i className="ti ti-eye-off" style={{ fontSize: 12 }} />
-            {unpublishing || isUnpublishingAll ? "Unpublishing…" : "Unpublish all cards"}
+            Unpublish all cards
           </button>
           <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
             <i className="ti ti-trash" style={{ fontSize: 12 }} />
@@ -1077,8 +1077,8 @@ function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
       />
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
         <button className="btn btn-secondary btn-sm" onClick={onCancel} disabled={deleting}>Cancel</button>
-        <button className="btn btn-danger btn-sm" onClick={onConfirm} disabled={!armed || deleting}>
-          {deleting ? "Deleting…" : "Delete my account"}
+        <button className={`btn btn-danger btn-sm${deleting ? " btn-loading" : ""}`} onClick={onConfirm} disabled={!armed || deleting}>
+          Delete my account
         </button>
       </div>
     </Modal>

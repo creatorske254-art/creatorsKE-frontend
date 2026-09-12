@@ -410,34 +410,22 @@ export default function PortfolioBuilderPage() {
           {isPublished ? (
             <button
               type="button"
-              className="btn btn-ghost btn-sm"
+              className={`btn btn-ghost btn-sm${isUnpublishing ? ' btn-loading' : ''}`}
               onClick={() => unpublish(portfolio.id)}
               disabled={isUnpublishing}
             >
-              {isUnpublishing ? (
-                <span className="btn-loading">Unpublish</span>
-              ) : (
-                <>
-                  <i className="ti ti-eye-off" style={{ fontSize: 13 }} aria-hidden="true" />
-                  Unpublish
-                </>
-              )}
+              <i className="ti ti-eye-off" style={{ fontSize: 13 }} aria-hidden="true" />
+              Unpublish
             </button>
           ) : (
             <button
               type="button"
-              className="btn btn-purple btn-sm"
+              className={`btn btn-purple btn-sm${isPublishing ? ' btn-loading' : ''}`}
               onClick={() => publish(portfolio?.id)}
               disabled={isPublishing}
             >
-              {isPublishing ? (
-                <span className="btn-loading">Publish portfolio</span>
-              ) : (
-                <>
-                  <i className="ti ti-send" style={{ fontSize: 13 }} aria-hidden="true" />
-                  Publish portfolio
-                </>
-              )}
+              <i className="ti ti-send" style={{ fontSize: 13 }} aria-hidden="true" />
+              Publish portfolio
             </button>
           )}
         </div>

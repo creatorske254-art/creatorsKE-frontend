@@ -172,7 +172,7 @@ export default function DirectoryPage() {
         </span>
 
         <div className="dir-navbar-links" style={{ display: 'flex', gap: 4 }}>
-          <button className="dir-nav-link active">Browse creators</button>
+          <button className="dir-nav-link active" aria-current="page" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Browse creators</button>
           <button className="dir-nav-link" onClick={() => navigate('/#how-it-works')}>How it works</button>
           <button className="dir-nav-link" onClick={() => navigate('/pricing')}>Pricing</button>
         </div>

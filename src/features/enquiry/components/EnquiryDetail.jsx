@@ -96,21 +96,21 @@ export default function EnquiryDetail({
         <div className="enq-actions">
           <button
             type="button"
-            className="btn btn-purple btn-full"
+            className={`btn btn-purple btn-full${isAccepting ? ' btn-loading' : ''}`}
             onClick={onAccept}
             disabled={isAccepting || isDeclining}
           >
             <IconCheck size={14} />
-            {isAccepting ? 'Accepting…' : 'Accept enquiry'}
+            Accept enquiry
           </button>
           <button
             type="button"
-            className="btn btn-danger btn-full"
+            className={`btn btn-danger btn-full${isDeclining ? ' btn-loading' : ''}`}
             onClick={onDecline}
             disabled={isAccepting || isDeclining}
           >
             <IconX size={14} />
-            {isDeclining ? 'Declining…' : 'Decline'}
+            Decline
           </button>
         </div>
       )}

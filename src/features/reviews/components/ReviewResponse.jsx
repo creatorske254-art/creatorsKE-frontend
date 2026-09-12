@@ -46,11 +46,11 @@ export default function ReviewResponse({ review, canReply = false, onSubmit, isS
       />
       <div style={{ display: 'flex', gap: 6 }}>
         <button
-          className="btn btn-purple btn-xs"
+          className={`btn btn-purple btn-xs${isSubmitting ? ' btn-loading' : ''}`}
           disabled={!text.trim() || isSubmitting}
           onClick={() => onSubmit(text.trim())}
         >
-          {isSubmitting ? 'Posting…' : 'Post reply'}
+          Post reply
         </button>
         <button className="btn btn-ghost btn-xs" onClick={() => { setComposing(false); setText(''); }}>Cancel</button>
       </div>

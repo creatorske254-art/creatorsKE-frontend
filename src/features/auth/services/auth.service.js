@@ -5,6 +5,8 @@ export const authService = {
   login: (credentials) => api.post('/auth/login', credentials),
   refreshToken: (refreshToken) => api.post('/auth/refresh-token', { refreshToken }),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
+  // Not in the documented API — best-effort path, see BACKEND_API_SPEC.md.
+  resendVerification: (email) => api.post('/auth/resend-verification', { email }),
   requestPasswordReset: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, password: newPassword }),
   logout: () => api.post('/auth/logout'),

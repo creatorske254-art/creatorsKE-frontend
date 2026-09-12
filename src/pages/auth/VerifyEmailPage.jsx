@@ -15,6 +15,9 @@ export default function VerifyEmailPage() {
   const [status, setStatus] = useState(token ? STATUS.LOADING : STATUS.IDLE);
   const [errorMsg, setErrorMsg] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [resending, setResending] = useState(false);
+  // Signup stores the address so this page can resend without asking again.
+  const pendingEmail = searchParams.get('email') || sessionStorage.getItem('creatorske_pending_email') || '';
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -22,13 +25,22 @@ export default function VerifyEmailPage() {
     return () => clearTimeout(t);
   }, [resendCooldown]);
 
-  // ASSUMPTION: no dedicated resend-verification endpoint is documented in
-  // the API doc — this is a no-op backend call, matching the same optimistic
-  // pattern already used for this exact scenario in OnboardingPage.jsx.
-  const handleResend = () => {
-    if (resendCooldown > 0) return;
-    toast.success('Verification email resent — check your inbox.');
-    setResendCooldown(RESEND_COOLDOWN_S);
+  const handleResend = async () => {
+    if (resendCooldown > 0 || resending) return;
+    if (!pendingEmail) {
+      toast.error("We don't know which email to resend to — please sign up again.");
+      return;
+    }
+    setResending(true);
+    try {
+      await authService.resendVerification(pendingEmail);
+      toast.success(`Verification email resent to ${pendingEmail}.`);
+      setResendCooldown(RESEND_COOLDOWN_S);
+    } catch (err) {
+      toast.error(err.message ?? 'Could not resend the email. Please try again.');
+    } finally {
+      setResending(false);
+    }
   };
 
   useEffect(() => {
@@ -84,7 +96,8 @@ export default function VerifyEmailPage() {
               <button
                 type="button"
                 onClick={handleResend}
-                disabled={resendCooldown > 0}
+                disabled={resendCooldown > 0 || resending}
+                className={resending ? 'btn-loading' : undefined}
                 style={{
                   background: 'none', border: 'none', fontWeight: 500, cursor: resendCooldown > 0 ? 'default' : 'pointer',
                   fontSize: '13px', padding: 0,

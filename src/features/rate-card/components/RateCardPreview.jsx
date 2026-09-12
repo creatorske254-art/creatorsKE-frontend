@@ -1,4 +1,8 @@
+import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/utils';
+
+const previewOnly = () =>
+  toast.info('This is a preview — brands will use this button on your published rate card.');
 
 /**
  * RateCardPreview
@@ -102,7 +106,7 @@ export default function RateCardPreview({ data = {}, creatorName = '' }) {
                     {pkg.revisions === 'unlimited' ? 'Unlimited' : pkg.revisions} revision{pkg.revisions !== '1' && pkg.revisions !== 'unlimited' ? 's' : ''}
                   </span>
                 )}
-                <button className="btn btn-primary btn-sm" style={{ marginLeft: 'auto' }}>
+                <button type="button" className="btn btn-primary btn-sm" style={{ marginLeft: 'auto' }} onClick={previewOnly}>
                   Book now
                 </button>
               </div>

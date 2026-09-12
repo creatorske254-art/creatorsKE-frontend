@@ -310,13 +310,14 @@ function CampaignDrawer({ campaign, onClose }) {
               <button
                 onClick={handleApprove}
                 disabled={isApproving}
+                className={isApproving ? "btn-loading" : undefined}
                 style={{
                   flex: 1, background: C.black, color: C.white, border: "none",
                   borderRadius: R.md, padding: "10px 0", fontSize: 13, fontWeight: 500,
-                  cursor: "pointer", opacity: isApproving ? .7 : 1, fontFamily: FONT_BODY,
+                  cursor: "pointer", fontFamily: FONT_BODY,
                 }}
               >
-                {isApproving ? "Approving…" : "Approve delivery"}
+                Approve delivery
               </button>
               <button
                 onClick={handleRaiseDispute}

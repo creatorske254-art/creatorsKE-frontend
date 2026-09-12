@@ -93,8 +93,8 @@ const css = `
 
   /* Starter note */
   .ps-starter-note { font-size: 12px; color: var(--grey-400); text-align: center; margin-bottom: 24px; }
-  .ps-starter-note a { color: var(--purple-600); font-weight: 500; cursor: pointer; text-decoration: none; }
-  .ps-starter-note a:hover { text-decoration: underline; }
+  .ps-starter-note .ps-link-btn { color: var(--purple-600); font-weight: 500; cursor: pointer; text-decoration: none; background: none; border: none; padding: 0; font: inherit; }
+  .ps-starter-note .ps-link-btn:hover { text-decoration: underline; }
 
   /* CTA button — .btn/.btn-purple/.btn-lg/.btn-full/.btn-loading come from
      the shared index.css button system. Only the disabled-state dimming has
@@ -259,7 +259,7 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
           disabled={!valid || isSubmitting}
           onClick={() => onConfirm({ provider, phone: phone.trim() })}
         >
-          {isSubmitting ? 'Starting…' : 'Start trial'}
+          Start trial
         </button>
       </div>
     </Modal>
@@ -464,9 +464,9 @@ export default function PlanSelectionPage({ firstName, onComplete }) {
 
               <div className="ps-starter-note">
                 No commitment on Starter.{' '}
-                <a onClick={() => { setSelectedPlan('starter'); handleContinue('starter') }}>
+                <button type="button" className="ps-link-btn" onClick={() => { setSelectedPlan('starter'); handleContinue('starter') }}>
                   Continue free →
-                </a>
+                </button>
               </div>
 
               <button

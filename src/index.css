@@ -637,7 +637,7 @@
 
   .btn-purple {
     background: var(--purple-600);
-    color: var(--white);
+    color: #fff; /* literal: purple is a fixed hue, so its label must not flip with the theme */
     border-radius: var(--radius-md);
     font-size: var(--text-body-size);
     padding: 11px 22px;
@@ -826,17 +826,31 @@
   .btn-danger:hover { background: var(--status-error-bg); filter: brightness(0.94); }
 
   .btn-disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-  .btn-loading { pointer-events: none; opacity: 0.7; position: relative; color: transparent !important; }
-  .btn-loading::after {
+
+  /* Loading state: the label stays readable and a small spinner appears in
+     front of it, replacing any leading icon so there's never icon + spinner.
+     The spinner is drawn in currentColor, so it's automatically right on
+     every variant (white on purple/primary, dark on secondary, red on danger)
+     and in both themes. Add `btn-loading` alongside the variant class while a
+     request is in flight; keep the label constant — never swap it for
+     "Saving…" text. */
+  .btn-loading { pointer-events: none; opacity: 0.85; }
+  .btn-loading::before {
     content: '';
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    border: 2px solid color-mix(in srgb, currentColor 25%, transparent);
+    border-top-color: currentColor;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
+  /* Raw (non-.btn) buttons aren't flex, so give the spinner its own gap */
+  .btn-loading:not(.btn)::before { margin-right: 7px; vertical-align: -2px; }
+  .btn-loading > i:first-child,
+  .btn-loading > svg:first-child { display: none; }
+  .btn-xs.btn-loading::before, .btn-sm.btn-loading::before { width: 11px; height: 11px; }
 
   /* ── Avatar ───────────────────────────────────────────────────────────── */
   .avatar {

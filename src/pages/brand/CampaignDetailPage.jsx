@@ -369,9 +369,9 @@ export default function CampaignDetailPage() {
 
                 {!showDisputeForm ? (
                   <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
-                    <button className="btn btn-purple" onClick={handleApprove} disabled={isApproving}>
+                    <button className={`btn btn-purple${isApproving ? ' btn-loading' : ''}`} onClick={handleApprove} disabled={isApproving}>
                       <IconCheck size={14} />
-                      {isApproving ? 'Approving…' : 'Approve & release payment'}
+                      Approve & release payment
                     </button>
                     <button className="btn btn-danger" onClick={() => setShowDisputeForm(true)}>
                       <IconScale size={14} />
@@ -390,7 +390,7 @@ export default function CampaignDetailPage() {
                       style={{ marginBottom: 'var(--space-10)', resize: 'vertical' }}
                     />
                     <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
-                      <button className="btn btn-danger" disabled={isDisputing} onClick={handleRaiseDispute}>{isDisputing ? 'Submitting…' : 'Submit dispute'}</button>
+                      <button className={`btn btn-danger${isDisputing ? ' btn-loading' : ''}`} disabled={isDisputing} onClick={handleRaiseDispute}>Submit dispute</button>
                       <button className="btn btn-ghost" onClick={() => setShowDisputeForm(false)}>Cancel</button>
                     </div>
                   </div>

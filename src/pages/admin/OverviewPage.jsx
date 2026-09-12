@@ -5,6 +5,7 @@ import { useAdmin } from '@/features/admin/hooks/useAdmin';
 import { useDisputes } from '@/features/admin/hooks/useDisputes';
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
 import { formatCurrency, getInitials } from '@/lib/utils';
+import Modal from '@/components/ui/Modal';
 
 // A small "Demo data" tag for sections with no backing endpoint yet (see the
 // production-readiness plan's backend spec) — kept visible rather than
@@ -168,6 +169,7 @@ export default function OverviewPage() {
   useTablerIcons();
   const navigate = useNavigate();
   const [period, setPeriod] = useState("7d");
+  const [emailCopyOpen, setEmailCopyOpen] = useState(false);
 
   const { stats, isLoading: statsLoading } = useAdmin();
   const { disputes: rawDisputes, openDisputeCount, isLoading: disputesLoading } = useDisputes();
@@ -397,7 +399,7 @@ export default function OverviewPage() {
             <h2 style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: "var(--black)", marginBottom: 2, display: 'flex', alignItems: 'center', gap: 8 }}>Re-engagement email queue <DemoTag /></h2>
             <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Creators who abandoned their onboarding draft for 48+ hours. Emails sent automatically.</div>
           </div>
-          <button className="btn btn-ghost btn-sm">
+          <button className="btn btn-ghost btn-sm" onClick={() => setEmailCopyOpen(true)}>
             Review email copy
           </button>
         </div>
@@ -439,6 +441,25 @@ export default function OverviewPage() {
           </table>
         </div>
       </div>
+
+      <Modal open={emailCopyOpen} onClose={() => setEmailCopyOpen(false)} title="Re-engagement email" size="md">
+        <p style={{ fontSize: 12.5, color: "var(--grey-500)", marginBottom: 14 }}>
+          Sent automatically 48 hours after a creator abandons their onboarding draft. Editing the copy needs a backend template endpoint — this shows what currently goes out.
+        </p>
+        <div style={{ border: "0.5px solid var(--grey-200)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+          <div style={{ padding: "10px 14px", background: "var(--grey-50)", borderBottom: "0.5px solid var(--grey-200)", fontSize: 12.5 }}>
+            <div><span style={{ color: "var(--grey-400)" }}>Subject:</span> <strong>Your rate card is almost ready, {'{{firstName}}'}</strong></div>
+            <div style={{ marginTop: 2 }}><span style={{ color: "var(--grey-400)" }}>From:</span> Creatorske &lt;hello@creatorske.com&gt;</div>
+          </div>
+          <div style={{ padding: 16, fontSize: 13.5, lineHeight: 1.7, color: "var(--grey-700)" }}>
+            <p>Hi {'{{firstName}}'},</p>
+            <p>You started building your rate card on Creatorske but didn't finish. It's saved exactly where you left it — {'{{packageCount}}'} package{'{{packageCount === 1 ? "" : "s"}}'} and counting.</p>
+            <p>Creators with a published card get their first brand enquiry within a median of 6 days. Pick up where you left off:</p>
+            <p><span className="btn btn-purple btn-sm" style={{ pointerEvents: "none" }}>Finish my rate card</span></p>
+            <p style={{ color: "var(--grey-400)", fontSize: 12 }}>Not interested anymore? <u>Delete my draft</u> · <u>Unsubscribe</u></p>
+          </div>
+        </div>
+      </Modal>
 
     </div>
   );

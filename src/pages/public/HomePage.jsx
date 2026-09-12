@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
   IconLayoutCards,
@@ -112,9 +113,26 @@ function FeatureCard({ icon, title, desc }) {
 }
 
 // ── Main Page ──────────────────────────────────────────────────────────────
+// Footer social profiles. Kept in one place so the real handles can be set
+// without touching markup; they open in a new tab like any external link.
+const SOCIAL_LINKS = [
+  { key: 'instagram', Icon: IconBrandInstagram, href: 'https://www.instagram.com/creatorske', label: 'Creatorske on Instagram' },
+  { key: 'tiktok',    Icon: IconBrandTiktok,    href: 'https://www.tiktok.com/@creatorske',   label: 'Creatorske on TikTok' },
+  { key: 'linkedin',  Icon: IconBrandLinkedin,  href: 'https://www.linkedin.com/company/creatorske', label: 'Creatorske on LinkedIn' },
+];
+
 export default function HomePage() {
   usePageMeta(null, "Creatorske — the marketplace for Kenya's content creators. Build a shareable rate card, get discovered by brands, and get paid via M-Pesa.");
   const navigate = useNavigate();
+  const { hash } = useLocation();
+
+  // Other pages deep-link here as /#how-it-works; the router doesn't scroll
+  // to hashes on its own, so do it once the section has rendered.
+  useEffect(() => {
+    if (!hash) return;
+    const el = document.getElementById(hash.slice(1));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [hash]);
 
   const creators = [
     { initials: 'AO', name: 'Amara Osei',   handle: '@amaracreates · Lifestyle', followers: '48K',  eng: '4.8%', rating: '4.9', avail: 'available', gradient: 'linear-gradient(135deg,#6B5FF4,#1E1480)', delay: 0    },
@@ -306,17 +324,14 @@ export default function HomePage() {
               The professional rate card platform for East African content creators.
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              {[
-                { key: 'instagram', Icon: IconBrandInstagram },
-                { key: 'tiktok',    Icon: IconBrandTiktok    },
-                { key: 'linkedin',  Icon: IconBrandLinkedin  },
-              ].map(({ key, Icon }) => (
-                <button key={key} style={{ width: 34, height: 34, borderRadius: 8, border: '0.5px solid var(--grey-700)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--grey-400)', transition: 'all .15s' }}
+              {SOCIAL_LINKS.map(({ key, Icon, href, label }) => (
+                <a key={key} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} title={label}
+                  style={{ width: 34, height: 34, borderRadius: 8, border: '0.5px solid var(--grey-700)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--grey-400)', transition: 'all .15s', textDecoration: 'none' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--grey-400)'; e.currentTarget.style.color = 'var(--white)'; e.currentTarget.style.background = 'var(--grey-800)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--grey-700)'; e.currentTarget.style.color = 'var(--grey-400)'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   <Icon size={16} />
-                </button>
+                </a>
               ))}
             </div>
           </div>

@@ -256,9 +256,9 @@ function SaveBar({ dirty, saving, onSave }) {
   return (
     <div className="settings-savebar">
       <span className="settings-savebar-hint">You have unsaved changes</span>
-      <button className="btn btn-primary" onClick={onSave} disabled={saving}>
+      <button className={`btn btn-primary${saving ? " btn-loading" : ""}`} onClick={onSave} disabled={saving}>
         <i className="ti ti-check" style={{ fontSize: 13 }} />
-        {saving ? "Saving…" : "Save changes"}
+        Save changes
       </button>
     </div>
   );
@@ -755,8 +755,8 @@ function SecurityTab({ onDirty }) {
                 </div>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button className="btn btn-primary" onClick={handlePwSave} disabled={pwSaving}>
-                  {pwSaving ? "Updating…" : "Update password"}
+                <button className={`btn btn-primary${pwSaving ? " btn-loading" : ""}`} onClick={handlePwSave} disabled={pwSaving}>
+                  Update password
                 </button>
               </div>
             </div>
@@ -935,8 +935,8 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
           {blocked ? "Close" : "Cancel"}
         </button>
         {!blocked && (
-          <button className="btn btn-danger btn-sm" onClick={onConfirm} disabled={!armed || deleting}>
-            {deleting ? "Deleting…" : "Delete my account"}
+          <button className={`btn btn-danger btn-sm${deleting ? " btn-loading" : ""}`} onClick={onConfirm} disabled={!armed || deleting}>
+            Delete my account
           </button>
         )}
       </div>

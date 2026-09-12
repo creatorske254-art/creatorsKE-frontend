@@ -421,8 +421,8 @@ export default function DisputesPage() {
                         />
                       </div>
 
-                      <button className="btn btn-primary" disabled={!note.trim() || isResolving} onClick={submitDecision}>
-                        <i className="ti ti-gavel" style={{ fontSize: 14 }} /> {isResolving ? 'Submitting…' : 'Issue binding decision'}
+                      <button className={`btn btn-primary${isResolving ? ' btn-loading' : ''}`} disabled={!note.trim() || isResolving} onClick={submitDecision}>
+                        <i className="ti ti-gavel" style={{ fontSize: 14 }} /> Issue binding decision
                       </button>
                     </>
                   )}

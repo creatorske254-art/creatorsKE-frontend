@@ -67,8 +67,8 @@ export default function EnquiryForm({ creatorId, packages = [], initialPackageId
             Cancel
           </button>
         )}
-        <button type="submit" className="btn btn-purple" disabled={isCreating || !message.trim()}>
-          {isCreating ? 'Sending…' : 'Send enquiry'}
+        <button type="submit" className={`btn btn-purple${isCreating ? ' btn-loading' : ''}`} disabled={isCreating || !message.trim()}>
+          Send enquiry
         </button>
       </div>
     </form>

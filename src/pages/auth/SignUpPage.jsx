@@ -135,15 +135,8 @@ function Navbar({ step, onBack }) {
   );
 }
 
-// Google button
-const GoogleSVG = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24">
-    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-  </svg>
-);
+// Google sign-up intentionally absent until the backend has an OAuth endpoint —
+// a button that can only say "coming soon" is a mockup.
 
 // Step 1: Choose type
 function StepChooseType({ onContinue }) {
@@ -244,6 +237,7 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
     try {
       await authService.signup({ ...data, role: ROLES.CREATOR });
       toast.success('Account created! Check your email to verify.');
+      sessionStorage.setItem('creatorske_pending_email', data.email);
       navigate('/verify-email');
     } catch (err) {
       toast.error(err.message ?? 'Sign up failed. Please try again.');
@@ -263,20 +257,6 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
       <p style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '24px' }}>
         Build your rate card and start getting booked.
       </p>
-
-      <button
-        type="button"
-        style={{ width: '100%', padding: '11px 14px', border: '0.5px solid var(--grey-200)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500, color: 'var(--grey-700)', background: 'var(--white)', cursor: 'pointer', transition: 'all .15s' }}
-        onClick={() => toast.info('Google sign-up coming soon')}
-      >
-        <GoogleSVG /> Continue with Google
-      </button>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
-        <div style={{ flex: 1, height: '0.5px', background: 'var(--grey-200)' }} />
-        <span style={{ fontSize: '12px', color: 'var(--grey-400)' }}>or sign up with email</span>
-        <div style={{ flex: 1, height: '0.5px', background: 'var(--grey-200)' }} />
-      </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
@@ -363,6 +343,7 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
     try {
       await authService.signup({ ...data, role: ROLES.BRAND });
       toast.success('Account created! Check your email to verify.');
+      sessionStorage.setItem('creatorske_pending_email', data.email);
       navigate('/verify-email');
     } catch (err) {
       toast.error(err.message ?? 'Sign up failed. Please try again.');
@@ -382,20 +363,6 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
       <p style={{ fontSize: '14px', color: 'var(--grey-500)', lineHeight: 1.6, marginBottom: '24px' }}>
         Find and book creators for your next campaign.
       </p>
-
-      <button
-        type="button"
-        style={{ width: '100%', padding: '11px 14px', border: '0.5px solid var(--grey-200)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 500, color: 'var(--grey-700)', background: 'var(--white)', cursor: 'pointer', transition: 'all .15s' }}
-        onClick={() => toast.info('Google sign-up coming soon')}
-      >
-        <GoogleSVG /> Continue with Google
-      </button>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '18px 0' }}>
-        <div style={{ flex: 1, height: '0.5px', background: 'var(--grey-200)' }} />
-        <span style={{ fontSize: '12px', color: 'var(--grey-400)' }}>or sign up with email</span>
-        <div style={{ flex: 1, height: '0.5px', background: 'var(--grey-200)' }} />
-      </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>

@@ -591,6 +591,26 @@
     padding: 0 var(--space-24);
     gap: var(--space-32);
   }
+  /* Navbar search (components/layouts/NavbarSearch) - inline on desktop,
+     an icon that opens a sheet under the navbar on phones. */
+  .navbar-search { flex: 1; display: flex; justify-content: center; min-width: 0; }
+  .navbar-search__field { max-width: var(--navbar-search-max-width); width: 100%; }
+  .navbar-search__field .search-input { width: 100%; padding-left: var(--space-32); font-size: var(--text-body-sm-size); padding-top: var(--space-8); padding-bottom: var(--space-8); }
+  .navbar-search__field .input-icon.left { left: var(--space-12); }
+  .navbar-search__toggle { display: none; margin-left: auto; }
+  .navbar-search__sheet {
+    position: fixed; left: 0; right: 0; top: var(--navbar-height); z-index: calc(var(--z-navbar) - 1);
+    display: flex; gap: var(--space-8); align-items: center;
+    padding: var(--space-12) var(--gutter-mobile); background: var(--white);
+    border-bottom: 0.5px solid var(--grey-100); box-shadow: var(--shadow-md);
+    animation: select-in .12s ease-out;
+  }
+  .navbar-search__sheet .navbar-search__field { max-width: none; }
+  @media (max-width: 600px) {
+    .navbar-search { display: none; }
+    .navbar-search__toggle { display: inline-flex; }
+  }
+
   .navbar-logo {
     font-family: var(--font-display);
     font-size: var(--text-h4-size);
@@ -842,6 +862,8 @@
   /* ── Collapsible card body ────────────────────────────────────────────── */
   /* The header supplies the gap; content that used to sit under an inline
      title often carries its own margin-top, which would double it. */
+  .collapsible-card__head:focus-visible { outline-offset: 6px; border-radius: var(--radius-sm); }
+  .collapsible-card__desc { display: block; font-size: 12.5px; color: var(--grey-500); margin-top: var(--space-4); line-height: 1.5; }
   .collapsible-card__body { margin-top: var(--space-16); }
   .collapsible-card__body > :first-child { margin-top: 0 !important; }
   .card-body-text { font-size: var(--text-body-sm-size); line-height: 1.65; color: var(--grey-500); }

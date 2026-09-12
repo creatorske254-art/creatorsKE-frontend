@@ -7,7 +7,8 @@ import { useAdmin } from '@/features/admin/hooks/useAdmin';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
-import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSearch, IconSettings, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
+import NavbarSearch from './NavbarSearch';
+import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSettings, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
 
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -53,25 +54,6 @@ const LAYOUT_STYLES = `
   overflow-y: auto;
 }
 
-.admin-layout__search {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.admin-layout__search .input-wrapper {
-  max-width: var(--navbar-search-max-width);
-  width: 100%;
-}
-
-.admin-layout__search .search-input {
-  width: 100%;
-  padding-left: var(--space-32);
-}
-
-.admin-layout__search .input-icon.left {
-  left: var(--space-12);
-}
 
 .admin-layout__main {
   flex: 1;
@@ -131,11 +113,6 @@ const LAYOUT_STYLES = `
   }
 }
 
-@media (max-width: 600px) {
-  .admin-layout__search {
-    display: none;
-  }
-}
 `;
 
 // Sidebar - grouped by operational domain, matching admin journeys.
@@ -202,15 +179,7 @@ export default function AdminLayout() {
   const badgeCounts = { openDisputeCount, flaggedAccountCount, flaggedReviewCount };
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
-
-  function handleSearchSubmit(e) {
-    e.preventDefault();
-    const q = searchValue.trim();
-    if (!q) return;
-    navigate(`/admin/accounts?q=${encodeURIComponent(q)}`);
-  }
 
   const initials = getInitials(
     user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
@@ -241,19 +210,7 @@ export default function AdminLayout() {
           </NavLink>
 
           {/* Submits to the accounts moderation list, which reads ?q= */}
-          <form className="admin-layout__search" role="search" onSubmit={handleSearchSubmit}>
-            <div className="input-wrapper">
-              <IconSearch className="icon-sm input-icon left" aria-hidden="true" />
-              <input
-                className="search-input"
-                type="text"
-                placeholder="Search accounts…"
-                aria-label="Search accounts"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-              />
-            </div>
-          </form>
+          <NavbarSearch placeholder="Search accounts…" ariaLabel="Search accounts" onSubmit={(q) => navigate(`/admin/accounts?q=${encodeURIComponent(q)}`)} />
 
           <div className="navbar-actions">
             <div style={{ position: 'relative' }}>

@@ -5,7 +5,8 @@ import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
-import { IconBell, IconIdBadge, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconSearch, IconSettings, IconUserCircle, IconWallet, IconX } from '@tabler/icons-react';
+import NavbarSearch from './NavbarSearch';
+import { IconBell, IconIdBadge, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconSettings, IconUserCircle, IconWallet, IconX } from '@tabler/icons-react';
 
 
 // Component-library chrome (.navbar, .sidebar, .nav-link, .sidebar-link, ...)
@@ -144,15 +145,7 @@ export default function CreatorLayout() {
   const { unreadCount } = useNotifications();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
-
-  function handleSearchSubmit(e) {
-    e.preventDefault();
-    const q = searchValue.trim();
-    if (!q) return;
-    navigate(`/directory?q=${encodeURIComponent(q)}`);
-  }
 
   const initials = getInitials(
     user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
@@ -178,29 +171,7 @@ export default function CreatorLayout() {
 
           {/* Submits to the public creator directory, which reads ?q= - the
               same destination BrandLayout's search uses. */}
-          <form
-            role="search"
-            onSubmit={handleSearchSubmit}
-            style={{ flex: 1, display: 'flex', justifyContent: 'center' }}
-          >
-            <div className="input-wrapper" style={{ maxWidth: 'var(--navbar-search-max-width)', width: '100%' }}>
-              <IconSearch className="icon-sm input-icon left" aria-hidden="true" />
-              <input
-                type="text"
-                placeholder="Search creators…"
-                className="search-input"
-                aria-label="Search creators"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                style={{
-                  width: '100%',
-                  fontSize: 'var(--text-body-sm-size)',
-                  paddingTop: 'var(--space-8)',
-                  paddingBottom: 'var(--space-8)',
-                }}
-              />
-            </div>
-          </form>
+          <NavbarSearch placeholder="Search creators…" ariaLabel="Search creators" onSubmit={(q) => navigate(`/directory?q=${encodeURIComponent(q)}`)} />
 
           {/* Swapped in literal component-library markup here instead of
               abstracted NotificationBell/Avatar components so the topbar

@@ -6,7 +6,8 @@ import { useEnquiries } from '@/features/enquiry';
 import { useNotifications } from '@/context/NotificationContext';
 import { NotificationList } from '@/features/notifications';
 import { getInitials } from '@/lib/utils';
-import { IconBell, IconBookmark, IconClockHour4, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconReceipt2, IconReportMoney, IconRocket, IconSearch, IconSettings, IconWorldSearch, IconX } from '@tabler/icons-react';
+import NavbarSearch from './NavbarSearch';
+import { IconBell, IconBookmark, IconClockHour4, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconReceipt2, IconReportMoney, IconRocket, IconSettings, IconWorldSearch, IconX } from '@tabler/icons-react';
 
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -48,25 +49,6 @@ const LAYOUT_STYLES = `
   overflow-y: auto;
 }
 
-.brand-layout__search {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.brand-layout__search .input-wrapper {
-  max-width: var(--navbar-search-max-width);
-  width: 100%;
-}
-
-.brand-layout__search .search-input {
-  width: 100%;
-  padding-left: var(--space-32);
-}
-
-.brand-layout__search .input-icon.left {
-  left: var(--space-12);
-}
 
 .brand-layout__main {
   flex: 1;
@@ -133,11 +115,6 @@ const LAYOUT_STYLES = `
   }
 }
 
-@media (max-width: 600px) {
-  .brand-layout__search {
-    display: none;
-  }
-}
 `;
 
 // Sidebar - grouped by workflow stage matching brand journeys in the product spec.
@@ -190,17 +167,8 @@ export default function BrandLayout() {
     user ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email : ''
   );
 
-  const [searchValue, setSearchValue] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-
-  function handleSearchSubmit(e) {
-    e.preventDefault();
-    const query = searchValue.trim();
-    if (!query) return;
-    // Reuses the public creator directory - there's no brand-only search route.
-    navigate(`/directory?q=${encodeURIComponent(query)}`);
-  }
 
   function handleLogout() {
     logout();
@@ -226,19 +194,8 @@ export default function BrandLayout() {
             Creatorske<span>.</span>
           </NavLink>
 
-          <form className="brand-layout__search" onSubmit={handleSearchSubmit} role="search">
-            <div className="input-wrapper">
-              <IconSearch className="icon-sm input-icon left" aria-hidden="true" />
-              <input
-                className="search-input"
-                type="text"
-                placeholder="Search…"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                aria-label="Search"
-              />
-            </div>
-          </form>
+          {/* Reuses the public creator directory - there's no brand-only search route. */}
+          <NavbarSearch placeholder="Search creators…" ariaLabel="Search creators" onSubmit={(q) => navigate(`/directory?q=${encodeURIComponent(q)}`)} />
 
           <div className="navbar-actions">
             <div style={{ position: 'relative' }}>

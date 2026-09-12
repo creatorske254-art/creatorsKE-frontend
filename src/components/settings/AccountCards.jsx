@@ -53,7 +53,7 @@ export function LoginDetailsCard({ collapsible = true }) {
   }
 
   return (
-    <CollapsibleCard title="Login details" collapsible={collapsible} defaultOpen={!collapsible}>
+    <CollapsibleCard title="Login details" description="The email you sign in with, and your password." collapsible={collapsible} defaultOpen={!collapsible}>
       <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
         <Field label="Email address" required htmlFor="acct-email" hint="Used to sign in and for every notification.">
           <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
@@ -150,7 +150,7 @@ export function SessionsCard() {
     { id: 's2', device: 'Safari on iPhone', location: 'Nairobi, KE', time: '2 hours ago', current: false, mobile: true },
   ]);
   return (
-    <CollapsibleCard title="Active sessions" right={<span className="tag tag-default">{sessions.length} {sessions.length === 1 ? 'device' : 'devices'}</span>}>
+    <CollapsibleCard title="Active sessions" description="Devices signed in to this account. Sign out of any you don't recognise." right={<span className="tag tag-default">{sessions.length} {sessions.length === 1 ? 'device' : 'devices'}</span>}>
       <div style={{ marginTop: 'var(--space-8)' }}>
         {sessions.map((s) => (
           <div key={s.id} className="session-row">

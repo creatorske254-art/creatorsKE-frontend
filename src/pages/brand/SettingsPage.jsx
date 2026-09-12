@@ -11,7 +11,7 @@ import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDash
 import { brandService } from '@/features/brand-dashboard/services/brand.service';
 import { SettingsShell, ToggleRow as SharedToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, TeamCard } from '@/components/settings';
 import { useImageUpload } from '@/lib/useImageUpload';
-import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCircleCheck, IconCreditCard, IconDeviceMobile, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconPhone, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
+import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCircleCheck, IconCreditCard, IconDeviceMobile, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconPhone, IconShieldCheck, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
 
 // Nav tabs - same order as every other role's settings (see SettingsShell).
@@ -97,7 +97,7 @@ function ProfileTab({ form, setForm, onDirty }) {
       </CollapsibleCard>
 
       {/* Company details */}
-      <CollapsibleCard title="Company details">
+      <CollapsibleCard title="Company details" description="Name, industry, website and the description creators see on your enquiries.">
         <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
           This information is shown to creators when they receive your enquiry.
         </p>
@@ -130,7 +130,7 @@ function ProfileTab({ form, setForm, onDirty }) {
       </CollapsibleCard>
 
       {/* Contact details */}
-      <CollapsibleCard title="Contact details">
+      <CollapsibleCard title="Contact details" description="Who creators and Creatorske reach when something needs a decision.">
         <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
           Used for invoices and shown to creators on accepted bookings.
         </p>

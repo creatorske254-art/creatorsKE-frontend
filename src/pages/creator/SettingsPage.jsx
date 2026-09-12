@@ -42,7 +42,7 @@ function ProfileTab() {
   return (
     <div className="settings-stack">
       {/* Avatar & name */}
-      <CollapsibleCard title="Public profile"
+      <CollapsibleCard title="Public profile" description="Your photo, name, handle, bio and category, as brands see them."
         right={<span className="tag tag-success">
             <span className="sdot" style={{ background: "var(--status-success)" }} />
             Live
@@ -155,7 +155,7 @@ function ProfileTab() {
       </div>
 
       {/* Social links */}
-      <CollapsibleCard title="Social platforms">
+      <CollapsibleCard title="Social platforms" description="The handles shown on your rate card and used for follower counts.">
         <div className="settings-stack" style={{ gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
           <div className="field">
             <label className="field-label">Instagram</label>
@@ -228,7 +228,7 @@ function NotificationsTab() {
   return (
     <div className="settings-stack">
       <div className="bento-2">
-        <CollapsibleCard title="Email notifications">
+        <CollapsibleCard title="Email notifications" description="Which events email you: enquiries, bookings, payments and messages.">
           <div style={{ marginTop: 'var(--space-12)' }}>
             <div className="notif-row">
               <div>

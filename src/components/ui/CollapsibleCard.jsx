@@ -9,13 +9,16 @@ import { IconChevronDown } from '@tabler/icons-react';
  * the toggle.
  *
  * @param {ReactNode} title        - rendered with the .card-title role
+ * @param {ReactNode} [description] - one line under the title, shown while
+ *                                    collapsed so a folded card still says
+ *                                    what is inside; hidden once open
  * @param {ReactNode} [right]      - trailing header content
  * @param {boolean}   [collapsible] - false renders a plain, always-open card
  *                                    with the same header layout (short sections)
  * @param {boolean}   [defaultOpen]
  * @param {string}    [className]  - card classes, default "card card-p-lg"
  */
-export default function CollapsibleCard({ title, right, collapsible = true, defaultOpen = false, className = 'card card-p-lg', children }) {
+export default function CollapsibleCard({ title, description, right, collapsible = true, defaultOpen = false, className = 'card card-p-lg', children }) {
   const [open, setOpen] = useState(defaultOpen);
   const bodyId = useId();
   const isOpen = collapsible ? open : true;
@@ -36,9 +39,13 @@ export default function CollapsibleCard({ title, right, collapsible = true, defa
     <section className={className} data-collapsed={(collapsible && !open) || undefined}>
       <div
         {...headerInteractive}
+        className="collapsible-card__head"
         style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)', cursor: collapsible ? 'pointer' : 'default', userSelect: collapsible ? 'none' : 'auto' }}
       >
-        <span className="card-title" style={{ marginBottom: 0, flex: 1, minWidth: 0 }}>{title}</span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span className="card-title" style={{ marginBottom: 0, display: 'block' }}>{title}</span>
+          {description && !isOpen && <span className="collapsible-card__desc">{description}</span>}
+        </span>
         {right && (
           <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
             {right}

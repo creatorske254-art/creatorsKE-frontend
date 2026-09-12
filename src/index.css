@@ -324,6 +324,17 @@
     box-sizing: border-box;
   }
 
+  /* Reserve the scrollbar's width whether or not it's showing, so content
+     doesn't jump sideways when a page grows past the viewport, a modal
+     opens, or a tab's content changes length. Applied to the document and
+     to the dashboard content panes, which scroll independently. */
+  html,
+  .dashboard-shell__main,
+  .brand-layout__main,
+  .admin-layout__main {
+    scrollbar-gutter: stable;
+  }
+
   body {
     font-family: var(--font-body);
     background-color: var(--background);

@@ -520,7 +520,7 @@ function NotificationsTab() {
         </CollapsibleCard>
 
         <div className="settings-stack">
-          <CollapsibleCard title="More notifications">
+          <CollapsibleCard title="More notifications" collapsible={false}>
             <div style={{ marginTop: 10 }}>
               <div className="notif-row">
                 <div>
@@ -539,7 +539,7 @@ function NotificationsTab() {
             </div>
           </CollapsibleCard>
 
-          <CollapsibleCard title="Notification email">
+          <CollapsibleCard title="Notification email" collapsible={false}>
             <div className="field" style={{ marginTop: 10 }}>
               <label className="field-label">Send notifications to</label>
               <div className="input-wrapper">
@@ -668,7 +668,7 @@ function PaymentsTab() {
 
   return (
     <div className="settings-stack">
-      <CollapsibleCard title="Payment methods"
+      <CollapsibleCard title="Payment methods" collapsible={false}
         right={<p className="field-hint" style={{ margin: 0 }}>Accept payments from brands directly</p>}>
         <div className="settings-stack" style={{ gap: 12, marginTop: 16 }}>
           {Object.entries(PAY_PROVIDERS).map(([key, provider]) => {
@@ -717,7 +717,7 @@ function PaymentsTab() {
         onCancel={() => setDisconnecting(null)}
       />
 
-      <CollapsibleCard title="Payout settings">
+      <CollapsibleCard title="Payout settings" collapsible={false}>
         <div className="settings-stack" style={{ marginTop: 14 }}>
           <div className="field-row">
             <div className="field">
@@ -782,7 +782,7 @@ function AppearanceTab() {
 
   return (
     <div className="settings-stack">
-      <CollapsibleCard title="Interface theme">
+      <CollapsibleCard title="Interface theme" collapsible={false}>
         <div className="bento-3" style={{ marginTop: 14 }}>
           {["light", "dark", "system"].map((t) => (
             <button
@@ -802,7 +802,7 @@ function AppearanceTab() {
       </CollapsibleCard>
 
       <div className="bento-2">
-        <CollapsibleCard title="Accent colour">
+        <CollapsibleCard title="Accent colour" collapsible={false}>
           <p className="field-hint" style={{ marginBottom: 14 }}>Applied to buttons, highlights, and your rate card theme.</p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {ACCENT_COLORS.map(({ hex, label }) => (
@@ -822,7 +822,7 @@ function AppearanceTab() {
           </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="Rate card layout">
+        <CollapsibleCard title="Rate card layout" collapsible={false}>
           <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
             {["Classic", "Minimal"].map((option) => (
               <button
@@ -940,7 +940,7 @@ function AccountTab() {
       </CollapsibleCard>
 
       <div className="bento-2">
-        <CollapsibleCard title="Two-factor authentication">
+        <CollapsibleCard title="Two-factor authentication" collapsible={false}>
           <div style={{ marginTop: 14 }}>
             <ToggleRow
               label="Enable 2FA"
@@ -957,7 +957,7 @@ function AccountTab() {
           </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="Privacy">
+        <CollapsibleCard title="Privacy" collapsible={false}>
           <div className="settings-stack" style={{ gap: 13, marginTop: 14 }}>
             <ToggleRow
               label="Show profile in Creatorske directory"

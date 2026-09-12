@@ -284,7 +284,7 @@ function ProfileTab({ form, setForm, onDirty }) {
   return (
     <div className="settings-stack">
       {/* Logo */}
-      <CollapsibleCard title="Company logo">
+      <CollapsibleCard title="Company logo" collapsible={false}>
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 14 }}>
           {logoUrl ? (
             <img src={logoUrl} alt="Company logo" className="avatar avatar-lg" style={{ objectFit: "cover" }} />
@@ -385,7 +385,7 @@ function ProfileTab({ form, setForm, onDirty }) {
 
       {/* Verification status */}
       <CollapsibleCard
-        title="Brand verification"
+        title="Brand verification" collapsible={false}
         right={(
           <span className="tag tag-success">
             <i className="ti ti-circle-check" style={{ fontSize: 12 }} />
@@ -517,7 +517,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
   return (
     <div className="settings-stack">
       {/* Payment methods */}
-      <CollapsibleCard title="Payment methods">
+      <CollapsibleCard title="Payment methods" collapsible={false}>
         <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
           How you pay creators. These are used at checkout when a booking is confirmed.
         </p>
@@ -564,7 +564,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
       />
 
       {/* Invoice preferences */}
-      <CollapsibleCard title="Invoice preferences">
+      <CollapsibleCard title="Invoice preferences" collapsible={false}>
         <div className="settings-stack" style={{ gap: 13, marginTop: 14 }}>
           <ToggleRow
             label="Receive auto-invoice on booking"
@@ -640,7 +640,7 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
   return (
     <div className="settings-stack">
       {groups.map((g) => (
-        <CollapsibleCard key={g.title} title={g.title}>
+        <CollapsibleCard key={g.title} title={g.title} collapsible={false}>
           <div className="settings-stack" style={{ gap: 0, marginTop: 14 }}>
             {g.items.map((item) => (
               <div key={item.key} className="notif-row">
@@ -659,7 +659,7 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
         </CollapsibleCard>
       ))}
 
-      <CollapsibleCard title="Email digest">
+      <CollapsibleCard title="Email digest" collapsible={false}>
         <p className="card-body-text" style={{ marginTop: -2, marginBottom: 14 }}>
           Instead of individual emails, get a single daily summary.
         </p>
@@ -750,7 +750,7 @@ function SecurityTab({ onDirty }) {
 
       {/* Two-factor */}
       <CollapsibleCard
-        title="Two-factor authentication"
+        title="Two-factor authentication" collapsible={false}
         right={<span className={`tag ${twoFAEnabled ? "tag-success" : "tag-warning"}`}>{twoFAEnabled ? "Enabled" : "Not enabled"}</span>}
       >
         <span className="field-hint">Add an extra layer of protection using an authenticator app or SMS code.</span>
@@ -817,7 +817,7 @@ function AccountTab() {
   return (
     <div className="settings-stack">
       {/* Plan */}
-      <CollapsibleCard title="Your plan">
+      <CollapsibleCard title="Your plan" collapsible={false}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginTop: 14 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div className="avatar avatar-md avatar-purple" style={{ borderRadius: "var(--radius-md)" }}>
@@ -833,7 +833,7 @@ function AccountTab() {
       </CollapsibleCard>
 
       {/* Legal */}
-      <CollapsibleCard title="Legal">
+      <CollapsibleCard title="Legal" collapsible={false}>
         <div className="settings-stack" style={{ gap: 10, marginTop: 14 }}>
           {[{ label: "Terms of Service", href: "/terms" }, { label: "Privacy Policy", href: "/privacy" }].map((l) => (
             <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="legal-row">

@@ -497,10 +497,8 @@ function AppearanceTab() {
       <ThemeCard />
       <div className="bento-2">
         <AccentCard hint="Applied to buttons, highlights, and your rate card theme." />
-        <DisplayCard />
-      </div>
-      <CollapsibleCard title="Rate card layout" collapsible={false}>
-        <div style={{ display: "flex", gap: 'var(--space-12)', marginTop: 'var(--space-16)', maxWidth: 420 }}>
+        <CollapsibleCard title="Rate card layout" collapsible={false}>
+          <div style={{ display: "flex", gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
           {["Classic", "Minimal"].map((option) => (
             <button key={option} type="button" onClick={() => handleLayout(option)} aria-pressed={layout === option} className={`option-card${layout === option ? " selected" : ""}`} style={{ flex: 1, alignItems: "stretch", cursor: "pointer" }}>
               <div style={{ height: 52, background: "var(--white)", border: "0.5px solid var(--grey-100)", borderRadius: 6, padding: 'var(--space-8)', display: "flex", flexDirection: "column", gap: 'var(--space-4)' }}>
@@ -512,8 +510,10 @@ function AppearanceTab() {
               <span className="option-card-label" style={{ textAlign: "center", width: "100%" }}>{option}</span>
             </button>
           ))}
-        </div>
-      </CollapsibleCard>
+          </div>
+        </CollapsibleCard>
+      </div>
+      <DisplayCard />
     </div>
   );
 }

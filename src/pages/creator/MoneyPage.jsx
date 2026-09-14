@@ -4,12 +4,11 @@ import { usePageMeta } from '@/lib/usePageMeta'
 import { usePayments } from '@/features/payments/hooks/usePayments'
 import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods'
 import TransactionHistory from '@/features/payments/components/TransactionHistory'
-import MpesaPrompt from '@/features/payments/components/MpesaPrompt'
 import { usePlan } from '@/features/plans/hooks/usePlan'
 import Modal from '@/components/ui/Modal'
 import { formatCurrency } from '@/lib/utils'
 import { ChartFrame, ChartPeriod, BarChart, kes } from '@/components/charts'
-import { IconBuildingBank, IconDeviceMobile, IconDownload, IconHistory, IconInfoCircle, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
+import { IconCheck, IconBuildingBank, IconDeviceMobile, IconDownload, IconHistory, IconInfoCircle, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import Skeleton from '@/components/ui/Skeleton'
 
 /*
@@ -111,6 +110,8 @@ export default function MoneyPage() {
   const navigate = useNavigate()
   const [period, setPeriod] = useState('3m')
   const [withdrawOpen, setWithdrawOpen] = useState(false)
+  const [withdrawDone, setWithdrawDone] = useState(false)
+  const [withdrawnAmount, setWithdrawnAmount] = useState(0)
   const [historyOpen, setHistoryOpen] = useState(false)
   const [addMethodOpen, setAddMethodOpen] = useState(false)
   const [amount, setAmount] = useState('')
@@ -122,7 +123,6 @@ export default function MoneyPage() {
     earningsTimeline, isTimelineLoading, isTimelineError,
     transactions, isHistoryLoading, isHistoryError, refetchHistory,
     requestPayout, isRequestingPayout,
-    paymentStatus, isPolling, stopPolling,
   } = usePayments({ period })
 
   // GET /payments/earnings/timeline's response schema is undocumented -
@@ -183,27 +183,24 @@ export default function MoneyPage() {
 
   function openWithdraw() {
     setAmount(String(availableBalance || ''))
+    setWithdrawDone(false)
     setWithdrawOpen(true)
   }
 
   function confirmWithdraw() {
     const numericAmount = Number(String(amount).replace(/,/g, '')) || 0
     if (!numericAmount || !primaryMethod) return
-    requestPayout({ amount: numericAmount, methodId: primaryMethod.id, method: primaryMethod.name })
+    requestPayout(
+      { amount: numericAmount, methodId: primaryMethod.id, method: primaryMethod.name },
+      { onSuccess: () => { setWithdrawnAmount(numericAmount); setWithdrawDone(true) } }
+    )
   }
 
-  const isPaymentSettled = paymentStatus
-    ? ['completed', 'success', 'successful', 'failed', 'cancelled', 'canceled'].includes(
-        (paymentStatus.status ?? paymentStatus.resultCode ?? '').toString().toLowerCase()
-      )
-    : false
-
-  // The modal deliberately stays open on a settled payment until the creator
-  // dismisses it - a withdrawal result that disappears on a timer gives them
-  // no chance to read what actually happened.
+  // The modal stays open on the success screen until the creator dismisses it,
+  // so a withdrawal result never disappears on a timer.
   function closeWithdraw() {
     setWithdrawOpen(false)
-    stopPolling()
+    setWithdrawDone(false)
   }
 
   return (
@@ -487,17 +484,25 @@ export default function MoneyPage() {
 
       {/* Withdraw modal */}
       {withdrawOpen && (
-        <div className="modal-backdrop" onClick={() => !isPolling && !isRequestingPayout && closeWithdraw()}>
+        <div className="modal-backdrop" onClick={() => !isRequestingPayout && closeWithdraw()}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">Withdraw funds</div>
-              <button className="modal-close" onClick={() => !isPolling && !isRequestingPayout && closeWithdraw()}>
+              <button className="modal-close" onClick={() => !isRequestingPayout && closeWithdraw()}>
                 <IconX className="icon-sm" aria-hidden="true" />
               </button>
             </div>
             <div className="modal-body">
-              {isPolling || isPaymentSettled ? (
-                <MpesaPrompt phone={primaryMethod?.detail} status={paymentStatus} isPolling={isPolling} />
+              {withdrawDone ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-24) 0', textAlign: 'center' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-success-text)' }}>
+                    <IconCheck className="icon-xl" aria-hidden="true" />
+                  </div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>Withdrawal sent</div>
+                  <div style={{ fontSize: 12.5, color: 'var(--grey-500)', lineHeight: 1.6 }}>
+                    {formatCurrency(withdrawnAmount)} is on its way to {primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'your M-Pesa'}. It usually lands within a few minutes.
+                  </div>
+                </div>
               ) : (
                 <>
                   <div className="modal-body-text">Confirm how much you'd like to move to your primary payment method.</div>
@@ -525,16 +530,9 @@ export default function MoneyPage() {
                 </>
               )}
             </div>
-            {isPaymentSettled ? (
+            {withdrawDone ? (
               <div className="modal-footer">
                 <button className="btn btn-purple" onClick={closeWithdraw}>Done</button>
-              </div>
-            ) : isPolling ? (
-              <div className="modal-footer">
-                <span style={{ fontSize: 12, color: 'var(--grey-500)', marginRight: 'auto' }}>
-                  Waiting for confirmation. Keep this open.
-                </span>
-                <button className="btn btn-ghost" onClick={closeWithdraw}>Close</button>
               </div>
             ) : (
               <div className="modal-footer">

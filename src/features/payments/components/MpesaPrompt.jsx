@@ -1,10 +1,10 @@
 import { IconDeviceMobile, IconCheck, IconX } from '@tabler/icons-react';
 
 /**
- * MpesaPrompt - waiting screen shown while an STK push / payout is polling
- * for confirmation (usePayments().isPolling), matching the ~3s poll interval
- * in usePayments.js. `status` is the raw usePayments().paymentStatus value;
- * its schema is undocumented so only a best-effort status field is read.
+ * MpesaPrompt - the "check your phone, enter your M-Pesa PIN" waiting screen
+ * for a C2B STK-push collection (money coming IN from a payer), polling for
+ * confirmation via usePayments().isPolling. NOT used for withdrawals: a payout
+ * is a B2C send to the creator, who never enters a PIN.
  */
 export default function MpesaPrompt({ phone, status, isPolling }) {
   const statusValue = (status?.status ?? status?.resultCode ?? '').toString().toLowerCase();

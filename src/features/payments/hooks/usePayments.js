@@ -85,13 +85,17 @@ export function usePayments({ period = '30d' } = {}) {
     onError: () => toast.error('Could not start the payment. Please try again.'),
   });
 
+  // A payout is a B2C send to the creator - there is no STK push and no PIN to
+  // enter, so it does not poll a checkout the way a C2B collection does. Just
+  // refresh the balance and history once the send is accepted.
   const payoutMutation = useMutation({
     mutationFn: (data) => initiatePayout(data),
-    onSuccess: (res) => {
-      startPolling(res?.checkoutRequestId ?? res?.id);
-      toast.success('Withdrawal initiated.');
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HISTORY_KEY });
+      queryClient.invalidateQueries({ queryKey: STATS_KEY(period) });
+      toast.success('Withdrawal sent.');
     },
-    onError: () => toast.error('Could not process withdrawal. Please try again.'),
+    onError: (err) => toast.error(err?.message || 'Could not process withdrawal. Please try again.'),
   });
 
   return {

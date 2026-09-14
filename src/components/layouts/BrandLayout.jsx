@@ -228,7 +228,7 @@ export default function BrandLayout() {
 
         {notifOpen && (
           <div
-            style={{ position: 'fixed', inset: 0, zIndex: 255 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 'calc(var(--z-navbar) - 1)' }}
             onClick={() => setNotifOpen(false)}
           />
         )}

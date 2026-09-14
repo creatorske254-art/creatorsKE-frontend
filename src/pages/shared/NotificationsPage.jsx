@@ -54,7 +54,7 @@ export default function NotificationsPage() {
   return (
     <div className="notif-page">
       <style>{`
-        .notif-page { max-width: 720px; }
+        .notif-page { width: 100%; }
         .notif-page__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-16); flex-wrap: wrap; margin-bottom: var(--space-24); }
         .notif-page__tabs { display: flex; gap: var(--space-8); margin-bottom: var(--space-16); }
         .notif-page__tab { padding: var(--space-8) var(--space-16); border-radius: var(--radius-pill); font-size: var(--text-body-sm-size); font-weight: 500; color: var(--grey-600); background: var(--white); border: 0.5px solid var(--grey-200); cursor: pointer; transition: all var(--transition-fast); }

@@ -1492,7 +1492,12 @@
 @keyframes pop-in { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes unfold { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
-.page-enter { animation: page-in 0.24s ease-out both; min-height: 100%; }
+/* fill-mode `backwards` (not `both`): holding the final keyframe leaves an
+   identity transform matrix on the element, which still establishes a
+   containing block for position:fixed - that broke modal centering (a fixed
+   overlay sized to the page content instead of the viewport). backwards keeps
+   the entrance without persisting a transform after it finishes. */
+.page-enter { animation: page-in 0.24s ease-out backwards; min-height: 100%; }
 .ui-modal-backdrop { animation: fade-in 0.16s ease-out both; }
 .ui-modal { animation: pop-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .collapsible-card__body { animation: unfold 0.18s ease-out both; }

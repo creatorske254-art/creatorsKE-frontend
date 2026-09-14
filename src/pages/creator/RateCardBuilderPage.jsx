@@ -14,6 +14,9 @@ import {
   IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading, IconWorld
 } from "@tabler/icons-react";
 import Select from '@/components/ui/Select';
+import SmartImage from '@/components/ui/SmartImage';
+import { useQueryClient } from '@tanstack/react-query';
+import { rateCardService } from '@/features/rate-card/services/rate-card.service';
 
 /* design tokens (scoped)
    These are intentionally kept as local custom-property *names* (--txt-primary,
@@ -277,9 +280,7 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
   return (
     <div className="rcp">
       <div className="rcp-top">
-        {profile.photoUrl
-          ? <img src={profile.photoUrl} alt="" className="av av-md" style={{ objectFit: "cover" }} />
-          : <div className="av av-md av-accent">{initials(profile.name)}</div>}
+        <SmartImage src={profile.photoUrl} className="av av-md" style={{ objectFit: "cover" }} fallback={<div className="av av-md av-accent">{initials(profile.name)}</div>} />
         <div className="rcp-name">{headline || profile.name}</div>
         <div className="rcp-handle">@{profile.handle || "handle"} &middot; {profile.location}</div>
         {pitch && <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 'var(--space-4)', lineHeight: 1.4 }}>{pitch}</div>}
@@ -348,10 +349,12 @@ export default function RateCardBuilderPage() {
   usePageMeta('Rate Card Builder', 'Build and publish your rate card on Creatorske.');
   const navigate = useNavigate();
   const { id: cardId } = useParams();
-  const { rateCard, isLoading: cardLoading, saveDraft: saveDraftMutation, publish: publishMutation, isPublishing } = useRateCard(cardId);
+  const { rateCard, isLoading: cardLoading } = useRateCard(cardId);
   const { create: createRateCard, isCreating } = useRateCards();
   const [step, setStep] = useState(1);
   const [savingDraft, setSavingDraft] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const queryClient = useQueryClient();
   const hydrated = useRef(false);
 
   // profile (step 1) - starts from the account profile for a brand-new card,
@@ -459,7 +462,7 @@ export default function RateCardBuilderPage() {
   const buildPayload = () => ({
     profile,
     platforms,
-    packages,
+    ...(packages.length ? { packages } : {}),
     payment: { autoInvoice, requireDeposit, whatsappReminder },
     headline,
     pitch,
@@ -487,11 +490,21 @@ export default function RateCardBuilderPage() {
   };
 
   const doPublish = async () => {
-    const id = await ensureCardId();
-    if (!id) return;
-    publishMutation(undefined, {
-      onSuccess: () => { setPublished(true); launchConfetti(); },
-    });
+    setPublishing(true);
+    try {
+      const id = await ensureCardId();
+      if (!id) return;
+      const updated = await rateCardService.publishRateCard(id);
+      queryClient.setQueryData(['rate-card', id], updated);
+      queryClient.invalidateQueries({ queryKey: ['rate-cards'] });
+      setPublished(true);
+      launchConfetti();
+      toast.success('Rate card published!');
+    } catch (err) {
+      toast.error(err?.message || 'Could not publish. Please try again.');
+    } finally {
+      setPublishing(false);
+    }
   };
   const copyLink = () => {
     navigator.clipboard?.writeText("https://" + slug);
@@ -502,8 +515,13 @@ export default function RateCardBuilderPage() {
     setSavingDraft(true);
     try {
       const id = await ensureCardId();
-      if (id && cardId) saveDraftMutation(buildPayload());
+      if (id) {
+        const updated = await rateCardService.saveDraft(id, buildPayload());
+        queryClient.setQueryData(['rate-card', id], updated);
+      }
       toast.success("Draft saved.");
+    } catch (err) {
+      toast.error(err?.message || "Could not save your draft. Please try again.");
     } finally {
       setSavingDraft(false);
     }
@@ -555,11 +573,7 @@ export default function RateCardBuilderPage() {
                 <div className="card card-p">
                   <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Profile photo</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-16)' }}>
-                    {photoUrl ? (
-                      <img src={photoUrl} alt="Profile photo" className="av av-xl" style={{ objectFit: "cover", border: "0.5px solid var(--bdr-tertiary)" }} />
-                    ) : (
-                      <div className="av av-xl av-accent">{initials(profile.name)}</div>
-                    )}
+                    <SmartImage src={photoUrl} alt="Profile photo" className="av av-xl" style={{ objectFit: "cover", border: "0.5px solid var(--bdr-tertiary)" }} fallback={<div className="av av-xl av-accent">{initials(profile.name)}</div>} />
                     <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
                       <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer" }}>
                         <IconUpload className="icon-xs" />{photoUrl ? "Change photo" : "Upload photo"}
@@ -949,9 +963,7 @@ export default function RateCardBuilderPage() {
                 <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Live preview</p>
                 <div className="rcp">
                   <div className="rcp-top">
-                    {profile.photoUrl
-          ? <img src={profile.photoUrl} alt="" className="av av-md" style={{ objectFit: "cover" }} />
-          : <div className="av av-md av-accent">{initials(profile.name)}</div>}
+                    <SmartImage src={profile.photoUrl} className="av av-md" style={{ objectFit: "cover" }} fallback={<div className="av av-md av-accent">{initials(profile.name)}</div>} />
                     <div className="rcp-name" style={{ fontSize: 13.5 }}>{headline}</div>
                     <div className="rcp-handle">@{profile.handle} &middot; {profile.location}</div>
                     <div style={{ fontSize: 10.5, color: "var(--txt-tertiary)", marginTop: 'var(--space-4)', lineHeight: 1.4 }}>{pitch}</div>
@@ -1049,7 +1061,7 @@ export default function RateCardBuilderPage() {
                   </div>
                 </div>
               ) : (
-                <button className={`btn btn-accent btn-full${isPublishing || isCreating ? " btn-loading" : ""}`} style={{ padding: 'var(--space-12)' }} disabled={isPublishing || isCreating} onClick={doPublish}>
+                <button className={`btn btn-accent btn-full${publishing || isCreating ? " btn-loading" : ""}`} style={{ padding: 'var(--space-12)' }} disabled={publishing || isCreating} onClick={doPublish}>
                   <IconRocket className="icon-sm" />Publish rate card
                 </button>
               )}

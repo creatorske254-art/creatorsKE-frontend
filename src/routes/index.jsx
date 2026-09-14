@@ -59,6 +59,9 @@ import AdminDeletionRequestsPage from '@/pages/admin/DeletionRequestsPage'
 import AdminReEngagementPage from '@/pages/admin/ReEngagementPage'
 import AdminSettingsPage from '@/pages/admin/SettingsPage'
 
+// Shared
+import NotificationsPage from '@/pages/shared/NotificationsPage'
+
 // ─────────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
 
@@ -119,6 +122,7 @@ const router = createBrowserRouter([
           { path: 'creator/enquiries',  element: <CreatorEnquiriesPage /> },
           { path: 'creator/money',      element: <MoneyPage /> },
           { path: 'creator/settings',   element: <CreatorSettingsPage /> },
+          { path: 'creator/notifications', element: <NotificationsPage /> },
         ],
       },
     ],
@@ -140,6 +144,7 @@ const router = createBrowserRouter([
           { path: 'brand/settings',     element: <BrandSettingsPage /> },
           { path: 'brand/billing',      element: <BrandBillingPage /> },
           { path: 'brand/transactions', element: <BrandTransactionsPage /> },
+          { path: 'brand/notifications', element: <NotificationsPage /> },
         ],
       },
     ],
@@ -161,6 +166,7 @@ const router = createBrowserRouter([
           { path: 'admin/deletion-requests', element: <AdminDeletionRequestsPage /> },
           { path: 'admin/re-engagement', element: <AdminReEngagementPage /> },
           { path: 'admin/settings',     element: <AdminSettingsPage /> },
+          { path: 'admin/notifications', element: <NotificationsPage /> },
         ],
       },
     ],

@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { usePortfolio } from '@/features/portfolio/hooks/usePortfolio';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useImageUpload } from '@/lib/useImageUpload';
+import SmartImage from '@/components/ui/SmartImage';
 import { IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, IconCheck, IconEye, IconEyeOff, IconMail, IconMapPin, IconPhone, IconPlus, IconSend, IconUpload, IconUser, IconUsers, IconX } from '@tabler/icons-react';
 
 // Component-library chrome (.btn, .card, .tag, .avatar, .input, .badge,
@@ -196,11 +197,7 @@ function LivePreview({ values, creatorName, handle }) {
       <div className="pb-preview-hero">
         <div className="pb-preview-top">
           <div className="avatar avatar-lg avatar-purple" style={{ overflow: 'hidden' }}>
-            {values.photoUrl ? (
-              <img src={values.photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              initials
-            )}
+            <SmartImage src={values.photoUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} fallback={initials} />
           </div>
           <div style={{ minWidth: 0 }}>
             <div className="pb-preview-name">{name}</div>

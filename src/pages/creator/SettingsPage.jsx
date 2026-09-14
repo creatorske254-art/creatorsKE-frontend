@@ -15,6 +15,7 @@ import { useProfile, usePreferences } from '@/features/auth/hooks/useProfile';
 import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
 import { getInitials, formatCount } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
+import SmartImage from '@/components/ui/SmartImage';
 import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandWhatsapp, IconBrandYoutube, IconBuildingBank, IconDeviceMobile, IconEyeOff, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
 
@@ -79,11 +80,13 @@ function ProfileForm({ profile }) {
           </span>}>
         <div className="settings-stack">
           <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-16)' }}>
-            {avatarSrc ? (
-              <img src={avatarSrc} alt="Profile" className="avatar avatar-lg" style={{ objectFit: "cover" }} />
-            ) : (
-              <div className="avatar avatar-lg avatar-purple">{getInitials(`${form.firstName} ${form.lastName}`.trim() || profile.email)}</div>
-            )}
+            <SmartImage
+              src={avatarSrc}
+              alt="Profile"
+              className="avatar avatar-lg"
+              style={{ objectFit: "cover" }}
+              fallback={<div className="avatar avatar-lg avatar-purple">{getInitials(`${form.firstName} ${form.lastName}`.trim() || profile.email)}</div>}
+            />
             <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
               <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
                 <IconUpload className="icon-xs" aria-hidden="true" />

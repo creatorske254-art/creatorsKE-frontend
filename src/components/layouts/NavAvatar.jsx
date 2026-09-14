@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import SmartImage from '@/components/ui/SmartImage';
 
 /*
    The navbar's account circle, shared by the three dashboard layouts.
@@ -26,7 +27,7 @@ export default function NavAvatar() {
   const initials = initialsFor(user);
   return (
     <Link to={href} className="nav-avatar" title="Your profile" aria-label="Your profile and settings">
-      {photo ? <img src={photo} alt="" /> : initials}
+      <SmartImage src={photo} fallback={initials} />
     </Link>
   );
 }

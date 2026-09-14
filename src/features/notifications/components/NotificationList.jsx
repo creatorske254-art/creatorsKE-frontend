@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { useNotifications as useNotificationsList } from '../hooks/useNotifications';
 import { useNotifications as useNotificationBadge } from '@/context/NotificationContext';
 import { formatRelativeDate } from '@/lib/utils';
 import { TYPES } from '../constants/notifications';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
-import { IconBell, IconBellOff, IconCash, IconMail, IconMessageCircle, IconPackage } from '@tabler/icons-react';
+import { IconBell, IconBellOff, IconCash, IconMail, IconMessageCircle, IconPackage, IconArrowRight } from '@tabler/icons-react';
 
 const TYPE_ICON = {
   [TYPES.NEW_ENQUIRY]: IconMail,
@@ -25,6 +26,8 @@ const TYPE_ICON = {
 // rather than assumed, same caution CLAUDE.md calls for elsewhere.
 export default function NotificationList({ onClose }) {
   const navigate = useNavigate();
+  const { role } = useAuth();
+  const notificationsHref = `/${role || 'creator'}/notifications`;
   const { notifications, unreadCount, isLoading, markRead, markAllRead } = useNotificationsList();
   const { refetch: refetchBadge } = useNotificationBadge();
 
@@ -62,6 +65,9 @@ export default function NotificationList({ onClose }) {
         .notif-item__message { font-size: var(--text-body-sm-size); color: var(--grey-600); line-height: 1.5; }
         .notif-item__time { font-size: var(--text-caption-size); color: var(--grey-400); margin-top: var(--space-4); }
         .notif-item__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--purple-500); flex-shrink: 0; margin-top: var(--space-8); }
+        .notif-panel__footer { border-top: 0.5px solid var(--grey-100); }
+        .notif-panel__viewall { display: flex; align-items: center; justify-content: center; gap: var(--space-4); width: 100%; padding: var(--space-12); font-size: var(--text-body-sm-size); font-weight: 500; color: var(--purple-600); background: none; border: none; cursor: pointer; transition: background var(--transition-fast); }
+        .notif-panel__viewall:hover { background: var(--page-bg); }
       `}</style>
 
       <div className="notif-panel__header">
@@ -114,6 +120,17 @@ export default function NotificationList({ onClose }) {
             );
           })
         )}
+      </div>
+
+      <div className="notif-panel__footer">
+        <button
+          type="button"
+          className="notif-panel__viewall"
+          onClick={() => { navigate(notificationsHref); onClose?.(); }}
+        >
+          View all notifications
+          <IconArrowRight className="icon-sm" aria-hidden="true" />
+        </button>
       </div>
     </div>
   );

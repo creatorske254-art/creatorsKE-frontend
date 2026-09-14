@@ -11,6 +11,7 @@ import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDash
 import { useBrandPaymentMethods, useBrandTeam } from '@/features/brand-dashboard/hooks/useBrandAccount';
 import { usePreferences } from '@/features/auth/hooks/useProfile';
 import Skeleton from '@/components/ui/Skeleton';
+import SmartImage from '@/components/ui/SmartImage';
 import ErrorState from '@/components/shared/ErrorState';
 import { SettingsShell, ToggleRow as SharedToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, TeamCard } from '@/components/settings';
 import { useImageUpload } from '@/lib/useImageUpload';
@@ -82,13 +83,13 @@ function ProfileTab({ form, setForm, onDirty }) {
       {/* Logo */}
       <CollapsibleCard title="Company logo" collapsible={false}>
         <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
-          {logoUrl ? (
-            <img src={logoUrl} alt="Company logo" className="avatar avatar-lg" style={{ objectFit: "cover" }} />
-          ) : (
-            <div className="avatar avatar-lg avatar-purple">
-              {form.companyName ? form.companyName.slice(0, 2).toUpperCase() : "NB"}
-            </div>
-          )}
+          <SmartImage
+            src={logoUrl}
+            alt="Company logo"
+            className="avatar avatar-lg"
+            style={{ objectFit: "cover" }}
+            fallback={<div className="avatar avatar-lg avatar-purple">{form.companyName ? form.companyName.slice(0, 2).toUpperCase() : "NB"}</div>}
+          />
           <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
             <label className={`btn btn-ghost btn-sm${logoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
               <IconUpload className="icon-xs" aria-hidden="true" />

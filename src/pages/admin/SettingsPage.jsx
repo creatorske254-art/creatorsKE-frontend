@@ -8,6 +8,7 @@ import { adminService } from '@/features/admin/services/admin.service';
 import { useImageUpload } from '@/lib/useImageUpload';
 import { usePreferences } from '@/features/auth/hooks/useProfile';
 import Skeleton from '@/components/ui/Skeleton';
+import SmartImage from '@/components/ui/SmartImage';
 import ErrorState from '@/components/shared/ErrorState';
 import { getInitials } from '@/lib/utils';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
@@ -73,7 +74,7 @@ function ProfileTab() {
       <CollapsibleCard title="Your details" collapsible={false}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)', marginTop: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
           <div className="avatar avatar-lg avatar-purple" style={{ overflow: 'hidden' }}>
-            {avatar.url ? <img src={avatar.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials(`${form.firstName} ${form.lastName}`.trim() || 'A')}
+            <SmartImage src={avatar.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} fallback={getInitials(`${form.firstName} ${form.lastName}`.trim() || 'A')} />
           </div>
           <div>
             <label className={`btn btn-secondary btn-sm${avatar.uploading ? ' btn-loading' : ''}`} style={{ cursor: 'pointer' }}>

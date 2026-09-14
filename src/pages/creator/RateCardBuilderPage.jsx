@@ -4,12 +4,14 @@ import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useRateCard, useRateCards } from '@/features/rate-card/hooks/useRateCard';
 import { useImageUpload } from '@/lib/useImageUpload';
+import { useProfile } from '@/features/auth/hooks/useProfile';
+import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
 import {
   IconArrowLeft, IconArrowRight, IconUpload, IconMapPin, IconBrandInstagram, IconBrandYoutube, IconBrandTiktok,
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
   IconBuilding, IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
   IconEye, IconEyeOff, IconPencil, IconPlus, IconLayoutDashboard,
-  IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading
+  IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading, IconWorld
 } from "@tabler/icons-react";
 import Select from '@/components/ui/Select';
 
@@ -293,8 +295,8 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
         )}
         <div className="rcp-plats">
           {activePlats.map((p) => {
-            const Icon = PLATFORM_ICON[p];
-            return <div className="rcp-plat" key={p}><Icon size={12} /></div>;
+            const Icon = PLATFORM_ICON[String(p).toLowerCase()] ?? IconWorld;
+            return <div className="rcp-plat" key={p}><Icon className="icon-xs" aria-hidden="true" /></div>;
           })}
         </div>
       </div>
@@ -352,32 +354,41 @@ export default function RateCardBuilderPage() {
   const [savingDraft, setSavingDraft] = useState(false);
   const hydrated = useRef(false);
 
-  // profile (step 1)
+  // profile (step 1) - starts from the account profile for a brand-new card,
+  // or from the saved rate card's own profile block when editing.
+  const { profile: account } = useProfile();
   const [profile, setProfile] = useState({
-    name: "Amara Osei",
-    handle: "amaracreates",
-    bio: "Lifestyle & travel creator based in Nairobi, partnering with brands that align with authentic storytelling.",
-    location: "Nairobi, Kenya",
-    followers: "240,000",
-    engagement: "4.8",
-    reach: "18,000",
-    niche: "Lifestyle",
-    languages: "English, Swahili",
+    name: "", handle: "", bio: "", location: "", followers: "", engagement: "", reach: "", niche: "Lifestyle", languages: "",
+    whatsapp: "", instagram: "", tiktok: "", youtube: "", twitter: "",
   });
-  const [platforms, setPlatforms] = useState({ instagram: true, tiktok: true, youtube: false, twitter: false, podcast: false });
-  const togglePlatform = (key) => setPlatforms((p) => ({ ...p, [key]: !p[key] }));
-
   const { url: photoUrl, setUrl: setPhotoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
     successMessage: "Profile photo updated.",
     onUploaded: ({ url, id }) => setProfile((p) => ({ ...p, photoUrl: url, photoUploadId: id })),
   });
+  const seededFromAccount = useRef(false);
+  useEffect(() => {
+    if (cardId || !account || seededFromAccount.current) return;
+    seededFromAccount.current = true;
+    const c = account.creator ?? {};
+    const socials = c.socials ?? {};
+    setProfile((p) => ({
+      ...p,
+      name: account.name ?? `${account.firstName ?? ''} ${account.lastName ?? ''}`.trim(),
+      handle: account.handle ?? '',
+      bio: c.bio ?? '', location: c.location ?? '', niche: c.niche ?? p.niche, languages: c.languages ?? '',
+      followers: c.followers != null ? Number(c.followers).toLocaleString('en-KE') : '',
+      engagement: c.eng != null ? String(c.eng) : '',
+      reach: c.followers != null ? Math.round(c.followers * 0.4).toLocaleString('en-KE') : '',
+      whatsapp: account.phone ?? '', instagram: socials.instagram ?? '', tiktok: socials.tiktok ?? '', youtube: socials.youtube ?? '', twitter: socials.twitter ?? '',
+    }));
+    if (account.avatar) setPhotoUrl(account.avatar);
+  }, [cardId, account]);
+  const [platforms, setPlatforms] = useState({ instagram: true, tiktok: true, youtube: false, twitter: false, podcast: false });
+  const togglePlatform = (key) => setPlatforms((p) => ({ ...p, [key]: !p[key] }));
+
 
   // packages (step 2)
-  const [packages, setPackages] = useState([
-    { id: 1, name: "Reel + Caption", price: "22,000", desc: "1 × 60s reel, caption & hashtags", feat: true },
-    { id: 2, name: "Story Post", price: "8,000", desc: "3 story slides with swipe-up link", feat: false },
-    { id: 3, name: "Brand Partnership", price: "55,000", desc: "Dedicated reel + 2 stories + usage rights", feat: false },
-  ]);
+  const [packages, setPackages] = useState([]);
   const addPackage = () => {
     if (packages.length >= 5) return;
     setPackages((p) => [...p, { id: Date.now(), name: "New package", price: "0", desc: "Describe what's included", feat: false }]);
@@ -385,33 +396,28 @@ export default function RateCardBuilderPage() {
   const removePackage = (id) => setPackages((p) => p.filter((pkg) => pkg.id !== id));
   const updatePackage = (id, field, value) => setPackages((p) => p.map((pkg) => (pkg.id === id ? { ...pkg, [field]: value } : pkg)));
 
-  // payment (step 3)
-  const [mpesaPhone, setMpesaPhone] = useState("712 345 678");
-  const [mpesaBusiness, setMpesaBusiness] = useState("Amara Osei");
-  const [airtelConnected, setAirtelConnected] = useState(false);
-  const [airtelLoading, setAirtelLoading] = useState(false);
+  // payment (step 3) - payout methods live on the account (/payments/methods);
+  // invoice preferences are saved with the rate card.
+  const { methods: payoutMethods, addMethod: addPayoutMethod, isAdding: addingPayout, removeMethod: removePayoutMethod } = usePayoutMethods();
+  const methodOf = (type) => payoutMethods.find((m) => m.type === type);
+  const [bankName, setBankName] = useState("");
+  const [mpesaPhone, setMpesaPhone] = useState("");
+  const [mpesaBusiness, setMpesaBusiness] = useState("");
+  const [airtelPhone, setAirtelPhone] = useState("");
   const [bankOpen, setBankOpen] = useState(false);
+  const [bankAccount, setBankAccount] = useState("");
+  const [bankHolder, setBankHolder] = useState("");
   const [autoInvoice, setAutoInvoice] = useState(true);
   const [requireDeposit, setRequireDeposit] = useState(false);
   const [whatsappReminder, setWhatsappReminder] = useState(true);
-  // No backend endpoint exists yet for linking a payout method independent
-  // of a transaction (see production plan's backend spec) - this saves
-  // locally as part of the rate card draft rather than pretending to be a
-  // live Airtel connection.
-  const connectAirtel = () => {
-    setAirtelLoading(true);
-    setTimeout(() => {
-      setAirtelLoading(false);
-      setAirtelConnected(true);
-      toast.info("Saved to your draft. It will sync automatically once Airtel payouts are supported on the backend.");
-    }, 1200);
-  };
+  const connectMpesa = () => addPayoutMethod({ type: 'mpesa', name: 'M-Pesa', detail: `+254 ${mpesaPhone.trim()}`, fields: { phone: `+254 ${mpesaPhone.trim()}`, business: mpesaBusiness.trim() } });
+  const connectAirtel = () => addPayoutMethod({ type: 'airtel', name: 'Airtel Money', detail: `+254 ${airtelPhone.trim()}`, fields: { phone: `+254 ${airtelPhone.trim()}` } });
+  const connectBank = () => addPayoutMethod({ type: 'bank', name: bankName, detail: `···· ···· ${bankAccount.trim().slice(-4)}`, fields: { bank: bankName, account: bankAccount.trim(), holder: bankHolder.trim() } }, { onSuccess: () => setBankOpen(false) });
 
   // edit card (step 4)
-  const [headline, setHeadline] = useState("Amara Osei · Lifestyle & Travel Creator");
-  const [pitch, setPitch] = useState("East Africa's go-to creator for authentic brand stories.");
+  const [headline, setHeadline] = useState("");
+  const [pitch, setPitch] = useState("");
   const [leadTime, setLeadTime] = useState("3-5 business days");
-  const [bankName, setBankName] = useState("");
   const [availability, setAvailability] = useState("Open for collabs");
   const [usageNote, setUsageNote] = useState("Usage rights for digital channels included for 6 months from delivery date.");
   const [revisionPolicy, setRevisionPolicy] = useState("1 round of revisions included");
@@ -425,7 +431,11 @@ export default function RateCardBuilderPage() {
     hydrated.current = true;
     if (rateCard.profile) setProfile((p) => ({ ...p, ...rateCard.profile }));
     if (rateCard.profile?.photoUrl) setPhotoUrl(rateCard.profile.photoUrl);
-    if (rateCard.platforms) setPlatforms((p) => ({ ...p, ...rateCard.platforms }));
+    if (Array.isArray(rateCard.platforms)) {
+      // Public/list shapes send platforms as an array of ids or names; the wizard keeps an on/off map.
+      const on = new Set(rateCard.platforms.map((x) => String(x?.id ?? x?.name ?? x).toLowerCase().replace(/\s*\/\s*x$/, '').replace('twitter/x', 'twitter')));
+      setPlatforms((p) => Object.fromEntries(Object.keys(p).map((k) => [k, on.has(k)])));
+    } else if (rateCard.platforms && typeof rateCard.platforms === 'object') setPlatforms((p) => ({ ...p, ...rateCard.platforms }));
     if (Array.isArray(rateCard.packages) && rateCard.packages.length > 0) setPackages(rateCard.packages);
     if (rateCard.headline) setHeadline(rateCard.headline);
     if (rateCard.pitch) setPitch(rateCard.pitch);
@@ -434,6 +444,11 @@ export default function RateCardBuilderPage() {
     if (rateCard.usageNote) setUsageNote(rateCard.usageNote);
     if (rateCard.revisionPolicy) setRevisionPolicy(rateCard.revisionPolicy);
     if (rateCard.showPricing != null) setShowPricing(rateCard.showPricing);
+    if (rateCard.payment) {
+      if (rateCard.payment.autoInvoice != null) setAutoInvoice(!!rateCard.payment.autoInvoice);
+      if (rateCard.payment.requireDeposit != null) setRequireDeposit(!!rateCard.payment.requireDeposit);
+      if (rateCard.payment.whatsappReminder != null) setWhatsappReminder(!!rateCard.payment.whatsappReminder);
+    }
     if (rateCard.published) setPublished(true);
   }, [cardId, rateCard]);
 
@@ -445,7 +460,7 @@ export default function RateCardBuilderPage() {
     profile,
     platforms,
     packages,
-    payment: { mpesaPhone, mpesaBusiness, airtelConnected, autoInvoice, requireDeposit, whatsappReminder },
+    payment: { autoInvoice, requireDeposit, whatsappReminder },
     headline,
     pitch,
     leadTime,
@@ -497,7 +512,6 @@ export default function RateCardBuilderPage() {
   const next = () => setStep((s) => Math.min(5, s + 1));
   const back = () => setStep((s) => Math.max(1, s - 1));
 
-  const previewProps = { profile, platforms, packages, headline: undefined, pitch: undefined, leadTime: undefined, availability: undefined };
 
   if (cardId && cardLoading) {
     return (
@@ -721,60 +735,90 @@ export default function RateCardBuilderPage() {
                 <div className="alert-body"><div className="alert-title">Secure &amp; encrypted</div>All payment details are stored securely. Creatorske never stores full card credentials.</div>
               </div>
 
-              <div className="pay-method active-method">
+              {(() => { const m = methodOf('mpesa'); return (
+              <div className={`pay-method${m ? " active-method" : ""}`}>
                 <div className="pay-method-header">
                   <div className="pay-icon" style={{ background: "#00a651" }}><IconDeviceMobile className="icon-md" color="#fff" /></div>
-                  <div style={{ flex: 1 }}><div className="section-title">M-Pesa</div><p className="hint">Safaricom mobile money</p></div>
-                  <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
+                  <div style={{ flex: 1 }}><div className="section-title">M-Pesa</div><p className="hint">{m ? m.detail : 'Safaricom mobile money'}</p></div>
+                  {m ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+                      <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
+                      <button className="btn btn-ghost btn-sm" onClick={() => removePayoutMethod(m.id)}>Disconnect</button>
+                    </div>
+                  ) : (
+                    <button className={`btn btn-ghost btn-sm${addingPayout ? " btn-loading" : ""}`} disabled={addingPayout || mpesaPhone.trim().length < 9} onClick={connectMpesa}>Connect</button>
+                  )}
                 </div>
+                {!m && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                   <div className="field">
                     <label className="field-label field-required">M-Pesa phone number</label>
-                    <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} value={mpesaPhone} onChange={(e) => setMpesaPhone(e.target.value)} /></div>
+                    <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} value={mpesaPhone} onChange={(e) => setMpesaPhone(e.target.value)} placeholder="7XX XXX XXX" /></div>
                   </div>
                   <div className="field">
                     <label className="field-label">Business name on M-Pesa</label>
-                    <div className="inp-wrap"><span className="inp-icon l"><IconBuildingStore className="icon-sm" /></span><input className="inp inp-icon-l" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} /></div>
+                    <div className="inp-wrap"><span className="inp-icon l"><IconBuildingStore className="icon-sm" /></span><input className="inp inp-icon-l" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} placeholder={profile.name || 'Your name'} /></div>
                     <p className="hint">Displayed to clients when they pay</p>
                   </div>
                 </div>
+                )}
               </div>
+              ); })()}
 
-              <div className={`pay-method${airtelConnected ? " active-method" : ""}`}>
+              {(() => { const m = methodOf('airtel'); return (
+              <div className={`pay-method${m ? " active-method" : ""}`}>
                 <div className="pay-method-header">
                   <div className="pay-icon" style={{ background: "#e40000" }}><IconDeviceMobile className="icon-md" color="#fff" /></div>
-                  <div style={{ flex: 1 }}><div className="section-title">Airtel Money</div><p className="hint">Airtel mobile money</p></div>
-                  {airtelConnected ? (
-                    <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
+                  <div style={{ flex: 1 }}><div className="section-title">Airtel Money</div><p className="hint">{m ? m.detail : 'Airtel mobile money'}</p></div>
+                  {m ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+                      <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
+                      <button className="btn btn-ghost btn-sm" onClick={() => removePayoutMethod(m.id)}>Disconnect</button>
+                    </div>
                   ) : (
-                    <button className={`btn btn-ghost btn-sm${airtelLoading ? " btn-loading" : ""}`} disabled={airtelLoading} onClick={connectAirtel}>Connect</button>
+                    <button className={`btn btn-ghost btn-sm${addingPayout ? " btn-loading" : ""}`} disabled={addingPayout || airtelPhone.trim().length < 9} onClick={connectAirtel}>Connect</button>
                   )}
                 </div>
+                {!m && (
                 <div className="field">
                   <label className="field-label">Airtel phone number</label>
-                  <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} placeholder="7XX XXX XXX" /></div>
+                  <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} placeholder="7XX XXX XXX" value={airtelPhone} onChange={(e) => setAirtelPhone(e.target.value)} /></div>
                 </div>
+                )}
               </div>
+              ); })()}
 
-              <div className="pay-method">
+              {(() => { const m = methodOf('bank'); return (
+              <div className={`pay-method${m ? " active-method" : ""}`}>
                 <div className="pay-method-header">
                   <div className="pay-icon" style={{ background: "var(--bg-secondary)" }}><IconBuilding className="icon-md" color="var(--txt-secondary)" /></div>
-                  <div style={{ flex: 1 }}><div className="section-title">Bank transfer</div><p className="hint">Local &amp; international wire</p></div>
-                  <button className="btn btn-ghost btn-sm" onClick={() => setBankOpen((o) => !o)}>{bankOpen ? "Hide" : "Add details"}</button>
+                  <div style={{ flex: 1 }}><div className="section-title">Bank transfer</div><p className="hint">{m ? `${m.name} ${m.detail}` : 'Local & international wire'}</p></div>
+                  {m ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+                      <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
+                      <button className="btn btn-ghost btn-sm" onClick={() => removePayoutMethod(m.id)}>Disconnect</button>
+                    </div>
+                  ) : (
+                    <button className="btn btn-ghost btn-sm" onClick={() => setBankOpen((o) => !o)}>{bankOpen ? "Hide" : "Add details"}</button>
+                  )}
                 </div>
-                {bankOpen && (
+                {!m && bankOpen && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="g2">
                       <div className="field">
                         <label className="field-label">Bank name</label>
                         <Select className="inp" aria-label="Bank" value={bankName} onChange={setBankName} placeholder="Select bank" options={["Equity Bank", "KCB Bank", "Co-operative Bank", "NCBA", "Stanbic Bank", "Other"].map((b) => ({ value: b, label: b }))} />
                       </div>
-                      <div className="field"><label className="field-label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" /></div></div>
+                      <div className="field"><label className="field-label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" value={bankAccount} onChange={(e) => setBankAccount(e.target.value)} /></div></div>
                     </div>
-                    <div className="field"><label className="field-label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="e.g. Amara Osei" /></div></div>
+                    <div className="field"><label className="field-label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser className="icon-sm" /></span><input className="inp inp-icon-l" placeholder={profile.name || 'Account holder'} value={bankHolder} onChange={(e) => setBankHolder(e.target.value)} /></div></div>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <button className={`btn btn-primary btn-sm${addingPayout ? " btn-loading" : ""}`} disabled={addingPayout || !bankName || bankAccount.trim().length < 6} onClick={connectBank}>Save bank details</button>
+                    </div>
                   </div>
                 )}
               </div>
+              ); })()}
 
               <div className="card card-p">
                 <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Invoice preferences</p>
@@ -859,24 +903,24 @@ export default function RateCardBuilderPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
                     <div className="field">
                       <label className="field-label">WhatsApp business number</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconMessageCircle className="icon-sm" color="#25D366" /></span><input className="inp inp-icon-l" defaultValue="+254 712 345 678" /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconMessageCircle className="icon-sm" color="#25D366" /></span><input className="inp inp-icon-l" value={profile.whatsapp} onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value })} placeholder="+254 7XX XXX XXX" /></div>
                     </div>
                     <div className="field">
                       <label className="field-label">Instagram</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandInstagram className="icon-sm" /></span><input className="inp inp-icon-l" defaultValue="instagram.com/amaracreates" /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandInstagram className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.instagram} onChange={(e) => setProfile({ ...profile, instagram: e.target.value })} placeholder="instagram.com/…" /></div>
                     </div>
                     <div className="field">
                       <label className="field-label">TikTok</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandTiktok className="icon-sm" /></span><input className="inp inp-icon-l" defaultValue="tiktok.com/@amaracreates" /></div>
+                      <div className="inp-wrap"><span className="inp-icon l"><IconBrandTiktok className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.tiktok} onChange={(e) => setProfile({ ...profile, tiktok: e.target.value })} placeholder="tiktok.com/@…" /></div>
                     </div>
                     <div className="g2">
                       <div className="field">
                         <label className="field-label">YouTube</label>
-                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandYoutube className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="youtube.com/…" /></div>
+                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandYoutube className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.youtube} onChange={(e) => setProfile({ ...profile, youtube: e.target.value })} placeholder="youtube.com/…" /></div>
                       </div>
                       <div className="field">
                         <label className="field-label">Twitter / X</label>
-                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandX className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="x.com/…" /></div>
+                        <div className="inp-wrap"><span className="inp-icon l"><IconBrandX className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.twitter} onChange={(e) => setProfile({ ...profile, twitter: e.target.value })} placeholder="x.com/…" /></div>
                       </div>
                     </div>
                   </div>

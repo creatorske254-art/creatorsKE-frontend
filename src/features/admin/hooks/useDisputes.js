@@ -28,8 +28,7 @@ export function useDisputes() {
   // hammering a 404, and the seam is ready to work once it's built.
   const replyMutation = useMutation({
     mutationFn: ({ id, message }) => adminService.replyToDispute(id, message),
-    retry: false,
-    onError: () => toast.error("Replying isn't available yet. It needs backend support."),
+    onError: (err) => toast.error(err?.message || 'Could not post your reply.'),
   });
 
   return {

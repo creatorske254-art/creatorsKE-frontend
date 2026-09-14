@@ -18,6 +18,7 @@ export function useFlaggedAccounts() {
     mutationFn: ({ id, action, reason }) => adminService.takeAccountAction(id, action, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: FLAGGED_KEY });
+      queryClient.invalidateQueries({ queryKey: ['admin-accounts'] });
       toast.success('Action applied.');
     },
     onError: () => toast.error('Could not apply action.'),

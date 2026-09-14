@@ -5,13 +5,13 @@ import EmptyState from '@/components/shared/EmptyState'
 import ErrorState from '@/components/shared/ErrorState'
 import Skeleton from '@/components/ui/Skeleton'
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts'
+import { useAccounts } from '@/features/admin/hooks/useAccounts'
 import { formatDate } from '@/lib/utils'
 import { IconBan, IconChevronRight, IconCircleCheck, IconFlag, IconRotate, IconSearch, IconShieldCheck, IconShieldX, IconUsers, IconX } from '@tabler/icons-react';
 
-// GET /admin/accounts/flagged is the only account-listing endpoint that
-// exists today (see CLAUDE.md / production plan's backend spec) - there is
-// no "list all accounts" endpoint yet, so this page only shows flagged
-// accounts rather than pretending to have the full directory.
+// Two views: the moderation queue (GET /admin/accounts/flagged) and every
+// account on the platform (GET /admin/accounts?q=). Actions post to
+// POST /admin/accounts/:id/action in both.
 function normalizeAccount(a) {
   const flagSource = a.flag ?? a
   return {
@@ -23,13 +23,14 @@ function normalizeAccount(a) {
     domainVerified: a.domainVerified ?? null,
     joined: formatDate(a.joinedAt ?? a.createdAt),
     status: a.status ?? 'flagged',
-    flag: {
+    plan: a.plan ?? null,
+    flag: (a.flag || a.status === 'flagged' || a.flagReason) ? {
       reason: flagSource.reason ?? a.flagReason ?? 'Flagged for review.',
       flaggedBy: flagSource.flaggedBy ?? 'System',
       flaggedOn: formatDate(flagSource.flaggedOn ?? flagSource.flaggedAt ?? a.flaggedAt),
       enquiriesSent: flagSource.enquiriesSent ?? 0,
       messagesSent: flagSource.messagesSent ?? 0,
-    },
+    } : null,
     stat: a.type === 'brand'
       ? { label: 'Enquiries sent', value: flagSource.enquiriesSent ?? 0 }
       : { label: 'Rating', value: a.rating ?? '-' },
@@ -60,7 +61,14 @@ export default function AccountsPage() {
     setSearchParams(next, { replace: true })
   }
   const [selectedId, setSelectedId] = useState(null)
-  const { accounts: rawAccounts, isLoading, isError, refetch, takeAction, isTakingAction } = useFlaggedAccounts()
+  const view = searchParams.get('view') === 'all' ? 'all' : 'flagged'
+  const setView = (v) => { const next = new URLSearchParams(searchParams); if (v === 'all') next.set('view', 'all'); else next.delete('view'); setSearchParams(next, { replace: true }) }
+  const flaggedQ = useFlaggedAccounts()
+  const allQ = useAccounts()
+  const { accounts: rawAccounts, isLoading, isError, refetch } = view === 'all'
+    ? { accounts: allQ.accounts, isLoading: allQ.isLoading, isError: allQ.isError, refetch: allQ.refetch }
+    : { accounts: flaggedQ.accounts, isLoading: flaggedQ.isLoading, isError: flaggedQ.isError, refetch: flaggedQ.refetch }
+  const { takeAction, isTakingAction } = flaggedQ
   const accounts = useMemo(() => rawAccounts.map(normalizeAccount), [rawAccounts])
   const [confirmAction, setConfirmAction] = useState(null) // { type: 'suspend'|'restore'|'remove', account }
 
@@ -147,17 +155,23 @@ export default function AccountsPage() {
           </div>
         </div>
 
-        {/* Search */}
+        {/* View + search */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-16)', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)', flexWrap: 'wrap' }}>
+            <div className="tabs" role="tablist" aria-label="Account view">
+              <button type="button" role="tab" aria-selected={view === 'flagged'} className={`tab${view === 'flagged' ? ' active' : ''}`} onClick={() => setView('flagged')}>Needs review<span className="tab-count">{flaggedQ.accounts.length}</span></button>
+              <button type="button" role="tab" aria-selected={view === 'all'} className={`tab${view === 'all' ? ' active' : ''}`} onClick={() => setView('all')}>All accounts<span className="tab-count">{allQ.accounts.length}</span></button>
+            </div>
           <span style={{ fontSize: 13, color: 'var(--grey-500)' }}>
-            {isLoading ? 'Loading accounts…' : (
+            {isLoading ? 'Loading accounts' : (
               <>
                 <strong style={{ color: 'var(--black)' }}>{filtered.length}</strong>
-                {' '}flagged {filtered.length === 1 ? 'account' : 'accounts'}
+                {' '}{view === 'flagged' ? 'flagged ' : ''}{filtered.length === 1 ? 'account' : 'accounts'}
                 {query && <> matching “{query}”</>}
               </>
             )}
           </span>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
             <div className="search-input">
               <IconSearch className="icon-sm" aria-hidden="true" />
@@ -237,8 +251,8 @@ export default function AccountsPage() {
               <EmptyState
                 size="sm"
                 icon={<IconUsers />}
-                title={accounts.length === 0 ? 'No flagged accounts' : 'No accounts found'}
-                description={accounts.length === 0 ? "There's nothing needing review right now." : 'Try a different search term.'}
+                title={accounts.length === 0 ? (view === 'flagged' ? 'No flagged accounts' : 'No accounts yet') : 'No accounts found'}
+                description={accounts.length === 0 ? (view === 'flagged' ? "There's nothing needing review right now." : 'Sign-ups will appear here.') : 'Try a different search term.'}
               />
             )}
               </>

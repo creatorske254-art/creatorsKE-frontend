@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useDeletionRequests } from '@/features/admin/hooks/useOperations';
-import { useDemoFallback } from '@/lib/useDemoFallback';
-import { DEMO_DELETION_REQUESTS } from '@/lib/demoData';
 import { formatDate, getInitials } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
-import DemoTag from '@/components/shared/DemoTag';
 import { ChartFrame, BarChart, Meter } from '@/components/charts';
 import { IconUserMinus, IconCheck, IconX, IconAlertTriangle, IconSearch } from '@tabler/icons-react';
 
@@ -43,7 +40,7 @@ export default function DeletionRequestsPage() {
   const [typed, setTyped] = useState('');
 
   const { query: reqQuery, rows: rawRows, resolve, isResolving, resolvingId } = useDeletionRequests();
-  const requests = useDemoFallback(reqQuery, DEMO_DELETION_REQUESTS);
+  const requests = { data: reqQuery.data, isLoading: reqQuery.isLoading };
   const rows = useMemo(() => (Array.isArray(requests.data) ? requests.data : requests.data?.requests ?? rawRows ?? []), [requests.data, rawRows]);
 
   const filtered = useMemo(() => {
@@ -82,7 +79,7 @@ export default function DeletionRequestsPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
       <div>
-        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Deletion requests{requests.isDemo && <DemoTag />}</h1>
+        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Deletion requests</h1>
         <p className="page-subtitle">Users who asked to erase their account. Approve once nothing is open on it; every rejection sends the user your reason.</p>
       </div>
 
@@ -107,7 +104,7 @@ export default function DeletionRequestsPage() {
 
           {requests.isLoading ? (
             <div style={{ padding: 'var(--space-20)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>{[0, 1, 2].map((i) => <Skeleton key={i} width="100%" height={64} />)}</div>
-          ) : reqQuery.isError && !requests.isDemo ? (
+          ) : reqQuery.isError ? (
             <ErrorState title="Couldn't load requests" description="This queue needs the admin/deletion-requests endpoint to be live." onRetry={reqQuery.refetch} />
           ) : filtered.length === 0 ? (
             <EmptyState icon={<IconUserMinus />} title={rows.length ? 'No requests match' : 'No deletion requests'} description={rows.length ? 'Try another filter.' : 'Requests from Settings > Delete account land here.'} />
@@ -150,7 +147,7 @@ export default function DeletionRequestsPage() {
         </section>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
-          <ChartFrame title="Why people leave" subtitle="Stated reasons, all requests" loading={requests.isLoading} empty={!reasonRows.length} emptyTitle="No reasons yet" demo={requests.isDemo} height={170}>
+          <ChartFrame title="Why people leave" subtitle="Stated reasons, all requests" loading={requests.isLoading} empty={!reasonRows.length} emptyTitle="No reasons yet" height={170}>
             <BarChart data={reasonRows} series={[{ key: 'value', label: 'Requests' }]} layout="horizontal" labels height={170} />
           </ChartFrame>
           <section className="card card-p-md">

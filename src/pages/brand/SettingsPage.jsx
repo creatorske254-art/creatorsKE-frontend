@@ -8,7 +8,10 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/features/auth/services/auth.service';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
-import { brandService } from '@/features/brand-dashboard/services/brand.service';
+import { useBrandPaymentMethods, useBrandTeam } from '@/features/brand-dashboard/hooks/useBrandAccount';
+import { usePreferences } from '@/features/auth/hooks/useProfile';
+import Skeleton from '@/components/ui/Skeleton';
+import ErrorState from '@/components/shared/ErrorState';
 import { SettingsShell, ToggleRow as SharedToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, TeamCard } from '@/components/settings';
 import { useImageUpload } from '@/lib/useImageUpload';
 import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCircleCheck, IconCreditCard, IconDeviceMobile, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconPhone, IconShieldCheck, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
@@ -56,6 +59,7 @@ function ProfileTab({ form, setForm, onDirty }) {
   }
 
   const { url: logoUrl, uploading: logoUploading, onChange: handleLogoChange } = useImageUpload({
+    initialUrl: form.logoUrl ?? null,
     successMessage: "Logo uploaded.",
     onUploaded: ({ url }) => { setForm((f) => ({ ...f, logoUrl: url })); onDirty(); },
   });
@@ -197,7 +201,7 @@ function ProfileTab({ form, setForm, onDirty }) {
 // Connecting opens a modal for real details rather than flipping a boolean -
 // there's no /payments/methods endpoint yet (see BACKEND_API_SPEC.md), so what
 // the brand enters is held here and labelled, not invented.
-const PAYMENT_METHODS = [
+const PAY_PROVIDERS = [
   {
     id: "mpesa",
     name: "M-Pesa",
@@ -232,11 +236,25 @@ const PAYMENT_METHODS = [
     ],
     summary: (v) => `${v.bank} ····${String(v.account).slice(-4)}`,
   },
+  {
+    id: "card",
+    name: "Visa / Mastercard",
+    sub: "Company card · charged at checkout",
+    iconBg: "var(--purple-50)",
+    iconColor: "var(--purple-600)",
+    icon: IconCreditCard,
+    fields: [
+      { key: "brand", label: "Card brand", placeholder: "Visa or Mastercard", required: true },
+      { key: "last4", label: "Last 4 digits", placeholder: "4521", required: true },
+      { key: "expiry", label: "Expiry", placeholder: "MM/YY", required: true },
+    ],
+    summary: (v) => `${v.brand} ···· ${v.last4}`,
+  },
 ];
 
 // Leading icon inside each dynamic input, keyed by what the field collects.
 const FIELD_ICON = { phone: IconDeviceMobile, till: IconHash, email: IconMail, bank: IconBuildingBank, account: IconHash, holder: IconUser };
-function ConnectMethodModal({ method, onClose, onConnect }) {
+function ConnectMethodModal({ method, onClose, onConnect, busy }) {
   const [values, setValues] = useState({});
   if (!method) return null;
 
@@ -264,11 +282,11 @@ function ConnectMethodModal({ method, onClose, onConnect }) {
         ))}
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
-        <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
+        <button className="btn btn-secondary btn-sm" onClick={onClose} disabled={busy}>Cancel</button>
         <button
-          className="btn btn-primary btn-sm"
-          disabled={missing}
-          onClick={() => onConnect(method.id, method.summary(values))}
+          className={`btn btn-primary btn-sm${busy ? ' btn-loading' : ''}`}
+          disabled={missing || busy}
+          onClick={() => onConnect({ type: method.id, name: method.id === 'bank' ? values.bank : method.name, detail: method.summary(values), ...values })}
         >
           Connect {method.name}
         </button>
@@ -278,28 +296,23 @@ function ConnectMethodModal({ method, onClose, onConnect }) {
 }
 
 function PaymentsTab({ prefs, setPrefs, onDirty }) {
-  const [methods, setMethods] = useState(PAYMENT_METHODS);
+  const { methods, isLoading, addMethod, isAdding, removeMethod } = useBrandPaymentMethods();
   const [connecting, setConnecting] = useState(null);
   const [disconnecting, setDisconnecting] = useState(null);
+  const connectedFor = (providerId) => methods.find((m) => m.type === providerId && m.connected !== false);
 
   function toggle(key) {
     setPrefs((p) => ({ ...p, [key]: !p[key] }));
     onDirty();
   }
 
-  function handleConnect(id, detail) {
-    setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, connected: true, detail } : m)));
-    setConnecting(null);
-    onDirty();
-    toast.success(`${methods.find((m) => m.id === id)?.name} connected. Saved locally until payment methods are supported on the backend.`);
+  function handleConnect(payload) {
+    addMethod(payload, { onSuccess: () => setConnecting(null) });
   }
 
   function handleDisconnect() {
-    const id = disconnecting;
-    setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, connected: false, detail: undefined } : m)));
+    removeMethod(disconnecting.id);
     setDisconnecting(null);
-    onDirty();
-    toast.success(`${methods.find((m) => m.id === id)?.name} disconnected.`);
   }
 
   return (
@@ -310,28 +323,32 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
           How you pay creators. These are used at checkout when a booking is confirmed.
         </p>
         <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
-          {methods.map((m) => (
-            <div key={m.id} className={`pay-row${m.connected ? " connected" : ""}`}>
-              <div className="pay-icon" style={{ background: m.iconBg }}>
-                <m.icon className="icon-md" style={{ color: m.iconColor || "#fff" }} aria-hidden="true" />
+          {isLoading && <Skeleton width="100%" height={64} />}
+          {!isLoading && PAY_PROVIDERS.map((p) => {
+            const m = connectedFor(p.id);
+            return (
+            <div key={p.id} className={`pay-row${m ? " connected" : ""}`}>
+              <div className="pay-icon" style={{ background: p.iconBg }}>
+                <p.icon className="icon-md" style={{ color: p.iconColor || "#fff" }} aria-hidden="true" />
               </div>
               <div className="pay-info">
-                <div className="pay-name">{m.name}</div>
-                <div className="pay-desc">{m.sub}</div>
+                <div className="pay-name">{m?.name ?? p.name}</div>
+                <div className="pay-desc">{p.sub}</div>
               </div>
-              {m.connected ? (
+              {m ? (
                 <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
                   <span className="tag tag-success">
                     <IconCircleCheck className="icon-xs" aria-hidden="true" />
-                    Connected · {m.detail}
+                    {m.primary ? 'Primary' : 'Connected'}{m.detail || m.phone || m.last4 ? ` · ${m.detail ?? m.phone ?? `···· ${m.last4}`}` : ''}
                   </span>
-                  <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(m.id)}>Disconnect</button>
+                  <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(m)}>Disconnect</button>
                 </div>
               ) : (
-                <button className="btn btn-ghost btn-sm" onClick={() => setConnecting(m)}>Connect</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setConnecting(p)}>Connect</button>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </CollapsibleCard>
 
@@ -339,12 +356,13 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
         method={connecting}
         onClose={() => setConnecting(null)}
         onConnect={handleConnect}
+        busy={isAdding}
       />
 
       <ConfirmDialog
         open={!!disconnecting}
         variant="danger"
-        title={`Disconnect ${methods.find((m) => m.id === disconnecting)?.name ?? ""}?`}
+        title={`Disconnect ${disconnecting?.name ?? ""}?`}
         message="You won't be able to pay creators with this method until you reconnect it. Campaigns already paid for are unaffected."
         confirmLabel="Disconnect"
         onConfirm={handleDisconnect}
@@ -529,26 +547,17 @@ function BillingTab({ prefs, setPrefs, onDirty }) {
 
 // Team tab
 function TeamTab() {
-  const { user } = useAuth();
-  const [inviting, setInviting] = useState(false);
-  const members = [
-    { id: 'me', name: user?.contactName ?? user?.firstName ?? 'You', email: user?.email ?? '', role: 'owner', status: 'active' },
-  ];
-  function invite(email, role) {
-    setInviting(true);
-    brandService.inviteTeamMember(email, role)
-      .then(() => toast.success(`Invitation sent to ${email}.`))
-      .catch(() => toast.error("Team invites aren't available yet. It needs backend support."))
-      .finally(() => setInviting(false));
-  }
+  const { members, isLoading, invite, isInviting, changeRole, remove } = useBrandTeam();
   return (
     <div className="settings-stack">
       <TeamCard
         members={members}
+        loading={isLoading}
         roles={TEAM_ROLES}
-        onInvite={invite}
-        onRemove={(id) => brandService.removeTeamMember(id).catch(() => {})}
-        inviting={inviting}
+        onInvite={(email, role) => invite({ email, role })}
+        onChangeRole={(id, role) => changeRole({ id, role })}
+        onRemove={(id) => remove(id)}
+        inviting={isInviting}
         description="Everyone here signs in with their own email and password. Roles decide what they can change."
       />
       <div className="info-callout">
@@ -577,29 +586,33 @@ function AppearanceTab() {
 
 // Privacy & data tab
 function PrivacyTab() {
-  const [showToCreators, setShowToCreators] = useState(true);
-  const [showLogo, setShowLogo] = useState(true);
-  const [shareAnalytics, setShareAnalytics] = useState(false);
-  const [marketing, setMarketing] = useState(true);
-  const [dirty, setDirty] = useState(false);
+  const { preferences, isLoading, isError, savePreferences, isSaving } = usePreferences();
+  const [draft, setDraft] = useState(null);
   const [saved, setSaved] = useState(false);
-  const set = (fn) => (v) => { fn(v); setDirty(true); };
-  function handleSave() { setSaved(true); setDirty(false); toast.success('Privacy preferences saved.'); setTimeout(() => setSaved(false), 2000); }
+  const v = { showToCreators: true, showLogo: true, shareAnalytics: false, marketing: true, ...preferences, ...(draft ?? {}) };
+  const set = (k) => (val) => setDraft((d) => ({ ...(d ?? {}), [k]: val }));
+  function handleSave() {
+    savePreferences(draft ?? {}, {
+      onSuccess: () => { setDraft(null); setSaved(true); toast.success('Privacy preferences saved.'); setTimeout(() => setSaved(false), 2000); },
+    });
+  }
+  if (isLoading) return <div className="settings-stack"><Skeleton width="100%" height={200} /></div>;
+  if (isError) return <ErrorState title="Couldn't load your privacy settings" />;
   return (
     <div className="settings-stack">
       <div className="bento-2">
         <CollapsibleCard title="Visibility to creators" collapsible={false}>
           <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-            <SharedToggleRow label="Show company name on enquiries" desc="Off = creators see 'A verified brand' until you book." on={showToCreators} onChange={set(setShowToCreators)} />
+            <SharedToggleRow label="Show company name on enquiries" desc="Off = creators see 'A verified brand' until you book." on={!!v.showToCreators} onChange={set('showToCreators')} />
             <div className="field-divider" />
-            <SharedToggleRow label="Show our logo on completed campaigns" desc="Creators may list your campaign in their portfolio with your logo." on={showLogo} onChange={set(setShowLogo)} />
+            <SharedToggleRow label="Show our logo on completed campaigns" desc="Creators may list your campaign in their portfolio with your logo." on={!!v.showLogo} onChange={set('showLogo')} />
           </div>
         </CollapsibleCard>
         <CollapsibleCard title="Data use" collapsible={false}>
           <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-            <SharedToggleRow label="Share anonymised analytics" desc="Helps us improve the platform. No personal or company data is shared." on={shareAnalytics} onChange={set(setShareAnalytics)} />
+            <SharedToggleRow label="Share anonymised analytics" desc="Helps us improve the platform. No personal or company data is shared." on={!!v.shareAnalytics} onChange={set('shareAnalytics')} />
             <div className="field-divider" />
-            <SharedToggleRow label="Product news and case studies" desc="Occasional emails about new features and campaigns that worked." on={marketing} onChange={set(setMarketing)} />
+            <SharedToggleRow label="Product news and case studies" desc="Occasional emails about new features and campaigns that worked." on={!!v.marketing} onChange={set('marketing')} />
           </div>
         </CollapsibleCard>
       </div>
@@ -607,7 +620,7 @@ function PrivacyTab() {
         <DataExportCard description="Download your company profile, campaigns, messages, invoices and transactions as a ZIP of JSON and CSV files. We email you a link within 24 hours." />
         <LegalCard />
       </div>
-      <SaveBar dirty={dirty} saved={saved} onSave={handleSave} />
+      <SaveBar dirty={!!draft} saving={isSaving} saved={saved} onSave={handleSave} />
     </div>
   );
 }
@@ -670,58 +683,49 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
 // Main component
 export default function BrandSettingsPage() {
   usePageMeta('Settings', 'Manage your Creatorske brand account and billing settings.');
+  const { profile, isLoadingProfile, isProfileError, refetchProfile } = useBrandDashboard();
+  if (isLoadingProfile) {
+    return (
+      <div className="page-enter">
+        <div className="settings-stack"><Skeleton width={220} height={24} /><Skeleton width="100%" height={48} /><Skeleton width="100%" height={320} /></div>
+      </div>
+    );
+  }
+  if (isProfileError || !profile) return <ErrorState title="Couldn't load your company settings" onRetry={refetchProfile} />;
+  return <BrandSettingsForm profile={profile} />;
+}
+
+const DEFAULT_PREFS = { autoInvoice: true, deposit: false, payReminder: true };
+const DEFAULT_NOTIFS = {
+  enquiryAccepted: true, deliveryMarked: true, approvalReminder: true, disputeUpdate: true, paymentConfirmed: true,
+  escrowTimeout: true, invoiceReady: true, newMessage: true, enquiryExpiry: true, digest: false,
+};
+
+function BrandSettingsForm({ profile }) {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const { updateProfile } = useBrandDashboard();
   const [form, setForm] = useState({
-    companyName: "Nairobi Brew Co.",
-    industry: "food",
-    website: "https://nairobibrew.co.ke",
-    description: "We craft award-winning specialty coffee and teas across Kenya. Our campaigns focus on authentic lifestyle storytelling.",
-    contactName: "Aisha Mwangi",
-    jobTitle: "Marketing Manager",
-    email: "aisha@nairobibrew.co.ke",
-    phone: "+254 722 456 789",
-    location: "Nairobi, Kenya",
+    companyName: profile.companyName ?? "",
+    industry: profile.industry ?? "",
+    website: profile.website ?? "",
+    description: profile.description ?? "",
+    contactName: profile.contactName ?? "",
+    jobTitle: profile.jobTitle ?? "",
+    email: profile.email ?? "",
+    phone: profile.phone ?? "",
+    location: profile.location ?? "",
+    logoUrl: profile.logoUrl ?? null,
   });
-  const [prefs, setPrefs] = useState({
-    autoInvoice: true,
-    deposit: false,
-    payReminder: true,
-  });
-  const [notifPrefs, setNotifPrefs] = useState({
-    enquiryAccepted: true,
-    deliveryMarked: true,
-    approvalReminder: true,
-    disputeUpdate: true,
-    paymentConfirmed: true,
-    escrowTimeout: true,
-    invoiceReady: true,
-    newMessage: true,
-    enquiryExpiry: true,
-    digest: false,
-  });
+  const [prefs, setPrefs] = useState({ ...DEFAULT_PREFS, ...(profile.preferences ?? {}) });
+  const [notifPrefs, setNotifPrefs] = useState({ ...DEFAULT_NOTIFS, ...(profile.notificationPreferences ?? {}) });
   function onDirty() { setDirty(true); }
 
-  // Real PUT /brands/profile via useBrandDashboard's mutation (which owns the
-  // success/error toasts), rather than a timer that pretends the save landed.
+  // PUT /brands/profile via useBrandDashboard's mutation, which owns the toasts.
   function handleSave() {
     setSaving(true);
     updateProfile(
-      {
-        companyName: form.companyName,
-        industry: form.industry,
-        website: form.website,
-        description: form.description,
-        contactName: form.contactName,
-        jobTitle: form.jobTitle,
-        email: form.email,
-        phone: form.phone,
-        location: form.location,
-        logoUrl: form.logoUrl,
-        preferences: prefs,
-        notificationPreferences: notifPrefs,
-      },
+      { ...form, preferences: prefs, notificationPreferences: notifPrefs },
       {
         onSuccess: () => setDirty(false),
         onSettled: () => setSaving(false),

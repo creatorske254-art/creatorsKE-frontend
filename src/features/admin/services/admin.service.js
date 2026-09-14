@@ -22,7 +22,7 @@ export const adminService = {
 
   getStats: () => api.get('/admin/stats').then((r) => r.data),
 
-  // Operations pages - specified in BACKEND_API_SPEC.md, not yet built.
+  // Operations pages (escrow, deletion requests, re-engagement)
   listEscrow: (params) => api.get('/admin/escrow', { params }).then((r) => r.data),
   escrowAction: (id, action, note) => api.post(`/admin/escrow/${id}/${action}`, { note }).then((r) => r.data),
   listDeletionRequests: (params) => api.get('/admin/deletion-requests', { params }).then((r) => r.data),
@@ -36,5 +36,7 @@ export const adminService = {
   getSettings: () => api.get('/admin/settings').then((r) => r.data),
   updateSettings: (rules) => api.put('/admin/settings', rules).then((r) => r.data),
   listTeam: () => api.get('/admin/team').then((r) => r.data),
+  updateTeamMember: (id, data) => api.patch(`/admin/team/${id}`, data).then((r) => r.data),
+  removeTeamMember: (id) => api.delete(`/admin/team/${id}`).then((r) => r.data),
   removeAdmin: (id) => api.delete(`/admin/team/${id}`).then((r) => r.data),
 };

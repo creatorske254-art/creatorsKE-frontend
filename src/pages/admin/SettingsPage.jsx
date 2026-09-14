@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/context/AuthContext';
 import { userService } from '@/features/auth/services/auth.service';
 import { adminService } from '@/features/admin/services/admin.service';
 import { useImageUpload } from '@/lib/useImageUpload';
+import { usePreferences } from '@/features/auth/hooks/useProfile';
+import Skeleton from '@/components/ui/Skeleton';
+import ErrorState from '@/components/shared/ErrorState';
 import { getInitials } from '@/lib/utils';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import {
@@ -128,12 +132,22 @@ const ALERTS = [
   ] },
 ];
 
+const ALERT_DEFAULTS = { newDispute: true, disputeEvidence: false, flaggedAccount: true, flaggedReview: true, escrowOverdue: true, deletionRequest: true, payoutFailed: true, digest: 'daily', channel: 'email' };
+
 function NotificationsTab() {
-  const [prefs, setPrefs] = useState({ newDispute: true, disputeEvidence: false, flaggedAccount: true, flaggedReview: true, escrowOverdue: true, deletionRequest: true, payoutFailed: true, digest: 'daily', channel: 'email' });
-  const [dirty, setDirty] = useState(false);
+  const { preferences, isLoading, isError, savePreferences, isSaving } = usePreferences();
+  const [draft, setDraft] = useState(null);
   const [saved, setSaved] = useState(false);
-  const set = (k, v) => { setPrefs((p) => ({ ...p, [k]: v })); setDirty(true); };
-  function save() { setSaved(true); setDirty(false); toast.success('Notification preferences saved.'); setTimeout(() => setSaved(false), 2000); }
+  const prefs = { ...ALERT_DEFAULTS, ...(preferences.alerts ?? {}), ...(draft ?? {}) };
+  const set = (k, v) => setDraft((d) => ({ ...(d ?? {}), [k]: v }));
+  function save() {
+    savePreferences({ alerts: { ...(preferences.alerts ?? {}), ...(draft ?? {}) } }, {
+      onSuccess: () => { setDraft(null); setSaved(true); toast.success('Notification preferences saved.'); setTimeout(() => setSaved(false), 2000); },
+    });
+  }
+
+  if (isLoading) return <div className="settings-stack"><Skeleton width="100%" height={240} /></div>;
+  if (isError) return <ErrorState title="Couldn't load your alert settings" />;
 
   return (
     <div className="settings-stack">
@@ -161,7 +175,7 @@ function NotificationsTab() {
           </Field>
         </div>
       </CollapsibleCard>
-      <SaveBar dirty={dirty} saved={saved} onSave={save} />
+      <SaveBar dirty={!!draft} saving={isSaving} saved={saved} onSave={save} />
     </div>
   );
 }
@@ -172,20 +186,33 @@ const RULE_DEFAULTS = {
   draftAbandonDays: 7, inactiveDays: 30, enquiryReplyHours: 48, maintenance: false, maintenanceMessage: '',
 };
 
+const SETTINGS_KEY = ['admin', 'settings'];
+
 function PlatformTab() {
-  const [rules, setRules] = useState(RULE_DEFAULTS);
+  const { data, isLoading, isError, refetch } = useQuery({ queryKey: SETTINGS_KEY, queryFn: adminService.getSettings });
+  if (isLoading) return <div className="settings-stack"><Skeleton width="100%" height={320} /></div>;
+  if (isError) return <ErrorState title="Couldn't load the platform rules" onRetry={refetch} />;
+  return <PlatformForm initial={{ ...RULE_DEFAULTS, ...(data ?? {}) }} />;
+}
+
+function PlatformForm({ initial }) {
+  const queryClient = useQueryClient();
+  const [rules, setRules] = useState(initial);
   const [dirty, setDirty] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const num = (k) => (e) => { setRules((r) => ({ ...r, [k]: Number(e.target.value) })); setDirty(true); };
 
-  function save() {
-    setSaving(true);
-    adminService.updateSettings(rules)
-      .then(() => { setSaved(true); setDirty(false); setTimeout(() => setSaved(false), 2000); toast.success('Platform rules saved.'); })
-      .catch(() => toast.error("Saving platform rules isn't available yet. It needs backend support."))
-      .finally(() => setSaving(false));
-  }
+  const mutation = useMutation({
+    mutationFn: adminService.updateSettings,
+    onSuccess: (updated) => {
+      queryClient.setQueryData(SETTINGS_KEY, updated);
+      setSaved(true); setDirty(false); setTimeout(() => setSaved(false), 2000);
+      toast.success('Platform rules saved.');
+    },
+    onError: (err) => toast.error(err?.message || 'Could not save platform rules.'),
+  });
+  const saving = mutation.isPending;
+  function save() { mutation.mutate(rules); }
 
   const NumberField = ({ id, label, k, unit, hint, min = 0, max = 365 }) => (
     <Field label={label} htmlFor={id} hint={hint}>
@@ -231,20 +258,43 @@ function PlatformTab() {
 }
 
 /* ── Team ────────────────────────────────────────────────────────────────── */
+const TEAM_KEY = ['admin', 'team'];
+
 function TeamTab() {
-  const { user } = useAuth();
-  const [inviting, setInviting] = useState(false);
-  const members = [{ id: 'me', name: `${user?.firstName ?? 'You'} ${user?.lastName ?? ''}`.trim(), email: user?.email ?? '', role: 'owner', status: 'active' }];
-  function invite(email, role) {
-    setInviting(true);
-    adminService.inviteAdmin(email, role)
-      .then(() => toast.success(`Invitation sent to ${email}.`))
-      .catch(() => toast.error("Inviting admins isn't available yet. It needs backend support."))
-      .finally(() => setInviting(false));
-  }
+  const queryClient = useQueryClient();
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: TEAM_KEY });
+  const { data, isLoading } = useQuery({ queryKey: TEAM_KEY, queryFn: adminService.listTeam });
+  const members = data?.members ?? data ?? [];
+
+  const invite = useMutation({
+    mutationFn: ({ email, role }) => adminService.inviteAdmin(email, role),
+    onSuccess: (_m, { email }) => { invalidate(); toast.success(`Invitation sent to ${email}.`); },
+    onError: (err) => toast.error(err?.message || 'Could not send the invite.'),
+  });
+  const changeRole = useMutation({
+    mutationFn: ({ id, role }) => adminService.updateTeamMember(id, { role }),
+    onSuccess: invalidate,
+    onError: (err) => toast.error(err?.message || 'Could not change that role.'),
+  });
+  const remove = useMutation({
+    mutationFn: adminService.removeTeamMember,
+    onSuccess: invalidate,
+    onError: (err) => toast.error(err?.message || 'Could not remove that member.'),
+  });
+
   return (
     <div className="settings-stack">
-      <TeamCard title="Admin team" members={members} roles={ADMIN_ROLES} onInvite={invite} inviting={inviting} description="Every admin signs in with 2FA. Roles limit which queues a person can act on; every action is written to the audit log." />
+      <TeamCard
+        title="Admin team"
+        members={members}
+        loading={isLoading}
+        roles={ADMIN_ROLES}
+        onInvite={(email, role) => invite.mutate({ email, role })}
+        onChangeRole={(id, role) => changeRole.mutate({ id, role })}
+        onRemove={(id) => remove.mutate(id)}
+        inviting={invite.isPending}
+        description="Every admin signs in with 2FA. Roles limit which queues a person can act on; every action is written to the audit log."
+      />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
-import DemoTag from '@/components/shared/DemoTag';
 import { IconChartAreaLine } from '@tabler/icons-react';
 
 /**
@@ -17,14 +16,13 @@ import { IconChartAreaLine } from '@tabler/icons-react';
  * @param {boolean}   [empty]      - data came back but there is nothing to plot
  * @param {string}    [emptyTitle]
  * @param {string}    [emptyDescription]
- * @param {boolean}   [demo]       - sample data is being shown (dev only); tags the title
  * @param {number}    [height]     - plot height, default 220
  * @param {boolean}   [bare]       - no .card chrome (when embedding in another card)
  */
 export default function ChartFrame({
   title, subtitle, right, legend, loading, error, empty,
   emptyTitle = 'Nothing to show yet', emptyDescription,
-  demo, height = 220, bare = false, className = '', children,
+  height = 220, bare = false, className = '', children,
 }) {
   const showLegend = legend && legend.length >= 2;
   return (
@@ -32,7 +30,7 @@ export default function ChartFrame({
       <div className="chart-frame__head">
         <div style={{ minWidth: 0 }}>
           <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-            {title}{demo && <DemoTag />}
+            {title}
           </h2>
           {subtitle && <div className="chart-frame__subtitle">{subtitle}</div>}
         </div>

@@ -4,7 +4,7 @@ import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
   IconCurrencyDollar, IconBrandWhatsapp, IconShare, IconUser,
   IconSparkles, IconVideo, IconCalendarEvent, IconPencil,
-  IconMoodSmile, IconPlane, IconBulb, IconTrendingUp, IconPhone, IconMail,
+  IconMoodSmile, IconPlane, IconPhone, IconMail,
   IconEdit,
 } from '@tabler/icons-react';
 import { toast } from 'sonner';
@@ -50,61 +50,9 @@ const NICHE_ICONS = { Comedy: IconMoodSmile, Beauty: IconSparkles, Travel: IconP
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
-// TEMP: mock fallback so this page is viewable while the backend isn't
-// reachable or doesn't have data for :handle yet. Delete MOCK_PORTFOLIO
-// and the try/catch (just keep the two lines inside `try`) once your
-// backend is returning real data.
-const MOCK_PORTFOLIO = {
-  creator: {
-    displayName: "Purity Wang'ombe",
-    handle: 'stony.36',
-    role: 'Online portfolio',
-    bio: 'A passionate and results-driven content creator specialising in digital storytelling and brand-focused content. With a strong understanding of audience behaviour and online trends, she creates engaging, authentic, and impactful content that connects brands with their communities.',
-  },
-  about: {
-    whoIAm: "Stony is a passionate and results-driven content creator specialising in digital storytelling and brand-focused content. Her work combines creativity, strategy, and consistency to build a meaningful digital presence.",
-    whatIDo: 'With a strong understanding of audience behaviour and online trends, she creates engaging, authentic, and impactful content that connects brands with their communities, helping them grow their digital footprint.',
-  },
-  expertise: [
-    { title: 'Social media content creation', description: 'Creating engaging and platform-optimised content that captures attention quickly while delivering clear and meaningful messages.' },
-    { title: 'Short-form video production', description: 'Producing dynamic and trend-aware short videos with strong hooks, smooth transitions, and storytelling that keeps viewers engaged.' },
-    { title: 'Content planning and strategy', description: 'Organising ideas into structured content calendars to maintain consistency, clarity, and long-term growth.' },
-    { title: 'Copywriting and caption writing', description: 'Crafting persuasive and engaging captions that strengthen the message and encourage audience engagement.' },
-  ],
-  niches: [
-    { name: 'Comedy', description: 'Sharing everyday moments and personal thoughts through humor, in a way that feels authentic and relatable to her audience.' },
-    { name: 'Beauty', description: "Creating visually appealing content that explores skin and body care, from honest reviews to tutorials and brand features." },
-    { name: 'Travel', description: 'Documenting journeys, new experiences, and hidden gems through engaging visuals and immersive storytelling.' },
-  ],
-  whyWorkWithMe: [
-    { title: 'Creative yet strategic mindset', icon: IconBulb, text: "Stony doesn't create content randomly. Every idea is supported by clear objectives, audience understanding, and compelling storytelling, balancing artistic expression with measurable goals so each project has direction and impact." },
-    { title: 'Strong understanding of digital trends', icon: IconTrendingUp, text: 'She stays updated with platform trends, content formats, and audience behaviour, allowing her to create timely content that feels fresh while still ensuring brand consistency and alignment.' },
-  ],
-  collaborations: [
-    { brand: 'Brand Partner', initial: 'G', description: 'Creating engaging and natural personal content to promote beauty and skin care products through authentic daily storytelling.' },
-    { brand: 'Brand Partner', initial: 'P', description: 'Sharing honest personal care testimonials and real-life usage of deodorants, connecting the brand with everyday audiences.' },
-    { brand: 'Vitalia', initial: 'V', description: "An experience-based review that highlighted the product's impact on energy and wellbeing, targeting health-conscious audiences." },
-    { brand: 'Oralmo', initial: 'O', description: 'Reviewing the highlights and real-life usage of the product with an authentic, audience-first perspective.' },
-  ],
-  socialStats: [
-    { platform: 'Instagram', handle: '@stony.36', followers: '82.5K', metrics: [{ label: 'Followers', value: '82.5K' }, { label: 'Engagement', value: '5.25%' }, { label: 'Audience', value: '18-30' }] },
-    { platform: 'TikTok', handle: '@stony.36', followers: '73.1K', metrics: [{ label: 'Followers', value: '73.1K' }, { label: 'Engagement', value: '10.4%' }, { label: 'Views/video', value: '6.4K' }] },
-  ],
-  contact: {
-    phone: '+254 143 336 171',
-    instagram: '@stony.36',
-    email: 'stony.360blog@gmail.com',
-  },
-};
-
 async function fetchPortfolio(handle) {
-  try {
-    const res = await api.get(`/public/creators/${handle}/portfolio`);
-    return res.data;
-  } catch (err) {
-    console.warn('[fetchPortfolio] falling back to mock data:', err.message);
-    return MOCK_PORTFOLIO;
-  }
+  const res = await api.get(`/public/creators/${handle}/portfolio`);
+  return res.data;
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────

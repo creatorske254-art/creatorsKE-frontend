@@ -5,9 +5,7 @@ import { IconMessageCircle } from '@tabler/icons-react';
  * ReviewResponse - a creator's single public reply to one review. Read-only
  * when `review.reply` already exists; otherwise, if `canReply` is true (the
  * viewer is the reviewed creator), shows a compose form calling
- * onSubmit(text). POST /reviews/:id/reply doesn't exist on the backend yet
- * (see the production-readiness plan's backend spec) - onSubmit's mutation
- * degrades to a toast until it does.
+ * onSubmit(text), which posts to POST /reviews/:id/reply.
  */
 export default function ReviewResponse({ review, canReply = false, onSubmit, isSubmitting = false }) {
   const [text, setText] = useState('');

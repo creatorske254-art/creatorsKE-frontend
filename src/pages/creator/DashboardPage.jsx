@@ -5,8 +5,6 @@ import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
 import { useRateCard } from '@/features/rate-card/hooks/useRateCard';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { usePageMeta } from '@/lib/usePageMeta';
-import { useDemoFallback } from '@/lib/useDemoFallback';
-import { demoEarningsTimeline, DEMO_VIEWS_BY_DAY, DEMO_ENQUIRY_STAGES } from '@/lib/demoData';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
 import { ChartFrame, ChartPeriod, TrendChart, BarChart, DonutChart, Sparkline, Meter, kes } from '@/components/charts';
@@ -149,10 +147,7 @@ export default function DashboardPage() {
 
   // ── Chart data ─────────────────────────────────────────────────────────
   // Earnings: GET /payments/earnings/timeline -> [{ date, amount }]
-  const earnings = useDemoFallback(
-    { data: earningsTimeline, isError: !!earningsError, isLoading: earningsLoading },
-    demoEarningsTimeline(earningsPeriod),
-  );
+  const earnings = { data: earningsTimeline, isLoading: earningsLoading };
   const earningsRows = useMemo(
     () => (Array.isArray(earnings.data) ? earnings.data : []).map((d) => ({ label: shortDate(d.date ?? d.label ?? ''), amount: Number(d.amount ?? d.value ?? 0) })),
     [earnings.data],
@@ -162,10 +157,7 @@ export default function DashboardPage() {
 
   // Card views by day: GET /rate-cards/:id/analytics -> { views: [{ date, count }] } (shape unconfirmed)
   const { analyticsQuery } = useRateCard(primaryCardId);
-  const views = useDemoFallback(
-    { data: analyticsQuery?.data, isError: analyticsQuery?.isError || (!primaryCardId && !healthLoading), isLoading: analyticsQuery?.isLoading },
-    DEMO_VIEWS_BY_DAY,
-  );
+  const views = { data: analyticsQuery?.data, isLoading: !!primaryCardId && !!analyticsQuery?.isLoading };
   const viewRows = useMemo(() => {
     const raw = Array.isArray(views.data) ? views.data : (views.data?.views ?? views.data?.viewsByDay ?? views.data?.timeline ?? []);
     return (Array.isArray(raw) ? raw : []).map((d) => ({ label: shortDate(d.date ?? d.label ?? ''), views: Number(d.views ?? d.count ?? d.value ?? 0) }));
@@ -175,18 +167,13 @@ export default function DashboardPage() {
 
   // Enquiries by stage: real pipeline counts from GET /enquiries
   const enquiriesQuery = useEnquiries();
-  const stages = useDemoFallback(
-    { data: enquiriesQuery.pipelineCounts, isError: !!enquiriesQuery.error, isLoading: enquiriesQuery.isLoading },
-    null,
-  );
-  const stageRows = stages.isDemo
-    ? DEMO_ENQUIRY_STAGES
-    : [
-        { label: 'New', value: stages.data?.new ?? 0 },
-        { label: 'In review', value: stages.data?.in_review ?? 0 },
-        { label: 'Booked', value: stages.data?.booked ?? 0 },
-        { label: 'Completed', value: stages.data?.completed ?? 0 },
-      ];
+  const stages = { data: enquiriesQuery.pipelineCounts, isLoading: enquiriesQuery.isLoading };
+  const stageRows = [
+    { label: 'New', value: stages.data?.new ?? 0 },
+    { label: 'In review', value: stages.data?.in_review ?? 0 },
+    { label: 'Booked', value: stages.data?.booked ?? 0 },
+    { label: 'Completed', value: stages.data?.completed ?? 0 },
+  ];
   const stageTotal = stageRows.reduce((a, r) => a + r.value, 0);
   const bookedRate = stageTotal ? Math.round(((stageRows[2].value + stageRows[3].value) / stageTotal) * 100) : null;
 
@@ -231,7 +218,7 @@ export default function DashboardPage() {
             <div className="stat-card-value" style={{ fontSize: 44 }}>
               {statsLoading
                 ? <Skeleton width={90} height={38} />
-                : statsError && !earnings.isDemo ? '-' : `${Math.round((stats?.earningsTotal ?? earningsTotal) / 1000)}K`}
+                : statsError ? '-' : `${Math.round((stats?.earningsTotal ?? earningsTotal) / 1000)}K`}
             </div>
             <Delta value={stats?.earningsDelta ?? halfDelta(earningsValues)} suffix={`vs previous ${earningsPeriod}`} />
           </div>
@@ -243,14 +230,14 @@ export default function DashboardPage() {
         {/* Secondary stats */}
         <div className="bento-views stat-card">
           <div className="stat-card-label"><IconEye className="icon-sm" aria-hidden="true" /> Card views</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : statsError && !views.isDemo ? '-' : (stats?.profileViews ?? viewValues.reduce((a, b) => a + b, 0)).toLocaleString('en-KE')}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={60} height={24} /> : statsError ? '-' : (stats?.profileViews ?? viewValues.reduce((a, b) => a + b, 0)).toLocaleString('en-KE')}</div>
           <Delta value={stats?.profileViewsDelta ?? halfDelta(viewValues)} suffix="vs previous 7 days" />
           {!views.isLoading && <Sparkline data={viewValues} trend={(halfDelta(viewValues) ?? 0) >= 0 ? 'up' : 'down'} />}
         </div>
 
         <div className="bento-enq stat-card">
           <div className="stat-card-label"><IconInbox className="icon-sm" aria-hidden="true" /> Enquiries</div>
-          <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : statsError && !stages.isDemo ? '-' : (stats?.enquiries?.total ?? stageTotal)}</div>
+          <div className="stat-card-value">{statsLoading ? <Skeleton width={40} height={24} /> : statsError ? '-' : (stats?.enquiries?.total ?? stageTotal)}</div>
           <div className="stat-card-delta" style={{ color: 'var(--grey-500)' }}>{stageRows[0].value} new awaiting a reply</div>
           <div style={{ marginTop: 'auto', paddingTop: 'var(--space-12)' }}>
             <Meter value={stageRows[0].value} max={Math.max(1, stageTotal)} detail={null} />
@@ -273,11 +260,10 @@ export default function DashboardPage() {
           subtitle={!earnings.isLoading && <><strong>{kes(earningsTotal)}</strong> last {earningsPeriod.replace('d', ' days')}</>}
           right={<ChartPeriod options={PERIOD_OPTIONS} value={earningsPeriod} onChange={setEarningsPeriod} />}
           loading={earnings.isLoading}
-          error={!earnings.isDemo && earningsError}
+          error={earningsError}
           empty={earningsRows.length === 0}
           emptyTitle="No earnings yet"
           emptyDescription="Completed bookings will chart here."
-          demo={earnings.isDemo}
           height={200}
         >
           <TrendChart data={earningsRows} series={[{ key: 'amount', label: 'Earnings' }]} format={kes} height={200} />
@@ -293,7 +279,6 @@ export default function DashboardPage() {
           empty={stageTotal === 0}
           emptyTitle="No enquiries yet"
           emptyDescription="Brands' enquiries will break down by stage here."
-          demo={stages.isDemo}
           height={160}
         >
           <DonutChart data={stageRows} centerLabel="Enquiries" />
@@ -308,7 +293,6 @@ export default function DashboardPage() {
           empty={viewRows.length === 0}
           emptyTitle="No views yet"
           emptyDescription="Publish your rate card and share the link to start tracking views."
-          demo={views.isDemo}
           height={160}
         >
           <BarChart data={viewRows} series={[{ key: 'views', label: 'Views' }]} emphasis={(row) => row.views === peakViews} height={160} />

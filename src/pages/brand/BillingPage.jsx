@@ -3,14 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useBrandBilling } from '@/features/brand-dashboard/hooks/useBrandBilling';
-import { useDemoFallback } from '@/lib/useDemoFallback';
-import { DEMO_BRAND_BILLING } from '@/lib/demoData';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
-import DemoTag from '@/components/shared/DemoTag';
 import { ChartFrame, BarChart, SERIES, kes } from '@/components/charts';
 import { IconCreditCard, IconDownload, IconFileInvoice, IconReceipt2, IconSearch } from '@tabler/icons-react';
 
@@ -49,8 +46,8 @@ export default function BillingPage() {
   const [previewInvoice, setPreviewInvoice] = useState(null);
 
   const { billing, invoices, invoiceRows, invoicePdfUrl } = useBrandBilling();
-  const billingData = useDemoFallback(billing, DEMO_BRAND_BILLING);
-  const invoiceData = useDemoFallback(invoices, DEMO_BRAND_BILLING.invoices);
+  const billingData = { data: billing.data, isLoading: billing.isLoading };
+  const invoiceData = { data: invoices.data, isLoading: invoices.isLoading };
 
   const plan = billingData.data?.plan ?? null;
   const method = billingData.data?.paymentMethod ?? null;
@@ -94,7 +91,6 @@ export default function BillingPage() {
   }, [rows]);
 
   function download(inv) {
-    if (invoiceData.isDemo) { toast.info('PDF downloads need the invoices endpoint. This is sample data.'); return; }
     window.open(invoicePdfUrl(inv.id), '_blank', 'noopener');
   }
 
@@ -102,7 +98,7 @@ export default function BillingPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-16)', flexWrap: 'wrap' }}>
         <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Billing & invoices{(billingData.isDemo || invoiceData.isDemo) && <DemoTag />}</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Billing & invoices</h1>
           <p className="page-subtitle">Your plan, payment method, and every charge on the account.</p>
         </div>
         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/brand/transactions')}>
@@ -136,7 +132,7 @@ export default function BillingPage() {
             <h2 className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Your plan</h2>
             {billingData.isLoading ? (
               <Skeleton width="100%" height={72} />
-            ) : billing.isError && !billingData.isDemo ? (
+            ) : billing.isError ? (
               <ErrorState size="sm" title="Couldn't load your plan" onRetry={billing.refetch} />
             ) : plan ? (
               <>
@@ -183,11 +179,10 @@ export default function BillingPage() {
           subtitle="Campaign payments vs plan fees, last 6 months"
           legend={[{ label: 'Campaign payments', color: SERIES[0] }, { label: 'Plan & fees', color: SERIES[1] }]}
           loading={invoiceData.isLoading}
-          error={!invoiceData.isDemo && invoices.isError}
+          error={invoices.isError}
           empty={spendRows.every((r) => !r.campaigns && !r.fees)}
           emptyTitle="No charges yet"
           emptyDescription="Invoices will chart here as campaigns are booked."
-          demo={invoiceData.isDemo}
           height={220}
         >
           <BarChart data={spendRows} series={[{ key: 'campaigns', label: 'Campaign payments' }, { key: 'fees', label: 'Plan & fees' }]} stacked format={kes} height={220} />
@@ -215,7 +210,7 @@ export default function BillingPage() {
           <div style={{ padding: 'var(--space-20)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
             {[0, 1, 2, 3].map((i) => <Skeleton key={i} width="100%" height={40} />)}
           </div>
-        ) : invoices.isError && !invoiceData.isDemo ? (
+        ) : invoices.isError ? (
           <ErrorState title="Couldn't load invoices" description="Invoices need the billing endpoints to be live." onRetry={invoices.refetch} />
         ) : filtered.length === 0 ? (
           <EmptyState icon={<IconFileInvoice />} title={rows.length ? 'No invoices match' : 'No invoices yet'} description={rows.length ? 'Try a different filter or search.' : 'Your first campaign booking or plan charge will create one.'} />

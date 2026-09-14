@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useEscrowCases } from '@/features/admin/hooks/useOperations';
-import { useDemoFallback } from '@/lib/useDemoFallback';
-import { DEMO_ESCROW_CASES } from '@/lib/demoData';
 import { formatCurrency, formatDate, getInitials } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
-import DemoTag from '@/components/shared/DemoTag';
 import { ChartFrame, BarChart, DonutChart, kes } from '@/components/charts';
 import { IconLockDollar, IconLockOpen, IconClock, IconSearch, IconAlertTriangle } from '@tabler/icons-react';
 
@@ -48,7 +45,7 @@ export default function EscrowPage() {
   const [confirm, setConfirm] = useState(null); // { action: 'release'|'extend', row }
 
   const { query: escrowQuery, rows: rawRows, act, isActing, actingId } = useEscrowCases();
-  const escrow = useDemoFallback(escrowQuery, DEMO_ESCROW_CASES);
+  const escrow = { data: escrowQuery.data, isLoading: escrowQuery.isLoading };
   const rows = useMemo(() => {
     const list = Array.isArray(escrow.data) ? escrow.data : escrow.data?.cases ?? rawRows ?? [];
     return list.map((c) => ({ ...c, days: daysHeld(c.heldSince ?? c.createdAt) }));
@@ -93,7 +90,7 @@ export default function EscrowPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
       <div>
-        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Escrow cases{escrow.isDemo && <DemoTag />}</h1>
+        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Escrow cases</h1>
         <p className="page-subtitle">Payments held between booking and approval. Funds auto-release {AUTO_RELEASE_DAYS} days after delivery unless a dispute is open.</p>
       </div>
 
@@ -105,10 +102,10 @@ export default function EscrowPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: 'var(--space-16)' }}>
-        <ChartFrame title="Escrow aging" subtitle="Open bookings by days held; 30+ needs a decision" loading={escrow.isLoading} empty={!totals.count} emptyTitle="Nothing in escrow" demo={escrow.isDemo} height={180}>
+        <ChartFrame title="Escrow aging" subtitle="Open bookings by days held; 30+ needs a decision" loading={escrow.isLoading} empty={!totals.count} emptyTitle="Nothing in escrow" height={180}>
           <BarChart data={agingRows} series={[{ key: 'value', label: 'Bookings' }]} emphasis={(r) => r.label === '30+ days'} height={180} />
         </ChartFrame>
-        <ChartFrame title="Held amount by status" loading={escrow.isLoading} empty={statusRows.every((r) => !r.value)} emptyTitle="Nothing in escrow" demo={escrow.isDemo} height={180}>
+        <ChartFrame title="Held amount by status" loading={escrow.isLoading} empty={statusRows.every((r) => !r.value)} emptyTitle="Nothing in escrow" height={180}>
           <DonutChart data={statusRows} format={kes} centerLabel="Held" center={formatCurrency(totals.amount).replace('KES ', '')} size={132} />
         </ChartFrame>
       </div>
@@ -126,7 +123,7 @@ export default function EscrowPage() {
           </div>
           {escrow.isLoading ? (
             <div style={{ padding: 'var(--space-20)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>{[0, 1, 2, 3].map((i) => <Skeleton key={i} width="100%" height={44} />)}</div>
-          ) : escrowQuery.isError && !escrow.isDemo ? (
+          ) : escrowQuery.isError ? (
             <ErrorState title="Couldn't load escrow cases" description="This queue needs the admin/escrow endpoint to be live." onRetry={escrowQuery.refetch} />
           ) : filtered.length === 0 ? (
             <EmptyState icon={<IconLockDollar />} title={rows.length ? 'No cases match' : 'Nothing in escrow'} description={rows.length ? 'Try another filter.' : 'Funded bookings will appear here until they are released.'} />

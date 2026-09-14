@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { userService } from '@/features/auth/services/auth.service';
 import { useTheme } from '@/context/ThemeContext';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import { ToggleRow } from './SettingsShell';
@@ -72,13 +73,23 @@ export function DisplayCard() {
   );
 }
 
-/** Request a copy of everything the platform holds on the account. */
+/** Request a copy of everything the platform holds on the account (POST /users/export). */
 export function DataExportCard({ description }) {
   const [requested, setRequested] = useState(false);
+  const [busy, setBusy] = useState(false);
+  async function request() {
+    setBusy(true);
+    try {
+      await userService.requestExport();
+      setRequested(true);
+      toast.success('Export requested. Watch your inbox for the download link.');
+    } catch (err) { toast.error(err?.message || 'Could not request your export.'); }
+    finally { setBusy(false); }
+  }
   return (
     <CollapsibleCard title="Your data" collapsible={false}>
       <p className="field-hint" style={{ marginBottom: 'var(--space-16)' }}>{description ?? 'Download a copy of your profile, messages, bookings and transactions as a ZIP of JSON and CSV files. We email you a link within 24 hours.'}</p>
-      <button className="btn btn-secondary btn-sm" disabled={requested} onClick={() => { setRequested(true); toast.success('Export requested. Watch your inbox for the download link.'); }}>
+      <button className={`btn btn-secondary btn-sm${busy ? ' btn-loading' : ''}`} disabled={requested || busy} onClick={request}>
         <IconDownload className="icon-sm" aria-hidden="true" />{requested ? 'Export requested' : 'Request a data export'}
       </button>
     </CollapsibleCard>

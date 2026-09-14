@@ -1,82 +1,23 @@
 import { useState } from "react";
 import { usePageMeta } from '@/lib/usePageMeta';
 import EmptyState from '@/components/shared/EmptyState';
+import ErrorState from '@/components/shared/ErrorState';
+import Skeleton from '@/components/ui/Skeleton';
+import { useReviewFeed } from '@/features/reviews/hooks/useReviews';
+import { reviewService } from '@/features/reviews/services/review.service';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { IconFlag3, IconMessage2, IconShieldCheck, IconStar, IconStarFilled } from '@tabler/icons-react';
 
-const reviews = [
-  {
-    id: 1,
-    brand: "Nala Foods",
-    brandInitial: "N",
-    brandColor: "#5445E8",
-    creatorName: "Amara Osei",
-    package: "Instagram Story Series",
-    stars: 5,
-    date: "12 Jun 2025",
-    text: "Absolutely nailed the brief. The content felt authentic and our audience responded really well, our highest engagement week this quarter. Would book again without hesitation.",
-    campaign: "Product Launch",
-    replied: false,
-  },
-  {
-    id: 2,
-    brand: "Zuri Skincare",
-    brandInitial: "Z",
-    brandColor: "#00B96B",
-    creatorName: "Kofi Mensah",
-    package: "TikTok Reel + Instagram Reel",
-    stars: 4,
-    date: "29 May 2025",
-    text: "Great work overall. Communication was smooth and the final content looked polished. Minor revision needed on the caption but it was handled quickly.",
-    campaign: "Brand Awareness",
-    replied: true,
-    reply: "Thank you Zuri! The revision was a quick fix, happy it all came together well. Looking forward to working together again.",
-  },
-  {
-    id: 3,
-    brand: "Kasha",
-    brandInitial: "K",
-    brandColor: "#F5A623",
-    creatorName: "Amara Osei",
-    package: "Full Campaign Bundle",
-    stars: 1,
-    date: "14 May 2025",
-    text: "Absolutely useless, this person is a complete waste of money and clearly has no idea what they're doing. Would never work with them again.",
-    campaign: "Seasonal Campaign",
-    replied: false,
-    flagged: true,
-    flagReason: "Reported by creator: contains a personal insult, not constructive feedback about the delivered work.",
-  },
-  {
-    id: 4,
-    brand: "Equity Bank",
-    brandInitial: "E",
-    brandColor: "#4393F5",
-    creatorName: "Zara Kipchoge",
-    package: "YouTube Integration",
-    stars: 3,
-    date: "2 May 2025",
-    text: "Decent work. The integration felt a bit forced and the CTA wasn't as strong as we'd hoped. Appreciate the effort though and the deadline was met.",
-    campaign: "Product Feature",
-    replied: true,
-    reply: "Thank you for the honest feedback. I'll make sure the next brief includes clearer CTA direction so we're fully aligned from the start.",
-  },
-  {
-    id: 5,
-    brand: "Jumia Kenya",
-    brandInitial: "J",
-    brandColor: "#FF4B4B",
-    creatorName: "Lena Wachira",
-    package: "Instagram Story Series",
-    stars: 5,
-    date: "18 Apr 2025",
-    text: "Second time booking and it keeps getting better. The creator really gets our brand voice now. Highly recommend. Contact me directly at +254 700 000 000 to skip the platform fees next time.",
-    campaign: "Flash Sale",
-    replied: false,
-    flagged: true,
-    flagReason: "Auto-flagged: review text contains a phone number and appears to solicit an off-platform booking.",
-  },
-];
+// Brand avatars take a stable colour from the brand name so the same brand
+// always reads the same across the feed.
+const BRAND_COLORS = ['#5445E8', '#00B96B', '#F59E0B', '#E11D48', '#0EA5E9', '#8B5CF6'];
+function brandColor(name = '') {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return BRAND_COLORS[h % BRAND_COLORS.length];
+}
 
 function Stars({ count, size = "sm" }) {
   return (
@@ -269,23 +210,41 @@ function ReviewCard({ review, onReply, onRemove, onDismiss }) {
 
 export default function ReviewsPage() {
   usePageMeta('Flagged Reviews', 'Moderate flagged reviews and platform feedback on Creatorske.');
-  const [data, setData] = useState(reviews);
+  const { reviews, isLoading, isError, refetch, moderate } = useReviewFeed();
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState("flagged");
 
-  function handleReply(id, text) {
-    setData((prev) => prev.map((r) => r.id === id ? { ...r, reply: text, replied: true } : r));
-  }
+  const replyMutation = useMutation({
+    mutationFn: ({ id, text }) => reviewService.replyToReview(id, text),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['reviews'] }); toast.success('Reply posted.'); },
+    onError: (err) => toast.error(err?.message || 'Could not post that reply.'),
+  });
 
-  function handleRemove(id) {
-    setData((prev) => prev.filter((r) => r.id !== id));
-  }
+  const data = reviews.map((r) => ({
+    ...r,
+    stars: r.stars ?? Math.round(r.rating ?? 0),
+    text: r.text ?? r.comment ?? '',
+    brandInitial: r.brandInitial ?? (r.brand ?? r.brandName ?? '?')[0],
+    brandColor: r.brandColor ?? brandColor(r.brand ?? r.brandName),
+  }));
 
-  function handleDismiss(id) {
-    setData((prev) => prev.map((r) => r.id === id ? { ...r, flagged: false, flagReason: null } : r));
+  function handleReply(id, text) { replyMutation.mutate({ id, text }); }
+  function handleRemove(id) { moderate({ reviewId: id, action: 'remove', reason: 'Removed by admin' }); }
+  function handleDismiss(id) { moderate({ reviewId: id, action: 'dismiss' }); }
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'grid', gap: 'var(--space-16)' }}>
+        <Skeleton width={220} height={24} />
+        <Skeleton width="100%" height={140} />
+        <Skeleton width="100%" height={220} />
+      </div>
+    );
   }
+  if (isError) return <ErrorState title="Couldn't load reviews" onRetry={refetch} />;
 
   const total = data.length;
-  const avg = (data.reduce((s, r) => s + r.stars, 0) / total).toFixed(1);
+  const avg = total ? (data.reduce((s, r) => s + r.stars, 0) / total).toFixed(1) : '0.0';
   const dist = [5, 4, 3, 2, 1].map((v) => ({ value: v, count: data.filter((r) => r.stars === v).length }));
 
   const filtered =
@@ -304,9 +263,6 @@ export default function ReviewsPage() {
         </h1>
         <p className="page-subtitle">
           Moderate reviews flagged by creators or auto-detected for policy violations across the platform.
-        </p>
-        <p style={{ fontSize: 12, color: "var(--grey-400)", lineHeight: 1.6, fontStyle: 'italic', marginTop: 'var(--space-4)' }}>
-          Demo data. A cross-creator review moderation feed endpoint doesn't exist on the backend yet (reviewService only supports listing one creator's reviews at a time). See the production-readiness plan's backend spec.
         </p>
       </div>
 

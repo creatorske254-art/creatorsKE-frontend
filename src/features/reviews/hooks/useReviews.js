@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { reviewService } from '../services/review.service';
+import { adminService } from '@/features/admin/services/admin.service';
 
 export function useReviews(creatorId) {
   const queryClient = useQueryClient();
@@ -21,16 +22,13 @@ export function useReviews(creatorId) {
     onError: () => toast.error('Could not submit review.'),
   });
 
-  // No backend endpoint exists yet (see backend spec) - retry:false avoids
-  // hammering a 404, and the seam is ready to work once it's built.
   const replyMutation = useMutation({
     mutationFn: ({ reviewId, reply }) => reviewService.replyToReview(reviewId, reply),
-    retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: key });
       toast.success('Reply posted.');
     },
-    onError: () => toast.error("Replying isn't available yet. It needs backend support."),
+    onError: (err) => toast.error(err?.message || 'Could not post your reply.'),
   });
 
   return {
@@ -41,4 +39,24 @@ export function useReviews(creatorId) {
     reply: replyMutation.mutate,
     isReplying: replyMutation.isPending,
   };
+}
+
+/**
+ * Cross-account review feed for admins (GET /reviews returns every review for
+ * an admin token) plus the moderation actions (keep / remove).
+ */
+export function useReviewFeed(params = {}) {
+  const queryClient = useQueryClient();
+  const key = ['reviews', 'feed', params];
+  const query = useQuery({ queryKey: key, queryFn: () => reviewService.listReviews(params) });
+  const moderate = useMutation({
+    mutationFn: ({ reviewId, action, reason }) => adminService.moderate(reviewId, action, reason),
+    onSuccess: (_d, v) => {
+      queryClient.invalidateQueries({ queryKey: ['reviews'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+      toast.success(v.action === 'remove' ? 'Review removed.' : 'Flag dismissed, review kept.');
+    },
+    onError: (err) => toast.error(err?.message || 'Could not update that review.'),
+  });
+  return { reviews: query.data?.reviews ?? query.data ?? [], isLoading: query.isLoading, isError: query.isError, refetch: query.refetch, moderate: moderate.mutate, isModerating: moderate.isPending };
 }

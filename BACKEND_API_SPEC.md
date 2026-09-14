@@ -1,74 +1,81 @@
-# Backend endpoint spec — production-readiness gaps
+# Backend API contract
 
-This is a deliverable from the frontend production-readiness pass: a list of backend endpoints the frontend now calls (with a graceful "not available yet" fallback) but that don't exist in the documented API yet, plus two response-shape confirmations needed for endpoints that do exist. Frontend code is already wired to these paths — once built, most require no frontend changes beyond removing the `retry: false` guard.
+The frontend is fully wired to a REST API under `VITE_API_BASE_URL` (`http://localhost:5000/api` in development). Every endpoint below is implemented by the local mock backend in `backend/` (Express, seeded in-memory data persisted to `backend/db.json`; not committed, see `backend/README.md`), so the mock is the executable reference for request and response shapes. A real backend needs to match these shapes for the pages to work unchanged; the frontend unwraps list responses as `data?.items ?? data` (e.g. `{ enquiries: [...] }` or a bare array both work) and reads a few documented field aliases.
 
-## Missing endpoints
+Auth: bearer token in `Authorization`, plus `?token=` on links that open in a new tab (invoice PDFs). 401 sends the app to `/login`.
 
-| Method | Path (guess) | Purpose | Consumer | Frontend seam |
-|---|---|---|---|---|
-| GET | `/admin/accounts` | List **all** accounts (not just flagged), with filters (role, status, search) | `AccountsPage.jsx` | `adminService.listAccounts()`, `useAccounts()` |
-| POST | `/admin/invite` | Invite a new admin user (email + role) | `AccountsPage.jsx` "Invite admin" | `adminService.inviteAdmin()`, `useAccounts().invite` |
-| POST | `/admin/disputes/:id/reply` | Admin posts a message into an open dispute without resolving it (distinct from `resolveDispute`, which closes it) | `DisputesPage.jsx` | `adminService.replyToDispute()`, `useDisputes().reply` |
-| GET | `/admin/reviews` (or `/reviews?flagged=true`) | Cross-creator review moderation feed — `reviewService.listReviews` is scoped to one creator (`{creatorId}`), not a moderation queue | `admin/ReviewsPage.jsx` | not yet seamed (page still shows labeled demo data) |
-| POST | `/reviews/:id/reply` | Creator posts a single public reply to a review | `features/reviews/components/ReviewResponse.jsx`, public `RateCardPage.jsx` | `reviewService.replyToReview()`, `useReviews().reply` |
-| GET | `/payments/methods` | List a creator's saved payout methods (M-Pesa/Airtel/bank) | `MoneyPage.jsx` payment-methods card | not yet seamed (local-only list, honest "coming soon" for Add) |
-| POST | `/payments/methods` | Link/add a new payout method | `MoneyPage.jsx` "Add payment method", `RateCardBuilderPage.jsx` payment step | same as above |
-| PATCH | `/payments/methods/:id/primary` | Set a payout method as primary | `MoneyPage.jsx` "Set as primary" | same as above |
-| DELETE | `/payments/methods/:id` | Remove a payout method | `MoneyPage.jsx` | same as above |
-| POST | `/brands/campaigns/:id/approve` | Brand approves a delivered campaign and releases escrow | `CampaignDetailPage.jsx` | `brandService.approveCampaign()`, `useCampaignActions(id).approve` |
-| POST | `/brands/campaigns/:id/dispute` | Brand raises a dispute on a campaign with evidence | `CampaignDetailPage.jsx` | `brandService.disputeCampaign()`, `useCampaignActions(id).dispute` |
-| GET | `/rate-cards/completeness` (or a field added to an existing response) | Real per-creator rate-card completeness score | `useCreatorDashboard.js` / creator `DashboardPage.jsx` | worked around client-side for now (computed from package/payment-method counts against the documented per-plan limits in `pricingTiers.js`) |
+## Auth and account
 
-## Dashboard charts and operations pages (added with the chart kit)
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/auth/signup`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/login`, `/auth/refresh-token`, `/auth/logout`, `/auth/forgot-password`, `/auth/reset-password` | login returns `{ token, refreshToken, user }` |
+| GET | `/auth/me` | current user |
+| DELETE | `/auth/account` | creates a deletion request (admin approves it) |
+| GET / PATCH | `/users/profile` | user + `creator` / `brand` sub-object + `preferences`; PATCH accepts `firstName, lastName, email, phone, avatar, title, handle, bio, location, niche, languages, socials` |
+| POST | `/users/change-password` | `{ currentPassword, newPassword }` |
+| GET / PATCH | `/users/preferences` | `{ language, timezone, weekStart, notifications: {...}, notificationEmail, showInDirectory, showBookingCount, shareAnalytics, marketing, currency, autoWithdraw, alerts: {...} }` (merge on PATCH) |
+| GET | `/users/sessions` | `{ sessions: [{ id, device, location, lastActiveAt, current, mobile }] }` |
+| DELETE | `/users/sessions/others`, `/users/sessions/:id` | 204 |
+| POST | `/users/2fa/setup` -> `{ secret, otpauthUrl }`, `/users/2fa/verify` `{ code }`, DELETE `/users/2fa` | admins cannot disable |
+| POST | `/users/export` | `{ requestedAt }` |
 
-Every row below is wired in the frontend already: a service method, a TanStack hook with `retry: false`, and a page that renders the real response when it arrives. Until it does, **dev builds** show a deterministic sample tagged "Demo data" (`src/lib/demoData.js` via `useDemoFallback`); production builds show the honest empty/error state. Response shapes are what the pages read - matching them means zero frontend changes.
+## Directory, public profiles, rate cards, portfolio, plans, onboarding
 
-| Method | Path | Purpose | Response shape the page reads | Consumer |
-|---|---|---|---|---|
-| GET | `/admin/stats` (extend) | Overview KPIs **plus** chart series | add `growth: [{ label, creators, brands }]` (monthly), `enquiryTimeline: [{ date, count }]` (daily, 90 days), `abandonedDraftsByStep: [{ label, value }]`, `escrowAging: [{ label, value }]` (buckets `0-7 days`, `8-14 days`, `15-30 days`, `30+ days`) | `admin/OverviewPage.jsx` |
-| GET | `/payments/earnings/timeline` (confirm) | Creator earnings over time | `[{ date: 'YYYY-MM-DD', amount }]` for `period=7d\|30d\|90d`; `[{ label, amount }]` per week/month for `3m\|6m\|1y` | creator `DashboardPage.jsx`, `MoneyPage.jsx` |
-| GET | `/rate-cards/:id/analytics` (confirm) | Card views by day | `{ views: [{ date, count }] }` (last 14 days) | creator `DashboardPage.jsx` "Card views" |
-| GET | `/payments/transactions` (confirm) | Transaction rows carry the package | each row: `{ id, date, type, amount, package \| packageName, status }` - `package` drives "Earnings by package" | `MoneyPage.jsx` |
-| GET | `/brands/campaigns` (confirm) | Campaign rows carry a timestamp | each row: `completedAt` / `deliveredAt` / `createdAt` - drives "Spend by month" and "Campaigns by status" | brand `DashboardPage.jsx` |
-| GET | `/brands/billing` | Plan + payment method on file | `{ plan: { id, name, price, interval, renewsAt, status }, paymentMethod: { type, brand, last4, expiry }, billingName }` | `brand/BillingPage.jsx` |
-| GET | `/brands/invoices` | Invoice list | `{ invoices: [{ id, number, issuedAt, description, amount, status: paid\|due\|overdue\|refunded\|void }] }` | `brand/BillingPage.jsx` |
-| GET | `/brands/invoices/:id/pdf` | Invoice PDF (auth'd download) | `application/pdf` | `brand/BillingPage.jsx` "PDF" |
-| GET | `/brands/transactions?range=30d\|90d\|1y` | Escrow ledger for the brand | `{ transactions: [{ id, date, type: deposit\|release\|refund\|fee, campaign, creator, amount, status: completed\|held\|pending\|failed }] }` | `brand/TransactionsPage.jsx` |
-| GET | `/admin/escrow` | Open escrow cases | `{ cases: [{ id, campaign, brand, creator, amount, heldSince, status: held\|awaiting_approval\|disputed\|released }] }` | `admin/EscrowPage.jsx` |
-| POST | `/admin/escrow/:id/release` | Admin releases held funds to the creator | `{ note }` -> updated case | `admin/EscrowPage.jsx` |
-| POST | `/admin/escrow/:id/extend` | Admin extends the auto-release by 7 days | `{ note }` -> updated case | `admin/EscrowPage.jsx` |
-| GET | `/admin/deletion-requests` | Account-erasure queue | `{ requests: [{ id, user: { name, email, role }, requestedAt, reason, openItems, graceEndsAt, status: pending\|approved\|rejected\|cancelled }] }` - `openItems` = open bookings + disputes + escrow holds, blocks approval | `admin/DeletionRequestsPage.jsx` |
-| POST | `/admin/deletion-requests/:id/approve` | Schedule erasure (24h) | -> updated request | `admin/DeletionRequestsPage.jsx` |
-| POST | `/admin/deletion-requests/:id/reject` | Reject with a reason emailed to the user | `{ reason }` -> updated request | `admin/DeletionRequestsPage.jsx` |
-| GET | `/admin/re-engagement` | Segments + send history | `{ segments: [{ id, label, description, count, lastSentAt }], history: [{ id, segment, sentAt, recipients, opened, clicked, reactivated }], abandonedByStep: [{ label, value }] }` - segment ids used: `abandoned_drafts`, `never_published`, `inactive_30d`, `no_enquiry_reply` | `admin/ReEngagementPage.jsx` |
-| POST | `/admin/re-engagement/send` | Queue an email to a segment | `{ segmentId, subject, preview }` -> `{ queued: n }` | `admin/ReEngagementPage.jsx` |
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/directory` | filters `q` (alias `keyword`), `niche`, `platform`, `follower_range` (alias `followerRange`), `location`, `availability`, `page`, `limit` -> `{ creators, total, page, totalPages }`; rows are directory cards (`name, handle, initials, niche, followers, eng, rating, reviews, verified, avail, bg, platforms[], location, bio, price, priceUnit`) |
+| GET | `/directory/filter-options` | `{ niches, platforms, locations }` |
+| GET | `/creators`, `/creators/:id` | |
+| GET | `/public/creators/:handle/rate-card` | `{ creator, niches, stats, averageRating, reviewCount, turnaroundDays, packages, reviews }` |
+| GET | `/public/creators/:handle/portfolio` | `{ creator, about, expertise, niches, whyWorkWithMe, collaborations, socialStats, contact }` |
+| GET / POST | `/rate-cards` | array of the creator's cards; POST creates (body = builder payload: `profile, platforms, packages, payment, headline, pitch, leadTime, availability, usageNote, revisionPolicy, showPricing`) |
+| GET / PATCH / DELETE | `/rate-cards/:id`, PATCH `/rate-cards/:id/draft` | `platforms` is the builder's on/off map `{ instagram, tiktok, youtube, twitter, podcast }` |
+| POST | `/rate-cards/:id/publish`, `/unpublish`, `/reorder` | publish requires at least one package |
+| GET | `/rate-cards/:id/analytics` | `{ views: [{ date, count }], totalViews, enquiries, conversion }` |
+| GET | `/rate-cards/health` | module health only (`{ status }`); completeness is computed client-side |
+| GET / POST / PUT | `/portfolio/:creatorId`, `/portfolio`, `/portfolio/draft`, `/publish`, `/unpublish`, `/analytics` | |
+| GET | `/plans`, `/plans/current` -> `{ id, name, price, interval, features, limits, renewsAt, rateCards }`, POST `/plans/upgrade` `{ planId }` | |
+| GET / POST | `/onboarding/resume`, `/onboarding/draft`, `/onboarding/complete` | |
 
-## Settings pages (added with the shared settings shell)
+## Enquiries, messages, notifications, payments, reviews, uploads
 
-| Method | Path | Purpose | Response shape the page reads | Consumer |
-|---|---|---|---|---|
-| GET | `/brands/team` | Members of a brand account | `{ members: [{ id, name, email, role: owner\|admin\|member\|finance, status: active\|invited }] }` | brand Settings > Team |
-| POST | `/brands/team/invite` | Invite a teammate | `{ email, role }` -> member row with `status: 'invited'` | brand Settings > Team |
-| DELETE | `/brands/team/:id` | Remove a member or withdraw an invite | 204 | brand Settings > Team |
-| GET | `/admin/team` | Admin roster | `{ members: [{ id, name, email, role: owner\|moderator\|finance\|support, status }] }` | admin Settings > Team |
-| DELETE | `/admin/team/:id` | Remove an admin | 204 | admin Settings > Team |
-| GET | `/admin/settings` | Platform rules | `{ platformFeePct, escrowReleaseDays, disputeWindowDays, deletionGraceDays, draftAbandonDays, inactiveDays, enquiryReplyHours, maintenance, maintenanceMessage }` | admin Settings > Platform |
-| PUT | `/admin/settings` | Update platform rules (super admin only) | same object | admin Settings > Platform |
-| GET | `/users/sessions` | Where the account is signed in | `{ sessions: [{ id, device, location, lastActiveAt, current }] }` | every Settings > Account |
-| DELETE | `/users/sessions/:id` / `/users/sessions/others` | Sign out a device / all other devices | 204 | every Settings > Account |
-| PATCH | `/users/preferences` | Language, timezone, week start, privacy toggles, marketing consent | `{ language, timezone, weekStart, showInDirectory, shareAnalytics, marketing, ... }` | every Settings > Account / Privacy & data |
-| POST | `/users/export` | Request a data export (emailed link) | `{ requestedAt }` | Settings > Privacy & data |
+| Method | Path | Notes |
+|---|---|---|
+| GET / POST | `/enquiries` | role-scoped `{ enquiries }`; POST `{ creatorId, packageId, message }` |
+| GET | `/enquiries/:id`; POST `/enquiries/:id/accept` (creates campaign, escrow deposit, invoice), `/decline`, `/expire` | status `NEW | IN_REVIEW | BOOKED | COMPLETED | EXPIRED` |
+| GET | `/messages/threads/:id` -> `{ messages }`; POST `/messages` `{ threadId, text, attachmentUrl }` | thread id = enquiry id |
+| GET | `/notifications`, `/notifications/unread-count`; PATCH `/notifications/mark-read` `{ ids }` | |
+| GET | `/payments/stats` | `{ availableBalance, pendingBalance, totalEarned, earningsDelta, profileViews, enquiries: { total, new }, cardCtr, recentEnquiries }` |
+| GET | `/payments/earnings/timeline?period=7d|30d|90d|3m|6m|1y` | `[{ date|label, amount }]` |
+| GET | `/payments/transactions` | `{ transactions }` with a `positive` flag |
+| GET / POST | `/payments/methods`; PATCH `/payments/methods/:id/primary`; DELETE `/payments/methods/:id` | `{ methods: [{ id, type: mpesa|airtel|bank, name, detail, primary, fields }] }`; POST enforces the plan's payout-method limit (400 with a message) |
+| POST | `/payments/stk-push`, `/payments/mpesa/verify-pin`, `/payments/payout` `{ amount, methodId }`; GET `/payments/status/:id` | status settles after a few seconds |
+| GET / POST | `/reviews` (`?creatorId`, `?flagged=true`; admins see all), POST `{ campaignId, creatorId, rating, comment }`, POST `/reviews/:id/reply` `{ reply }` | |
+| POST / GET / DELETE | `/uploads/upload` (multipart `file`) -> `{ id, url }`, `/uploads/:id` | files served from `/uploads` |
 
-## Response-shape confirmations needed (endpoints exist, shape doesn't)
+## Brand
 
-- **`GET /brands/campaigns/:id`** — does the response include `deliverables`, `revisionPolicy`, `usageRights`, `deliveredFiles`, `enquiryId`? `CampaignDetailPage.jsx` currently merges live fields over placeholder data as a fallback until this is confirmed.
-- **`POST /enquiries`** — payload is assumed to be `{ creatorId, packageId, message }` based on an existing code comment in `useEnquiries.js`/`EnquiryForm`; never confirmed against a real response.
-- **`GET /admin/stats`** — `OverviewPage.jsx`'s health-metric grid guesses field names (`activeCreators`, `registeredBrands`, `liveRateCards`, `enquiriesLast7Days`, `bookingsInProgress`, `completedThisMonth`, `transactionVolume`, `platformFeesCollected`); unconfirmed fields render as `—` rather than a fabricated number.
-- **`GET /payments/stats`** — `MoneyPage.jsx` guesses `availableBalance`, `pendingBalance`, `totalEarned`.
-- **`GET /payments/earnings/timeline`** — guessed as an array of `{ label|period|month, amount|total }` points.
-- **`GET /plans/current`** — `usePlan().currentPlan` guessed fields: `name`/`id`, `price`, `renewsAt`, `rateCardsUsed`/`rateCardsMax`. Unconfirmed fields render as `—` on `MoneyPage.jsx`'s subscription card.
+| Method | Path | Notes |
+|---|---|---|
+| GET / PUT | `/brands/profile` | company fields + `preferences` + `notificationPreferences` |
+| GET / POST / PATCH / DELETE | `/brands/shortlist`, `/brands/shortlist/:id` | rows = directory card + `addedOn, note`; DELETE accepts the row id or the creator id |
+| GET / POST | `/brands/campaigns`; GET / PUT `/brands/campaigns/:id` (detail includes `messages`, `enquiryId`, `deliverables`, `deliveredFiles`, `activity`, `review`) | |
+| POST | `/brands/campaigns/:id/approve` (completes, releases escrow), `/brands/campaigns/:id/dispute` `{ evidence }` | |
+| GET | `/brands/billing`, `/brands/invoices`, `/brands/invoices/:id/pdf?token=`, `/brands/transactions?range=` | |
+| GET / POST / DELETE | `/brands/payment-methods`, `/brands/payment-methods/:id` | `{ methods: [{ id, type: card|mpesa|airtel|bank, name, detail, connected, primary }] }` |
+| GET / POST / PATCH / DELETE | `/brands/team`, `/brands/team/invite` `{ email, role }`, `/brands/team/:id` `{ role }` | roles `owner | admin | member | finance` |
 
-## Notes for whoever picks this up
+## Admin
 
-- Every guessed path above is wired on the frontend with `retry: false` and a friendly error toast/empty-state — nothing crashes against a 404, so these can ship incrementally in any order.
-- Once an endpoint is confirmed, remove the corresponding `retry: false` and the "not yet available" comment next to it (grep for "backend spec" across `src/features/*/services/*.js` and `src/features/*/hooks/*.js` to find every seam).
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/admin/stats` | KPIs + `growth`, `enquiryTimeline`, `abandonedDraftsByStep`, `escrowAging` series |
+| GET / PATCH / POST | `/admin/disputes`, `/admin/disputes/:id`, `/admin/disputes/:id/resolve` `{ decision, creatorShare, note }`, `/admin/disputes/:id/reply` | |
+| GET | `/admin/accounts?q=&role=&status=` -> `{ accounts, total }`, `/admin/accounts/flagged`; POST `/admin/accounts/:id/action` `{ action, reason }` | brand rows use the company name |
+| POST | `/admin/invite` `{ email, role }`, `/admin/moderation` `{ targetId, action: remove|dismiss, reason }` | |
+| GET | `/admin/reviews` -> `{ reviews }` | moderation feed across creators |
+| GET / POST | `/admin/escrow`, `/admin/escrow/:id/release|extend` | |
+| GET / POST | `/admin/deletion-requests`, `/admin/deletion-requests/:id/approve|reject` | |
+| GET / POST | `/admin/re-engagement` -> `{ segments, history, abandonedByStep, queue }`, `/admin/re-engagement/send` | |
+| GET / PUT | `/admin/settings` | `{ platformFeePct, escrowReleaseDays, disputeWindowDays, deletionGraceDays, draftAbandonDays, inactiveDays, enquiryReplyHours, maintenance, maintenanceMessage }` |
+| GET / PATCH / DELETE | `/admin/team`, `/admin/team/:id` | roles `owner | moderator | finance | support` |

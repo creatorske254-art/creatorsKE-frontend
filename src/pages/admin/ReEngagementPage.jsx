@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useReengagement } from '@/features/admin/hooks/useOperations';
-import { useDemoFallback } from '@/lib/useDemoFallback';
-import { DEMO_REENGAGEMENT, DEMO_ABANDONED_DRAFTS } from '@/lib/demoData';
 import { formatDate, formatRelativeDate } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import Modal from '@/components/ui/Modal';
 import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
-import DemoTag from '@/components/shared/DemoTag';
 import { ChartFrame, BarChart, TrendChart, Meter, SERIES } from '@/components/charts';
 import { IconMailForward, IconSend, IconUsers, IconEye } from '@tabler/icons-react';
 
@@ -36,10 +33,10 @@ export default function ReEngagementPage() {
   const [preview, setPreview] = useState('');
 
   const { query, data, send, isSending, sendingId } = useReengagement();
-  const re = useDemoFallback(query, DEMO_REENGAGEMENT);
+  const re = { data, isLoading: query.isLoading };
   const segments = re.data?.segments ?? [];
   const history = useMemo(() => [...(re.data?.history ?? [])].sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt)), [re.data]);
-  const funnel = re.data?.abandonedByStep ?? (re.isDemo ? DEMO_ABANDONED_DRAFTS : []);
+  const funnel = re.data?.abandonedByStep ?? [];
 
   const totals = useMemo(() => {
     const sum = (k) => history.reduce((s, h) => s + Number(h[k] ?? 0), 0);
@@ -63,7 +60,7 @@ export default function ReEngagementPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
       <div>
-        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Re-engagement{re.isDemo && <DemoTag />}</h1>
+        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Re-engagement</h1>
         <p className="page-subtitle">Creators who stalled, grouped by why, and the emails that bring them back. Open rate target is 30%.</p>
       </div>
 
@@ -87,7 +84,7 @@ export default function ReEngagementPage() {
         <h2 className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Segments</h2>
         {re.isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-16)' }}>{[0, 1, 2, 3].map((i) => <Skeleton key={i} width="100%" height={120} />)}</div>
-        ) : query.isError && !re.isDemo ? (
+        ) : query.isError ? (
           <ErrorState title="Couldn't load segments" description="This tool needs the admin/re-engagement endpoint to be live." onRetry={query.refetch} />
         ) : segments.length === 0 ? (
           <div className="card card-p-md"><EmptyState size="sm" icon={<IconUsers />} title="No one to re-engage" description="Every creator is active. Segments fill as people stall." /></div>
@@ -124,11 +121,11 @@ export default function ReEngagementPage() {
           title="Email performance"
           subtitle="Per send, as a share of recipients"
           legend={[{ label: 'Opened', color: SERIES[0] }, { label: 'Clicked', color: SERIES[1] }, { label: 'Reactivated', color: SERIES[2] }]}
-          loading={re.isLoading} empty={!trendRows.length} emptyTitle="No sends yet" demo={re.isDemo} height={200}
+          loading={re.isLoading} empty={!trendRows.length} emptyTitle="No sends yet" height={200}
         >
           <TrendChart data={trendRows} series={[{ key: 'open', label: 'Opened' }, { key: 'click', label: 'Clicked' }, { key: 'reactivated', label: 'Reactivated' }]} format={(v) => `${v}%`} height={200} />
         </ChartFrame>
-        <ChartFrame title="Where drafts stall" subtitle="Abandoned onboarding drafts by last completed step" loading={re.isLoading} empty={!funnel.length} emptyTitle="No abandoned drafts" demo={re.isDemo} height={200}>
+        <ChartFrame title="Where drafts stall" subtitle="Abandoned onboarding drafts by last completed step" loading={re.isLoading} empty={!funnel.length} emptyTitle="No abandoned drafts" height={200}>
           <BarChart data={funnel} series={[{ key: 'value', label: 'Drafts' }]} layout="horizontal" labels height={200} />
         </ChartFrame>
       </div>

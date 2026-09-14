@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
@@ -14,12 +14,13 @@ import Select from '@/components/ui/Select';
    Roles are passed in so the same card serves both: the brand gets
    owner / admin / member / finance, admins get super admin / moderator /
    finance / support. `onInvite(email, role)` and `onRemove(id)` are the
-   role's own service seams; the member list is seeded from `members` and
-   kept locally until the endpoint exists.
+   role's own service seams, `onChangeRole(id, role)` too; the member list
+   follows `members` whenever the parent's query refreshes.
 */
-export function TeamCard({ title = 'Team members', members: initial = [], roles, onInvite, onRemove, inviting = false, description }) {
+export function TeamCard({ title = 'Team members', members: initial = [], roles, onInvite, onRemove, onChangeRole, inviting = false, loading = false, description }) {
   const { user } = useAuth();
   const [members, setMembers] = useState(initial);
+  useEffect(() => { setMembers(initial); }, [initial]);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState(roles[Math.min(1, roles.length - 1)].id);
@@ -36,6 +37,7 @@ export function TeamCard({ title = 'Team members', members: initial = [], roles,
   function changeRole(id, next) {
     setMembers((m) => m.map((x) => (x.id === id ? { ...x, role: next } : x)));
     setMenuFor(null);
+    onChangeRole?.(id, next);
     toast.success(`Role updated to ${roles.find((r) => r.id === next)?.label ?? next}.`);
   }
   function remove() {
@@ -53,6 +55,7 @@ export function TeamCard({ title = 'Team members', members: initial = [], roles,
     >
       {description && <p className="field-hint" style={{ marginBottom: 'var(--space-8)' }}>{description}</p>}
       <div>
+        {loading && members.length === 0 && <p className="field-hint">Loading team</p>}
         {members.map((m) => {
           const r = roles.find((x) => x.id === m.role);
           const isSelf = m.email && m.email === user?.email;

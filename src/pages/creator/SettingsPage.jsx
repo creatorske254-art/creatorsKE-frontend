@@ -3,14 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/context/AuthContext';
-import { authService, userService } from '@/features/auth/services/auth.service';
+import { authService } from '@/features/auth/services/auth.service';
 import { useImageUpload } from '@/lib/useImageUpload';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
+import ErrorState from '@/components/shared/ErrorState';
 import Modal from '@/components/ui/Modal';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import { SettingsShell, Toggle, ToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard } from '@/components/settings';
 import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
-import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandWhatsapp, IconBrandYoutube, IconBuildingBank, IconCreditCard, IconDeviceMobile, IconEyeOff, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
+import { useProfile, usePreferences } from '@/features/auth/hooks/useProfile';
+import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
+import { getInitials, formatCount } from '@/lib/utils';
+import Skeleton from '@/components/ui/Skeleton';
+import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandWhatsapp, IconBrandYoutube, IconBuildingBank, IconDeviceMobile, IconEyeOff, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
 
 const TABS = [
@@ -24,45 +29,65 @@ const TABS = [
 
 // Tab panels
 
+const CATEGORIES = ["Lifestyle", "Fashion", "Food", "Tech", "Beauty", "Travel", "Fitness", "Finance", "Comedy", "Education"];
+const PLATFORMS = ["Instagram", "TikTok", "YouTube", "Twitter/X"];
+
 function ProfileTab() {
+  const { profile, isLoading, isError, refetch } = useProfile();
+  if (isLoading) return <div className="settings-stack"><Skeleton width="100%" height={220} /><Skeleton width="100%" height={120} /></div>;
+  if (isError || !profile) return <ErrorState title="Couldn't load your profile" onRetry={refetch} />;
+  return <ProfileForm profile={profile} />;
+}
+
+function ProfileForm({ profile }) {
+  const { saveProfile, isSaving } = useProfile();
+  const c = profile.creator ?? {};
+  const socials = c.socials ?? {};
+  const [form, setForm] = useState({
+    firstName: profile.firstName ?? '', lastName: profile.lastName ?? '', handle: profile.handle ?? '',
+    bio: c.bio ?? '', location: c.location ?? '', niche: c.niche ?? CATEGORIES[0], phone: profile.phone ?? '',
+    primaryPlatform: c.platforms?.[0]?.name ?? PLATFORMS[0],
+    instagram: socials.instagram ?? '', tiktok: socials.tiktok ?? '', youtube: socials.youtube ?? '', twitter: socials.twitter ?? '',
+  });
+  const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [category, setCategory] = useState('Lifestyle & Travel');
-  const [primaryPlatform, setPrimaryPlatform] = useState('Instagram');
+  const set = (k) => (v) => { setForm((f) => ({ ...f, [k]: typeof v === 'string' ? v : v.target.value })); setDirty(true); };
 
   function handleSave() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    const { instagram, tiktok, youtube, twitter, primaryPlatform, ...rest } = form;
+    saveProfile({ ...rest, socials: { instagram, tiktok, youtube, twitter, primaryPlatform } }, {
+      onSuccess: () => { setDirty(false); setSaved(true); setTimeout(() => setSaved(false), 2000); },
+    });
   }
 
   const { url: photoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
+    initialUrl: profile.avatar ?? null,
     successMessage: "Profile photo updated.",
-    onUploaded: ({ url }) => userService.updateProfile({ avatar: url }).catch(() => {}),
+    onUploaded: ({ url }) => saveProfile({ avatar: url }),
   });
+  const avatarSrc = photoUrl ?? profile.avatar;
+  const followers = c.followers ?? c.platforms?.reduce((n, p) => n + (p.followers ?? 0), 0) ?? 0;
+  const published = profile.rateCardPublished ?? true;
 
   return (
     <div className="settings-stack">
       {/* Avatar & name */}
       <CollapsibleCard title="Public profile" description="Your photo, name, handle, bio and category, as brands see them."
-        right={<span className="tag tag-success">
-            <span className="sdot" style={{ background: "var(--status-success)" }} />
-            Live
+        right={<span className={`tag ${published ? 'tag-success' : 'tag-default'}`}>
+            <span className="sdot" style={{ background: published ? "var(--status-success)" : "var(--grey-400)" }} />
+            {published ? 'Live' : 'Hidden'}
           </span>}>
         <div className="settings-stack">
           <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-16)' }}>
-            {photoUrl ? (
-              <img
-                src={photoUrl}
-                alt="Profile"
-                className="avatar avatar-lg"
-                style={{ objectFit: "cover" }}
-              />
+            {avatarSrc ? (
+              <img src={avatarSrc} alt="Profile" className="avatar avatar-lg" style={{ objectFit: "cover" }} />
             ) : (
-              <div className="avatar avatar-lg avatar-purple">AO</div>
+              <div className="avatar avatar-lg avatar-purple">{getInitials(`${form.firstName} ${form.lastName}`.trim() || profile.email)}</div>
             )}
             <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-8)' }}>
               <label className={`btn btn-secondary btn-sm${photoUploading ? " btn-loading" : ""}`} style={{ cursor: "pointer", width: "fit-content" }}>
                 <IconUpload className="icon-xs" aria-hidden="true" />
-                {photoUrl ? "Change photo" : "Upload photo"}
+                {avatarSrc ? "Change photo" : "Upload photo"}
                 <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handlePhotoChange} disabled={photoUploading} style={{ display: "none" }} />
               </label>
               <p className="field-hint" style={{ marginTop: 0 }}>JPG or PNG · max 2 MB</p>
@@ -72,41 +97,26 @@ function ProfileTab() {
           <div className="field-row">
             <div className="field">
               <label className="field-label field-required">First name</label>
-              <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Amara" /></div>
+              <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.firstName} onChange={set('firstName')} /></div>
             </div>
             <div className="field">
               <label className="field-label field-required">Last name</label>
-              <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" defaultValue="Osei" /></div>
+              <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={form.lastName} onChange={set('lastName')} /></div>
             </div>
           </div>
 
           <div className="field">
             <label className="field-label field-required">Creator handle</label>
             <div className="input-wrapper">
-              <span
-                style={{
-                  position: "absolute",
-                  left: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  fontSize: 13,
-                  color: "var(--grey-400)",
-                  pointerEvents: "none",
-                }}
-              >
-                @
-              </span>
-              <input className="input input-md" style={{ paddingLeft: 'var(--space-24)' }} defaultValue="amaracreates" />
+              <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 13, color: "var(--grey-400)", pointerEvents: "none" }}>@</span>
+              <input className="input input-md" style={{ paddingLeft: 'var(--space-24)' }} value={form.handle} onChange={(e) => set('handle')(e.target.value.replace(/[^a-z0-9_.]/gi, '').toLowerCase())} />
             </div>
+            <p className="field-hint">Your public rate card lives at /c/{form.handle || 'handle'}.</p>
           </div>
 
           <div className="field">
             <label className="field-label">Bio</label>
-            <textarea
-              className="input input-md textarea"
-              rows={3}
-              defaultValue="Lifestyle & travel creator based in Nairobi, partnering with brands that align with authentic storytelling."
-            />
+            <textarea className="input input-md textarea" rows={3} value={form.bio} onChange={set('bio')} />
             <p className="field-hint">Appears on your public rate card. Keep it under 120 characters.</p>
           </div>
 
@@ -115,13 +125,13 @@ function ProfileTab() {
               <label className="field-label">Location</label>
               <div className="input-wrapper">
                 <IconMapPin className="icon-sm input-icon left" aria-hidden="true" />
-                <input className="input input-md input-icon-left" defaultValue="Nairobi, Kenya" />
+                <input className="input input-md input-icon-left" value={form.location} onChange={set('location')} />
               </div>
             </div>
             <div className="field">
               <label className="field-label">Category</label>
               <div>
-                <Select aria-label="Category" value={category} onChange={setCategory} options={["Lifestyle & Travel", "Fashion & Beauty", "Food & Wellness", "Tech & Gaming", "Finance & Business"].map((o) => ({ value: o, label: o }))} />
+                <Select aria-label="Category" value={form.niche} onChange={set('niche')} options={[...new Set([form.niche, ...CATEGORIES])].filter(Boolean).map((o) => ({ value: o, label: o }))} />
               </div>
             </div>
           </div>
@@ -134,24 +144,24 @@ function ProfileTab() {
         <div className="bento-4">
           <div className="stat-card">
             <div className="stat-card-label">Total followers</div>
-            <div className="stat-card-value">240K</div>
+            <div className="stat-card-value">{formatCount(followers)}</div>
           </div>
           <div className="stat-card">
             <div className="stat-card-label">Avg engagement</div>
-            <div className="stat-card-value">4.8%</div>
+            <div className="stat-card-value">{c.eng != null ? `${c.eng}%` : '-'}</div>
           </div>
           <div className="stat-card">
-            <div className="stat-card-label">Avg reach / post</div>
-            <div className="stat-card-value">18K</div>
+            <div className="stat-card-label">Rating</div>
+            <div className="stat-card-value">{c.rating != null ? c.rating : '-'}</div>
           </div>
           <div className="stat-card">
             <div className="stat-card-label">Primary platform</div>
             <div style={{ marginTop: 'var(--space-8)' }}>
-              <Select size="sm" aria-label="Primary platform" value={primaryPlatform} onChange={setPrimaryPlatform} options={["Instagram", "TikTok", "YouTube", "Twitter / X"].map((o) => ({ value: o, label: o }))} />
+              <Select size="sm" aria-label="Primary platform" value={form.primaryPlatform} onChange={set('primaryPlatform')} options={[...new Set([form.primaryPlatform, ...PLATFORMS])].filter(Boolean).map((o) => ({ value: o, label: o }))} />
             </div>
           </div>
         </div>
-        <p className="field-hint" style={{ marginTop: 'var(--space-8)' }}>Shown on your public rate card.</p>
+        <p className="field-hint" style={{ marginTop: 'var(--space-8)' }}>Follower counts and engagement come from your connected platforms and are shown on your public rate card.</p>
       </div>
 
       {/* Social links */}
@@ -161,7 +171,7 @@ function ProfileTab() {
             <label className="field-label">Instagram</label>
             <div className="input-wrapper">
               <IconBrandInstagram className="icon-sm input-icon left" aria-hidden="true" />
-              <input className="input input-md input-icon-left" defaultValue="instagram.com/amaracreates" />
+              <input className="input input-md input-icon-left" value={form.instagram} onChange={set('instagram')} placeholder="instagram.com/…" />
             </div>
           </div>
           <div className="field-row">
@@ -169,14 +179,14 @@ function ProfileTab() {
               <label className="field-label">TikTok</label>
               <div className="input-wrapper">
                 <IconBrandTiktok className="icon-sm input-icon left" aria-hidden="true" />
-                <input className="input input-md input-icon-left" defaultValue="tiktok.com/@amaracreates" />
+                <input className="input input-md input-icon-left" value={form.tiktok} onChange={set('tiktok')} placeholder="tiktok.com/@…" />
               </div>
             </div>
             <div className="field">
               <label className="field-label">YouTube</label>
               <div className="input-wrapper">
                 <IconBrandYoutube className="icon-sm input-icon left" aria-hidden="true" />
-                <input className="input input-md input-icon-left" placeholder="youtube.com/…" />
+                <input className="input input-md input-icon-left" value={form.youtube} onChange={set('youtube')} placeholder="youtube.com/…" />
               </div>
             </div>
           </div>
@@ -185,14 +195,14 @@ function ProfileTab() {
               <label className="field-label">Twitter / X</label>
               <div className="input-wrapper">
                 <IconBrandTwitter className="icon-sm input-icon left" aria-hidden="true" />
-                <input className="input input-md input-icon-left" placeholder="x.com/…" />
+                <input className="input input-md input-icon-left" value={form.twitter} onChange={set('twitter')} placeholder="x.com/…" />
               </div>
             </div>
             <div className="field">
               <label className="field-label">WhatsApp business</label>
               <div className="input-wrapper">
                 <IconBrandWhatsapp className="icon-sm input-icon left" style={{ color: "var(--status-success)" }} aria-hidden="true" />
-                <input className="input input-md input-icon-left" type="tel" defaultValue="+254 712 345 678" />
+                <input className="input input-md input-icon-left" type="tel" value={form.phone} onChange={set('phone')} placeholder="+254 7XX XXX XXX" />
               </div>
             </div>
           </div>
@@ -200,84 +210,66 @@ function ProfileTab() {
         </div>
       </CollapsibleCard>
 
-      <SaveBar saved={saved} onSave={handleSave} />
+      <SaveBar dirty={dirty} saving={isSaving} saved={saved} onSave={handleSave} />
     </div>
   );
 }
 
+const NOTIF_ROWS = [
+  ['newEnquiry', 'New enquiry', 'When a brand submits an enquiry from your rate card'],
+  ['bookingConfirmed', 'Booking confirmed', 'When a client books and pays for a package'],
+  ['paymentReceived', 'Payment received', 'Each time a payment lands in your account'],
+  ['newMessage', 'New message', 'When a brand replies in an enquiry thread'],
+];
+const MORE_NOTIF_ROWS = [
+  ['reviewReceived', 'New review', 'When a brand leaves a review after a campaign'],
+  ['weeklyDigest', 'Weekly performance digest', 'Views, enquiries, and earnings summary every Monday'],
+  ['marketingTips', 'Product updates', 'New features and platform announcements'],
+];
+
 function NotificationsTab() {
-  const [notifs, setNotifs] = useState({
-    newEnquiry: true,
-    bookingConfirmed: true,
-    paymentReceived: true,
-    weeklyDigest: false,
-    cardViews: false,
-    productUpdates: true,
-  });
+  const { preferences, isLoading, isError, savePreferences, isSaving } = usePreferences();
+  const [draft, setDraft] = useState(null);
+  const [saved, setSaved] = useState(false);
+  const notifs = draft?.notifications ?? preferences.notifications ?? {};
+  const email = draft?.notificationEmail ?? preferences.notificationEmail ?? '';
 
   function toggle(key) {
-    setNotifs((prev) => ({ ...prev, [key]: !prev[key] }));
+    setDraft((d) => ({ notificationEmail: email, ...(d ?? {}), notifications: { ...notifs, [key]: !notifs[key] } }));
+  }
+  function setEmail(v) { setDraft((d) => ({ notifications: notifs, ...(d ?? {}), notificationEmail: v })); }
+  function handleSave() {
+    savePreferences({ notifications: notifs, notificationEmail: email }, {
+      onSuccess: () => { setDraft(null); setSaved(true); toast.success('Notification preferences saved.'); setTimeout(() => setSaved(false), 2000); },
+    });
   }
 
-  const [saved, setSaved] = useState(false);
-  function handleSave() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  }
+  if (isLoading) return <div className="settings-stack"><Skeleton width="100%" height={240} /></div>;
+  if (isError) return <ErrorState title="Couldn't load your notification settings" />;
+
+  const Row = ({ k, label, desc, last }) => (
+    <div className="notif-row" style={last ? { borderBottom: "none" } : undefined}>
+      <div>
+        <div className="notif-row-label">{label}</div>
+        <div className="notif-row-desc">{desc}</div>
+      </div>
+      <Toggle on={!!notifs[k]} onChange={() => toggle(k)} />
+    </div>
+  );
 
   return (
     <div className="settings-stack">
       <div className="bento-2">
         <CollapsibleCard title="Email notifications" description="Which events email you: enquiries, bookings, payments and messages.">
           <div style={{ marginTop: 'var(--space-12)' }}>
-            <div className="notif-row">
-              <div>
-                <div className="notif-row-label">New enquiry</div>
-                <div className="notif-row-desc">When a brand submits an enquiry from your rate card</div>
-              </div>
-              <Toggle on={notifs.newEnquiry} onChange={() => toggle("newEnquiry")} />
-            </div>
-            <div className="notif-row">
-              <div>
-                <div className="notif-row-label">Booking confirmed</div>
-                <div className="notif-row-desc">When a client books and pays for a package</div>
-              </div>
-              <Toggle on={notifs.bookingConfirmed} onChange={() => toggle("bookingConfirmed")} />
-            </div>
-            <div className="notif-row">
-              <div>
-                <div className="notif-row-label">Payment received</div>
-                <div className="notif-row-desc">Each time a payment lands in your account</div>
-              </div>
-              <Toggle on={notifs.paymentReceived} onChange={() => toggle("paymentReceived")} />
-            </div>
-            <div className="notif-row" style={{ borderBottom: "none" }}>
-              <div>
-                <div className="notif-row-label">Weekly performance digest</div>
-                <div className="notif-row-desc">Views, enquiries, and earnings summary every Monday</div>
-              </div>
-              <Toggle on={notifs.weeklyDigest} onChange={() => toggle("weeklyDigest")} />
-            </div>
+            {NOTIF_ROWS.map(([k, label, desc], i) => <Row key={k} k={k} label={label} desc={desc} last={i === NOTIF_ROWS.length - 1} />)}
           </div>
         </CollapsibleCard>
 
         <div className="settings-stack">
           <CollapsibleCard title="More notifications" collapsible={false}>
             <div style={{ marginTop: 'var(--space-12)' }}>
-              <div className="notif-row">
-                <div>
-                  <div className="notif-row-label">Card view milestones</div>
-                  <div className="notif-row-desc">Notify me at 100, 500, 1K+ views</div>
-                </div>
-                <Toggle on={notifs.cardViews} onChange={() => toggle("cardViews")} />
-              </div>
-              <div className="notif-row" style={{ borderBottom: "none" }}>
-                <div>
-                  <div className="notif-row-label">Product updates</div>
-                  <div className="notif-row-desc">New features and platform announcements</div>
-                </div>
-                <Toggle on={notifs.productUpdates} onChange={() => toggle("productUpdates")} />
-              </div>
+              {MORE_NOTIF_ROWS.map(([k, label, desc], i) => <Row key={k} k={k} label={label} desc={desc} last={i === MORE_NOTIF_ROWS.length - 1} />)}
             </div>
           </CollapsibleCard>
 
@@ -286,7 +278,7 @@ function NotificationsTab() {
               <label className="field-label">Send notifications to</label>
               <div className="input-wrapper">
                 <IconMail className="icon-sm input-icon left" aria-hidden="true" />
-                <input className="input input-md input-icon-left" type="email" defaultValue="amara@example.com" />
+                <input className="input input-md input-icon-left" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
               <p className="field-hint">We'll also send receipts and important account info here.</p>
             </div>
@@ -294,36 +286,34 @@ function NotificationsTab() {
         </div>
       </div>
 
-      <SaveBar saved={saved} onSave={handleSave} />
+      <SaveBar dirty={!!draft} saving={isSaving} saved={saved} onSave={handleSave} />
     </div>
   );
 }
 
-// Field sets for each payout provider's connect modal. There's no
-// /payments/methods endpoint yet (see BACKEND_API_SPEC.md), so connecting
-// stores what the creator actually typed and says so - rather than the old
-// behaviour of flipping a boolean and inventing "+254 712 345 678 · Till 123456".
+// Field sets for each payout provider's connect modal. Connecting posts to
+// /payments/methods; the provider key is the method `type` the API stores.
 const PAY_PROVIDERS = {
   mpesa: {
     name: "M-Pesa",
     icon: IconDeviceMobile,
     iconStyle: { background: "var(--tint-green-bg)", color: "var(--tint-green-text)" },
-    blurb: "Connect your M-Pesa till or paybill",
+    blurb: "Connect your M-Pesa number, till or paybill",
     fields: [
       { key: "phone", label: "M-Pesa phone number", placeholder: "+254 7XX XXX XXX", required: true },
       { key: "till", label: "Till / paybill number", placeholder: "e.g. 123456" },
     ],
     summary: (v) => [v.phone, v.till && `Till ${v.till}`].filter(Boolean).join(" · "),
   },
-  stripe: {
-    name: "Stripe",
-    icon: IconCreditCard,
-    iconStyle: { background: "var(--purple-50)", color: "var(--purple-600)" },
-    blurb: "Accept card payments internationally",
+  airtel: {
+    name: "Airtel Money",
+    icon: IconDeviceMobile,
+    iconStyle: { background: "var(--status-error-bg)", color: "var(--status-error-text)" },
+    blurb: "Withdraw to an Airtel Money number",
     fields: [
-      { key: "email", label: "Stripe account email", placeholder: "you@email.com", required: true, type: "email" },
+      { key: "phone", label: "Airtel Money number", placeholder: "+254 7XX XXX XXX", required: true },
     ],
-    summary: (v) => `${v.email} · Visa / Mastercard`,
+    summary: (v) => v.phone,
   },
   bank: {
     name: "Bank transfer",
@@ -341,7 +331,7 @@ const PAY_PROVIDERS = {
 
 // Leading icon inside each dynamic input, keyed by what the field collects.
 const FIELD_ICON = { phone: IconDeviceMobile, till: IconHash, email: IconMail, bank: IconBuildingBank, account: IconHash, holder: IconUser };
-function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
+function ConnectPayoutModal({ providerKey, onClose, onConnect, busy }) {
   const provider = providerKey ? PAY_PROVIDERS[providerKey] : null;
   const [values, setValues] = useState({});
 
@@ -352,7 +342,7 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
   return (
     <Modal open onClose={onClose} title={`Connect ${provider.name}`} size="sm">
       <p style={{ fontSize: 13.5, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
-        {provider.blurb}. These details are shown to brands when they pay you.
+        {provider.blurb}. Your earnings are paid out here.
       </p>
       <div className="settings-stack" style={{ gap: 'var(--space-12)', marginBottom: 'var(--space-20)' }}>
         {provider.fields.map((f) => (
@@ -372,11 +362,11 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
         ))}
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 'var(--space-12)' }}>
-        <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
+        <button className="btn btn-secondary btn-sm" onClick={onClose} disabled={busy}>Cancel</button>
         <button
-          className="btn btn-primary btn-sm"
-          disabled={missing}
-          onClick={() => onConnect(providerKey, provider.summary(values))}
+          className={`btn btn-primary btn-sm${busy ? ' btn-loading' : ''}`}
+          disabled={missing || busy}
+          onClick={() => onConnect({ type: providerKey, name: providerKey === 'bank' ? values.bank : provider.name, detail: provider.summary(values), fields: values })}
         >
           Connect {provider.name}
         </button>
@@ -386,53 +376,47 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect }) {
 }
 
 function PaymentsTab() {
-  const [connected, setConnected] = useState({});
-  const [defaultMethod, setDefaultMethod] = useState('');
-  const [currency, setCurrency] = useState('KES');
+  const { methods, primaryMethod, isLoading, addMethod, isAdding, setPrimary, removeMethod } = usePayoutMethods();
+  const { preferences, savePreferences } = usePreferences();
   const [connecting, setConnecting] = useState(null); // provider key
-  const [autoWithdraw, setAutoWithdraw] = useState(true);
-  const [disconnecting, setDisconnecting] = useState(null);
+  const [disconnecting, setDisconnecting] = useState(null); // method
 
-  function handleConnect(key, summary) {
-    setConnected((prev) => ({ ...prev, [key]: summary }));
-    setConnecting(null);
-    toast.success(`${PAY_PROVIDERS[key].name} connected. Saved locally until payout methods are supported on the backend.`);
+  const byType = Object.fromEntries(methods.map((m) => [m.type, m]));
+  const currency = preferences.currency ?? 'KES';
+  const autoWithdraw = preferences.autoWithdraw ?? false;
+
+  function handleConnect(payload) {
+    addMethod(payload, { onSuccess: () => setConnecting(null) });
   }
-
   function handleDisconnect() {
-    const key = disconnecting;
-    setConnected((prev) => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
+    removeMethod(disconnecting.id);
     setDisconnecting(null);
-    toast.success(`${PAY_PROVIDERS[key].name} disconnected.`);
   }
 
   return (
     <div className="settings-stack">
-      <CollapsibleCard title="Payment methods" collapsible={false}
-        right={<p className="field-hint" style={{ margin: 0 }}>Accept payments from brands directly</p>}>
+      <CollapsibleCard title="Payout methods" collapsible={false}
+        right={<p className="field-hint" style={{ margin: 0 }}>Where your earnings are sent</p>}>
         <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-          {Object.entries(PAY_PROVIDERS).map(([key, provider]) => {
-            const summary = connected[key];
+          {isLoading && <Skeleton width="100%" height={64} />}
+          {!isLoading && Object.entries(PAY_PROVIDERS).map(([key, provider]) => {
+            const method = byType[key];
             return (
-              <div key={key} className={`pay-row${summary ? " connected" : ""}`}>
+              <div key={key} className={`pay-row${method ? " connected" : ""}`}>
                 <div className="pay-icon" style={provider.iconStyle}>
                   <provider.icon className="icon-md" aria-hidden="true" />
                 </div>
                 <div className="pay-info">
-                  <div className="pay-name">{provider.name}</div>
-                  <div className="pay-desc">{summary ?? provider.blurb}</div>
+                  <div className="pay-name">{method?.name ?? provider.name}</div>
+                  <div className="pay-desc">{method?.detail ?? provider.blurb}</div>
                 </div>
-                {summary ? (
+                {method ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
                     <span className="tag tag-success">
                       <span className="sdot" style={{ background: "var(--status-success)" }} />
-                      Connected
+                      {method.primary ? 'Primary' : 'Connected'}
                     </span>
-                    <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(key)}>Disconnect</button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(method)}>Disconnect</button>
                   </div>
                 ) : (
                   <button className="btn btn-secondary btn-sm" onClick={() => setConnecting(key)}>
@@ -449,13 +433,14 @@ function PaymentsTab() {
         providerKey={connecting}
         onClose={() => setConnecting(null)}
         onConnect={handleConnect}
+        busy={isAdding}
       />
 
       <ConfirmDialog
         open={!!disconnecting}
         variant="danger"
-        title={`Disconnect ${disconnecting ? PAY_PROVIDERS[disconnecting].name : ""}?`}
-        message="Brands won't be able to pay you through this method until you reconnect it. Your existing transactions are unaffected."
+        title={`Disconnect ${disconnecting?.name ?? ""}?`}
+        message="You won't be able to withdraw to this method until you reconnect it. Your existing transactions are unaffected."
         confirmLabel="Disconnect"
         onConfirm={handleDisconnect}
         onCancel={() => setDisconnecting(null)}
@@ -467,24 +452,24 @@ function PaymentsTab() {
             <div className="field">
               <label className="field-label">Default payout method</label>
               <div>
-                <Select aria-label="Default payout method" disabled={Object.keys(connected).length === 0} placeholder="No methods connected yet" value={defaultMethod} onChange={setDefaultMethod} options={Object.keys(connected).map((key) => ({ value: key, label: PAY_PROVIDERS[key].name }))} />
+                <Select aria-label="Default payout method" disabled={methods.length === 0} placeholder="No methods connected yet" value={primaryMethod?.id ?? ''} onChange={(id) => setPrimary(id)} options={methods.map((m) => ({ value: m.id, label: m.name, hint: m.detail }))} />
               </div>
-              {Object.keys(connected).length === 0 && (
-                <p className="field-hint">Connect a payment method above to choose a default.</p>
+              {methods.length === 0 && (
+                <p className="field-hint">Connect a payout method above to choose a default.</p>
               )}
             </div>
             <div className="field">
               <label className="field-label">Payout currency</label>
               <div>
-                <Select aria-label="Payout currency" value={currency} onChange={setCurrency} options={[{ value: 'KES', label: 'KES', hint: 'Kenyan Shilling' }, { value: 'USD', label: 'USD', hint: 'US Dollar' }, { value: 'EUR', label: 'EUR', hint: 'Euro' }]} />
+                <Select aria-label="Payout currency" value={currency} onChange={(v) => savePreferences({ currency: v }, { onSuccess: () => toast.success('Payout currency updated.') })} options={[{ value: 'KES', label: 'KES', hint: 'Kenyan Shilling' }, { value: 'USD', label: 'USD', hint: 'US Dollar' }, { value: 'EUR', label: 'EUR', hint: 'Euro' }]} />
               </div>
             </div>
           </div>
           <ToggleRow
             label="Auto-withdraw earnings"
-            desc="Transfer balance to M-Pesa when it hits KES 5,000"
+            desc="Transfer balance to your primary method when it hits KES 5,000"
             on={autoWithdraw}
-            onChange={setAutoWithdraw}
+            onChange={(v) => savePreferences({ autoWithdraw: v }, { onSuccess: () => toast.success(v ? 'Auto-withdraw on.' : 'Auto-withdraw off.') })}
           />
         </div>
       </CollapsibleCard>
@@ -597,35 +582,36 @@ function AccountTab() {
 }
 
 function PrivacyTab() {
-  const [showInDirectory, setShowInDirectory] = useState(true);
-  const [showEarnings, setShowEarnings] = useState(false);
-  const [shareAnalytics, setShareAnalytics] = useState(false);
-  const [marketing, setMarketing] = useState(true);
+  const { preferences, isLoading, isError, savePreferences, isSaving } = usePreferences();
+  const [draft, setDraft] = useState(null);
   const [saved, setSaved] = useState(false);
-  const [dirty, setDirty] = useState(false);
-  const set = (fn) => (v) => { fn(v); setDirty(true); };
+  const v = { showInDirectory: true, showBookingCount: false, shareAnalytics: false, marketing: true, ...preferences, ...(draft ?? {}) };
+  const set = (k) => (val) => setDraft((d) => ({ ...(d ?? {}), [k]: val }));
 
   function handleSave() {
-    setSaved(true); setDirty(false);
-    toast.success('Privacy preferences saved.');
-    setTimeout(() => setSaved(false), 2000);
+    savePreferences(draft ?? {}, {
+      onSuccess: () => { setDraft(null); setSaved(true); toast.success('Privacy preferences saved.'); setTimeout(() => setSaved(false), 2000); },
+    });
   }
+
+  if (isLoading) return <div className="settings-stack"><Skeleton width="100%" height={200} /></div>;
+  if (isError) return <ErrorState title="Couldn't load your privacy settings" />;
 
   return (
     <div className="settings-stack">
       <div className="bento-2">
         <CollapsibleCard title="Visibility" collapsible={false}>
           <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-            <ToggleRow label="Show my profile in the directory" desc="Brands can find you through search and filters. Off = only people with your link can see your card." on={showInDirectory} onChange={set(setShowInDirectory)} />
+            <ToggleRow label="Show my profile in the directory" desc="Brands can find you through search and filters. Off = only people with your link can see your card." on={!!v.showInDirectory} onChange={set('showInDirectory')} />
             <div className="field-divider" />
-            <ToggleRow label="Show booking count on my rate card" desc="Displays how many campaigns you've completed on Creatorske." on={showEarnings} onChange={set(setShowEarnings)} />
+            <ToggleRow label="Show booking count on my rate card" desc="Displays how many campaigns you've completed on Creatorske." on={!!v.showBookingCount} onChange={set('showBookingCount')} />
           </div>
         </CollapsibleCard>
         <CollapsibleCard title="Data use" collapsible={false}>
           <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-            <ToggleRow label="Share anonymised analytics" desc="Helps us improve the platform. No personal data is shared." on={shareAnalytics} onChange={set(setShareAnalytics)} />
+            <ToggleRow label="Share anonymised analytics" desc="Helps us improve the platform. No personal data is shared." on={!!v.shareAnalytics} onChange={set('shareAnalytics')} />
             <div className="field-divider" />
-            <ToggleRow label="Product news and tips" desc="Occasional emails about new features and how creators use them." on={marketing} onChange={set(setMarketing)} />
+            <ToggleRow label="Product news and tips" desc="Occasional emails about new features and how creators use them." on={!!v.marketing} onChange={set('marketing')} />
           </div>
         </CollapsibleCard>
       </div>
@@ -633,7 +619,7 @@ function PrivacyTab() {
         <DataExportCard />
         <LegalCard />
       </div>
-      <SaveBar dirty={dirty} saved={saved} onSave={handleSave} />
+      <SaveBar dirty={!!draft} saving={isSaving} saved={saved} onSave={handleSave} />
     </div>
   );
 }

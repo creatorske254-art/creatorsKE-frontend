@@ -3,22 +3,10 @@ import { usePageMeta } from '@/lib/usePageMeta';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IconSearch, IconCheck, IconArrowRight, IconStarFilled } from '@tabler/icons-react';
 import { EmptyDirectoryState } from '@/features/directory';
-
-// ── Static creator data ────────────────────────────────────────────────────
-const CREATORS = [
-  { name: 'Amara Osei',    handle: '@amaracreates', initials: 'AO', niche: 'Lifestyle', followers: '48K',  eng: '6.2%', rating: '4.8', verified: true,  avail: 'available', bg: 'linear-gradient(135deg,#6B5FF4,#1E1480)' },
-  { name: 'James Kiema',   handle: '@jkiema',       initials: 'JK', niche: 'Tech',      followers: '120K', eng: '4.1%', rating: '4.9', verified: true,  avail: 'limited',   bg: 'linear-gradient(135deg,#0D0D0D,#333)'    },
-  { name: 'Njeri Wanjiku', handle: '@njeriwanjiku', initials: 'NW', niche: 'Fashion',   followers: '22K',  eng: '8.7%', rating: '4.7', verified: false, avail: 'booked',    bg: 'linear-gradient(135deg,#5445E8,#2C1FB8)' },
-  { name: 'Brian Otieno',  handle: '@brianotieno',  initials: 'BO', niche: 'Food',      followers: '35K',  eng: '7.3%', rating: '4.6', verified: true,  avail: 'available', bg: 'linear-gradient(135deg,#1a1a1a,#444)'    },
-  { name: 'Sasha Mwangi',  handle: '@sashamwangi',  initials: 'SM', niche: 'Travel',    followers: '67K',  eng: '5.8%', rating: '4.8', verified: true,  avail: 'available', bg: 'linear-gradient(135deg,#3D2FD6,#110B52)' },
-  { name: 'Lena Kamau',    handle: '@lenakamau',    initials: 'LK', niche: 'Fitness',   followers: '19K',  eng: '9.1%', rating: '4.5', verified: false, avail: 'limited',   bg: 'linear-gradient(135deg,#2C1FB8,#6B5FF4)' },
-  { name: 'Kevin Njoroge', handle: '@kevinnjoroge', initials: 'KN', niche: 'Finance',   followers: '82K',  eng: '3.9%', rating: '4.7', verified: true,  avail: 'booked',    bg: 'linear-gradient(135deg,#111,#555)'        },
-  { name: 'Aisha Hassan',  handle: '@aishahassan',  initials: 'AH', niche: 'Lifestyle', followers: '14K',  eng: '11.2%',rating: '4.9', verified: false, avail: 'available', bg: 'linear-gradient(135deg,#6B5FF4,#3D2FD6)' },
-  { name: 'Daniel Mutua',  handle: '@danielmutua',  initials: 'DM', niche: 'Tech',      followers: '55K',  eng: '5.1%', rating: '4.6', verified: true,  avail: 'available', bg: 'linear-gradient(135deg,#222,#444)'        },
-  { name: 'Faith Ndungu',  handle: '@faithndungu',  initials: 'FN', niche: 'Fashion',   followers: '31K',  eng: '7.8%', rating: '4.8', verified: false, avail: 'limited',   bg: 'linear-gradient(135deg,#5445E8,#9187F7)' },
-  { name: 'Omar Ali',      handle: '@omarali',      initials: 'OA', niche: 'Food',      followers: '28K',  eng: '6.6%', rating: '4.5', verified: true,  avail: 'booked',    bg: 'linear-gradient(135deg,#0D0D0D,#222)'    },
-  { name: 'Ruth Waweru',   handle: '@ruthwaweru',   initials: 'RW', niche: 'Travel',    followers: '43K',  eng: '5.3%', rating: '4.7', verified: false, avail: 'available', bg: 'linear-gradient(135deg,#2C1FB8,#5445E8)' },
-];
+import { useQuery } from '@tanstack/react-query';
+import { searchCreators } from '@/features/directory/services/directory.service';
+import Skeleton from '@/components/ui/Skeleton';
+import ErrorState from '@/components/shared/ErrorState';
 
 const NICHES = ['All', 'Lifestyle', 'Fashion', 'Tech', 'Food', 'Travel', 'Fitness', 'Finance'];
 
@@ -128,14 +116,24 @@ export default function DirectoryPage() {
   };
   const [activeNiche, setNiche]   = useState('All');
 
+  // GET /directory - every published creator; niche and keyword filtering
+  // stays client-side so the chips respond instantly.
+  const { data, isLoading, isError, refetch } = useQuery({ queryKey: ['directory', 'all'], queryFn: () => searchCreators({ limit: 200 }), staleTime: 60_000 });
+  const creators = useMemo(() => (data?.creators ?? []).map((c) => ({
+    ...c,
+    followers: typeof c.followers === 'number' ? (c.followers >= 1000 ? `${(c.followers / 1000).toFixed(c.followers % 1000 === 0 ? 0 : 1)}K` : String(c.followers)) : c.followers,
+    eng: typeof c.eng === 'number' ? `${c.eng}%` : c.eng,
+    rating: typeof c.rating === 'number' ? c.rating.toFixed(1) : c.rating,
+  })), [data]);
+
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return CREATORS.filter(c => {
+    return creators.filter(c => {
       const matchNiche = activeNiche === 'All' || c.niche === activeNiche;
       const matchQuery = !q || c.name.toLowerCase().includes(q) || c.handle.toLowerCase().includes(q) || c.niche.toLowerCase().includes(q);
       return matchNiche && matchQuery;
     });
-  }, [query, activeNiche]);
+  }, [creators, query, activeNiche]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--page-bg)' }}>
@@ -249,7 +247,13 @@ export default function DirectoryPage() {
           )}
         </div>
 
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 'var(--space-16)' }}>
+            {[0, 1, 2, 3, 4, 5].map((i) => <Skeleton key={i} width="100%" height={260} style={{ borderRadius: 'var(--radius-xl)' }} />)}
+          </div>
+        ) : isError ? (
+          <ErrorState title="Couldn't load creators" description="The directory didn't respond. Try again in a moment." onRetry={refetch} />
+        ) : filtered.length === 0 ? (
           <EmptyDirectoryState onReset={() => { setQuery(''); setNiche('All'); }} />
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 'var(--space-16)' }}>

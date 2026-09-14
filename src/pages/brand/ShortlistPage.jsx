@@ -1,19 +1,14 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
+import Skeleton from '@/components/ui/Skeleton';
+import ErrorState from '@/components/shared/ErrorState';
 import {
   IconSearch, IconCheck, IconBookmark, IconBookmarkFilled,
   IconFilterOff, IconStarFilled,
 } from '@tabler/icons-react';
 
-// ── Static shortlist data, replace with useBrandDashboard() shortlist fetch ─
-const SHORTLIST = [
-  { id: 'c1', name: 'Amara Muriithi', handle: '@amaramuriithi', initials: 'AM', niche: 'Food',      followers: 48000,  eng: 6.4, rating: 4.8, reviews: 32, verified: true,  avail: 'available', bg: 'linear-gradient(135deg,#6B5FF4,#1E1480)', platforms: ['Instagram', 'TikTok'],       price: 18000, priceUnit: 'per reel',        revision: '2 rounds',  lead: '3–5 days',   addedOn: '2026-06-28', note: '' },
-  { id: 'c2', name: 'James Otieno',   handle: '@jamesotieno',   initials: 'JO', niche: 'Tech',      followers: 102000, eng: 4.1, rating: 4.6, reviews: 21, verified: true,  avail: 'limited',   bg: 'linear-gradient(135deg,#0D0D0D,#333)',     platforms: ['YouTube'],                   price: 45000, priceUnit: 'per integration', revision: '1 round',   lead: '7–10 days',  addedOn: '2026-06-27', note: 'Good fit for the Vivo launch, check YouTube Shorts pricing.' },
-  { id: 'c3', name: 'Neema Kimani',   handle: '@neemakimani',   initials: 'NK', niche: 'Lifestyle', followers: 210000, eng: 7.2, rating: 4.9, reviews: 54, verified: true,  avail: 'available', bg: 'linear-gradient(135deg,#5445E8,#2C1FB8)', platforms: ['TikTok', 'Instagram'],       price: 32000, priceUnit: 'per post',        revision: 'Unlimited', lead: '2–4 days',   addedOn: '2026-06-25', note: '' },
-  { id: 'c4', name: 'Brenda Waweru',  handle: '@brendawaweru',  initials: 'BW', niche: 'Fashion',   followers: 76000,  eng: 5.3, rating: 4.7, reviews: 18, verified: false, avail: 'booked',    bg: 'linear-gradient(135deg,#3D2FD6,#110B52)', platforms: ['Instagram'],                 price: 22000, priceUnit: 'per reel',        revision: '2 rounds',  lead: '5–7 days',   addedOn: '2026-06-20', note: '' },
-  { id: 'c5', name: 'Kevin Mwangi',   handle: '@kevmwangi',     initials: 'KM', niche: 'Tech',      followers: 34000,  eng: 3.8, rating: 4.4, reviews: 9,  verified: false, avail: 'available', bg: 'linear-gradient(135deg,#2C1FB8,#6B5FF4)', platforms: ['YouTube', 'Twitter/X'],      price: null,  priceUnit: '',                revision: 'None',      lead: '10–14 days', addedOn: '2026-06-18', note: '' },
-];
 
 const NICHES = ['All', 'Food', 'Tech', 'Lifestyle', 'Fashion'];
 
@@ -201,7 +196,7 @@ function NoResults({ onClear }) {
 export default function ShortlistPage() {
   usePageMeta('Shortlist', 'Creators you have saved for comparison on Creatorske.');
   const navigate = useNavigate();
-  const [creators, setCreators] = useState(SHORTLIST);
+  const { shortlist: creators, isLoadingShortlist, isShortlistError, removeFromShortlist, addToShortlist } = useBrandDashboard();
   const [query, setQuery] = useState('');
   const [activeNiche, setNiche] = useState('All');
   const [availableOnly, setAvailableOnly] = useState(false);
@@ -245,15 +240,15 @@ export default function ShortlistPage() {
   }, [creators]);
 
   const removeCreator = useCallback((creator) => {
-    setCreators(prev => prev.filter(c => c.id !== creator.id));
+    removeFromShortlist(creator.id);
     showToast(`Removed ${creator.name} from your shortlist`, {
       label: 'Undo',
       onClick: () => {
-        setCreators(prev => [...prev, creator].sort((a, b) => new Date(b.addedOn) - new Date(a.addedOn)));
+        addToShortlist(creator.creatorId ?? creator.id);
         setToast(t => ({ ...t, visible: false }));
       },
     });
-  }, [showToast]);
+  }, [showToast, removeFromShortlist, addToShortlist]);
 
   const handleEnquire = (creator) => navigate(`/c/${creator.handle.replace('@', '')}?enquire=1`);
 
@@ -301,7 +296,15 @@ export default function ShortlistPage() {
         </button>
       </div>
 
-      {creators.length === 0 ? (
+      {isLoadingShortlist ? (
+        <div style={{ display: 'grid', gap: 'var(--space-16)' }}>
+          <Skeleton width="100%" height={96} />
+          <Skeleton width="100%" height={220} />
+          <Skeleton width="100%" height={220} />
+        </div>
+      ) : isShortlistError ? (
+        <ErrorState title="Couldn't load your shortlist" description="Check your connection and try again." />
+      ) : creators.length === 0 ? (
         <EmptyShortlist navigate={navigate} />
       ) : (
         <>

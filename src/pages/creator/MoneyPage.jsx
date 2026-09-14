@@ -1,17 +1,16 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { usePayments } from '@/features/payments/hooks/usePayments'
+import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods'
 import TransactionHistory from '@/features/payments/components/TransactionHistory'
 import MpesaPrompt from '@/features/payments/components/MpesaPrompt'
 import { usePlan } from '@/features/plans/hooks/usePlan'
 import Modal from '@/components/ui/Modal'
 import { formatCurrency } from '@/lib/utils'
-import { useDemoFallback } from '@/lib/useDemoFallback'
-import { demoEarningsTimeline, DEMO_EARNINGS_BY_PACKAGE } from '@/lib/demoData'
 import { ChartFrame, ChartPeriod, BarChart, kes } from '@/components/charts'
-import { IconBuildingBank, IconDeviceMobile, IconDownload, IconHistory, IconInfoCircle, IconPlus, IconX } from '@tabler/icons-react';
+import { IconBuildingBank, IconDeviceMobile, IconDownload, IconHistory, IconInfoCircle, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
+import Skeleton from '@/components/ui/Skeleton'
 
 /*
    MoneyPage: content area only (sidebar/navbar live in the
@@ -29,7 +28,13 @@ const METHOD_TYPES = [
   { key: 'bank', label: 'Bank account', icon: IconBuildingBank, field: 'Account number', placeholder: '0123456789' },
 ]
 
-function AddPaymentMethodModal({ open, onClose, onAdd }) {
+const METHOD_LOOK = {
+  mpesa:  { icon: IconDeviceMobile, iconBg: '#00A651' },
+  airtel: { icon: IconDeviceMobile, iconBg: '#E40000' },
+  bank:   { icon: IconBuildingBank, iconBg: 'var(--grey-100)', iconColor: 'var(--grey-600)' },
+}
+
+function AddPaymentMethodModal({ open, onClose, onAdd, isAdding }) {
   const [type, setType] = useState('mpesa')
   const [detail, setDetail] = useState('')
   const [bankName, setBankName] = useState('')
@@ -94,16 +99,12 @@ function AddPaymentMethodModal({ open, onClose, onAdd }) {
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-12)' }}>
         <button className="btn btn-ghost btn-sm" onClick={onClose}>Cancel</button>
-        <button className="btn btn-purple btn-sm" disabled={!valid} onClick={submit}>Add method</button>
+        <button className={`btn btn-purple btn-sm${isAdding ? ' btn-loading' : ''}`} disabled={!valid || isAdding} onClick={submit}>{isAdding ? 'Adding' : 'Add method'}</button>
       </div>
     </Modal>
   )
 }
 
-const PAYMENT_METHODS = [
-  { icon: IconDeviceMobile, iconBg: '#00A651', name: 'M-Pesa', detail: '+254 712 345 678', primary: true },
-  { icon: IconBuildingBank, iconBg: 'var(--grey-100)', iconColor: 'var(--grey-600)', name: 'Equity Bank', detail: '···· ···· 4521', primary: false },
-]
 
 export default function MoneyPage() {
   usePageMeta('Money', 'View your earnings, transaction history, and payout options on Creatorske.');
@@ -113,8 +114,7 @@ export default function MoneyPage() {
   const [historyOpen, setHistoryOpen] = useState(false)
   const [addMethodOpen, setAddMethodOpen] = useState(false)
   const [amount, setAmount] = useState('')
-  const [paymentMethods, setPaymentMethods] = useState(PAYMENT_METHODS)
-  const primaryMethod = paymentMethods.find((m) => m.primary)
+  const { methods: paymentMethods, primaryMethod, isLoading: isMethodsLoading, addMethod, isAdding, setPrimary, removeMethod } = usePayoutMethods()
 
   const { currentPlan } = usePlan()
   const {
@@ -128,10 +128,7 @@ export default function MoneyPage() {
   // GET /payments/earnings/timeline's response schema is undocumented -
   // guessed as [{ period/label/date, amount }]. Columns; the latest period is
   // the emphasised one.
-  const timeline = useDemoFallback(
-    { data: earningsTimeline, isError: isTimelineError, isLoading: isTimelineLoading },
-    demoEarningsTimeline(period),
-  )
+  const timeline = { data: earningsTimeline, isLoading: isTimelineLoading, isError: isTimelineError }
   const chartRows = useMemo(() => {
     const points = Array.isArray(timeline.data) ? timeline.data : []
     return points.map((p, i) => ({
@@ -144,12 +141,8 @@ export default function MoneyPage() {
 
   // Earnings by package: grouped client-side from the transaction history
   // (GET /payments/transactions rows carry `package`/`packageName` - unconfirmed).
-  const byPackage = useDemoFallback(
-    { data: transactions, isError: isHistoryError, isLoading: isHistoryLoading },
-    null,
-  )
+  const byPackage = { data: transactions, isLoading: isHistoryLoading }
   const packageRows = useMemo(() => {
-    if (byPackage.isDemo) return DEMO_EARNINGS_BY_PACKAGE
     const totals = new Map()
     for (const t of Array.isArray(byPackage.data) ? byPackage.data : []) {
       const name = t.package ?? t.packageName ?? t.description
@@ -157,7 +150,7 @@ export default function MoneyPage() {
       totals.set(name, (totals.get(name) ?? 0) + Number(t.amount ?? 0))
     }
     return [...totals].map(([label, amount]) => ({ label, amount })).sort((a, b) => b.amount - a.amount).slice(0, 6)
-  }, [byPackage.data, byPackage.isDemo])
+  }, [byPackage.data])
 
   // GET /payments/stats' response schema is undocumented - best-effort field
   // guesses with a "-" fallback rather than fabricated numbers.
@@ -165,28 +158,10 @@ export default function MoneyPage() {
   const pendingBalance = stats?.pendingBalance ?? 0
   const totalEarnedThisPeriod = stats?.totalEarned ?? 0
 
-  function handleSetPrimary(name) {
-    setPaymentMethods((prev) => prev.map((m) => ({ ...m, primary: m.name === name })))
-    toast.success(`${name} set as your primary payout method.`)
-  }
+  function handleSetPrimary(id) { setPrimary(id) }
 
-  // No /payments/methods endpoint exists yet (see BACKEND_API_SPEC.md), so the
-  // new method is held in page state and labelled as such - but the creator
-  // still enters real details and sees them, instead of a dead-end toast.
   function handleAddPaymentMethod(method) {
-    setPaymentMethods((prev) => [
-      ...prev.map((m) => ({ ...m, primary: method.makePrimary ? false : m.primary })),
-      {
-        icon: method.type === 'bank' ? IconBuildingBank : IconDeviceMobile,
-        iconBg: method.type === 'mpesa' ? '#00A651' : method.type === 'airtel' ? '#E40000' : 'var(--grey-100)',
-        iconColor: method.type === 'bank' ? 'var(--grey-600)' : undefined,
-        name: method.name,
-        detail: method.detail,
-        primary: !!method.makePrimary || prev.length === 0,
-      },
-    ])
-    setAddMethodOpen(false)
-    toast.success(`${method.name} added. Saved locally until payout methods are supported on the backend.`)
+    addMethod(method, { onSuccess: () => setAddMethodOpen(false) })
   }
 
   function handleExportCsv() {
@@ -214,7 +189,7 @@ export default function MoneyPage() {
   function confirmWithdraw() {
     const numericAmount = Number(String(amount).replace(/,/g, '')) || 0
     if (!numericAmount || !primaryMethod) return
-    requestPayout({ amount: numericAmount, method: primaryMethod.name })
+    requestPayout({ amount: numericAmount, methodId: primaryMethod.id, method: primaryMethod.name })
   }
 
   const isPaymentSettled = paymentStatus
@@ -359,7 +334,6 @@ export default function MoneyPage() {
               empty={chartRows.length === 0}
               emptyTitle="No earnings yet"
               emptyDescription="No earnings data for this period yet."
-              demo={timeline.isDemo}
               height={200}
             >
               <BarChart data={chartRows} series={[{ key: 'amount', label: 'Earnings' }]} emphasis={(r) => r.latest} format={kes} height={200} />
@@ -374,7 +348,6 @@ export default function MoneyPage() {
               empty={packageRows.length === 0}
               emptyTitle="Nothing booked yet"
               emptyDescription="Completed bookings will rank your packages here."
-              demo={byPackage.isDemo}
               height={200}
             >
               <BarChart data={packageRows} series={[{ key: 'amount', label: 'Earned' }]} layout="horizontal" labels format={kes} height={200} />
@@ -402,9 +375,15 @@ export default function MoneyPage() {
             <div className="card card-p-md s-5">
               <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Payment methods</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
-                {paymentMethods.map((m) => (
+                {isMethodsLoading && <Skeleton width="100%" height={56} />}
+                {!isMethodsLoading && paymentMethods.length === 0 && (
+                  <p className="text-hint" style={{ margin: 0 }}>No payout method yet. Add one to withdraw your earnings.</p>
+                )}
+                {paymentMethods.map((m) => {
+                  const look = METHOD_LOOK[m.type] ?? METHOD_LOOK.bank
+                  return (
                   <div
-                    key={m.name}
+                    key={m.id ?? m.name}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 'var(--space-12)', padding: 'var(--space-12) var(--space-12)',
                       background: m.primary ? 'var(--purple-50)' : 'var(--page-bg)',
@@ -412,10 +391,10 @@ export default function MoneyPage() {
                       borderRadius: 'var(--radius-lg)',
                     }}
                   >
-                    <div className="pay-icon" style={{ background: m.iconBg, width: 32, height: 32 }}>
-                      <m.icon className="icon-sm" style={{ color: m.iconColor || 'white' }} aria-hidden="true" />
+                    <div className="pay-icon" style={{ background: look.iconBg, width: 32, height: 32 }}>
+                      <look.icon className="icon-sm" style={{ color: look.iconColor || 'white' }} aria-hidden="true" />
                     </div>
-                    <div style={{ flex: 1 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 500 }}>{m.name}</div>
                       <div style={{ fontSize: 11.5, color: 'var(--grey-400)' }}>{m.detail}</div>
                     </div>
@@ -424,10 +403,14 @@ export default function MoneyPage() {
                         <span className="sdot" style={{ background: 'var(--status-success)', width: 5, height: 5 }}></span>Primary
                       </span>
                     ) : (
-                      <button className="btn btn-ghost btn-xs" onClick={() => handleSetPrimary(m.name)}>Set primary</button>
+                      <>
+                        <button className="btn btn-ghost btn-xs" onClick={() => handleSetPrimary(m.id)}>Set primary</button>
+                        <button className="btn btn-ghost btn-xs" aria-label={`Remove ${m.name}`} onClick={() => removeMethod(m.id)}><IconTrash className="icon-sm" aria-hidden="true" /></button>
+                      </>
                     )}
                   </div>
-                ))}
+                  )
+                })}
                 <button className="btn btn-secondary btn-full btn-sm" style={{ marginTop: 'var(--space-2)' }} onClick={() => setAddMethodOpen(true)}>
                   <IconPlus className="icon-sm" aria-hidden="true" />Add payment method
                 </button>
@@ -499,7 +482,7 @@ export default function MoneyPage() {
       <AddPaymentMethodModal
         open={addMethodOpen}
         onClose={() => setAddMethodOpen(false)}
-        onAdd={handleAddPaymentMethod}
+        onAdd={handleAddPaymentMethod} isAdding={isAdding}
       />
 
       {/* Withdraw modal */}

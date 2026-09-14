@@ -1,7 +1,11 @@
 import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { userService } from '@/features/auth/services/auth.service';
+import { usePreferences } from '@/features/auth/hooks/useProfile';
+import { formatRelativeDate } from '@/lib/utils';
+import Skeleton from '@/components/ui/Skeleton';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import Modal from '@/components/ui/Modal';
 import { ToggleRow, Field } from './SettingsShell';
@@ -90,11 +94,39 @@ export function LoginDetailsCard({ collapsible = true }) {
   );
 }
 
-/** 2FA status + enrolment dialog. `required` (admins) removes the off switch. */
+/** 2FA status + enrolment dialog (POST /users/2fa/setup|verify, DELETE /users/2fa). `required` (admins) removes the off switch. */
 export function TwoFactorCard({ required = false }) {
-  const [enabled, setEnabled] = useState(false);
+  const { user, updateUser } = useAuth();
+  const [enabled, setEnabled] = useState(!!user?.twoFactorEnabled);
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
+  const [setup, setSetup] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  async function beginSetup() {
+    setOpen(true); setCode(''); setSetup(null);
+    try { setSetup(await userService.setup2fa()); }
+    catch (err) { toast.error(err?.message || 'Could not start two-factor setup.'); setOpen(false); }
+  }
+  async function verify() {
+    setBusy(true);
+    try {
+      await userService.verify2fa(code);
+      setEnabled(true); updateUser?.({ twoFactorEnabled: true });
+      setOpen(false); setCode('');
+      toast.success('Two-factor authentication enabled.');
+    } catch (err) { toast.error(err?.message || 'That code did not match. Try again.'); }
+    finally { setBusy(false); }
+  }
+  async function disable() {
+    setBusy(true);
+    try {
+      await userService.disable2fa();
+      setEnabled(false); updateUser?.({ twoFactorEnabled: false });
+      toast.success('Two-factor authentication disabled.');
+    } catch (err) { toast.error(err?.message || 'Could not disable two-factor authentication.'); }
+    finally { setBusy(false); }
+  }
 
   return (
     <CollapsibleCard
@@ -106,11 +138,11 @@ export function TwoFactorCard({ required = false }) {
       <div style={{ display: 'flex', gap: 'var(--space-8)', marginTop: 'var(--space-16)', flexWrap: 'wrap' }}>
         {enabled ? (
           <>
-            <button className="btn btn-secondary btn-sm" onClick={() => setOpen(true)}><IconShieldCheck className="icon-sm" aria-hidden="true" />Re-configure</button>
-            {!required && <button className="btn btn-ghost btn-sm" onClick={() => { setEnabled(false); toast.success('Two-factor authentication disabled.'); }}>Disable 2FA</button>}
+            <button className="btn btn-secondary btn-sm" onClick={beginSetup}><IconShieldCheck className="icon-sm" aria-hidden="true" />Re-configure</button>
+            {!required && <button className={`btn btn-ghost btn-sm${busy ? ' btn-loading' : ''}`} disabled={busy} onClick={disable}>Disable 2FA</button>}
           </>
         ) : (
-          <button className="btn btn-primary btn-sm" onClick={() => setOpen(true)}><IconShieldCheck className="icon-sm" aria-hidden="true" />Set up authenticator</button>
+          <button className="btn btn-primary btn-sm" onClick={beginSetup}><IconShieldCheck className="icon-sm" aria-hidden="true" />Set up authenticator</button>
         )}
       </div>
 
@@ -126,7 +158,11 @@ export function TwoFactorCard({ required = false }) {
           </div>
           <div style={{ minWidth: 0 }}>
             <div className="field-label" style={{ marginBottom: 'var(--space-4)' }}>Setup key</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12.5, color: 'var(--grey-600)', wordBreak: 'break-all' }}>Available once 2FA enrolment ships</div>
+            {setup ? (
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12.5, color: 'var(--grey-600)', wordBreak: 'break-all' }}>{setup.secret}</div>
+            ) : (
+              <Skeleton width={160} height={14} />
+            )}
           </div>
         </div>
         <label className="field-label" htmlFor="tfa-code" style={{ display: 'block', marginBottom: 'var(--space-8)' }}>6-digit code</label>
@@ -136,37 +172,54 @@ export function TwoFactorCard({ required = false }) {
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-12)' }}>
           <button className="btn btn-secondary btn-sm" onClick={() => setOpen(false)}>Cancel</button>
-          <button className="btn btn-primary btn-sm" disabled={code.length !== 6} onClick={() => { toast.info("Two-factor enrolment needs backend support, so your code wasn't verified."); setEnabled(true); setOpen(false); setCode(''); }}>Verify &amp; enable</button>
+          <button className={`btn btn-primary btn-sm${busy ? ' btn-loading' : ''}`} disabled={code.length !== 6 || busy || !setup} onClick={verify}>Verify &amp; enable</button>
         </div>
       </Modal>
     </CollapsibleCard>
   );
 }
 
-/** Where the account is signed in. (No sessions endpoint yet - see BACKEND_API_SPEC.md.) */
+const SESSIONS_KEY = ['user', 'sessions'];
+
+/** Where the account is signed in (GET /users/sessions, DELETE /users/sessions/:id|others). */
 export function SessionsCard() {
-  const [sessions, setSessions] = useState([
-    { id: 's1', device: 'Chrome on Windows', location: 'Nairobi, KE', time: 'Now', current: true, mobile: false },
-    { id: 's2', device: 'Safari on iPhone', location: 'Nairobi, KE', time: '2 hours ago', current: false, mobile: true },
-  ]);
+  const queryClient = useQueryClient();
+  const { data: sessions = [], isLoading, isError } = useQuery({ queryKey: SESSIONS_KEY, queryFn: userService.listSessions });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+
+  const revoke = useMutation({
+    mutationFn: (s) => userService.revokeSession(s.id),
+    onSuccess: (_d, s) => { invalidate(); toast.success(`Signed out of ${s.device}.`); },
+    onError: (err) => toast.error(err?.message || 'Could not sign out of that device.'),
+  });
+  const revokeOthers = useMutation({
+    mutationFn: userService.revokeOtherSessions,
+    onSuccess: () => { invalidate(); toast.success('Signed out of all other sessions.'); },
+    onError: (err) => toast.error(err?.message || 'Could not sign out of other sessions.'),
+  });
+
+  const when = (s) => s.current ? 'Now' : s.lastActiveAt ? formatRelativeDate(s.lastActiveAt) : (s.time ?? '');
+
   return (
     <CollapsibleCard title="Active sessions" description="Devices signed in to this account. Sign out of any you don't recognise." right={<span className="tag tag-default">{sessions.length} {sessions.length === 1 ? 'device' : 'devices'}</span>}>
       <div style={{ marginTop: 'var(--space-8)' }}>
+        {isLoading && <Skeleton width="100%" height={56} />}
+        {isError && <p className="field-hint">Couldn't load your sessions.</p>}
         {sessions.map((s) => (
           <div key={s.id} className="session-row">
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
               <div className="session-icon">{s.mobile ? <IconDeviceMobile className="icon-sm" aria-hidden="true" /> : <IconDeviceDesktop className="icon-sm" aria-hidden="true" />}</div>
               <div>
                 <div className="session-device">{s.device}{s.current && <span className="tag tag-purple">This device</span>}</div>
-                <div className="session-meta">{s.location} · {s.time}</div>
+                <div className="session-meta">{s.location} · {when(s)}</div>
               </div>
             </div>
-            {!s.current && <button className="btn btn-ghost btn-sm" onClick={() => { setSessions((p) => p.filter((x) => x.id !== s.id)); toast.success(`Signed out of ${s.device}.`); }}>Sign out</button>}
+            {!s.current && <button className="btn btn-ghost btn-sm" disabled={revoke.isPending} onClick={() => revoke.mutate(s)}>Sign out</button>}
           </div>
         ))}
       </div>
       <div style={{ marginTop: 'var(--space-12)' }}>
-        <button className="btn btn-ghost btn-sm" disabled={sessions.length <= 1} onClick={() => { setSessions((p) => p.filter((x) => x.current)); toast.success('Signed out of all other sessions.'); }}>Sign out of all other sessions</button>
+        <button className={`btn btn-ghost btn-sm${revokeOthers.isPending ? ' btn-loading' : ''}`} disabled={sessions.length <= 1 || revokeOthers.isPending} onClick={() => revokeOthers.mutate()}>Sign out of all other sessions</button>
       </div>
     </CollapsibleCard>
   );
@@ -175,26 +228,26 @@ export function SessionsCard() {
 const LANGUAGES = [{ value: 'en', label: 'English' }, { value: 'sw', label: 'Kiswahili' }];
 const TIMEZONES = [{ value: 'Africa/Nairobi', label: 'Nairobi (EAT, UTC+3)' }, { value: 'Europe/London', label: 'London (UTC+0/+1)' }, { value: 'Africa/Lagos', label: 'Lagos (WAT, UTC+1)' }, { value: 'Africa/Johannesburg', label: 'Johannesburg (SAST, UTC+2)' }];
 
-/** Language, timezone and date format - persisted locally until the profile carries them. */
+/** Language, timezone and week start, saved to the account's preferences. */
 export function LanguageRegionCard({ onDirty }) {
-  const read = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
-  const [lang, setLang] = useState(() => read('creatorske_lang', 'en'));
-  const [tz, setTz] = useState(() => read('creatorske_tz', 'Africa/Nairobi'));
-  const [weekStart, setWeekStart] = useState(() => read('creatorske_week_start', 'monday'));
-  function set(k, v, setter) { setter(v); try { localStorage.setItem(k, v); } catch { /* storage unavailable */ } onDirty?.(); }
+  const { preferences, savePreferences } = usePreferences();
+  const lang = preferences.language ?? 'en';
+  const tz = preferences.timezone ?? 'Africa/Nairobi';
+  const weekStart = preferences.weekStart ?? 'monday';
+  function set(patch) { savePreferences(patch, { onSuccess: () => toast.success('Preference saved.') }); onDirty?.(); }
 
   return (
     <CollapsibleCard title="Language & region" collapsible={false}>
       <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
         <div className="field-row">
           <Field label="Language" htmlFor="lang">
-            <Select id="lang" value={lang} onChange={(v) => set('creatorske_lang', v, setLang)} options={LANGUAGES} />
+            <Select id="lang" value={lang} onChange={(v) => set({ language: v })} options={LANGUAGES} />
           </Field>
           <Field label="Time zone" htmlFor="tz" hint="Dates and deadlines are shown in this zone.">
-            <Select id="tz" value={tz} onChange={(v) => set('creatorske_tz', v, setTz)} options={TIMEZONES} />
+            <Select id="tz" value={tz} onChange={(v) => set({ timezone: v })} options={TIMEZONES} />
           </Field>
         </div>
-        <ToggleRow label="Weeks start on Monday" desc="Affects calendars and weekly charts." on={weekStart === 'monday'} onChange={(v) => set('creatorske_week_start', v ? 'monday' : 'sunday', setWeekStart)} />
+        <ToggleRow label="Weeks start on Monday" desc="Affects calendars and weekly charts." on={weekStart === 'monday'} onChange={(v) => set({ weekStart: v ? 'monday' : 'sunday' })} />
       </div>
     </CollapsibleCard>
   );

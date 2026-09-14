@@ -54,84 +54,9 @@ const PLATFORM_ICONS = {
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
-// TEMP: mock fallback so this page is viewable while the backend isn't
-// reachable or doesn't have data for :handle yet. Delete MOCK_RATE_CARD
-// and the try/catch (just keep the two lines inside `try`) once your
-// backend is returning real data.
-const MOCK_RATE_CARD = {
-  creator: {
-    displayName: 'Amara Osei',
-    handle: 'amaracreates',
-    initials: 'AO',
-    phone: '+254 143 336 171',
-    location: 'Nairobi, Kenya',
-    languages: 'English, Swahili',
-    availability: 'available',
-    bio: 'Lifestyle and wellness content creator based in Nairobi. I help brands tell authentic stories that resonate with East African audiences. 5+ years creating content that converts.',
-    memberSince: 'Jan 2026',
-    paymentMethods: 'M-Pesa, Airtel, Bank',
-    platforms: [
-      { name: 'Instagram', followers: 48000 },
-      { name: 'TikTok', followers: 31000 },
-      { name: 'YouTube', followers: 12000 },
-      { name: 'Twitter / X', followers: 9000 },
-    ],
-  },
-  niches: ['Lifestyle', 'Wellness', 'Food & Drink', 'Fashion', 'Beauty'],
-  stats: {
-    avgEngagement: '4.8%',
-    totalReach: '100K+',
-    campaignsDone: 38,
-    turnaroundDays: '2-5 days',
-  },
-  averageRating: 4.9,
-  reviewCount: 2,
-  turnaroundDays: '2-5 business days',
-  packages: [
-    {
-      id: 1,
-      name: 'Story Post',
-      price: 8000,
-      description: 'A single Instagram or TikTok Story highlighting your product. Ideal for brand awareness and time-sensitive promotions with swipe-up link.',
-      deliverables: ['1x Story (24hr)', 'Product tag', 'Swipe-up link', 'Insights report'],
-    },
-    {
-      id: 2,
-      name: 'Reel + Caption',
-      price: 22000,
-      featured: true,
-      description: 'A full-length Reel or TikTok video with a crafted caption and hashtag strategy. Perfect for product launches and brand storytelling that drives engagement.',
-      deliverables: ['1x Reel (60-90s)', 'Caption + hashtags', '1x Story teaser', '2 revision rounds', 'Insights report'],
-    },
-    {
-      id: 3,
-      name: 'Full Campaign',
-      price: 58000,
-      description: 'A complete cross-platform brand partnership across all profiles for 30 days. Maximum reach, multiple content formats, and a full analytics report at the end.',
-      deliverables: ['3x Reels', '5x Stories', '3x Static posts', '1x YouTube mention', 'Twitter thread', '30-day analytics'],
-    },
-    {
-      id: 4,
-      name: 'Pro Creator Package',
-      customPricing: true,
-      description: 'Custom long-term partnerships for agencies and enterprise clients. Includes usage rights, dedicated account management, and priority turnaround times.',
-      deliverables: ['Fully custom scope', 'Usage rights included', 'Priority turnaround'],
-    },
-  ],
-  reviews: [
-    { id: 1, brand: 'Jumia Kenya', initials: 'JK', date: 'March 2026', rating: 5, comment: "Amara delivered the campaign ahead of schedule and the engagement numbers blew our projections out of the water. The content felt completely authentic; our audience loved it. We'll definitely be booking again." },
-    { id: 2, brand: 'Safaricom', initials: 'SC', date: 'January 2026', rating: 4.5, comment: "Professional, responsive, and genuinely creative. The brief turnaround was impressive. Very clear on deliverables from the start; made our partnership team's job very easy." },
-  ],
-};
-
 async function fetchRateCard(handle) {
-  try {
-    const res = await api.get(`/public/creators/${handle}/rate-card`);
-    return res.data;
-  } catch (err) {
-    console.warn('[fetchRateCard] falling back to mock data:', err.message);
-    return MOCK_RATE_CARD;
-  }
+  const res = await api.get(`/public/creators/${handle}/rate-card`);
+  return res.data;
 }
 
 // ─── Small pieces ───────────────────────────────────────────────────────────
@@ -274,12 +199,11 @@ export default function RateCardPage() {
   const isOwnCard = isAuthenticated && user?.role === 'creator' && user?.handle === handle;
   const replyMutation = useMutation({
     mutationFn: ({ reviewId, reply }) => reviewService.replyToReview(reviewId, reply),
-    retry: false,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['public-rate-card', handle] });
       toast.success('Reply posted.');
     },
-    onError: () => toast.error("Replying isn't available yet. It needs backend support."),
+    onError: (err) => toast.error(err?.message || 'Could not post your reply.'),
   });
 
   usePageMeta(

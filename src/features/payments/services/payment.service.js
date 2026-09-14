@@ -22,3 +22,16 @@ export const getCreatorStats = (params) =>
 
 export const getEarningsTimeline = (params) =>
   api.get('/payments/earnings/timeline', { params }).then((r) => r.data);
+
+// Payout methods (M-Pesa / Airtel / bank) the creator withdraws to
+export const listPayoutMethods = () =>
+  api.get('/payments/methods').then((r) => r.data?.methods ?? r.data ?? []);
+
+export const addPayoutMethod = (data) =>
+  api.post('/payments/methods', data).then((r) => r.data);
+
+export const setPrimaryPayoutMethod = (id) =>
+  api.patch(`/payments/methods/${id}/primary`).then((r) => r.data);
+
+export const removePayoutMethod = (id) =>
+  api.delete(`/payments/methods/${id}`).then((r) => r.data);

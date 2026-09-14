@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { brandService } from '../services/brand.service';
+import { useAuth } from '@/context/AuthContext';
 
 const CAMPAIGNS_KEY = ['brand-campaigns'];
 const SHORTLIST_KEY = ['brand-shortlist'];
@@ -8,6 +9,7 @@ const PROFILE_KEY = ['brand-profile'];
 
 export function useBrandDashboard() {
   const queryClient = useQueryClient();
+  const { updateUser } = useAuth();
 
   const campaignsQuery = useQuery({
     queryKey: CAMPAIGNS_KEY,
@@ -59,8 +61,9 @@ export function useBrandDashboard() {
 
   const updateProfileMutation = useMutation({
     mutationFn: (data) => brandService.updateProfile(data),
-    onSuccess: () => {
+    onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: PROFILE_KEY });
+      if (updated?.companyName || updated?.logoUrl !== undefined) updateUser?.({ companyName: updated.companyName, logoUrl: updated.logoUrl ?? null });
       toast.success('Profile updated.');
     },
     onError: () => toast.error('Could not update profile.'),
@@ -77,6 +80,8 @@ export function useBrandDashboard() {
     isShortlistError: shortlistQuery.isError,
     profile: profileQuery.data,
     isLoadingProfile: profileQuery.isLoading,
+    isProfileError: profileQuery.isError,
+    refetchProfile: profileQuery.refetch,
     addToShortlist: addToShortlistMutation.mutate,
     removeFromShortlist: removeFromShortlistMutation.mutate,
     createCampaign: createCampaignMutation.mutate,

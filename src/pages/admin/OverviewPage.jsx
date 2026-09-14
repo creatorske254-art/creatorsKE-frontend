@@ -2,24 +2,18 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAdmin } from '@/features/admin/hooks/useAdmin';
-import DemoTag from '@/components/shared/DemoTag';
-import { useDemoFallback } from '@/lib/useDemoFallback';
-import { DEMO_ADMIN_STATS, DEMO_PLATFORM_GROWTH, DEMO_ENQUIRY_VOLUME, DEMO_ABANDONED_DRAFTS, DEMO_ESCROW_AGING, DEMO_DISPUTES_BY_OUTCOME } from '@/lib/demoData';
 import { ChartFrame, ChartPeriod, TrendChart, BarChart, SERIES } from '@/components/charts';
 import { useDisputes } from '@/features/admin/hooks/useDisputes';
 import { useFlaggedAccounts } from '@/features/admin/hooks/useFlaggedAccounts';
+import { useEscrowCases, useReengagement } from '@/features/admin/hooks/useOperations';
+import { useReviewFeed } from '@/features/reviews/hooks/useReviews';
+import { formatRelativeDate } from '@/lib/utils';
 import { formatCurrency, getInitials } from '@/lib/utils';
 import Modal from '@/components/ui/Modal';
 import { IconAlertTriangle, IconArrowRight, IconFlag3, IconStarFilled } from '@tabler/icons-react';
 
-// A small "Demo data" tag for sections with no backing endpoint yet (see the
-// production-readiness plan's backend spec) - kept visible rather than
-// silently passed off as real.
-
-// GET /admin/stats' response schema is undocumented - these are best-effort
-// field-name guesses with a "-" fallback rather than fabricated numbers.
-// No delta/trend field exists on any documented response, so unlike the
-// original mock these show a plain value with no invented "+34 this week".
+// KPI tiles read GET /admin/stats with a "-" fallback for any field the
+// backend leaves out; there is no delta/trend field, so no invented "+34 this week".
 const HEALTH_METRICS_DEF = [
   { label: "Active creators", field: "activeCreators" },
   { label: "Registered brands", field: "registeredBrands" },
@@ -29,21 +23,6 @@ const HEALTH_METRICS_DEF = [
   { label: "Completed (month)", field: "completedThisMonth" },
   { label: "Transaction volume", field: "transactionVolume", currency: true },
   { label: "Platform fees collected", field: "platformFeesCollected", currency: true },
-];
-
-// Demo-only sections below (escrow queue, flagged reviews, draft/enquiry
-// charts, re-engagement queue) have no backing endpoint at all - see the
-// production-readiness plan's backend spec. Left in place as illustrative
-// placeholders, clearly tagged, rather than removed or silently treated as real.
-
-const ESCROW_QUEUE = [
-  { id: "B-204", creator: "Lena Wachira", brand: "Jumia Kenya", amount: "KES 18,500", overdue: "2 days", initials: "LW" },
-  { id: "B-198", creator: "Kofi Mensah", brand: "Zuri Skincare", amount: "KES 32,000", overdue: "5 days", initials: "KM" },
-];
-
-const RECENT_REVIEWS = [
-  { id: "R-41", reviewer: "Nala Foods", creator: "Mwangi Osei", stars: 2, flagged: true, reason: "Contains personal insult", excerpt: "Absolutely useless, this person is a complete…" },
-  { id: "R-39", reviewer: "Kasha", creator: "Amara Muriithi", stars: 5, flagged: false, reason: null, excerpt: "Delivered ahead of schedule, high quality content…" },
 ];
 
 // Tiny helpers
@@ -121,28 +100,37 @@ export default function OverviewPage() {
 
   const { stats, isLoading: statsLoading, isError: statsError } = useAdmin();
   const { disputes: rawDisputes, openDisputeCount, isLoading: disputesLoading, isError: disputesError } = useDisputes();
+  const { rows: escrowCases, query: escrowQuery } = useEscrowCases();
+  const escrowLoading = escrowQuery.isLoading;
+  const overdueEscrow = useMemo(() => escrowCases
+    .map((e) => ({ ...e, overdueDays: Math.floor((Date.now() - new Date(e.heldSince ?? e.createdAt)) / 864e5) - 14 }))
+    .filter((e) => e.status !== 'released' && e.overdueDays > 0)
+    .sort((a, b) => b.overdueDays - a.overdueDays).slice(0, 4), [escrowCases]);
+  const { reviews: allReviews } = useReviewFeed({ flagged: 'true' });
+  const flaggedReviews = useMemo(() => (allReviews ?? []).filter((r) => r.flagged).slice(0, 3), [allReviews]);
+  const { data: reengagement } = useReengagement();
+  const reengagementQueue = reengagement?.queue ?? [];
 
   // ── Charts ───────────────────────────────────────────────────────────────
   // GET /admin/stats is expected to carry these series (see BACKEND_API_SPEC.md);
   // until it does, dev builds show the tagged samples.
-  const statsFallback = useDemoFallback({ data: stats, isError: statsError, isLoading: statsLoading }, null);
-  const growthRows = statsFallback.isDemo ? DEMO_PLATFORM_GROWTH : (stats?.growth ?? []);
+  const statsFallback = { data: stats, isLoading: statsLoading, isError: statsError };
+  const growthRows = stats?.growth ?? [];
   const enquiryRows = useMemo(() => {
-    const raw = statsFallback.isDemo ? DEMO_ENQUIRY_VOLUME : (stats?.enquiryTimeline ?? []);
+    const raw = stats?.enquiryTimeline ?? [];
     const n = period === '7d' ? 7 : period === '90d' ? 90 : 30;
     return raw.slice(-n).map((d) => ({
       label: d.label ?? (d.date ? new Date(`${d.date}T00:00:00`).toLocaleDateString('en-KE', { month: 'short', day: 'numeric' }) : ''),
       count: Number(d.count ?? d.value ?? 0),
     }));
-  }, [statsFallback.isDemo, stats, period]);
+  }, [stats, period]);
   const enquiryTotal = enquiryRows.reduce((a, r) => a + r.count, 0);
-  const draftRows = statsFallback.isDemo ? DEMO_ABANDONED_DRAFTS : (stats?.abandonedDraftsByStep ?? []);
-  const escrowRows = statsFallback.isDemo ? DEMO_ESCROW_AGING : (stats?.escrowAging ?? []);
+  const draftRows = stats?.abandonedDraftsByStep ?? [];
+  const escrowRows = stats?.escrowAging ?? [];
 
   // Disputes by outcome per month, grouped from the dispute list itself.
-  const disputesFallback = useDemoFallback({ data: rawDisputes, isError: disputesError, isLoading: disputesLoading }, null);
+  const disputesFallback = { data: rawDisputes, isLoading: disputesLoading, isError: disputesError };
   const disputeRows = useMemo(() => {
-    if (disputesFallback.isDemo) return DEMO_DISPUTES_BY_OUTCOME;
     const months = new Map();
     const now = new Date();
     for (let i = 5; i >= 0; i--) {
@@ -159,7 +147,7 @@ export default function OverviewPage() {
       else if (outcome) row.split += 1;
     }
     return [...months.values()];
-  }, [rawDisputes, disputesFallback.isDemo]);
+  }, [rawDisputes]);
   const { accounts: rawFlagged, flaggedAccountCount, isLoading: flaggedLoading } = useFlaggedAccounts();
 
   const openDisputes = useMemo(() => rawDisputes
@@ -192,7 +180,7 @@ export default function OverviewPage() {
       {/* Page heading */}
       <div style={{ marginBottom: 'var(--space-32)' }}>
         <h1 className="page-title" style={{ marginBottom: 'var(--space-4)' }}>
-          Platform Overview{statsFallback.isDemo && <> <DemoTag /></>}
+          Platform Overview
         </h1>
         <p className="page-subtitle">
           Platform health, open items requiring attention, and activity across all users.
@@ -214,7 +202,7 @@ export default function OverviewPage() {
       {/* Health metric grid */}
       <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: 'var(--space-16)', marginBottom: 'var(--space-32)' }}>
         {HEALTH_METRICS_DEF.map((m) => {
-          const raw = (statsFallback.isDemo ? DEMO_ADMIN_STATS : stats)?.[m.field];
+          const raw = stats?.[m.field];
           const display = raw == null ? '-' : m.currency ? formatCurrency(raw) : raw.toLocaleString?.() ?? raw;
           return (
             <div className="card card-p-md" key={m.label}>
@@ -236,7 +224,6 @@ export default function OverviewPage() {
           loading={statsFallback.isLoading}
           empty={growthRows.length === 0}
           emptyTitle="No growth data yet"
-          demo={statsFallback.isDemo}
           height={200}
         >
           <TrendChart data={growthRows} series={[{ key: 'creators', label: 'Creators' }, { key: 'brands', label: 'Brands' }]} height={200} />
@@ -249,7 +236,6 @@ export default function OverviewPage() {
           loading={statsFallback.isLoading}
           empty={enquiryRows.length === 0}
           emptyTitle="No enquiries in this period"
-          demo={statsFallback.isDemo}
           height={200}
         >
           <BarChart data={enquiryRows} series={[{ key: 'count', label: 'Enquiries' }]} height={200} />
@@ -265,7 +251,6 @@ export default function OverviewPage() {
           loading={statsFallback.isLoading}
           empty={draftRows.length === 0}
           emptyTitle="No abandoned drafts"
-          demo={statsFallback.isDemo}
           height={180}
         >
           <BarChart data={draftRows} series={[{ key: 'value', label: 'Drafts' }]} layout="horizontal" labels height={180} />
@@ -278,7 +263,6 @@ export default function OverviewPage() {
           loading={statsFallback.isLoading}
           empty={escrowRows.length === 0}
           emptyTitle="Nothing in escrow"
-          demo={statsFallback.isDemo}
           height={180}
         >
           <BarChart data={escrowRows} series={[{ key: 'value', label: 'Bookings' }]} emphasis={(r) => /30\+/.test(r.label)} height={180} />
@@ -291,7 +275,6 @@ export default function OverviewPage() {
           loading={disputesFallback.isLoading}
           empty={disputeRows.every((r) => !r.creator && !r.brand && !r.split)}
           emptyTitle="No decisions yet"
-          demo={disputesFallback.isDemo}
           height={180}
         >
           <BarChart data={disputeRows} series={[{ key: 'creator', label: 'For creator' }, { key: 'brand', label: 'For brand' }, { key: 'split', label: 'Split' }]} stacked height={180} />
@@ -365,19 +348,21 @@ export default function OverviewPage() {
 
           {/* Escrow timeout queue */}
           <div className="card">
-            <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+            <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-8)' }}>
               <h2 className="section-title">Escrow timeout queue</h2>
-              <DemoTag />
+              <button className="btn btn-ghost btn-xs" onClick={() => navigate('/admin/escrow')}>All cases</button>
             </div>
             <div style={{ padding: "var(--space-4) 0" }}>
-              {ESCROW_QUEUE.map((e, i) => (
-                <div key={e.id} style={{ padding: "var(--space-12) var(--space-20)", borderBottom: i < ESCROW_QUEUE.length - 1 ? "0.5px solid var(--grey-100)" : "none", display: "flex", alignItems: "center", gap: 'var(--space-12)' }}>
-                  <Initials letters={e.initials} color="var(--grey-600)" size={30} />
+              {escrowLoading ? <div style={{ padding: 'var(--space-20)', fontSize: 12.5, color: 'var(--grey-400)' }}>Loading</div>
+                : overdueEscrow.length === 0 ? <div style={{ padding: 'var(--space-20)', fontSize: 12.5, color: 'var(--grey-400)', textAlign: 'center' }}>Nothing past its release window.</div>
+                : overdueEscrow.map((e, i) => (
+                <div key={e.id} style={{ padding: "var(--space-12) var(--space-20)", borderBottom: i < overdueEscrow.length - 1 ? "0.5px solid var(--grey-100)" : "none", display: "flex", alignItems: "center", gap: 'var(--space-12)', cursor: 'pointer' }} onClick={() => navigate('/admin/escrow')}>
+                  <Initials letters={getInitials(e.creator ?? '?')} color="var(--grey-600)" size={30} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 500, color: "var(--black)" }}>{e.creator}</div>
-                    <div style={{ fontSize: 11, color: "var(--grey-400)" }}>{e.brand} · {e.amount}</div>
+                    <div style={{ fontSize: 11, color: "var(--grey-400)" }}>{e.brand} · {formatCurrency(e.amount)}</div>
                   </div>
-                  <span className="tag tag-error">+{e.overdue}</span>
+                  <span className="tag tag-error">+{e.overdueDays} {e.overdueDays === 1 ? 'day' : 'days'}</span>
                 </div>
               ))}
             </div>
@@ -385,19 +370,20 @@ export default function OverviewPage() {
 
           {/* Flagged reviews */}
           <div className="card" style={{ flex: 1 }}>
-            <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+            <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-8)' }}>
               <h2 className="section-title">Flagged reviews</h2>
-              <DemoTag />
+              <button className="btn btn-ghost btn-xs" onClick={() => navigate('/admin/reviews')}>Moderate</button>
             </div>
             <div style={{ padding: "var(--space-4) 0" }}>
-              {RECENT_REVIEWS.filter(r => r.flagged).map((r, i, arr) => (
+              {flaggedReviews.length === 0 && <div style={{ padding: 'var(--space-20)', fontSize: 12.5, color: 'var(--grey-400)', textAlign: 'center' }}>No reviews need a decision.</div>}
+              {flaggedReviews.map((r, i, arr) => (
                 <div key={r.id} style={{ padding: "var(--space-12) var(--space-20)", borderBottom: i < arr.length - 1 ? "0.5px solid var(--grey-100)" : "none" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 'var(--space-4)' }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: "var(--black)" }}>{r.creator}</div>
-                    <Stars n={r.stars} />
+                    <div style={{ fontSize: 13, fontWeight: 500, color: "var(--black)" }}>{r.creatorName}</div>
+                    <Stars n={Math.round(r.stars ?? r.rating ?? 0)} />
                   </div>
-                  <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-8)' }}>"{r.excerpt}"</div>
-                  <div style={{ fontSize: 11, color: "var(--status-error-text)", marginBottom: 'var(--space-8)', display: "flex", alignItems: "center", gap: 'var(--space-4)' }}><IconFlag3 className="icon-xs" aria-hidden="true" /> {r.reason}</div>
+                  <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-8)' }}>"{(r.text ?? r.comment ?? '').slice(0, 90)}"</div>
+                  <div style={{ fontSize: 11, color: "var(--status-error-text)", marginBottom: 'var(--space-8)', display: "flex", alignItems: "center", gap: 'var(--space-4)' }}><IconFlag3 className="icon-xs" aria-hidden="true" /> {r.flagReason ?? 'Flagged'}</div>
                   <div style={{ display: "flex", gap: 'var(--space-8)' }}>
                     <button className="btn btn-danger btn-xs" onClick={() => navigate('/admin/reviews')}>Remove</button>
                     <button className="btn btn-ghost btn-xs" onClick={() => navigate('/admin/reviews')}>Dismiss</button>
@@ -414,7 +400,7 @@ export default function OverviewPage() {
       <div className="card">
         <div style={{ padding: "var(--space-16) var(--space-20)", borderBottom: "0.5px solid var(--grey-100)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <h2 className="section-title" style={{ marginBottom: 'var(--space-2)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Re-engagement email queue <DemoTag /></h2>
+            <h2 className="section-title" style={{ marginBottom: 'var(--space-2)' }}>Re-engagement email queue</h2>
             <div style={{ fontSize: 12, color: "var(--grey-400)" }}>Creators who abandoned their onboarding draft for 48+ hours. Emails sent automatically.</div>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={() => setEmailCopyOpen(true)}>
@@ -431,27 +417,21 @@ export default function OverviewPage() {
               </tr>
             </thead>
             <tbody>
-              {[
-                { name: "Faith Otieno",    email: "faith@example.com",  abandoned: "3 days ago",  sent: "1 day ago",  opened: true,  status: "no_action" },
-                { name: "Daniel Kariuki",  email: "daniel@example.com", abandoned: "4 days ago",  sent: "2 days ago", opened: false, status: "no_action" },
-                { name: "Sila Mwamba",     email: "sila@example.com",   abandoned: "6 days ago",  sent: "4 days ago", opened: true,  status: "resumed" },
-                { name: "Brenda Achieng", email: "brenda@example.com", abandoned: "7 days ago",  sent: "5 days ago", opened: false, status: "no_action" },
-                { name: "James Ngugi",    email: "james@example.com",  abandoned: "8 days ago",  sent: "6 days ago", opened: true,  status: "published" },
-              ].map((row) => (
-                <tr key={row.email}>
-                  <td style={{ fontWeight: 500, color: "var(--black)" }}>{row.name}</td>
+              {reengagementQueue.map((row) => (
+                <tr key={row.id ?? row.email}>
+                  <td style={{ fontWeight: 500, color: "var(--black)" }}>{row.creator ?? row.name}</td>
                   <td style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{row.email}</td>
-                  <td>{row.abandoned}</td>
-                  <td>{row.sent}</td>
+                  <td>{formatRelativeDate(row.abandonedAt)}</td>
+                  <td>{formatRelativeDate(row.sentAt)}</td>
                   <td>
                     {row.opened
                       ? <span className="tag tag-success">Yes</span>
                       : <span className="tag tag-default">No</span>}
                   </td>
                   <td>
-                    {row.status === "resumed"   && <span className="tag tag-info">Resumed draft</span>}
-                    {row.status === "published" && <span className="tag tag-success">Published</span>}
-                    {row.status === "no_action" && <span className="tag tag-default">No action yet</span>}
+                    {/^resumed/i.test(row.status) && <span className="tag tag-info">{row.status}</span>}
+                    {/^published/i.test(row.status) && <span className="tag tag-success">{row.status}</span>}
+                    {!/^(resumed|published)/i.test(row.status) && <span className="tag tag-default">{row.status}</span>}
                   </td>
                 </tr>
               ))}

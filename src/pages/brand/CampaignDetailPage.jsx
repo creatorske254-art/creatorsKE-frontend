@@ -14,14 +14,15 @@ import {
 } from '@tabler/icons-react'
 import { useCampaign, useCampaignActions } from '@/features/brand-dashboard/hooks/useBrandDashboard'
 import { MessageThread } from '@/features/messaging'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { reviewService } from '@/features/reviews/services/review.service'
+import Skeleton from '@/components/ui/Skeleton'
+import ErrorState from '@/components/shared/ErrorState'
 import { usePageMeta } from '@/lib/usePageMeta'
 
-// NOTE: `base` merges live GET /brands/campaigns/:id fields over MOCK_CAMPAIGNS
-// as a fallback, since that endpoint's response schema is undocumented and a
-// blind swap risks blanking fields the backend doesn't actually return.
-// Approve/dispute now call real mutations (useCampaignActions); their
-// backend endpoints don't exist yet either (see the production plan's
-// backend spec), so expect a graceful error toast until they do.
+// Everything on this page comes from GET /brands/campaigns/:id. Approve and
+// dispute post to /brands/campaigns/:id/approve|dispute and the query is
+// invalidated on success, so status and the activity log update from the server.
 
 // Status → tag variant (see index.css .tag-* + design tokens) and dot color.
 const STATUS = {
@@ -32,71 +33,6 @@ const STATUS = {
   refunded: { label: 'Refunded', tag: 'tag-default', dot: 'var(--grey-400)' },
 }
 
-// Avatar variant → class from index.css (.avatar-purple / .avatar-tint-*), lets each
-// creator read as a distinct "brand tint" the way the CRM/enquiries list does.
-const MOCK_CAMPAIGNS = {
-  cmp_1: {
-    id: 'cmp_1',
-    creator: 'Amara Creates',
-    handle: '@amaracreates',
-    initials: 'AC',
-    avatarVariant: 'avatar-purple',
-    rating: 4.8,
-    reviewCount: 31,
-    package: 'Reel + Caption',
-    platform: 'Instagram',
-    price: 22000,
-    status: 'delivered',
-    deliverables: ['1 × 60s Instagram Reel', 'Caption + hashtag set', '1 × Story repost'],
-    revisionPolicy: '1 round of revisions',
-    usageRights: 'Brand may repost on owned channels for 90 days.',
-    goLiveDate: 'Marked delivered on 8 Jul 2026',
-    paidOn: '2 Jul 2026',
-    paymentMethod: 'M-Pesa',
-    review: null,
-    deliveredFiles: [{ name: 'reel_final_v2.mp4', size: '24.1 MB' }, { name: 'caption_copy.txt', size: '2 KB' }],
-    messages: [
-      { from: 'brand', text: 'Hi Amara! Excited to see the reel. Let us know once it’s ready.', time: 'Mon, 9:10 AM' },
-      { from: 'creator', text: 'Just posted the final cut, sending the files here too 🎬', time: 'Mon, 2:45 PM' },
-    ],
-    activity: [
-      { label: 'Enquiry accepted', time: '28 Jun · 11:02 AM' },
-      { label: 'Payment confirmed', time: '2 Jul · 4:20 PM' },
-      { label: 'Marked delivered', time: '8 Jul · 2:45 PM' },
-      { label: 'Awaiting your approval', time: 'Now', pending: true },
-    ],
-  },
-  cmp_2: {
-    id: 'cmp_2',
-    creator: 'Zane Cooks',
-    handle: '@zanecooks',
-    initials: 'ZC',
-    avatarVariant: 'avatar-tint-green',
-    rating: 4.6,
-    reviewCount: 18,
-    package: 'Brand Partnership',
-    platform: 'TikTok',
-    price: 55000,
-    status: 'in_progress',
-    deliverables: ['3 × TikTok videos', '1 × Behind-the-scenes story', 'Cross-post to Instagram Reels'],
-    revisionPolicy: 'Unlimited revisions',
-    usageRights: 'Full usage rights including paid media for 6 months.',
-    goLiveDate: 'Expected 14 Jul 2026',
-    paidOn: '30 Jun 2026',
-    paymentMethod: 'Bank transfer',
-    review: null,
-    deliveredFiles: [],
-    messages: [
-      { from: 'brand', text: 'Sending the brand brief over now, let us know if anything is unclear.', time: 'Sun, 6:02 PM' },
-      { from: 'creator', text: 'Got it, brief looks solid, starting filming this week.', time: 'Sun, 7:15 PM' },
-    ],
-    activity: [
-      { label: 'Enquiry accepted', time: '26 Jun · 10:00 AM' },
-      { label: 'Payment confirmed', time: '30 Jun · 1:30 PM' },
-      { label: 'In progress', time: 'Now', pending: true },
-    ],
-  },
-}
 
 function getStatusMeta(status) {
   return STATUS[status] ?? STATUS.in_progress
@@ -186,7 +122,7 @@ function ActivityLog({ items }) {
   )
 }
 
-function ReviewForm({ onSubmit }) {
+function ReviewForm({ onSubmit, isSubmitting }) {
   const [rating, setRating] = useState(0)
   const [text, setText] = useState('')
 
@@ -208,8 +144,8 @@ function ReviewForm({ onSubmit }) {
         onChange={(e) => setText(e.target.value)}
         style={{ marginBottom: 'var(--space-12)', resize: 'vertical' }}
       />
-      <button className="btn btn-purple btn-sm" disabled={rating === 0} onClick={() => onSubmit({ rating, text })}>
-        Submit review
+      <button className="btn btn-purple btn-sm" disabled={rating === 0 || isSubmitting} onClick={() => onSubmit({ rating, text })}>
+        {isSubmitting ? 'Posting' : 'Submit review'}
       </button>
     </div>
   )
@@ -218,22 +154,29 @@ function ReviewForm({ onSubmit }) {
 export default function CampaignDetailPage() {
   usePageMeta('Campaign Details', 'Review deliverables, messages, and payment details for this campaign on Creatorske.');
   const { id } = useParams()
-  const { data: liveCampaign } = useCampaign(id)
+  const { data: campaign, isLoading, isError, refetch } = useCampaign(id)
   const { approve, isApproving, dispute, isDisputing } = useCampaignActions(id)
-  const mock = MOCK_CAMPAIGNS[id] ?? Object.values(MOCK_CAMPAIGNS)[0]
-  // GET /brands/campaigns/:id's response schema is undocumented - prefer live
-  // fields where the API actually returns them, fall back to the matching
-  // mock field rather than blanking the page out.
-  const base = { ...mock, ...liveCampaign }
-
-  const [status, setStatus] = useState(base.status)
-  const [activity, setActivity] = useState(base.activity)
+  const queryClient = useQueryClient()
   const [showDisputeForm, setShowDisputeForm] = useState(false)
   const [disputeEvidence, setDisputeEvidence] = useState('')
-  const [review, setReview] = useState(base.review)
 
-  const platformFee = useMemo(() => Math.round(base.price * 0.1), [base.price])
-  const netPayout = base.price - platformFee
+  const base = campaign ?? {}
+  const status = base.status
+  const activity = base.activity ?? []
+  const review = base.review ?? null
+
+  const reviewMutation = useMutation({
+    mutationFn: ({ rating, text }) => reviewService.submitReview({ campaignId: id, creatorId: base.creatorId, rating, comment: text }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brand-campaign', id] })
+      toast.success('Review posted.')
+    },
+    onError: (err) => toast.error(err?.message || 'Could not post your review.'),
+  })
+
+  const price = Number(base.price ?? 0)
+  const platformFee = useMemo(() => Math.round(price * 0.1), [price])
+  const netPayout = price - platformFee
 
   function handleDownloadInvoice() {
     const lines = [
@@ -243,7 +186,7 @@ export default function CampaignDetailPage() {
       `Creator: ${base.creator} (${base.handle})`,
       `Platform: ${base.platform}`,
       '',
-      `Amount: KES ${base.price.toLocaleString()}`,
+      `Amount: KES ${price.toLocaleString()}`,
       `Platform fee (10%): KES ${platformFee.toLocaleString()}`,
       `Net payout to creator: KES ${netPayout.toLocaleString()}`,
       '',
@@ -267,32 +210,36 @@ export default function CampaignDetailPage() {
     toast.info(`${name} will be downloadable once file storage is connected.`)
   }
 
-  const handleApprove = () => {
-    approve(undefined, {
-      onSuccess: () => {
-        setStatus('completed')
-        setActivity((prev) => [
-          ...prev.map((a) => ({ ...a, pending: false })),
-          { label: 'Delivery approved · escrow released', time: 'Just now', pending: true },
-        ])
-      },
-    })
-  }
+  const handleApprove = () => approve()
 
   const handleRaiseDispute = () => {
     if (!disputeEvidence.trim()) return
-    dispute(disputeEvidence, {
-      onSuccess: () => {
-        setStatus('disputed')
-        setShowDisputeForm(false)
-        setActivity((prev) => [
-          ...prev.map((a) => ({ ...a, pending: false })),
-          { label: 'Dispute raised, evidence submitted', time: 'Just now', pending: true },
-        ])
-      },
-    })
+    dispute(disputeEvidence, { onSuccess: () => setShowDisputeForm(false) })
   }
 
+  if (isLoading) {
+    return (
+      <div className="campaign-detail-page">
+        <style>{PAGE_STYLES}</style>
+        <div className="max-wrap" style={{ display: 'grid', gap: 'var(--space-16)' }}>
+          <Skeleton width={160} height={16} />
+          <Skeleton width="100%" height={64} />
+          <Skeleton width="100%" height={320} />
+        </div>
+      </div>
+    )
+  }
+  if (isError || !campaign) {
+    return (
+      <div className="campaign-detail-page">
+        <style>{PAGE_STYLES}</style>
+        <div className="max-wrap">
+          <Link to="/brand/campaigns" className="back-link"><IconArrowLeft className="icon-sm" />Back to campaigns</Link>
+          <ErrorState title="Couldn't load this campaign" description="It may have been removed, or the connection dropped." onRetry={refetch} />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="campaign-detail-page">
@@ -324,7 +271,7 @@ export default function CampaignDetailPage() {
             <div className="card card-p-md">
               <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Agreed scope</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
-                {base.deliverables.map((d, i) => (
+                {(base.deliverables ?? []).map((d, i) => (
                   <div key={i} className="text-body" style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-8)' }}>
                     <IconCheck className="icon-sm" style={{ color: 'var(--purple-600)', marginTop: 'var(--space-2)', flexShrink: 0 }} />
                     {d}
@@ -348,7 +295,7 @@ export default function CampaignDetailPage() {
                   <div>The creator has marked this as delivered. Review the files below, then approve or raise a dispute within 48 hours.</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
-                  {base.deliveredFiles.map((f, i) => (
+                  {(base.deliveredFiles ?? []).map((f, i) => (
                     <div key={i} className="file-chip">
                       <IconFileText className="icon-sm" style={{ color: 'var(--grey-400)' }} />
                       <span style={{ flex: 1 }}>{f.name}</span>
@@ -410,7 +357,7 @@ export default function CampaignDetailPage() {
                   <div>Delivery approved. KES {netPayout.toLocaleString()} released to the creator, net of the platform fee.</div>
                 </div>
                 {!review ? (
-                  <ReviewForm onSubmit={(r) => setReview(r)} />
+                  <ReviewForm onSubmit={(r) => reviewMutation.mutate(r)} isSubmitting={reviewMutation.isPending} />
                 ) : (
                   <div>
                     <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Your review</div>
@@ -419,7 +366,7 @@ export default function CampaignDetailPage() {
                         <IconStar className="icon-sm" key={n} fill={n <= review.rating ? 'var(--status-warning)' : 'none'} stroke="var(--status-warning)" />
                       ))}
                     </div>
-                    {review.text && <p className="text-body-sm" style={{ color: 'var(--grey-600)' }}>{review.text}</p>}
+                    {(review.text || review.comment) && <p className="text-body-sm" style={{ color: 'var(--grey-600)' }}>{review.text || review.comment}</p>}
                   </div>
                 )}
               </div>
@@ -440,7 +387,7 @@ export default function CampaignDetailPage() {
                 enquiryId, falling back to the campaign's own id. */}
             <div className="card card-p-md">
               <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Messages</div>
-              <MessageThread threadId={liveCampaign?.enquiryId ?? id} />
+              <MessageThread threadId={base.enquiryId ?? id} />
             </div>
 
             {/* Activity */}

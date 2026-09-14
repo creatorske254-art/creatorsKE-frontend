@@ -3,13 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useBrandTransactions } from '@/features/brand-dashboard/hooks/useBrandBilling';
-import { useDemoFallback } from '@/lib/useDemoFallback';
-import { DEMO_BRAND_TRANSACTIONS } from '@/lib/demoData';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
 import ErrorState from '@/components/shared/ErrorState';
-import DemoTag from '@/components/shared/DemoTag';
 import { ChartFrame, ChartPeriod, BarChart, DonutChart, SERIES, kes } from '@/components/charts';
 import { IconArrowUp, IconDownload, IconReceipt2, IconRotateClockwise, IconSearch, IconLockDollar } from '@tabler/icons-react';
 
@@ -58,7 +55,7 @@ export default function TransactionsPage() {
   const [query, setQuery] = useState('');
 
   const { query: txQuery, rows: rawRows } = useBrandTransactions({ range });
-  const tx = useDemoFallback(txQuery, DEMO_BRAND_TRANSACTIONS);
+  const tx = { data: txQuery.data, isLoading: txQuery.isLoading };
   const rows = useMemo(() => (Array.isArray(tx.data) ? tx.data : tx.data?.transactions ?? rawRows ?? []), [tx.data, rawRows]);
 
   const inRange = useMemo(() => rows.filter((t) => withinRange(t.date ?? t.createdAt, range)), [rows, range]);
@@ -118,7 +115,7 @@ export default function TransactionsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-16)', flexWrap: 'wrap' }}>
         <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Transaction history{tx.isDemo && <DemoTag />}</h1>
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>Transaction history</h1>
           <p className="page-subtitle">Every deposit, release, refund and fee, with where the money sits right now.</p>
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-8)', alignItems: 'center' }}>
@@ -149,10 +146,9 @@ export default function TransactionsPage() {
           subtitle="Deposits in, releases and refunds out, by month"
           legend={[{ label: 'Deposits', color: SERIES[0] }, { label: 'Releases', color: SERIES[1] }, { label: 'Refunds', color: SERIES[2] }]}
           loading={tx.isLoading}
-          error={!tx.isDemo && txQuery.isError}
+          error={txQuery.isError}
           empty={flowRows.every((r) => !r.deposits && !r.releases && !r.refunds)}
           emptyTitle="No movement in this range"
-          demo={tx.isDemo}
           height={220}
         >
           <BarChart data={flowRows} series={[{ key: 'deposits', label: 'Deposits' }, { key: 'releases', label: 'Releases' }, { key: 'refunds', label: 'Refunds' }]} format={kes} height={220} />
@@ -163,7 +159,6 @@ export default function TransactionsPage() {
           loading={tx.isLoading}
           empty={mixRows.every((r) => !r.value)}
           emptyTitle="Nothing yet"
-          demo={tx.isDemo}
           height={220}
         >
           <DonutChart data={mixRows} format={kes} centerLabel="Total" center={formatCurrency(mixRows.reduce((s, r) => s + r.value, 0)).replace('KES ', '')} size={132} />
@@ -187,7 +182,7 @@ export default function TransactionsPage() {
           <div style={{ padding: 'var(--space-20)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
             {[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} width="100%" height={40} />)}
           </div>
-        ) : txQuery.isError && !tx.isDemo ? (
+        ) : txQuery.isError ? (
           <ErrorState title="Couldn't load transactions" description="Transaction history needs the brands/transactions endpoint to be live." onRetry={txQuery.refetch} />
         ) : filtered.length === 0 ? (
           <EmptyState icon={<IconReceipt2 />} title={rows.length ? 'No transactions match' : 'No transactions yet'} description={rows.length ? 'Try another type, range or search.' : 'Fund your first booking and it will appear here.'} action={!rows.length && <button className="btn btn-purple btn-sm" onClick={() => navigate('/directory')}>Find creators</button>} />

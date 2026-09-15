@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/lib/usePageMeta';
-import { IconCheck, IconMinus, IconArrowRight } from '@tabler/icons-react';
+import { IconCheck, IconMinus, IconArrowRight, IconArrowLeft } from '@tabler/icons-react';
 import { BRAND_PRICING_TIERS, CREATOR_PRICING_TIERS } from '@/features/plans/constants/pricingTiers';
 import { formatCurrency } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
+import { usePlan } from '@/features/plans/hooks/usePlan';
+import { ROLE_HOME } from '@/features/auth/constants/roles';
+
+// A creator's marketing tier id -> the backend plan key it maps to.
+const tierToPlanId = (role, tierId) => (role === 'creator' && tierId === 'elite' ? 'business' : tierId);
 
 const AUDIENCES = [
   { id: 'brands', label: 'For Brands', tiers: BRAND_PRICING_TIERS },
   { id: 'creators', label: 'For Creators', tiers: CREATOR_PRICING_TIERS },
 ];
 
-function PricingCard({ tier }) {
+function PricingCard({ tier, authed, role, currentPlanId, onSelect, pendingId }) {
   const navigate = useNavigate();
   const isFree = tier.price === 0;
+  const isCurrent = authed && currentPlanId && tierToPlanId(role, tier.id) === currentPlanId;
+  const busy = pendingId === tier.id;
 
   return (
     <div
@@ -40,17 +48,42 @@ function PricingCard({ tier }) {
         {isFree ? 'No credit card needed' : 'Billed monthly, cancel anytime'}
       </div>
 
-      <button
-        type="button"
-        onClick={() => navigate('/signup')}
-        className={`w-full mb-6 flex items-center justify-center gap-2 px-5 py-3 rounded-[8px] text-[13.5px] font-medium transition-all ${
-          tier.featured
-            ? 'bg-[var(--purple-600)] text-on-accent hover:bg-[var(--purple-700)]'
-            : 'bg-[var(--black)] text-white hover:opacity-90'
-        }`}
-      >
-        {isFree ? 'Get started free' : 'Get started'} <IconArrowRight className="icon-sm" />
-      </button>
+      {authed ? (
+        isCurrent ? (
+          <button
+            type="button"
+            disabled
+            className="w-full mb-6 flex items-center justify-center gap-2 px-5 py-3 rounded-[8px] text-[13.5px] font-medium bg-[var(--grey-100)] text-[var(--grey-500)] cursor-default"
+          >
+            <IconCheck className="icon-sm" /> Current plan
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onSelect(tier)}
+            disabled={busy}
+            className={`w-full mb-6 flex items-center justify-center gap-2 px-5 py-3 rounded-[8px] text-[13.5px] font-medium transition-all disabled:opacity-70 ${
+              tier.featured
+                ? 'bg-[var(--purple-600)] text-on-accent hover:bg-[var(--purple-700)]'
+                : 'bg-[var(--black)] text-white hover:opacity-90'
+            }`}
+          >
+            {busy ? 'Switching' : (isFree ? 'Switch to Free' : `Switch to ${tier.name}`)}
+          </button>
+        )
+      ) : (
+        <button
+          type="button"
+          onClick={() => navigate('/signup')}
+          className={`w-full mb-6 flex items-center justify-center gap-2 px-5 py-3 rounded-[8px] text-[13.5px] font-medium transition-all ${
+            tier.featured
+              ? 'bg-[var(--purple-600)] text-on-accent hover:bg-[var(--purple-700)]'
+              : 'bg-[var(--black)] text-white hover:opacity-90'
+          }`}
+        >
+          {isFree ? 'Get started free' : 'Get started'} <IconArrowRight className="icon-sm" />
+        </button>
+      )}
 
       <div className="flex flex-col gap-3">
         {tier.features.map((f, i) => (
@@ -73,8 +106,25 @@ function PricingCard({ tier }) {
 export default function PricingPage() {
   usePageMeta('Pricing', 'Simple, transparent pricing for creators and brands on Creatorske. Start free, upgrade only when you need to.');
   const navigate = useNavigate();
-  const [audience, setAudience] = useState('brands');
+  const { isAuthenticated, role } = useAuth();
+  const { currentPlan, upgrade } = usePlan();
+  const [audience, setAudience] = useState(role === 'creator' ? 'creators' : 'brands');
+  const [pendingId, setPendingId] = useState(null);
   const active = AUDIENCES.find((a) => a.id === audience);
+  const currentPlanId = isAuthenticated ? currentPlan?.id : null;
+
+  // Authenticated users change plan in-app instead of being sent to sign-up.
+  function handleSelect(tier) {
+    if (!isAuthenticated) { navigate('/signup'); return; }
+    setPendingId(tier.id);
+    upgrade(
+      { planId: tierToPlanId(role, tier.id), paymentMethod: null, name: tier.name, price: tier.price },
+      {
+        onSuccess: () => navigate(role === 'brand' ? '/brand/billing' : '/creator/money'),
+        onSettled: () => setPendingId(null),
+      }
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
@@ -105,8 +155,16 @@ export default function PricingPage() {
           <button className="pr-nav-link active" onClick={() => navigate('/pricing')}>Pricing</button>
         </div>
         <div className="flex items-center gap-2">
-          <button className="pr-btn-ghost" onClick={() => navigate('/login')}>Log in</button>
-          <button className="pr-btn-purple" onClick={() => navigate('/signup')}>Get started</button>
+          {isAuthenticated ? (
+            <button className="pr-btn-ghost" onClick={() => navigate(ROLE_HOME[role] ?? '/')}>
+              <IconArrowLeft className="icon-sm" style={{ marginRight: 'var(--space-4)' }} />Back to dashboard
+            </button>
+          ) : (
+            <>
+              <button className="pr-btn-ghost" onClick={() => navigate('/login')}>Log in</button>
+              <button className="pr-btn-purple" onClick={() => navigate('/signup')}>Get started</button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -136,7 +194,7 @@ export default function PricingPage() {
       <div className="max-w-[1080px] w-full mx-auto px-[var(--gutter-public)] pb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
           {active.tiers.map((tier) => (
-            <PricingCard key={tier.id} tier={tier} />
+            <PricingCard key={tier.id} tier={tier} authed={isAuthenticated} role={role} currentPlanId={currentPlanId} onSelect={handleSelect} pendingId={pendingId} />
           ))}
         </div>
 

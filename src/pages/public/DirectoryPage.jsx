@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { IconSearch, IconCheck, IconArrowRight, IconStarFilled } from '@tabler/icons-react';
+import { IconSearch, IconCheck, IconArrowRight, IconStarFilled, IconBookmark, IconBookmarkFilled } from '@tabler/icons-react';
 import { EmptyDirectoryState } from '@/features/directory';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { searchCreators } from '@/features/directory/services/directory.service';
+import { brandService } from '@/features/brand-dashboard/services/brand.service';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 import Skeleton from '@/components/ui/Skeleton';
 import ErrorState from '@/components/shared/ErrorState';
 
@@ -17,7 +20,7 @@ const AVAIL_META = {
 };
 
 // ── Creator Card ───────────────────────────────────────────────────────────
-function CreatorCard({ creator, index, onOpen, onEnquire }) {
+function CreatorCard({ creator, index, onOpen, onEnquire, showShortlist, shortlisted, onToggleShortlist }) {
   const [hovered, setHovered] = useState(false);
   const a = AVAIL_META[creator.avail];
 
@@ -42,6 +45,17 @@ function CreatorCard({ creator, index, onOpen, onEnquire }) {
     >
       {/* Cover gradient */}
       <div style={{ background: creator.bg, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'var(--space-12)', minHeight: 130 }}>
+        {showShortlist && (
+          <button
+            type="button"
+            aria-label={shortlisted ? `Remove ${creator.name} from shortlist` : `Add ${creator.name} to shortlist`}
+            title={shortlisted ? 'Remove from shortlist' : 'Add to shortlist'}
+            onClick={e => { e.stopPropagation(); onToggleShortlist(); }}
+            style={{ position: 'absolute', top: 10, left: 10, width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: shortlisted ? '#fff' : 'rgba(255,255,255,0.22)', color: shortlisted ? 'var(--purple-600)' : '#fff', border: 'none', cursor: 'pointer', zIndex: 2, transition: 'background 0.15s' }}
+          >
+            {shortlisted ? <IconBookmarkFilled className="icon-sm" /> : <IconBookmark className="icon-sm" />}
+          </button>
+        )}
         {/* niche tag */}
         <div style={{ position: 'absolute', top: 10, right: 10, fontSize: 9, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: 'var(--space-4) var(--space-8)', borderRadius: 999, background: 'rgba(255,255,255,0.22)', color: '#fff' }}>
           {creator.niche}
@@ -118,7 +132,35 @@ export default function DirectoryPage() {
 
   // GET /directory - every published creator; niche and keyword filtering
   // stays client-side so the chips respond instantly.
+  const { isAuthenticated, role } = useAuth();
+  const isBrand = isAuthenticated && role === 'brand';
+  const showShortlist = !isAuthenticated || role === 'brand'; // anon or brand (anon is prompted to sign in)
+  const queryClient = useQueryClient();
+
   const { data, isLoading, isError, refetch } = useQuery({ queryKey: ['directory', 'all'], queryFn: () => searchCreators({ limit: 200 }), staleTime: 60_000 });
+
+  // Only fetch the brand's shortlist for an authenticated brand - firing
+  // /brands/* for a creator/anon would 401/403 and bounce them off this
+  // public page.
+  const shortlistQuery = useQuery({ queryKey: ['brand-shortlist'], queryFn: () => brandService.getShortlist(), enabled: isBrand });
+  const shortlistIds = useMemo(() => new Set((shortlistQuery.data?.shortlist ?? shortlistQuery.data ?? []).map((s) => s.creatorId)), [shortlistQuery.data]);
+
+  const addShortlist = useMutation({
+    mutationFn: (creatorId) => brandService.addToShortlist(creatorId),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['brand-shortlist'] }); toast.success('Added to your shortlist.'); },
+    onError: (err) => toast.error(err?.message || 'Could not add to shortlist.'),
+  });
+  const removeShortlist = useMutation({
+    mutationFn: (creatorId) => brandService.removeFromShortlist(creatorId),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['brand-shortlist'] }); toast.success('Removed from your shortlist.'); },
+    onError: (err) => toast.error(err?.message || 'Could not remove from shortlist.'),
+  });
+
+  function toggleShortlist(creator) {
+    if (!isAuthenticated) { navigate('/login?redirect=/directory'); return; }
+    const id = creator.creatorId ?? creator.id;
+    if (shortlistIds.has(id)) removeShortlist.mutate(id); else addShortlist.mutate(id);
+  }
   const creators = useMemo(() => (data?.creators ?? []).map((c) => ({
     ...c,
     followers: typeof c.followers === 'number' ? (c.followers >= 1000 ? `${(c.followers / 1000).toFixed(c.followers % 1000 === 0 ? 0 : 1)}K` : String(c.followers)) : c.followers,
@@ -260,6 +302,9 @@ export default function DirectoryPage() {
             {filtered.map((c, i) => (
               <CreatorCard
                 key={c.handle}
+                showShortlist={showShortlist}
+                shortlisted={shortlistIds.has(c.creatorId ?? c.id)}
+                onToggleShortlist={() => toggleShortlist(c)}
                 creator={c}
                 index={i}
                 onOpen={() => navigate(`/c/${c.handle.replace('@', '')}`)}

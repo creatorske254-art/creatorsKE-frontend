@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reviewService } from '@/features/reviews/services/review.service';
+import { brandService } from '@/features/brand-dashboard/services/brand.service';
 import ReviewResponse from '@/features/reviews/components/ReviewResponse';
 import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
   IconCheck, IconSend, IconShare, IconLayoutGrid,
   IconBrandWhatsapp, IconShieldCheck, IconCircleCheck, IconClock,
-  IconStar, IconStarHalfFilled, IconLeaf, IconArrowRight, IconPackage,
+  IconStar, IconStarHalfFilled, IconLeaf, IconArrowRight, IconPackage, IconBookmark, IconBookmarkFilled,
 } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import api from '@/lib/api';
@@ -197,6 +198,24 @@ export default function RateCardPage() {
   });
 
   const isOwnCard = isAuthenticated && user?.role === 'creator' && user?.handle === handle;
+  const isBrand = isAuthenticated && user?.role === 'brand';
+  const shortlistQuery = useQuery({ queryKey: ['brand-shortlist'], queryFn: () => brandService.getShortlist(), enabled: isBrand });
+  const shortlistIds = new Set((shortlistQuery.data?.shortlist ?? shortlistQuery.data ?? []).map((x) => x.creatorId));
+  const addShortlist = useMutation({
+    mutationFn: (id) => brandService.addToShortlist(id),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['brand-shortlist'] }); toast.success('Added to your shortlist.'); },
+    onError: (err) => toast.error(err?.message || 'Could not add to shortlist.'),
+  });
+  const removeShortlist = useMutation({
+    mutationFn: (id) => brandService.removeFromShortlist(id),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['brand-shortlist'] }); toast.success('Removed from your shortlist.'); },
+    onError: (err) => toast.error(err?.message || 'Could not remove from shortlist.'),
+  });
+  function toggleShortlist() {
+    const id = data?.creator?.id;
+    if (!id) return;
+    if (shortlistIds.has(id)) removeShortlist.mutate(id); else addShortlist.mutate(id);
+  }
   const replyMutation = useMutation({
     mutationFn: ({ reviewId, reply }) => reviewService.replyToReview(reviewId, reply),
     onSuccess: () => {
@@ -344,6 +363,15 @@ export default function RateCardPage() {
                   >
                     <IconShare className="icon-sm" /> Share
                   </button>
+                  {isBrand && (
+                    <button
+                      type="button"
+                      onClick={toggleShortlist}
+                      className="inline-flex items-center gap-2 px-5 py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"
+                    >
+                      {shortlistIds.has(creator.id) ? <><IconBookmarkFilled className="icon-sm" /> Shortlisted</> : <><IconBookmark className="icon-sm" /> Shortlist</>}
+                    </button>
+                  )}
                   <Link
                     to={`/c/${handle}/portfolio`}
                     className="inline-flex items-center gap-2 px-5 py-[8.5px] rounded-[8px] border border-[0.5px] border-white/20 text-white/70 text-[13px] hover:bg-white/[0.06]"

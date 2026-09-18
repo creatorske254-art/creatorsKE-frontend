@@ -29,9 +29,10 @@ export function EnquiryCardSkeleton() {
  * @param {'creator'|'brand'} [variant]
  */
 export default function EnquiryCard({ enquiry, selected, onSelect, variant = 'creator' }) {
-  const counterpart = variant === 'creator' ? enquiry.brand : enquiry.creator;
-  const name = counterpart?.name ?? counterpart?.displayName ?? 'Unknown';
-  const initials = counterpart?.initials ?? getInitials(name);
+  // enquiry.brand/creator are plain display-name strings (see enquiry.service.js),
+  // not objects - reading .name/.displayName off a string is always undefined.
+  const name = (variant === 'creator' ? (enquiry.brand ?? enquiry.brandName) : (enquiry.creator ?? enquiry.creatorName)) || 'Unknown';
+  const initials = getInitials(name);
   const meta = STATUS_META[enquiry.status] ?? STATUS_META[STATUS.NEW];
 
   return (

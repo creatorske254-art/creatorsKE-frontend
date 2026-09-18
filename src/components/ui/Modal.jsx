@@ -10,6 +10,13 @@ const MAX_WIDTH = {
 
 /**
  * Generic portal-based modal. Escape and backdrop-click both close it.
+ *
+ * Shape follows Google's Material 3 dialog composition: a 28px "extra-large"
+ * corner radius, a soft 32%-scrim backdrop rather than a heavy one, no
+ * divider between header and body, and a borderless icon-only close button
+ * (ghost hover, not a permanently-visible filled chip). Typography still
+ * uses the app's own heading roles - only the shape/chrome changed, not the
+ * type system.
  * @param {boolean} open
  * @param {() => void} onClose
  * @param {string} [title]
@@ -34,7 +41,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }) {
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0,0,0,0.5)',
+        background: 'var(--scrim-modal)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -50,7 +57,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           background: 'var(--white)',
-          borderRadius: 'var(--radius-2xl)',
+          borderRadius: 'var(--radius-modal)',
           width: '100%',
           maxWidth: MAX_WIDTH[size] ?? MAX_WIDTH.md,
           maxHeight: 'min(680px, 86vh)',
@@ -83,24 +90,7 @@ export default function Modal({ open, onClose, title, size = 'md', children }) {
             >
               {title}
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: 'var(--radius-md)',
-                border: 'none',
-                background: 'var(--grey-100)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--grey-600)',
-                flexShrink: 0,
-              }}
-            >
+            <button type="button" className="ui-modal-close" onClick={onClose} aria-label="Close">
               <IconX className="icon-md" />
             </button>
           </div>

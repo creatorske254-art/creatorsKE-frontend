@@ -3,12 +3,18 @@ import { IconX, IconAlertTriangle } from '@tabler/icons-react';
 
 /**
  * ConfirmDialog
+ *
+ * Shape follows Google's Material 3 dialog composition: a 28px "extra-large"
+ * corner radius, a soft scrim, no divider or tinted band under the actions -
+ * they sit right-aligned on the same surface as the body - and pill-shaped
+ * buttons (a borderless text button for Cancel, a filled pill for Confirm).
+ *
  * @param {boolean}  open         - controlled visibility
  * @param {string}   title        - dialog heading
  * @param {string}   message      - body text
  * @param {string}   [confirmLabel] - confirm button text (default "Confirm")
  * @param {string}   [cancelLabel]  - cancel button text (default "Cancel")
- * @param {'danger'|'default'} [variant] - danger shows red confirm button
+ * @param {'danger'|'default'} [variant] - danger shows a filled red confirm button
  * @param {function} onConfirm    - called on confirm
  * @param {function} onCancel     - called on cancel / backdrop click
  */
@@ -32,26 +38,14 @@ export default function ConfirmDialog({
 
   if (!open) return null;
 
-  const confirmBtnStyle =
-    variant === 'danger'
-      ? {
-          background: 'var(--status-error-bg)',
-          color: 'var(--status-error-text)',
-          border: '0.5px solid rgba(255,75,75,0.3)',
-        }
-      : {
-          background: 'var(--black)',
-          color: 'var(--white)',
-          border: 'none',
-        };
-
   return (
     <div
+      className="ui-modal-backdrop"
       onClick={onCancel}
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(13,13,13,0.5)',
+        background: 'var(--scrim-modal)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -60,10 +54,14 @@ export default function ConfirmDialog({
       }}
     >
       <div
+        className="ui-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
         onClick={(e) => e.stopPropagation()}
         style={{
           background: 'var(--white)',
-          borderRadius: 'var(--radius-2xl)',
+          borderRadius: 'var(--radius-modal)',
           width: '100%',
           maxWidth: '420px',
           boxShadow: 'var(--shadow-xl)',
@@ -81,18 +79,7 @@ export default function ConfirmDialog({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
             {variant === 'danger' && (
-              <div
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'var(--status-error-bg)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
+              <div className="ui-confirm-icon" style={{ background: 'var(--status-error-bg)' }}>
                 <IconAlertTriangle className="icon-md" style={{ color: 'var(--status-error)' }} />
               </div>
             )}
@@ -108,22 +95,7 @@ export default function ConfirmDialog({
               {title}
             </div>
           </div>
-          <button
-            onClick={onCancel}
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: 'var(--radius-md)',
-              border: 'none',
-              background: 'var(--grey-100)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--grey-600)',
-              flexShrink: 0,
-            }}
-          >
+          <button type="button" className="ui-modal-close" onClick={onCancel} aria-label="Close">
             <IconX className="icon-sm" />
           </button>
         </div>
@@ -141,44 +113,15 @@ export default function ConfirmDialog({
           </p>
         </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            padding: 'var(--space-16) var(--space-24)',
-            background: 'var(--grey-50)',
-            borderTop: '0.5px solid var(--grey-100)',
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 'var(--space-12)',
-          }}
-        >
-          <button
-            onClick={onCancel}
-            style={{
-              padding: 'var(--space-8) var(--space-20)',
-              fontSize: '13px',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 500,
-              background: 'var(--white)',
-              color: 'var(--black)',
-              border: '0.5px solid var(--grey-300)',
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-            }}
-          >
+        {/* Actions - same surface as the body, no divider or tinted band */}
+        <div className="ui-confirm-actions">
+          <button type="button" className="ui-confirm-btn ui-confirm-btn--text" onClick={onCancel}>
             {cancelLabel}
           </button>
           <button
+            type="button"
+            className={`ui-confirm-btn ${variant === 'danger' ? 'ui-confirm-btn--danger' : 'ui-confirm-btn--filled'}`}
             onClick={onConfirm}
-            style={{
-              padding: 'var(--space-8) var(--space-20)',
-              fontSize: '13px',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 500,
-              borderRadius: 'var(--radius-md)',
-              cursor: 'pointer',
-              ...confirmBtnStyle,
-            }}
           >
             {confirmLabel}
           </button>

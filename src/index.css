@@ -138,6 +138,7 @@
   --radius-lg:   12px;
   --radius-xl:   16px;
   --radius-2xl:  24px;
+  --radius-modal: 28px; /* Google Material 3's "extra-large" dialog shape - every modal/dialog uses this, nothing else does */
   --radius-pill: 999px;
 
   /* ─── Spacing ─────────────────────────────────────────────────────────── */
@@ -204,6 +205,11 @@
   --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
   --shadow-xl: 0 16px 48px rgba(0,0,0,0.12);
+
+  /* Modal/dialog scrim - Material 3 dims the page behind a dialog to 32%,
+     noticeably lighter than the 40-50% most of these modals used before, so
+     the dialog reads as floating above the page rather than blocking it out. */
+  --scrim-modal: rgba(13,13,13,0.32);
 
   /* ─── shadcn/ui CSS variable mapping (light mode) ───────────────────────
      Nav/sidebar/cards = white (lightest surface).
@@ -1500,6 +1506,23 @@
 .page-enter { animation: page-in 0.24s ease-out backwards; min-height: 100%; }
 .ui-modal-backdrop { animation: fade-in 0.16s ease-out both; }
 .ui-modal { animation: pop-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+/* Modal.jsx's close (X) - a plain icon button, not a permanently-visible
+   filled chip, with a circular hover tint (Material 3's icon-button treatment). */
+.ui-modal-close { width: 32px; height: 32px; border-radius: 50%; border: none; background: none; display: flex; align-items: center; justify-content: center; color: var(--grey-600); cursor: pointer; flex-shrink: 0; transition: background var(--transition-fast); }
+.ui-modal-close:hover { background: var(--grey-100); }
+/* ConfirmDialog's icon chip and action row - pill-shaped buttons sitting
+   directly on the body surface, no bordered/tinted footer band (Material 3
+   keeps a dialog's actions on the same surface as its body, right-aligned,
+   with no divider separating them). */
+.ui-confirm-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ui-confirm-actions { display: flex; justify-content: flex-end; gap: var(--space-8); padding: var(--space-8) var(--space-24) var(--space-24); }
+.ui-confirm-btn { border-radius: var(--radius-pill); padding: var(--space-8) var(--space-20); font-size: 13px; font-family: var(--font-body); font-weight: 500; cursor: pointer; border: none; transition: background var(--transition-fast); }
+.ui-confirm-btn--text { background: none; color: var(--grey-700); }
+.ui-confirm-btn--text:hover { background: var(--grey-100); }
+.ui-confirm-btn--filled { background: var(--black); color: var(--white); }
+.ui-confirm-btn--filled:hover { background: var(--grey-800); }
+.ui-confirm-btn--danger { background: var(--status-error); color: var(--white); }
+.ui-confirm-btn--danger:hover { filter: brightness(0.92); }
 .collapsible-card__body { animation: unfold 0.18s ease-out both; }
 .menu-appear { animation: select-in 0.12s ease-out both; }
 .chart-frame__body > * { animation: fade-in 0.2s ease-out both; }

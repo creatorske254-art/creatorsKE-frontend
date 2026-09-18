@@ -249,16 +249,20 @@ export default function MoneyPage() {
         /* Withdraw CTA tile */
         .money-page .cta{background:var(--status-success-bg);border:0.5px solid rgba(16,185,129,.35)}
 
-        /* Modal (ported 1:1 from the component library spec) */
-        .money-page .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:var(--space-24);z-index:300}
-        .money-page .modal{background:var(--white);border-radius:var(--radius-2xl);width:100%;max-width:440px;max-height:min(600px,86vh);box-shadow:var(--shadow-xl);overflow:hidden;display:flex;flex-direction:column}
+        /* Modal - Material 3 dialog composition: 28px "extra-large" corner
+           radius, a soft 32% scrim, a borderless ghost close button, and
+           actions sitting directly on the body surface (no tinted/bordered
+           footer band) with pill-shaped buttons. */
+        .money-page .modal-backdrop{position:fixed;inset:0;background:var(--scrim-modal);display:flex;align-items:center;justify-content:center;padding:var(--space-24);z-index:300}
+        .money-page .modal{background:var(--white);border-radius:var(--radius-modal);width:100%;max-width:440px;max-height:min(600px,86vh);box-shadow:var(--shadow-xl);overflow:hidden;display:flex;flex-direction:column}
         .money-page .modal-header{padding:var(--space-24) var(--space-24) 0;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
         .money-page .modal-title{font-family:var(--font-display);font-size:var(--text-h4-size);font-weight:var(--text-h4-weight);color:var(--black);letter-spacing:var(--text-h4-tracking)}
-        .money-page .modal-close{width:32px;height:32px;border-radius:var(--radius-md);border:none;background:var(--grey-100);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--grey-600);font-size:16px;transition:all .15s;flex-shrink:0}
-        .money-page .modal-close:hover{background:var(--grey-200);color:var(--black)}
+        .money-page .modal-close{width:32px;height:32px;border-radius:50%;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--grey-600);font-size:16px;transition:background .15s;flex-shrink:0}
+        .money-page .modal-close:hover{background:var(--grey-100)}
         .money-page .modal-body{padding:var(--space-16) var(--space-24) var(--space-24);overflow-y:auto}
         .money-page .modal-body-text{font-size:13px;color:var(--grey-600);line-height:1.6;margin-bottom:var(--space-16)}
-        .money-page .modal-footer{padding:var(--space-16) var(--space-24);background:var(--page-bg);border-top:0.5px solid var(--grey-100);display:flex;justify-content:flex-end;gap:var(--space-12);flex-shrink:0}
+        .money-page .modal-footer{padding:var(--space-8) var(--space-24) var(--space-24);display:flex;justify-content:flex-end;gap:var(--space-8);flex-shrink:0}
+        .money-page .modal-footer .btn{border-radius:var(--radius-pill)}
 
         .money-page .alert{display:flex;align-items:flex-start;gap:var(--space-12);padding:var(--space-16) var(--space-16);border-radius:var(--radius-lg);font-size:12.5px;line-height:1.5}
         .money-page .alert-icon-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:#fff}
@@ -484,8 +488,8 @@ export default function MoneyPage() {
 
       {/* Withdraw modal */}
       {withdrawOpen && (
-        <div className="modal-backdrop" onClick={() => !isRequestingPayout && closeWithdraw()}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-backdrop ui-modal-backdrop" onClick={() => !isRequestingPayout && closeWithdraw()}>
+          <div className="modal ui-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">Withdraw funds</div>
               <button className="modal-close" onClick={() => !isRequestingPayout && closeWithdraw()}>
@@ -552,8 +556,8 @@ export default function MoneyPage() {
 
       {/* History modal */}
       {historyOpen && (
-        <div className="modal-backdrop" onClick={() => setHistoryOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-backdrop ui-modal-backdrop" onClick={() => setHistoryOpen(false)}>
+          <div className="modal ui-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div className="modal-title">Transaction history</div>
               <button className="modal-close" onClick={() => setHistoryOpen(false)}>

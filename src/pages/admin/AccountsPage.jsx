@@ -138,8 +138,18 @@ export default function AccountsPage() {
         .acc-page .detail-row:last-child{border-bottom:none}
         .acc-page .detail-label{color:var(--grey-400)}
         .acc-page .detail-value{color:var(--black);font-weight:500;text-align:right}
-        .acc-page .modal-overlay{position:fixed;inset:0;background:rgba(13,13,13,0.4);display:flex;align-items:center;justify-content:center;z-index:50;padding:var(--space-20)}
-        .acc-page .modal{background:var(--white);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);width:100%;max-width:420px;overflow:hidden}
+        /* Material 3 dialog composition: 28px "extra-large" corner radius,
+           soft 32% scrim, actions right-aligned with no bordered/tinted band.
+           No space before .modal-overlay: the overlay div carries both
+           acc-page and modal-overlay itself (it's a sibling rendered after
+           the page's main .acc-page wrapper closes, not nested inside it) -
+           the descendant-combinator form here never matched, so this dialog
+           has been rendering unstyled (position:static, sitting in normal
+           document flow) the whole time. */
+        .acc-page.modal-overlay{position:fixed;inset:0;background:var(--scrim-modal);display:flex;align-items:center;justify-content:center;z-index:50;padding:var(--space-20)}
+        .acc-page .modal{background:var(--white);border-radius:var(--radius-modal);box-shadow:var(--shadow-xl);width:100%;max-width:420px;overflow:hidden}
+        .acc-page .modal .btn{border-radius:var(--radius-pill)}
+        .acc-page .modal .card-header{border-bottom:none}
         .acc-page .split-grid{display:grid;gap:var(--space-20);align-items:start}
         @media(max-width:980px){.acc-page .split-grid{grid-template-columns:1fr !important}}
       `}</style>
@@ -336,8 +346,8 @@ export default function AccountsPage() {
 
       {/* Confirm dialog */}
       {confirmAction && (
-        <div className="acc-page modal-overlay" onClick={() => setConfirmAction(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="acc-page modal-overlay ui-modal-backdrop" onClick={() => setConfirmAction(null)}>
+          <div className="modal ui-modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
             <div className="card-header">
               <div className="section-title">
                 {confirmAction.type === 'suspend' && 'Suspend this account?'}
@@ -350,7 +360,7 @@ export default function AccountsPage() {
               {confirmAction.type === 'restore' && <>This will restore full platform access for <strong>{confirmAction.account.name}</strong>. Use this once valid credentials or context have been confirmed.</>}
               {confirmAction.type === 'remove' && <>This permanently removes <strong>{confirmAction.account.name}</strong> and their account data. This action cannot be undone.</>}
             </div>
-            <div style={{ padding: 'var(--space-16) var(--space-20)', borderTop: '0.5px solid var(--grey-100)', display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-8)' }}>
+            <div style={{ padding: 'var(--space-8) var(--space-20) var(--space-20)', display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-8)' }}>
               <button className="btn btn-ghost" onClick={() => setConfirmAction(null)}>Cancel</button>
               <button
                 className={`${confirmAction.type === 'restore' ? 'btn btn-primary' : 'btn btn-danger'}${isTakingAction ? ' btn-loading' : ''}`}

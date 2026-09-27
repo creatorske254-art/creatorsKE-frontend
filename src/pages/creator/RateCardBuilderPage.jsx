@@ -28,10 +28,10 @@ import { rateCardService } from '@/features/rate-card/services/rate-card.service
    automatically.
    Note: no --bg-* is applied to the .rcb wrapper itself, the content area
    already owns that background (matches DashboardPage / EnquiriesPage).
-   Also note: payment-provider brand marks (M-Pesa green, Airtel red,
-   WhatsApp green) intentionally stay hardcoded, those represent
-   third-party brand identities, not our own admin chrome, so they're
-   outside this system on purpose.
+   Also note: payment-provider brand marks (M-Pesa green, Airtel red)
+   intentionally stay hardcoded, those represent third-party brand
+   identities, not our own admin chrome, so they're outside this system
+   on purpose.
 */
 const Tokens = () => (
   <style>{`
@@ -362,7 +362,7 @@ export default function RateCardBuilderPage() {
   const { profile: account } = useProfile();
   const [profile, setProfile] = useState({
     name: "", handle: "", bio: "", location: "", followers: "", engagement: "", reach: "", niche: "Lifestyle", languages: "",
-    whatsapp: "", instagram: "", tiktok: "", youtube: "", twitter: "",
+    instagram: "", tiktok: "", youtube: "", twitter: "",
   });
   const { url: photoUrl, setUrl: setPhotoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
     successMessage: "Profile photo updated.",
@@ -382,7 +382,7 @@ export default function RateCardBuilderPage() {
       followers: c.followers != null ? Number(c.followers).toLocaleString('en-KE') : '',
       engagement: c.eng != null ? String(c.eng) : '',
       reach: c.followers != null ? Math.round(c.followers * 0.4).toLocaleString('en-KE') : '',
-      whatsapp: account.phone ?? '', instagram: socials.instagram ?? '', tiktok: socials.tiktok ?? '', youtube: socials.youtube ?? '', twitter: socials.twitter ?? '',
+      instagram: socials.instagram ?? '', tiktok: socials.tiktok ?? '', youtube: socials.youtube ?? '', twitter: socials.twitter ?? '',
     }));
     if (account.avatar) setPhotoUrl(account.avatar);
   }, [cardId, account]);
@@ -412,7 +412,6 @@ export default function RateCardBuilderPage() {
   const [bankHolder, setBankHolder] = useState("");
   const [autoInvoice, setAutoInvoice] = useState(true);
   const [requireDeposit, setRequireDeposit] = useState(false);
-  const [whatsappReminder, setWhatsappReminder] = useState(true);
   const connectMpesa = () => addPayoutMethod({ type: 'mpesa', name: 'M-Pesa', detail: `+254 ${mpesaPhone.trim()}`, fields: { phone: `+254 ${mpesaPhone.trim()}`, business: mpesaBusiness.trim() } });
   const connectAirtel = () => addPayoutMethod({ type: 'airtel', name: 'Airtel Money', detail: `+254 ${airtelPhone.trim()}`, fields: { phone: `+254 ${airtelPhone.trim()}` } });
   const connectBank = () => addPayoutMethod({ type: 'bank', name: bankName, detail: `···· ···· ${bankAccount.trim().slice(-4)}`, fields: { bank: bankName, account: bankAccount.trim(), holder: bankHolder.trim() } }, { onSuccess: () => setBankOpen(false) });
@@ -450,7 +449,6 @@ export default function RateCardBuilderPage() {
     if (rateCard.payment) {
       if (rateCard.payment.autoInvoice != null) setAutoInvoice(!!rateCard.payment.autoInvoice);
       if (rateCard.payment.requireDeposit != null) setRequireDeposit(!!rateCard.payment.requireDeposit);
-      if (rateCard.payment.whatsappReminder != null) setWhatsappReminder(!!rateCard.payment.whatsappReminder);
     }
     if (rateCard.published) setPublished(true);
   }, [cardId, rateCard]);
@@ -463,7 +461,7 @@ export default function RateCardBuilderPage() {
     profile,
     platforms,
     ...(packages.length ? { packages } : {}),
-    payment: { autoInvoice, requireDeposit, whatsappReminder },
+    payment: { autoInvoice, requireDeposit },
     headline,
     pitch,
     leadTime,
@@ -846,11 +844,6 @@ export default function RateCardBuilderPage() {
                     <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Require 50% deposit</div><p className="hint">Client pays half upfront before work begins</p></div>
                     <button className={`toggle${requireDeposit ? " on" : ""}`} onClick={() => setRequireDeposit((v) => !v)} />
                   </div>
-                  <div className="hr" />
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
-                    <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>WhatsApp payment reminder</div><p className="hint">Send a WhatsApp nudge 24 hrs before due date</p></div>
-                    <button className={`toggle${whatsappReminder ? " on" : ""}`} onClick={() => setWhatsappReminder((v) => !v)} />
-                  </div>
                 </div>
               </div>
             </div>
@@ -915,10 +908,6 @@ export default function RateCardBuilderPage() {
                 <div className="card card-p">
                   <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Contact &amp; social links</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
-                    <div className="field">
-                      <label className="field-label">WhatsApp business number</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconMessageCircle className="icon-sm" color="#25D366" /></span><input className="inp inp-icon-l" value={profile.whatsapp} onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value })} placeholder="+254 7XX XXX XXX" /></div>
-                    </div>
                     <div className="field">
                       <label className="field-label">Instagram</label>
                       <div className="inp-wrap"><span className="inp-icon l"><IconBrandInstagram className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.instagram} onChange={(e) => setProfile({ ...profile, instagram: e.target.value })} placeholder="instagram.com/…" /></div>
@@ -1038,11 +1027,6 @@ export default function RateCardBuilderPage() {
                   <IconLink className="icon-sm" color="var(--txt-tertiary)" />
                   <span className="share-url">{slug}</span>
                   <button className="btn btn-ghost btn-xs" onClick={copyLink}>{copied ? <><IconCheck className="icon-xs" />Copied!</> : <><IconCopy className="icon-xs" />Copy</>}</button>
-                </div>
-                <div style={{ display: "flex", gap: 'var(--space-8)', marginTop: 'var(--space-12)' }}>
-                  <button className="btn btn-ghost btn-sm" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent("Check out my rate card: https://" + slug)}`, "_blank")}>
-                    <IconMessageCircle className="icon-xs" />Share on WhatsApp
-                  </button>
                 </div>
               </div>
 

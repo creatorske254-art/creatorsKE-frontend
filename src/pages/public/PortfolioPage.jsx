@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
-  IconCurrencyDollar, IconBrandWhatsapp, IconShare, IconUser,
+  IconCurrencyDollar, IconShare, IconUser,
   IconSparkles, IconVideo, IconCalendarEvent, IconPencil,
   IconMoodSmile, IconPlane, IconPhone, IconMail,
   IconEdit,
@@ -10,15 +10,6 @@ import {
 import { toast } from 'sonner';
 import api from '@/lib/api';
 import { usePageMeta } from '@/lib/usePageMeta';
-
-function openWhatsApp(phone) {
-  const digits = (phone || '').replace(/\D/g, '');
-  if (!digits) {
-    toast.error("This creator hasn't added a WhatsApp number yet.");
-    return;
-  }
-  window.open(`https://wa.me/${digits}`, '_blank', 'noopener,noreferrer');
-}
 
 async function sharePortfolio(name) {
   const url = window.location.href;
@@ -170,12 +161,6 @@ export default function PortfolioPage() {
                     >
                       <IconCurrencyDollar className="icon-sm" /> View rate card
                     </Link>
-                    <button
-                      onClick={() => openWhatsApp(contact.phone)}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
-                    >
-                      <IconBrandWhatsapp className="icon-sm" /> WhatsApp me
-                    </button>
                     <button
                       onClick={() => sharePortfolio(creator.displayName)}
                       className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-[var(--grey-50)]"
@@ -355,7 +340,7 @@ export default function PortfolioPage() {
                       <IconPhone className="text-[var(--purple-500)] icon-md" />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">WhatsApp / Phone</div>
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">Phone</div>
                       <div className="text-[13px] font-medium text-[var(--black)] truncate">{contact.phone}</div>
                     </div>
                   </div>
@@ -402,12 +387,6 @@ export default function PortfolioPage() {
                   >
                     <IconCurrencyDollar className="icon-sm" /> View rate card
                   </Link>
-                  <button
-                    onClick={() => openWhatsApp(contact.phone)}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] text-[14px] font-medium hover:bg-white"
-                  >
-                    <IconBrandWhatsapp className="icon-sm" /> WhatsApp me
-                  </button>
                 </div>
               </div>
             )}

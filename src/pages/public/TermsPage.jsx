@@ -3,102 +3,68 @@ import { usePageMeta } from '@/lib/usePageMeta';
 
 const SECTIONS = [
   {
-    title: '1. Acceptance of these Terms',
+    title: '1. Introduction and Platform Role',
     body: [
-      'These Terms of Service ("Terms") govern your access to and use of Creatorske, a platform that connects brands with content creators in Kenya ("Creatorske", "we", "us", or "our"). By creating an account, browsing rate cards, or otherwise using the platform, you agree to be bound by these Terms. If you do not agree, you may not use Creatorske.',
-      'If you are using Creatorske on behalf of a company or other legal entity, you represent that you have the authority to bind that entity to these Terms.',
+      'Creators KE operates strictly as a digital marketplace and technological intermediary connecting brand advertisers ("Brands") with digital content creators ("Creators"). Creators KE provides infrastructure for discovery, campaign management, messaging, and escrow protection. Creators KE is not an employer, talent agency, publisher, or joint venture partner to any user.',
     ],
   },
   {
-    title: '2. Description of the Service',
+    title: '2. Independent Direct Contracts',
     body: [
-      'Creatorske provides a marketplace where creators publish rate cards and portfolios, and brands discover creators, send enquiries, and book paid collaborations. Creatorske facilitates the connection and, where applicable, the payment for these collaborations - it does not itself produce, endorse, or guarantee the content created between a brand and a creator.',
+      'All campaign briefs, deliverables, timelines, and payment terms agreed upon between a Brand and a Creator constitute a direct legal contract strictly between those two parties. Creators KE is not a party to, bound by, or liable under any contract signed or established between a Brand and a Creator.',
     ],
   },
   {
-    title: '3. Eligibility & Accounts',
+    title: '3. Dispute Resolution and Platform Intervention',
     body: [
-      'You must be at least 18 years old, or the age of legal majority in your jurisdiction, to create an account. You are responsible for maintaining the confidentiality of your login credentials and for all activity that occurs under your account.',
-      'You agree to provide accurate, current information when registering, including a verifiable business domain for brand accounts, and to keep that information up to date. We may suspend or terminate accounts that fail brand verification or are found to contain false information.',
+      'Creators KE will not actively interfere in ongoing campaign communications or creative direction. Platform intervention is limited strictly to non-binding administrative mediation subject to the following rules:',
+    ],
+    list: [
+      'Waiting Period: The dispute must remain unresolved between the Brand and Creator for a minimum of 14 calendar days despite direct, good-faith negotiation.',
+      'Formal Ticket Submission: Either party must submit a formal support ticket including the original brief, written platform chat history, and proof of work.',
+      'Binding Escrow Adjudication: Where funds are held in platform escrow, both parties agree that Creators KE\'s administrative ruling regarding the release or refund of escrow funds is final and binding within the platform ecosystem.',
     ],
   },
   {
-    title: '4. Creator & Brand Responsibilities',
+    title: '4. Off-Platform Transactions and Forfeiture of Protection',
     body: [
-      'Creators are responsible for the accuracy of their rate cards, portfolios, and social statistics, and for delivering agreed content on time and to the scope described in an accepted enquiry.',
-      'Brands are responsible for providing a clear brief, responding to creator communications in good faith, and approving or disputing a delivery within the review window shown on the booking.',
-      'Both parties agree to communicate through Creatorske\'s messaging tools for any booking made through the platform, so a record exists if a dispute needs to be reviewed.',
+      'All negotiations, communications (including exchange of phone numbers, emails, or personal handles), content submissions, and payments must take place exclusively on Creators KE.',
+    ],
+    list: [
+      'Automatic Voiding: Exchanging contact information or transferring funds off-platform automatically and permanently voids all platform protections, including Creators KE Legal Guard and Escrow Protection.',
+      'No Money Recovery: If a Brand conducts business outside the platform and the Creator fails to deliver work, posts subpar content, or defaults on agreement terms, Creators KE will not intervene, mediate, or assist in recovering lost funds.',
+      'Account Sanctions: Circumventing the platform may result in immediate suspension or permanent termination of both Brand and Creator accounts.',
     ],
   },
   {
-    title: '5. Enquiries, Bookings & Escrow Payments',
+    title: '5. Tax Obligations and Statutory Deductions',
     body: [
-      'When a brand sends a paid enquiry, funds are held in escrow by Creatorske (via our licensed payment partners, including M-Pesa and Airtel Money) until the creator marks the deliverable complete and the brand approves it, or the review window lapses without a dispute being raised.',
-      'If a brand raises a dispute within the evidence window, Creatorske\'s admin team will review the evidence submitted by both parties and issue a binding decision on how the escrowed funds are released. This process is described further in Section 10.',
+      'Creators KE is a software provider and is not a payment proxy, employer, or designated tax withholding agent for any transaction facilitated on the platform.',
+    ],
+    list: [
+      'Brand Responsibility (Withholding Tax): Under the Kenya Income Tax Act, the Brand bears sole legal responsibility for withholding the applicable statutory Withholding Tax (WHT) - currently 5% for resident creators and 20% for non-resident creators - from the gross payment and remitting it directly to the Kenya Revenue Authority (KRA). The Brand is required to generate and issue an official KRA WHT Certificate to the Creator.',
+      'Creator Responsibility: Creators are independent contractors responsible for filing their annual income tax returns with KRA and accounting for any additional tax liabilities.',
+      'Tax Indemnification: Neither Brands nor Creators shall hold Creators KE liable for unremitted taxes, KRA audits, penalties, or interest. Users agree to defend and hold harmless Creators KE against any tax claims arising from platform agreements.',
     ],
   },
   {
-    title: '6. Fees',
-    body: [
-      'Creatorske charges a platform fee on completed bookings, deducted from the amount released to the creator. Current fee rates and any subscription-plan pricing are shown on our Pricing page and may vary by plan. We will give reasonable notice before changing fee rates that affect existing bookings.',
+    title: '6. Intellectual Property Rights',
+    list: [
+      'Ownership: Creators retain full ownership of all original content until full and final payment is released from platform escrow.',
+      'License Transfer: Upon full disbursement of agreed funds, the Brand receives licensing and usage rights to the content strictly as defined in the accepted campaign brief.',
+      'Prohibited Content: Users must not create or publish content that violates third-party copyright, trademark, or Kenyan statutory regulations.',
     ],
   },
   {
-    title: '7. Content Ownership & Licensing',
+    title: '7. Limitation of Liability',
     body: [
-      'Unless otherwise agreed in writing between a brand and a creator, the creator retains ownership of the content they produce. A completed booking grants the brand a license to use the delivered content for the purpose and duration described in the booking\'s scope.',
-      'By publishing a rate card, portfolio, or review on Creatorske, you grant us a non-exclusive, worldwide license to display that content on the platform for the purpose of operating the marketplace.',
+      'To the maximum extent permitted by the laws of Kenya, Creators KE shall not be liable for any direct, indirect, incidental, or consequential damages resulting from lost profits, breach of contract by platform users, campaign delays, or unsatisfactory creative deliverables.',
     ],
   },
   {
-    title: '8. Reviews & Conduct',
+    title: '8. Account Termination',
     body: [
-      'Reviews must reflect a genuine completed booking. We may remove reviews that are fraudulent, abusive, or that violate a person\'s privacy, and may suspend accounts that repeatedly post such content.',
-      'You agree not to harass, discriminate against, or misrepresent yourself to another user of the platform.',
-    ],
-  },
-  {
-    title: '9. Prohibited Uses',
-    body: [
-      'You may not use Creatorske to: circumvent the platform\'s payment or fee system for a booking initiated on Creatorske; impersonate another person or business; upload unlawful, infringing, or fraudulent content; or interfere with the platform\'s normal operation, including through scraping or automated abuse.',
-    ],
-  },
-  {
-    title: '10. Disputes & Resolution',
-    body: [
-      'A dispute over a delivery may be raised by either party during the evidence window shown on the booking. Both parties may submit evidence (messages, files, screenshots). Creatorske\'s admin team will issue a decision on how the escrowed amount is split, which is binding for the purposes of releasing funds held on the platform.',
-      'This process addresses disputes over Creatorske-held escrow funds only. It does not limit either party\'s other legal rights.',
-    ],
-  },
-  {
-    title: '11. Termination',
-    body: [
-      'You may close your account at any time from Settings. We may suspend or terminate an account that violates these Terms, fails verification, or poses a risk to other users. Bookings already in progress at the time of termination are handled per Section 10.',
-    ],
-  },
-  {
-    title: '12. Disclaimers & Limitation of Liability',
-    body: [
-      'Creatorske is provided "as is." We do not guarantee the quality, timeliness, or outcome of any collaboration between a brand and a creator; we facilitate the connection and payment, we are not a party to the underlying creative agreement.',
-      'To the fullest extent permitted by law, Creatorske\'s liability for any claim arising from your use of the platform is limited to the platform fees you paid in the three months preceding the claim.',
-    ],
-  },
-  {
-    title: '13. Governing Law',
-    body: [
-      'These Terms are governed by the laws of the Republic of Kenya. Any dispute not resolved through Creatorske\'s internal process may be brought before the courts of Kenya.',
-    ],
-  },
-  {
-    title: '14. Changes to these Terms',
-    body: [
-      'We may update these Terms from time to time. We will post the updated Terms with a new "Last updated" date, and, for material changes, notify you by email or an in-app notice. Continuing to use Creatorske after a change takes effect means you accept the revised Terms.',
-    ],
-  },
-  {
-    title: '15. Contact Us',
-    body: [
-      'Questions about these Terms can be sent to legal@creatorske.com.',
+      'Creators KE reserves the right to modify, suspend, or terminate user access at any time for violations of these Terms, fraudulent activity, off-platform payment solicitation, or abusive behavior toward other users.',
     ],
   },
 ];
@@ -142,7 +108,7 @@ export default function TermsPage() {
         <h1 className="font-[var(--font-display)] text-[32px] font-semibold tracking-[-0.02em] text-[var(--black)] mb-2">
           Terms of Service
         </h1>
-        <p className="text-[13px] text-[var(--grey-400)] mb-12">Last updated: January 1, 2026</p>
+        <p className="text-[13px] text-[var(--grey-400)] mb-12">Last updated: September 27, 2026</p>
 
         <div className="flex flex-col gap-10">
           {SECTIONS.map((s) => (
@@ -150,11 +116,20 @@ export default function TermsPage() {
               <h2 className="font-[var(--font-display)] text-[18px] font-semibold text-[var(--black)] mb-3">
                 {s.title}
               </h2>
-              {s.body.map((p, i) => (
+              {s.body?.map((p, i) => (
                 <p key={i} className="text-[14px] leading-[1.75] text-[var(--grey-600)] mb-3 last:mb-0">
                   {p}
                 </p>
               ))}
+              {s.list && (
+                <ol className="list-decimal pl-5 flex flex-col gap-2 mt-1">
+                  {s.list.map((item, i) => (
+                    <li key={i} className="text-[14px] leading-[1.75] text-[var(--grey-600)]">
+                      {item}
+                    </li>
+                  ))}
+                </ol>
+              )}
             </div>
           ))}
         </div>

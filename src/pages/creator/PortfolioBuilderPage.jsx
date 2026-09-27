@@ -182,7 +182,7 @@ function LivePreview({ values, creatorName, handle }) {
   const heroStats = [
     { label: 'IG eng.', value: values.socialStats?.igEngagement || '–' },
     { label: 'TikTok views', value: values.socialStats?.ttAvgViews || '–' },
-    { label: 'WhatsApp', value: values.contact?.phone || '–' },
+    { label: 'Phone', value: values.contact?.phone || '–' },
   ];
 
   const followerStats = [
@@ -541,7 +541,7 @@ export default function PortfolioBuilderPage() {
 
             {/* 5. Contact */}
             <SectionCard title="Contact details">
-              <Field label="Phone / WhatsApp">
+              <Field label="Phone">
                 <div className="inp-wrap">
                   <span className="inp-icon l"><IconPhone className="icon-sm" aria-hidden="true" /></span>
                   <input className="inp inp-icon-l" placeholder="+254..." {...register('contact.phone')} />

@@ -8,7 +8,7 @@ import { usePageMeta } from '@/lib/usePageMeta';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
 import { ChartFrame, ChartPeriod, TrendChart, BarChart, DonutChart, Sparkline, Meter, kes } from '@/components/charts';
-import { IconBrandWhatsapp, IconCash, IconCopy, IconEdit, IconEye, IconInbox, IconPlus, IconStar, IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
+import { IconCash, IconCopy, IconEdit, IconEye, IconInbox, IconPlus, IconStar, IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 
 /*
    Layout: Bento grid.
@@ -141,7 +141,6 @@ export default function DashboardPage() {
     cardHealth,
     healthLoading,
     primaryCardId,
-    publicUrl,
     copyPublicLink,
   } = useCreatorDashboard();
 
@@ -184,11 +183,6 @@ export default function DashboardPage() {
   const payMax      = cardHealth?.paymentMethods?.max ?? 1;
 
   const rows = stats?.recentEnquiries ?? [];
-
-  function shareWhatsApp() {
-    const text = encodeURIComponent(`Check out my rate card: ${publicUrl}`);
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-  }
 
   return (
     <div style={{ minWidth: 0, width: '100%' }}>
@@ -357,9 +351,6 @@ export default function DashboardPage() {
               </Link>
               <button className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }} onClick={copyPublicLink}>
                 <IconCopy className="icon-sm" aria-hidden="true" />Copy public link
-              </button>
-              <button className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }} onClick={shareWhatsApp}>
-                <IconBrandWhatsapp className="icon-sm" aria-hidden="true" />Share on WhatsApp
               </button>
               <Link to="/creator/money" className="btn btn-secondary btn-full" style={{ justifyContent: 'center' }}>
                 <IconCash className="icon-sm" aria-hidden="true" />View earnings

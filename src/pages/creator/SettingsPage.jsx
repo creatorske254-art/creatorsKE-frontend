@@ -16,7 +16,7 @@ import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
 import { getInitials, formatCount } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import SmartImage from '@/components/ui/SmartImage';
-import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandWhatsapp, IconBrandYoutube, IconBuildingBank, IconDeviceMobile, IconEyeOff, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
+import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandYoutube, IconBuildingBank, IconDeviceMobile, IconEyeOff, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
 
 const TABS = [
@@ -202,14 +202,14 @@ function ProfileForm({ profile }) {
               </div>
             </div>
             <div className="field">
-              <label className="field-label">WhatsApp business</label>
+              <label className="field-label">Phone</label>
               <div className="input-wrapper">
-                <IconBrandWhatsapp className="icon-sm input-icon left" style={{ color: "var(--status-success)" }} aria-hidden="true" />
+                <IconDeviceMobile className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" type="tel" value={form.phone} onChange={set('phone')} placeholder="+254 7XX XXX XXX" />
               </div>
             </div>
           </div>
-          <p className="field-hint">WhatsApp number is used for the "Enquire" button on your rate card.</p>
+          <p className="field-hint">Your phone number is shown on your public rate card.</p>
         </div>
       </CollapsibleCard>
 

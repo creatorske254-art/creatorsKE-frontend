@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { usePageMeta } from '@/lib/usePageMeta';
 import {
-  IconArrowRight, IconPlus, IconBrandInstagram, IconBrandTiktok, IconBrandLinkedin, IconBrandWhatsapp, IconCamera, IconBuildingStore, IconLayoutCards, IconDeviceMobileDollar, IconShieldCheck, IconLockDollar, IconRocket,
+  IconArrowRight, IconPlus, IconBrandInstagram, IconBrandTiktok, IconBrandLinkedin, IconBell, IconCamera, IconBuildingStore, IconLayoutCards, IconDeviceMobileDollar, IconShieldCheck, IconLockDollar, IconRocket,
 } from '@tabler/icons-react';
 
 /*
@@ -33,7 +33,7 @@ const COPY = {
     features: [
       { icon: IconLayoutCards, title: 'Beautiful rate cards', desc: 'Curated designs that look professional from day one - no design skills needed.' },
       { icon: IconDeviceMobileDollar, title: 'M‑Pesa & Airtel Money', desc: 'Built for East Africa. Payouts land on M‑Pesa, Airtel Money or your bank.' },
-      { icon: IconBrandWhatsapp, title: 'WhatsApp alerts', desc: 'Instant WhatsApp notifications when a brand enquires or a payment lands.' },
+      { icon: IconBell, title: 'Instant alerts', desc: 'Get notified in the app the moment a brand enquires or a payment lands.' },
     ],
     faq: [
       { q: 'Is Creatorske free to join?', a: 'Yes. The Starter account is free forever - no subscription needed to build a rate card and start receiving briefs. Pro and Elite add more packages and payout methods.' },
@@ -60,7 +60,7 @@ const COPY = {
     features: [
       { icon: IconShieldCheck, title: 'Verified profiles', desc: 'Identity and audience-stat checks before a creator is listed - the numbers you see are real.' },
       { icon: IconLockDollar, title: 'Escrow-protected budgets', desc: 'Nothing releases until you approve the work. Disputes are decided by a human.' },
-      { icon: IconRocket, title: 'One place per campaign', desc: 'Brief, chat, deliverables, approval and invoices - without the WhatsApp sprawl.' },
+      { icon: IconRocket, title: 'One place per campaign', desc: 'Brief, chat, deliverables, approval and invoices - all in one thread.' },
     ],
     faq: [
       { q: 'Is Creatorske free to join?', a: "Yes. Browse the full creator directory at zero cost, and only fund escrow once you're ready to brief a campaign." },

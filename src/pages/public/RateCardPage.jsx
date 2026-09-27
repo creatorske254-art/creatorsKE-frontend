@@ -7,7 +7,7 @@ import ReviewResponse from '@/features/reviews/components/ReviewResponse';
 import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
   IconCheck, IconSend, IconShare, IconLayoutGrid,
-  IconBrandWhatsapp, IconShieldCheck, IconCircleCheck, IconClock,
+  IconShieldCheck, IconCircleCheck, IconClock,
   IconStar, IconStarHalfFilled, IconLeaf, IconArrowRight, IconPackage, IconBookmark, IconBookmarkFilled,
 } from '@tabler/icons-react';
 import { toast } from 'sonner';
@@ -18,15 +18,6 @@ import { POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
 import Modal from '@/components/ui/Modal';
 import { EnquiryForm } from '@/features/enquiry';
 import EmptyState from '@/components/shared/EmptyState';
-
-function openWhatsApp(phone) {
-  const digits = (phone || '').replace(/\D/g, '');
-  if (!digits) {
-    toast.error("This creator hasn't added a WhatsApp number yet.");
-    return;
-  }
-  window.open(`https://wa.me/${digits}`, '_blank', 'noopener,noreferrer');
-}
 
 async function shareRateCard(name) {
   const url = window.location.href;
@@ -483,13 +474,6 @@ export default function RateCardPage() {
                 >
                   <IconSend className="icon-sm" /> Send enquiry
                 </button>
-                <button
-                  onClick={() => openWhatsApp(creator.phone)}
-                  className="flex items-center justify-center gap-2 w-full mt-2 px-6 py-3 rounded-[8px] bg-[#25D366] text-on-accent text-[13px] font-medium hover:opacity-90 transition-all"
-                >
-                  <IconBrandWhatsapp className="icon-sm" /> Chat on WhatsApp
-                </button>
-
                 <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[var(--grey-100)]">
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconShieldCheck className="text-[var(--status-success)] icon-sm" /> Secure</span>
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconCircleCheck className="text-[var(--status-success)] icon-sm" /> No spam</span>

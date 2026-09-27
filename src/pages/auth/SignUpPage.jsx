@@ -28,8 +28,10 @@ const creatorSchema = z.object({
   password:  z
     .string()
     .min(8, 'Password must be at least 8 characters')
+    .regex(/[a-z]/, 'Must contain a lowercase letter')
     .regex(/[A-Z]/, 'Must contain a capital letter')
-    .regex(/[0-9]/, 'Must contain a number'),
+    .regex(/[0-9]/, 'Must contain a number')
+    .regex(/[^A-Za-z0-9]/, 'Must contain a special character'),
 });
 
 const brandSchema = z.object({
@@ -40,8 +42,10 @@ const brandSchema = z.object({
   password:    z
     .string()
     .min(8, 'Password must be at least 8 characters')
+    .regex(/[a-z]/, 'Must contain a lowercase letter')
     .regex(/[A-Z]/, 'Must contain a capital letter')
-    .regex(/[0-9]/, 'Must contain a number'),
+    .regex(/[0-9]/, 'Must contain a number')
+    .regex(/[^A-Za-z0-9]/, 'Must contain a special character'),
 });
 
 // Password strength

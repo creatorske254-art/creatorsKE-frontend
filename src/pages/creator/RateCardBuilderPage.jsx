@@ -378,7 +378,7 @@ export default function RateCardBuilderPage() {
       ...p,
       name: account.name ?? `${account.firstName ?? ''} ${account.lastName ?? ''}`.trim(),
       handle: account.handle ?? '',
-      bio: c.bio ?? '', location: c.location ?? '', niche: c.niche ?? p.niche, languages: c.languages ?? '',
+      bio: c.bio ?? '', location: c.location ?? '', niche: c.niche || p.niche, languages: c.languages ?? '',
       followers: c.followers != null ? Number(c.followers).toLocaleString('en-KE') : '',
       engagement: c.eng != null ? String(c.eng) : '',
       reach: c.followers != null ? Math.round(c.followers * 0.4).toLocaleString('en-KE') : '',
@@ -474,7 +474,7 @@ export default function RateCardBuilderPage() {
   // publish (step 5)
   const [published, setPublished] = useState(false);
   const [copied, setCopied] = useState(false);
-  const slug = `creatorske.com/${profile.handle.toLowerCase().replace(/\s/g, "")}`;
+  const slug = `${window.location.host}/c/${profile.handle.toLowerCase().replace(/\s/g, "")}`;
 
   // Ensures a rate card exists (creating one on first save if the wizard was
   // opened at /creator/rate-card with no :id yet), then navigates to its
@@ -505,7 +505,7 @@ export default function RateCardBuilderPage() {
     }
   };
   const copyLink = () => {
-    navigator.clipboard?.writeText("https://" + slug);
+    navigator.clipboard?.writeText(`${window.location.protocol}//${slug}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };

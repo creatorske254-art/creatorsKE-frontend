@@ -7,7 +7,7 @@ const PLAN_KEY = ['plan', 'current'];
 
 export function usePlan() {
   const queryClient = useQueryClient();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, updateUser } = useAuth();
 
   const query = useQuery({
     queryKey: PLAN_KEY,
@@ -19,11 +19,13 @@ export function usePlan() {
 
   const upgradeMutation = useMutation({
     mutationFn: (payload) => planService.upgradePlan(payload),
-    onSuccess: () => {
+    onSuccess: (plan) => {
       queryClient.invalidateQueries({ queryKey: PLAN_KEY });
-      toast.success('Plan upgraded!');
+      // Login sends a creator with no plan to the plan picker, so the session needs the new plan too.
+      if (plan?.id) updateUser?.({ plan });
+      toast.success(plan?.price ? `You're on ${plan.name}.` : `You're on the free ${plan?.name ?? 'Starter'} plan.`);
     },
-    onError: () => toast.error('Could not upgrade plan.'),
+    onError: (err) => toast.error(err?.message || 'Could not change your plan.'),
   });
 
   const hasFeature = (feature) => !!query.data?.features?.includes(feature);

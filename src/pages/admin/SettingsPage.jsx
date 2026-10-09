@@ -41,10 +41,10 @@ const TABS = [
 ];
 
 const ADMIN_ROLES = [
-  { id: 'owner', label: 'Super admin', hint: 'Everything, including platform rules and admin roles' },
+  { id: 'super', label: 'Super admin', hint: 'Everything, including the admin team and deletion requests' },
   { id: 'moderator', label: 'Moderator', hint: 'Disputes, flagged accounts and reviews' },
-  { id: 'finance', label: 'Finance', hint: 'Escrow, payouts and platform fees' },
-  { id: 'support', label: 'Support', hint: 'Read access plus re-engagement tools' },
+  { id: 'finance', label: 'Finance', hint: 'Escrow and platform rules' },
+  { id: 'support', label: 'Support', hint: 'Read access plus re-engagement emails' },
 ];
 
 /* ── Profile ─────────────────────────────────────────────────────────────── */
@@ -262,6 +262,7 @@ function PlatformForm({ initial }) {
 const TEAM_KEY = ['admin', 'team'];
 
 function TeamTab() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const invalidate = () => queryClient.invalidateQueries({ queryKey: TEAM_KEY });
   const { data, isLoading } = useQuery({ queryKey: TEAM_KEY, queryFn: adminService.listTeam });
@@ -290,11 +291,12 @@ function TeamTab() {
         members={members}
         loading={isLoading}
         roles={ADMIN_ROLES}
-        onInvite={(email, role) => invite.mutate({ email, role })}
-        onChangeRole={(id, role) => changeRole.mutate({ id, role })}
-        onRemove={(id) => remove.mutate(id)}
+        onInvite={(email, role) => invite.mutateAsync({ email, role })}
+        onChangeRole={(id, role) => changeRole.mutateAsync({ id, role })}
+        onRemove={(id) => remove.mutateAsync(id)}
         inviting={invite.isPending}
-        description="Every admin signs in with 2FA. Roles limit which queues a person can act on; every action is written to the audit log."
+        canManage={(user?.adminRole ?? 'super') === 'super'}
+        description="Admins keep two-factor on once it is set up. Everyone can see every queue; the role decides which ones they can act on, and each action is logged on the server."
       />
     </div>
   );

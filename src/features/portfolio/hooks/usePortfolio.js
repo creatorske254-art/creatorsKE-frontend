@@ -21,7 +21,7 @@ export function usePortfolio(creatorId) {
       queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEY(creatorId) });
       toast.success('Portfolio saved');
     },
-    onError: () => toast.error('Failed to save portfolio'),
+    onError: (err) => toast.error(err?.message || 'Failed to save portfolio'),
   });
 
   const draftMutation = useMutation({
@@ -35,7 +35,7 @@ export function usePortfolio(creatorId) {
       queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEY(creatorId) });
       toast.success('Portfolio published');
     },
-    onError: () => toast.error('Failed to publish portfolio'),
+    onError: (err) => toast.error(err?.message || 'Failed to publish portfolio'),
   });
 
   const unpublishMutation = useMutation({
@@ -44,7 +44,7 @@ export function usePortfolio(creatorId) {
       queryClient.invalidateQueries({ queryKey: PORTFOLIO_KEY(creatorId) });
       toast.success('Portfolio unpublished');
     },
-    onError: () => toast.error('Failed to unpublish portfolio'),
+    onError: (err) => toast.error(err?.message || 'Failed to unpublish portfolio'),
   });
 
   // Debounced auto-save - fires 1.5s after the last change
@@ -59,10 +59,11 @@ export function usePortfolio(creatorId) {
     []
   );
 
+  // Analytics belong to the portfolio record, not the creator.
   const { data: analytics } = useQuery({
     queryKey: [...PORTFOLIO_KEY(creatorId), 'analytics'],
-    queryFn: () => portfolioService.getPortfolioAnalytics(creatorId),
-    enabled: !!creatorId,
+    queryFn: () => portfolioService.getPortfolioAnalytics(portfolio.id),
+    enabled: !!portfolio?.id,
   });
 
   return {

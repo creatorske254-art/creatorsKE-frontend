@@ -11,7 +11,7 @@ import {
   IconStar, IconStarHalfFilled, IconLeaf, IconArrowRight, IconPackage, IconBookmark, IconBookmarkFilled,
 } from '@tabler/icons-react';
 import { toast } from 'sonner';
-import api from '@/lib/api';
+import { getPublicRateCard } from '@/features/rate-card/services/rate-card.service';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
@@ -46,10 +46,7 @@ const PLATFORM_ICONS = {
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
-async function fetchRateCard(handle) {
-  const res = await api.get(`/public/creators/${handle}/rate-card`);
-  return res.data;
-}
+const fetchRateCard = getPublicRateCard;
 
 // ─── Small pieces ───────────────────────────────────────────────────────────
 
@@ -188,7 +185,8 @@ export default function RateCardPage() {
     staleTime: 60_000,
   });
 
-  const isOwnCard = isAuthenticated && user?.role === 'creator' && user?.handle === handle;
+  const isOwnCard = isAuthenticated && user?.role === 'creator'
+    && (user?.handle === handle || (user?.id != null && String(user.id) === String(data?.creator?.id)));
   const isBrand = isAuthenticated && user?.role === 'brand';
   const shortlistQuery = useQuery({ queryKey: ['brand-shortlist'], queryFn: () => brandService.getShortlist(), enabled: isBrand });
   const shortlistIds = new Set((shortlistQuery.data?.shortlist ?? shortlistQuery.data ?? []).map((x) => x.creatorId));
@@ -331,7 +329,7 @@ export default function RateCardPage() {
                         return (
                           <div key={p.name} className="flex items-center gap-2 px-3 py-2 rounded-[999px] bg-white/[0.08] border border-[0.5px] border-white/[0.15] text-[12px] font-medium text-white/80">
                             {Icon && <Icon size={14} />}
-                            {p.name} · {formatFollowers(p.followers)}
+                            {p.name}{p.followers ? ` · ${formatFollowers(p.followers)}` : ''}
                           </div>
                         );
                       })}

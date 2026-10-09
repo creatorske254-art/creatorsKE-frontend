@@ -160,9 +160,6 @@ export default function AccountsPage() {
         <div>
           <div className="page-title">Accounts & Moderation</div>
           <div className="page-subtitle">Review flagged creator and brand accounts and resolve verification issues.</div>
-          <div className="page-subtitle" style={{ marginTop: 'var(--space-4)', fontStyle: 'italic' }}>
-            Showing flagged accounts only. A full account directory needs a backend endpoint that doesn't exist yet.
-          </div>
         </div>
 
         {/* View + search */}

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import QRCode from 'qrcode';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
@@ -102,6 +103,15 @@ export function TwoFactorCard({ required = false }) {
   const [code, setCode] = useState('');
   const [setup, setSetup] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [qr, setQr] = useState(null);
+
+  // The QR encodes the otpauth:// link; it is drawn in the browser so the secret never leaves it.
+  useEffect(() => {
+    let live = true;
+    setQr(null);
+    if (setup?.otpauthUrl) QRCode.toDataURL(setup.otpauthUrl, { margin: 1, width: 248 }).then((url) => { if (live) setQr(url); }).catch(() => {});
+    return () => { live = false; };
+  }, [setup?.otpauthUrl]);
 
   async function beginSetup() {
     setOpen(true); setCode(''); setSetup(null);
@@ -134,7 +144,7 @@ export function TwoFactorCard({ required = false }) {
       collapsible={false}
       right={<span className={`tag ${enabled ? 'tag-success' : required ? 'tag-error' : 'tag-warning'}`}>{enabled ? 'Enabled' : required ? 'Required' : 'Not enabled'}</span>}
     >
-      <span className="field-hint">{required ? 'Every admin account must use an authenticator app. Sign-in is blocked until it is set up.' : 'A 6-digit code from an authenticator app, asked for at every sign-in.'}</span>
+      <span className="field-hint">{required ? 'Every admin account must use an authenticator app, and it cannot be switched off once set up.' : 'A 6-digit code from an authenticator app, asked for at every sign-in.'}</span>
       <div style={{ display: 'flex', gap: 'var(--space-8)', marginTop: 'var(--space-16)', flexWrap: 'wrap' }}>
         {enabled ? (
           <>
@@ -153,8 +163,8 @@ export function TwoFactorCard({ required = false }) {
           <li>Enter the 6-digit code the app shows to finish.</li>
         </ol>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)', padding: 'var(--space-16)', background: 'var(--page-bg)', border: '0.5px solid var(--grey-100)', borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-16)' }}>
-          <div style={{ width: 92, height: 92, borderRadius: 'var(--radius-md)', background: 'var(--white)', border: '0.5px solid var(--grey-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-300)', flexShrink: 0 }}>
-            <IconQrcode className="icon-xl" aria-hidden="true" />
+          <div style={{ width: 132, height: 132, borderRadius: 'var(--radius-md)', background: '#fff', border: '0.5px solid var(--grey-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--grey-300)', flexShrink: 0, overflow: 'hidden' }}>
+            {qr ? <img src={qr} alt="QR code to add Creatorske to your authenticator app" width={124} height={124} /> : <IconQrcode className="icon-xl" aria-hidden="true" />}
           </div>
           <div style={{ minWidth: 0 }}>
             <div className="field-label" style={{ marginBottom: 'var(--space-4)' }}>Setup key</div>
@@ -201,7 +211,7 @@ export function SessionsCard() {
   const when = (s) => s.current ? 'Now' : s.lastActiveAt ? formatRelativeDate(s.lastActiveAt) : (s.time ?? '');
 
   return (
-    <CollapsibleCard title="Active sessions" description="Devices signed in to this account. Sign out of any you don't recognise." right={<span className="tag tag-default">{sessions.length} {sessions.length === 1 ? 'device' : 'devices'}</span>}>
+    <CollapsibleCard title="Active sessions" description="Devices signed in to this account. Sign out of any you don't recognise." right={isError ? null : <span className="tag tag-default">{sessions.length} {sessions.length === 1 ? 'device' : 'devices'}</span>}>
       <div style={{ marginTop: 'var(--space-8)' }}>
         {isLoading && <Skeleton width="100%" height={56} />}
         {isError && <p className="field-hint">Couldn't load your sessions.</p>}

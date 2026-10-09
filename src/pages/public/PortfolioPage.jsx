@@ -8,7 +8,8 @@ import {
   IconEdit,
 } from '@tabler/icons-react';
 import { toast } from 'sonner';
-import api from '@/lib/api';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { getPublicPortfolio } from '@/features/portfolio/services/portfolio.service';
 import { usePageMeta } from '@/lib/usePageMeta';
 
 async function sharePortfolio(name) {
@@ -41,10 +42,7 @@ const NICHE_ICONS = { Comedy: IconMoodSmile, Beauty: IconSparkles, Travel: IconP
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
-async function fetchPortfolio(handle) {
-  const res = await api.get(`/public/creators/${handle}/portfolio`);
-  return res.data;
-}
+const fetchPortfolio = getPublicPortfolio;
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -62,6 +60,9 @@ function SectionSkeleton({ rows = 3 }) {
 
 export default function PortfolioPage() {
   const { handle } = useParams();
+  const { user } = useAuth();
+  // Only the creator who owns this portfolio gets the edit shortcut.
+  const isOwner = user?.role === 'creator' && user?.handle === handle;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['public-portfolio', handle],
@@ -110,12 +111,12 @@ export default function PortfolioPage() {
           Creatorske<span className="text-[var(--purple-500)]">.</span>
         </Link>
         <div className="flex items-center gap-2">
-          <Link
+          {isOwner && <Link
             to={`/creator/portfolio`}
             className="inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-[8px] border border-[0.5px] border-[var(--grey-200)] text-[var(--grey-600)] hover:bg-[var(--grey-50)]"
           >
             <IconEdit className="icon-sm" /> Edit portfolio
-          </Link>
+          </Link>}
           <Link
             to={`/c/${handle}`}
             className="inline-flex items-center gap-2 text-[13px] font-medium px-4 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent hover:opacity-90"
@@ -175,7 +176,9 @@ export default function PortfolioPage() {
                     className="w-[260px] h-[310px] bg-[var(--grey-50)] flex items-center justify-center overflow-hidden"
                     style={{ borderRadius: '60% 40% 60% 40% / 50% 60% 40% 50%' }}
                   >
-                    <IconUser className="text-[var(--grey-200)] icon-xl" />
+                    {creator.avatar
+                      ? <img src={creator.avatar} alt={creator.displayName} className="w-full h-full object-cover" />
+                      : <IconUser className="text-[var(--grey-200)] icon-xl" aria-hidden="true" />}
                   </div>
                 </div>
               </div>
@@ -217,7 +220,7 @@ export default function PortfolioPage() {
                       return (
                         <div key={e.title} className="flex items-start gap-4 p-4 rounded-[12px] hover:bg-white transition-colors group">
                           <div className="w-9 h-9 rounded-[8px] bg-[var(--grey-50)] group-hover:bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0 transition-colors">
-                            <Icon size={16} className="text-[var(--grey-500)] group-hover:text-[var(--purple-500)] transition-colors" />
+                            <Icon className="icon-md text-[var(--grey-500)] group-hover:text-[var(--purple-500)] transition-colors" />
                           </div>
                           <div>
                             <div className="text-[13px] font-semibold text-[var(--black)] mb-0.5">{e.title}</div>
@@ -243,7 +246,7 @@ export default function PortfolioPage() {
                     const Icon = NICHE_ICONS[n.name] ?? IconSparkles;
                     return (
                       <div key={n.name} className="bg-white rounded-[16px] p-6 flex flex-col gap-2 hover:bg-[var(--purple-50)] transition-colors">
-                        <Icon size={22} className="text-[var(--purple-500)] mb-1" />
+                        <Icon className="icon-lg text-[var(--purple-500)] mb-1" />
                         <div className="font-[var(--font-display)] text-[15px] font-semibold text-[var(--purple-600)]">{n.name}</div>
                         <div className="text-[12px] text-[var(--grey-600)] leading-[1.6]">{n.description}</div>
                       </div>
@@ -260,7 +263,7 @@ export default function PortfolioPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {whyWorkWithMe.map((w) => (
                     <div key={w.title} className="bg-white rounded-[16px] p-6 flex flex-col gap-3">
-                      {w.icon && <w.icon size={20} className="text-[var(--purple-500)]" />}
+                      {w.icon && <w.icon className="icon-lg text-[var(--purple-500)]" />}
                       <div className="font-[var(--font-display)] text-[15px] font-semibold text-[var(--black)]">{w.title}</div>
                       <div className="text-[12px] text-[var(--grey-600)] leading-[1.65]">{w.text}</div>
                     </div>
@@ -308,7 +311,7 @@ export default function PortfolioPage() {
                       return (
                         <div key={s.platform} className="bg-white rounded-[16px] p-5 grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] items-center gap-5 hover:bg-[var(--grey-50)] transition-colors">
                           <div className="w-11 h-11 rounded-[12px] bg-[var(--grey-50)] flex items-center justify-center flex-shrink-0">
-                            {Icon && <Icon size={20} className="text-[var(--grey-600)]" />}
+                            {Icon && <Icon className="icon-lg text-[var(--grey-600)]" />}
                           </div>
                           <div>
                             <div className="font-[var(--font-display)] text-[15px] font-semibold text-[var(--black)]">{s.platform}</div>

@@ -9,7 +9,7 @@ import { NotificationList } from '@/features/notifications';
 import NavbarSearch from './NavbarSearch';
 import NavAvatar from './NavAvatar';
 import PageTransition from './PageTransition';
-import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSettings, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
+import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSettings, IconShieldLock, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
 
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -326,6 +326,15 @@ export default function AdminLayout() {
 
           {/* ── Page content ──────────────────────────────── */}
           <main className="admin-layout__main">
+            {user && !user.twoFactorEnabled && (
+              <div className="info-callout" style={{ marginBottom: 'var(--space-24)' }}>
+                <IconShieldLock className="icon-md" aria-hidden="true" />
+                <div>
+                  <div className="info-callout-title">Turn on two-factor authentication</div>
+                  <p className="info-callout-desc">Admin accounts can move money and close accounts, so they need a code from an authenticator app at sign-in. Once it is on, it stays on. <NavLink to="/admin/settings?tab=account">Set it up in Account settings</NavLink></p>
+                </div>
+              </div>
+            )}
             <PageTransition />
           </main>
         </div>

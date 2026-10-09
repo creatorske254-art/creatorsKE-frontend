@@ -61,9 +61,9 @@ export function useBrandTeam() {
     members: query.data?.members ?? query.data ?? [],
     isLoading: query.isLoading,
     isError: query.isError,
-    invite: invite.mutate,
+    invite: invite.mutateAsync,
     isInviting: invite.isPending,
-    changeRole: changeRole.mutate,
-    remove: remove.mutate,
+    changeRole: changeRole.mutateAsync,
+    remove: remove.mutateAsync,
   };
 }

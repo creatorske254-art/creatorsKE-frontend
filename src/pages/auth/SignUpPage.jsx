@@ -47,6 +47,9 @@ const brandSchema = z.object({
     .regex(/[0-9]/, 'Must contain a number')
     .regex(/[^A-Za-z0-9]/, 'Must contain a special character'),
 });
+// A teammate invited to an existing brand joins that company, so they don't name one.
+const teammateSchema = brandSchema.extend({ companyName: z.string().optional() });
+
 
 // Password strength
 function getPwStrength(pw) {
@@ -228,8 +231,11 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
   const [showPassword, setShowPassword] = useState(false);
   const [pwValue, setPwValue] = useState('');
 
+  // Invite emails link here with ?email= so the invited address is the one that signs up.
+  const [searchParams] = useSearchParams();
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(creatorSchema),
+    defaultValues: { email: searchParams.get('email') ?? '' },
   });
 
   const onSubmit = async (data) => {
@@ -334,8 +340,11 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
   const [showPassword, setShowPassword] = useState(false);
   const [pwValue, setPwValue] = useState('');
 
+  const [searchParams] = useSearchParams();
+  const invitedEmail = searchParams.get('email') ?? '';
   const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(brandSchema),
+    resolver: zodResolver(invitedEmail ? teammateSchema : brandSchema),
+    defaultValues: { email: invitedEmail },
   });
 
   const onSubmit = async (data) => {
@@ -366,11 +375,15 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
+          {invitedEmail ? (
+            <p className="text-hint" style={{ margin: 0 }}>You were invited to a brand team. Sign up with the invited email and you join that brand's account.</p>
+          ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Company name <span style={{ color: 'var(--status-error)' }}>*</span></label>
             <div className="input-wrapper"><IconBuildingStore className="icon-sm input-icon left" aria-hidden="true" /><input type="text" placeholder="e.g. Acme Kenya Ltd" {...register('companyName')} style={{ ...inputStyle(errors.companyName), paddingLeft: 'var(--space-40)' }} /></div>
             {errors.companyName && <span className="field-hint error">{errors.companyName.message}</span>}
           </div>
+          )}
 
           <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>

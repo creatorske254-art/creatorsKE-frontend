@@ -48,7 +48,7 @@ function MarkDeliveredModal({ open, onClose, onSubmit, isSubmitting }) {
   return (
     <Modal open={open} onClose={onClose} title="Mark this campaign as delivered" size="sm">
       <p style={{ fontSize: 13, color: 'var(--grey-600)', lineHeight: 1.6, marginBottom: 'var(--space-16)' }}>
-        Attach the final files (optional) and let the brand know it's ready. They'll have 48 hours to review before payment is released.
+        Attach the final files (optional) and let the brand know it's ready. Payment is released when they approve the delivery.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
@@ -137,9 +137,16 @@ function DeliverySection({ enquiry, variant }) {
               ))}
             </ul>
           )}
-          <button type="button" className="btn btn-purple btn-full" onClick={() => setModalOpen(true)}>
-            <IconTruckDelivery className="icon-sm" aria-hidden="true" /> Mark as delivered
-          </button>
+          {/* Work starts once the brand's payment is held in escrow. */}
+          {campaign.paidOn ? (
+            <button type="button" className="btn btn-purple btn-full" onClick={() => setModalOpen(true)}>
+              <IconTruckDelivery className="icon-sm" aria-hidden="true" /> Mark as delivered
+            </button>
+          ) : (
+            <p className="field-hint" style={{ margin: 0 }}>
+              Waiting for {campaign.brand ?? 'the brand'} to pay {campaign.price ? `KES ${Number(campaign.price).toLocaleString('en-KE')}` : 'the booking'} into escrow. You can start once it arrives; we will notify you.
+            </p>
+          )}
         </>
       )}
 
@@ -230,7 +237,8 @@ export default function EnquiryDetail({
   // equivalent handle, so a creator sees nothing extra here.
   const subtitle = variant === 'brand' ? enquiry.creatorHandle : null;
   const meta = STATUS_META[enquiry.status] ?? STATUS_META[STATUS.NEW];
-  const canRespond = variant === 'creator' && enquiry.status === STATUS.NEW;
+  // A reply moves an enquiry to In review; the creator can still accept or decline it from there.
+  const canRespond = variant === 'creator' && [STATUS.NEW, STATUS.IN_REVIEW].includes(enquiry.status);
 
   return (
     <div className="card card-p-md enq-detail">

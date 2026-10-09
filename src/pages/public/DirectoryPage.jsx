@@ -22,7 +22,7 @@ const AVAIL_META = {
 // ── Creator Card ───────────────────────────────────────────────────────────
 function CreatorCard({ creator, index, onOpen, onEnquire, showShortlist, shortlisted, onToggleShortlist }) {
   const [hovered, setHovered] = useState(false);
-  const a = AVAIL_META[creator.avail];
+  const a = AVAIL_META[creator.avail] ?? AVAIL_META.available;
 
   return (
     <div

@@ -191,7 +191,7 @@ export default function MoneyPage() {
     const numericAmount = Number(String(amount).replace(/,/g, '')) || 0
     if (!numericAmount || !primaryMethod) return
     requestPayout(
-      { amount: numericAmount, methodId: primaryMethod.id, method: primaryMethod.name },
+      { amount: numericAmount, methodId: primaryMethod.id, method: primaryMethod.type },
       { onSuccess: () => { setWithdrawnAmount(numericAmount); setWithdrawDone(true) } }
     )
   }

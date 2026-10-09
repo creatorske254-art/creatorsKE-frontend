@@ -5,6 +5,7 @@ import { useEnquiries } from '@/features/enquiry/hooks/useEnquiries';
 import { useRateCard } from '@/features/rate-card/hooks/useRateCard';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { formatCount } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
 import { ChartFrame, ChartPeriod, TrendChart, BarChart, DonutChart, Sparkline, Meter, kes } from '@/components/charts';
@@ -212,7 +213,7 @@ export default function DashboardPage() {
             <div className="stat-card-value" style={{ fontSize: 44 }}>
               {statsLoading
                 ? <Skeleton width={90} height={38} />
-                : statsError ? '-' : `${Math.round((stats?.earningsTotal ?? earningsTotal) / 1000)}K`}
+                : statsError ? '-' : formatCount(Number(stats?.earningsTotal ?? earningsTotal) || 0)}
             </div>
             <Delta value={stats?.earningsDelta ?? halfDelta(earningsValues)} suffix={`vs previous ${earningsPeriod}`} />
           </div>

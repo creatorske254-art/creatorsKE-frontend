@@ -1,5 +1,5 @@
 // Services
-export { rateCardService } from './services/rate-card.service';
+export { rateCardService, platformNames, availabilityKey } from './services/rate-card.service';
 
 // Hooks
 export { useRateCard, useRateCards } from './hooks/useRateCard';

@@ -12,6 +12,8 @@ export const brandService = {
   listCampaigns: (params) => api.get('/brands/campaigns', { params }).then((r) => r.data),
   getCampaign: (id) => api.get(`/brands/campaigns/${id}`).then((r) => r.data),
   updateCampaign: (id, data) => api.put(`/brands/campaigns/${id}`, data).then((r) => r.data),
+  // Sends an M-Pesa STK prompt for the booking amount; the money is held in escrow once paid.
+  payCampaign: (id, phoneNumber) => api.post(`/brands/campaigns/${id}/pay`, { phoneNumber }).then((r) => r.data),
   approveCampaign: (id) => api.post(`/brands/campaigns/${id}/approve`).then((r) => r.data),
   disputeCampaign: (id, evidence) => api.post(`/brands/campaigns/${id}/dispute`, { evidence }).then((r) => r.data),
 

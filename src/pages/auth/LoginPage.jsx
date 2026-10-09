@@ -37,32 +37,58 @@ export default function LoginPage() {
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Set when the account has two-factor on: the password was right, a 6-digit code is next.
+  const [challenge, setChallenge] = useState(null);
+  const [code, setCode] = useState('');
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
   });
 
+  const finishLogin = ({ token, user }) => {
+    login(token, user);
+    toast.success('Welcome back!');
+
+    // ?redirect= covers the common case; sessionStorage is the durable
+    // fallback for flows that hop through signup/verify-email first.
+    const redirectTo = searchParams.get('redirect') || sessionStorage.getItem(POST_AUTH_REDIRECT_KEY);
+    sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+
+    // A creator who hasn't chosen a plan yet picks one before their dashboard.
+    if (!redirectTo && user.role === 'creator' && !user.plan) {
+      navigate('/onboarding/plan');
+      return;
+    }
+    navigate(redirectTo || ROLE_HOME[user.role] || '/');
+  };
+
   const onSubmit = async (data) => {
     setLoading(true);
     try {
       const res = await authService.login(data);
-      login(res.data.token, res.data.user);
-      toast.success('Welcome back!');
-
-      // ?redirect= covers the common case; sessionStorage is the durable
-      // fallback for flows that hop through signup/verify-email first.
-      const redirectTo = searchParams.get('redirect') || sessionStorage.getItem(POST_AUTH_REDIRECT_KEY);
-      sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
-
-      // Best-effort heuristic pending backend confirmation of the `user.plan` field:
-      // a creator who hasn't chosen a plan yet gets sent to pick one before their dashboard.
-      if (!redirectTo && res.data.user.role === 'creator' && !res.data.user.plan) {
-        navigate('/onboarding/plan');
+      if (res.data.twoFactorRequired) {
+        setChallenge(res.data.challengeToken);
+        setCode('');
         return;
       }
-      navigate(redirectTo || ROLE_HOME[res.data.user.role] || '/');
+      finishLogin(res.data);
     } catch (err) {
       toast.error(err.message ?? 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmitCode = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await authService.loginTwoFactor(challenge, code.replace(/\s+/g, ''));
+      finishLogin(res.data);
+    } catch (err) {
+      // An expired challenge (5 minutes) sends the user back to email and password.
+      if (err.status === 401) { setChallenge(null); setCode(''); }
+      toast.error(err.message ?? 'That code did not work. Try again.');
     } finally {
       setLoading(false);
     }
@@ -112,17 +138,47 @@ export default function LoginPage() {
           boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
           <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
-            Welcome back
+            {challenge ? 'Two-factor check' : 'Welcome back'}
           </h1>
           <p className="page-subtitle" style={{ marginBottom: 'var(--space-24)' }}>
-            Sign in to your account.
+            {challenge ? 'Enter the 6-digit code from your authenticator app.' : 'Sign in to your account.'}
           </p>
+
+          {challenge && (
+            <form onSubmit={onSubmitCode} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
+                <label className="field-label" htmlFor="login-2fa-code">Authentication code</label>
+                <input
+                  id="login-2fa-code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  autoFocus
+                  maxLength={7}
+                  placeholder="123456"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/[^\d\s]/g, ''))}
+                  style={{ ...inputStyle(false), letterSpacing: '0.3em', textAlign: 'center', fontSize: '18px' }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading || code.replace(/\s+/g, '').length !== 6}
+                style={{ width: '100%', padding: 'var(--space-16) var(--space-32)', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading || code.replace(/\s+/g, '').length !== 6 ? 'var(--grey-300)' : 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)' }}
+              >
+                {loading && <IconLoader2 className="icon-md" style={{ animation: 'spin 0.8s linear infinite' }} />}
+                {loading ? 'Checking' : 'Verify and sign in'}
+              </button>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setChallenge(null); setCode(''); }}>
+                Use a different account
+              </button>
+            </form>
+          )}
 
           {/* Google sign-in intentionally absent until the backend has an OAuth
               endpoint - a button that can only say "coming soon" is a mockup. */}
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} style={challenge ? { display: 'none' } : undefined}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
 
               {/* Email */}

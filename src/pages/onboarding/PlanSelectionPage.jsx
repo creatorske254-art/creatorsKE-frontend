@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePageMeta } from '@/lib/usePageMeta'
 import { usePlan } from '@/features/plans/hooks/usePlan'
+import { useAuth } from '@/context/AuthContext'
 import { CREATOR_PRICING_TIERS } from '@/features/plans/constants/pricingTiers'
 import Modal from '@/components/ui/Modal'
 import { IconArrowRight, IconCheck, IconDeviceMobile, IconPencil } from '@tabler/icons-react';
@@ -392,8 +393,10 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
  *   firstName  - pre-filled from signup (string)
  *   onComplete(plan) - called when the user clicks "Start building my rate card"
  */
-export default function PlanSelectionPage({ firstName, onComplete }) {
+export default function PlanSelectionPage({ firstName: firstNameProp, onComplete }) {
   usePageMeta('Choose Your Plan', 'Pick the Creatorske plan that fits you. Start free, upgrade anytime.');
+  const { user } = useAuth()
+  const firstName = firstNameProp ?? user?.firstName
   const navigate = useNavigate()
   const { upgrade, isUpgrading } = usePlan()
   const [selectedPlan, setSelectedPlan] = useState(null)

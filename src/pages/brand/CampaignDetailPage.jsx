@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
@@ -16,6 +16,7 @@ import { useCampaign, useCampaignActions } from '@/features/brand-dashboard/hook
 import { MessageThread } from '@/features/messaging'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { reviewService } from '@/features/reviews/services/review.service'
+import { brandService } from '@/features/brand-dashboard/services/brand.service'
 import Skeleton from '@/components/ui/Skeleton'
 import ErrorState from '@/components/shared/ErrorState'
 import { usePageMeta } from '@/lib/usePageMeta'
@@ -151,6 +152,45 @@ function ReviewForm({ onSubmit, isSubmitting }) {
   )
 }
 
+// Booking payment into escrow by M-Pesa STK push. After the prompt goes out the campaign is
+// re-read every few seconds until the payment lands (or two minutes pass).
+function FundEscrowCard({ campaignId, amount, onPaid }) {
+  const [phone, setPhone] = useState('')
+  const [waitingSince, setWaitingSince] = useState(null)
+  const pay = useMutation({
+    mutationFn: () => brandService.payCampaign(campaignId, phone.trim()),
+    onSuccess: (res) => { setWaitingSince(Date.now()); toast.success(res?.message || 'Check your phone and enter your M-Pesa PIN.') },
+    onError: (err) => toast.error(err?.message || 'Could not start the M-Pesa payment.'),
+  })
+  useEffect(() => {
+    if (!waitingSince) return undefined
+    const t = setInterval(() => {
+      if (Date.now() - waitingSince > 120_000) { setWaitingSince(null); toast.error('No payment yet. If you approved it on your phone, refresh in a minute.'); return }
+      onPaid()
+    }, 4000)
+    return () => clearInterval(t)
+  }, [waitingSince, onPaid])
+
+  return (
+    <div className="card card-p-md">
+      <div className="section-title" style={{ marginBottom: 'var(--space-8)' }}>Pay into escrow</div>
+      <p className="text-body-sm" style={{ color: 'var(--grey-500)', marginBottom: 'var(--space-16)' }}>
+        The creator starts once KES {Number(amount).toLocaleString('en-KE')} is held in escrow. It is released only when you approve the delivery.
+      </p>
+      {waitingSince ? (
+        <div className="alert alert-info"><IconClock className="icon-sm" aria-hidden="true" /><div>Check your phone and enter your M-Pesa PIN. This page updates when the payment arrives.</div></div>
+      ) : (
+        <div style={{ display: 'flex', gap: 'var(--space-8)', flexWrap: 'wrap' }}>
+          <input className="input input-md" style={{ flex: '1 1 200px' }} inputMode="tel" placeholder="M-Pesa number, e.g. 0712345678" aria-label="M-Pesa number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <button className={`btn btn-purple${pay.isPending ? ' btn-loading' : ''}`} disabled={pay.isPending || phone.replace(/\D/g, '').length < 9} onClick={() => pay.mutate()}>
+            Pay KES {Number(amount).toLocaleString('en-KE')}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CampaignDetailPage() {
   usePageMeta('Campaign Details', 'Review deliverables, messages, and payment details for this campaign on Creatorske.');
   const { id } = useParams()
@@ -174,8 +214,12 @@ export default function CampaignDetailPage() {
     onError: (err) => toast.error(err?.message || 'Could not post your review.'),
   })
 
+  // Snapshotted on the booking when it was made; older bookings fall back to the platform default.
+  const disputeDays = Number(base.disputeWindowDays ?? 7)
   const price = Number(base.price ?? 0)
-  const platformFee = useMemo(() => Math.round(price * 0.1), [price])
+  // The fee rate is an admin setting, fixed onto the campaign when it was booked.
+  const feePct = Number(base.platformFeePct ?? 10)
+  const platformFee = useMemo(() => Math.round(price * feePct / 100), [price, feePct])
   const netPayout = price - platformFee
 
   function handleDownloadInvoice() {
@@ -187,7 +231,7 @@ export default function CampaignDetailPage() {
       `Platform: ${base.platform}`,
       '',
       `Amount: KES ${price.toLocaleString()}`,
-      `Platform fee (10%): KES ${platformFee.toLocaleString()}`,
+      `Platform fee (${feePct}%): KES ${platformFee.toLocaleString()}`,
       `Net payout to creator: KES ${netPayout.toLocaleString()}`,
       '',
       `Paid via: ${base.paymentMethod}`,
@@ -206,8 +250,9 @@ export default function CampaignDetailPage() {
   // ASSUMPTION: no file-storage endpoint is documented - deliveredFiles are
   // mock filenames with no real content anywhere, so there's nothing to
   // download. Toast is honest about that rather than faking a file.
-  function handleDownloadFile(name) {
-    toast.info(`${name} will be downloadable once file storage is connected.`)
+  function handleDownloadFile(file) {
+    if (file?.url) window.open(file.url, '_blank', 'noopener,noreferrer')
+    else toast.error('This file is no longer available.')
   }
 
   const handleApprove = () => approve()
@@ -280,11 +325,15 @@ export default function CampaignDetailPage() {
               </div>
               <div className="hr" />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }} className="text-body-sm">
-                <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>Revision policy</span><span style={{ fontWeight: 500 }}>{base.revisionPolicy}</span></div>
+                {base.revisionPolicy && <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>Revision policy</span><span style={{ fontWeight: 500 }}>{base.revisionPolicy}</span></div>}
                 <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>Usage rights</span><span style={{ fontWeight: 500, textAlign: 'right', maxWidth: 240 }}>{base.usageRights}</span></div>
                 <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>Timeline</span><span style={{ fontWeight: 500 }}>{base.goLiveDate}</span></div>
               </div>
             </div>
+
+            {!base.paidOn && ['in_progress', 'delivered'].includes(status) && (
+              <FundEscrowCard campaignId={id} amount={base.price} onPaid={refetch} />
+            )}
 
             {/* Delivery & approval (status-dependent) */}
             {status === 'delivered' && (
@@ -292,7 +341,7 @@ export default function CampaignDetailPage() {
                 <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Delivery</div>
                 <div className="alert alert-warning" style={{ marginBottom: 'var(--space-16)' }}>
                   <IconClock className="icon-sm" />
-                  <div>The creator has marked this as delivered. Review the files below, then approve or raise a dispute within 48 hours.</div>
+                  <div>The creator has marked this as delivered. Review the files below, then approve to release payment or raise a dispute within {disputeDays} days of delivery.</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
                   {(base.deliveredFiles ?? []).map((f, i) => (
@@ -302,7 +351,7 @@ export default function CampaignDetailPage() {
                       <span style={{ color: 'var(--grey-400)' }}>{f.size}</span>
                       <IconDownload className="icon-sm"
             style={{ color: 'var(--grey-400)', cursor: 'pointer' }}
-            onClick={() => handleDownloadFile(f.name)}
+            onClick={() => handleDownloadFile(f)}
                       />
                     </div>
                   ))}
@@ -420,13 +469,19 @@ export default function CampaignDetailPage() {
               <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Invoice summary</div>
               <div className="text-body-sm" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-12)' }}>
                 <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>{base.package}</span><span style={{ fontWeight: 500 }}>KES {base.price.toLocaleString()}</span></div>
-                <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>Platform fee (10%)</span><span style={{ fontWeight: 500 }}>– KES {platformFee.toLocaleString()}</span></div>
+                <div className="row-between"><span style={{ color: 'var(--grey-400)' }}>Platform fee ({feePct}%)</span><span style={{ fontWeight: 500 }}>– KES {platformFee.toLocaleString()}</span></div>
                 <div className="hr" style={{ margin: 'var(--space-2) 0' }} />
                 <div className="row-between"><span style={{ fontWeight: 600 }}>Creator payout</span><span style={{ fontWeight: 600 }}>KES {netPayout.toLocaleString()}</span></div>
               </div>
               <div className="text-caption" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', color: 'var(--grey-400)', textTransform: 'none', letterSpacing: 0, marginBottom: 'var(--space-16)' }}>
-                <div className="row-between"><span>Paid via</span><span>{base.paymentMethod}</span></div>
-                <div className="row-between"><span>Paid on</span><span>{base.paidOn}</span></div>
+                {base.paidOn ? (
+                  <>
+                    <div className="row-between"><span>Paid via</span><span>{base.paymentMethod}</span></div>
+                    <div className="row-between"><span>Paid on</span><span>{base.paidOn}</span></div>
+                  </>
+                ) : (
+                  <div className="row-between"><span>Payment</span><span>Not yet received</span></div>
+                )}
               </div>
               <button className="btn btn-ghost btn-sm btn-full" onClick={handleDownloadInvoice}>
                 <IconDownload className="icon-sm" />
@@ -437,7 +492,7 @@ export default function CampaignDetailPage() {
             <div className="card card-p-md">
               <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Need help?</div>
               <p className="text-body-sm" style={{ color: 'var(--grey-600)', marginBottom: 'var(--space-12)' }}>
-                If something doesn't look right, you have 48 hours after delivery to raise a dispute.
+                If something doesn't look right, you have {disputeDays} days after delivery to raise a dispute.
               </p>
               <a href="mailto:support@creatorske.com" className="btn btn-ghost btn-sm btn-full">
                 <IconMessageCircle className="icon-sm" />

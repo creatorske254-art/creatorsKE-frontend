@@ -6,52 +6,61 @@ import Modal from '@/components/ui/Modal';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import { getInitials } from '@/lib/utils';
 import { Field } from './SettingsShell';
-import { IconMail, IconUserPlus, IconDotsVertical } from '@tabler/icons-react';
+import { IconMail, IconUserPlus, IconDotsVertical, IconLoader2 } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
 
 /*
    Members of a shared account (a brand's marketing team, the admin staff).
    Roles are passed in so the same card serves both: the brand gets
    owner / admin / member / finance, admins get super admin / moderator /
-   finance / support. `onInvite(email, role)` and `onRemove(id)` are the
-   role's own service seams, `onChangeRole(id, role)` too; the member list
-   follows `members` whenever the parent's query refreshes.
+   finance / support. `onInvite(email, role)`, `onChangeRole(id, role)` and
+   `onRemove(id)` return the mutation's promise: the card confirms only once
+   the server has, and the parent's onError toast covers a refusal. The list
+   follows `members` whenever the parent's query refreshes. `canManage` hides
+   the invite button and member menus from people whose role cannot use them.
 */
-export function TeamCard({ title = 'Team members', members: initial = [], roles, onInvite, onRemove, onChangeRole, inviting = false, loading = false, description }) {
+export function TeamCard({ title = 'Team members', members: initial = [], roles, onInvite, onRemove, onChangeRole, inviting = false, loading = false, description, canManage = true }) {
   const { user } = useAuth();
   const [members, setMembers] = useState(initial);
   useEffect(() => { setMembers(initial); }, [initial]);
+  const [busyId, setBusyId] = useState(null);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState(roles[Math.min(1, roles.length - 1)].id);
   const [removeTarget, setRemoveTarget] = useState(null);
   const [menuFor, setMenuFor] = useState(null);
 
-  function submitInvite() {
+  async function submitInvite() {
     const clean = email.trim().toLowerCase();
     if (!clean.includes('@')) return;
-    onInvite?.(clean, role);
-    setMembers((m) => [...m, { id: `inv_${Date.now()}`, name: clean.split('@')[0], email: clean, role, status: 'invited' }]);
-    setInviteOpen(false); setEmail('');
+    try {
+      await onInvite?.(clean, role);
+      setInviteOpen(false); setEmail('');
+    } catch { /* the parent's mutation toasts the reason; the dialog stays open to fix it */ }
   }
-  function changeRole(id, next) {
-    setMembers((m) => m.map((x) => (x.id === id ? { ...x, role: next } : x)));
+  async function changeRole(id, next) {
     setMenuFor(null);
-    onChangeRole?.(id, next);
-    toast.success(`Role updated to ${roles.find((r) => r.id === next)?.label ?? next}.`);
+    setBusyId(id);
+    try {
+      await onChangeRole?.(id, next);
+      toast.success(`Role updated to ${roles.find((r) => r.id === next)?.label ?? next}.`);
+    } catch { /* toasted by the parent */ } finally { setBusyId(null); }
   }
-  function remove() {
-    onRemove?.(removeTarget.id);
-    setMembers((m) => m.filter((x) => x.id !== removeTarget.id));
-    toast.success(removeTarget.status === 'invited' ? 'Invitation withdrawn.' : `${removeTarget.name} removed.`);
+  async function remove() {
+    const target = removeTarget;
     setRemoveTarget(null);
+    setBusyId(target.id);
+    try {
+      await onRemove?.(target.id);
+      toast.success(target.status === 'invited' ? 'Invitation withdrawn.' : `${target.name} removed.`);
+    } catch { /* toasted by the parent */ } finally { setBusyId(null); }
   }
 
   return (
     <CollapsibleCard
       title={title}
       collapsible={false}
-      right={<button className="btn btn-primary btn-sm" onClick={() => setInviteOpen(true)}><IconUserPlus className="icon-sm" aria-hidden="true" />Invite</button>}
+      right={canManage ? <button className="btn btn-primary btn-sm" onClick={() => setInviteOpen(true)}><IconUserPlus className="icon-sm" aria-hidden="true" />Invite</button> : null}
     >
       {description && <p className="field-hint" style={{ marginBottom: 'var(--space-8)' }}>{description}</p>}
       <div>
@@ -72,7 +81,8 @@ export function TeamCard({ title = 'Team members', members: initial = [], roles,
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)', flexShrink: 0 }}>
                 <span className="tag tag-default">{r?.label ?? m.role}</span>
-                {!isSelf && m.role !== 'owner' && (
+                {busyId === m.id && <IconLoader2 className="icon-sm" style={{ animation: 'spin 0.8s linear infinite', color: 'var(--grey-400)' }} aria-label="Saving" />}
+                {canManage && !isSelf && m.role !== 'owner' && busyId !== m.id && (
                   <button className="btn btn-ghost btn-square btn-xs" aria-label={`Actions for ${m.name}`} aria-haspopup="menu" aria-expanded={menuFor === m.id} onClick={() => setMenuFor(menuFor === m.id ? null : m.id)}>
                     <IconDotsVertical className="icon-sm" aria-hidden="true" />
                   </button>

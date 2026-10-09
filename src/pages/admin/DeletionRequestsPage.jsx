@@ -13,7 +13,7 @@ import { IconUserMinus, IconCheck, IconX, IconAlertTriangle, IconSearch } from '
    Deletion requests (admin). A user asked for their account to be erased.
    There is a grace period (they can cancel), and a request can't be approved
    while the account still has open bookings, unresolved disputes or funds
-   in escrow (`openItems`). Approve = schedule the erasure; reject needs a
+   in escrow (`openItems`). Approve = erase the account now; reject needs a
    written reason that is sent to the user. Backed by GET /admin/deletion-
    requests and POST /admin/deletion-requests/:id/{approve|reject}.
 */
@@ -156,7 +156,7 @@ export default function DeletionRequestsPage() {
               <Meter label="Decided within grace period" value={rows.length ? Math.round(((rows.length - counts.expiring) / rows.length) * 100) : 0} max={100} status={counts.expiring ? 'warning' : undefined} />
               <Meter label="Pending that are unblocked" value={counts.pending - counts.blocked} max={Math.max(1, counts.pending)} detail={`${counts.pending - counts.blocked} / ${counts.pending}`} />
             </div>
-            <p className="text-hint" style={{ marginTop: 'var(--space-12) ', marginBottom: 0 }}>Approved accounts are erased 24h after approval; personal data in completed bookings is pseudonymised, not removed, for the legally required retention period.</p>
+            <p className="text-hint" style={{ marginTop: 'var(--space-12) ', marginBottom: 0 }}>Approving erases the account at once. Booking, payment and review records the platform must keep stay on file without the account.</p>
           </section>
         </div>
       </div>
@@ -166,7 +166,7 @@ export default function DeletionRequestsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--grey-600)' }}>
               {decision.kind === 'approve'
-                ? <>This schedules <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong>'s account ({decision.row.user?.email}) for erasure in 24 hours. Rate cards, portfolio and messages are removed. Type <strong style={{ color: 'var(--black)' }}>DELETE</strong> to confirm.</>
+                ? <>This erases <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong>'s account ({decision.row.user?.email}) now. Rate cards, portfolio and messages are removed and it cannot be undone. Type <strong style={{ color: 'var(--black)' }}>DELETE</strong> to confirm.</>
                 : <>Tell <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong> why the request can't be honoured yet. They receive this by email.</>}
             </p>
             {decision.kind === 'approve' ? (

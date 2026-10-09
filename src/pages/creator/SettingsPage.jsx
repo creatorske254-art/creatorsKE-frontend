@@ -540,14 +540,17 @@ function AccountTab() {
     }
   }
 
+  // Deleting files a request our team reviews; the account stays until it is approved.
   async function handleConfirmDelete() {
     setDeleting(true);
     try {
       await authService.deleteAccount();
-    } catch {
-      // Best-effort - still sign the user out locally even if the request fails,
-      // consistent with logout()'s own best-effort pattern in AuthContext.
+    } catch (err) {
+      toast.error(err?.message || 'Could not request deletion. Try again.');
+      setDeleting(false);
+      return;
     }
+    toast.success("Deletion requested. We'll email you once it's done; sign in before then to cancel.");
     logout();
     navigate('/');
   }
@@ -639,8 +642,8 @@ function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
   return (
     <Modal open={open} onClose={deleting ? () => {} : onCancel} title="Delete your account?" size="sm">
       <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
-        This permanently deletes your creator profile, rate cards, portfolio, and booking history.
-        Pending payouts are forfeited. This cannot be undone.
+        Our team deletes your creator profile, rate cards, portfolio and booking history once nothing is open on
+        the account: bookings in progress and pending payouts must finish first. Once deleted, it cannot be undone.
       </p>
       <label className="field-label" style={{ display: "block", marginBottom: 'var(--space-8)' }}>
         Type <strong>DELETE</strong> to confirm

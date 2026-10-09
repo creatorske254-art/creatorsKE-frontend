@@ -75,23 +75,29 @@ export function DisplayCard() {
 
 /** Request a copy of everything the platform holds on the account (POST /users/export). */
 export function DataExportCard({ description }) {
-  const [requested, setRequested] = useState(false);
+  const [exportId, setExportId] = useState(null);
   const [busy, setBusy] = useState(false);
   async function request() {
     setBusy(true);
     try {
-      await userService.requestExport();
-      setRequested(true);
-      toast.success('Export requested. Watch your inbox for the download link.');
+      const res = await userService.requestExport();
+      setExportId(res?.id ?? null);
+      toast.success('Your export is ready. We also emailed you the link.');
     } catch (err) { toast.error(err?.message || 'Could not request your export.'); }
     finally { setBusy(false); }
   }
   return (
     <CollapsibleCard title="Your data" collapsible={false}>
-      <p className="field-hint" style={{ marginBottom: 'var(--space-16)' }}>{description ?? 'Download a copy of your profile, messages, bookings and transactions as a ZIP of JSON and CSV files. We email you a link within 24 hours.'}</p>
-      <button className={`btn btn-secondary btn-sm${busy ? ' btn-loading' : ''}`} disabled={requested || busy} onClick={request}>
-        <IconDownload className="icon-sm" aria-hidden="true" />{requested ? 'Export requested' : 'Request a data export'}
-      </button>
+      <p className="field-hint" style={{ marginBottom: 'var(--space-16)' }}>{description ?? 'Download a copy of your profile, rate cards, messages, bookings and transactions as a JSON file. The link works for 7 days.'}</p>
+      {exportId ? (
+        <a className="btn btn-secondary btn-sm" href={userService.exportDownloadUrl(exportId)} target="_blank" rel="noopener noreferrer">
+          <IconDownload className="icon-sm" aria-hidden="true" />Download your data
+        </a>
+      ) : (
+        <button className={`btn btn-secondary btn-sm${busy ? ' btn-loading' : ''}`} disabled={busy} onClick={request}>
+          <IconDownload className="icon-sm" aria-hidden="true" />Request a data export
+        </button>
+      )}
     </CollapsibleCard>
   );
 }

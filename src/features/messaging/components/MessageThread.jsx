@@ -161,6 +161,7 @@ export default function MessageThread({ threadId }) {
           className="input input-md"
           style={{ flex: 1 }}
           placeholder="Write a message…"
+          aria-label="Message"
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}

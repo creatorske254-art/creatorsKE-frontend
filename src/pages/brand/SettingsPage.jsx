@@ -33,7 +33,7 @@ const TEAM_ROLES = [
   { id: 'owner', label: 'Owner', hint: 'Full access, billing, can delete the account' },
   { id: 'admin', label: 'Admin', hint: 'Manage campaigns, team and settings' },
   { id: 'member', label: 'Member', hint: 'Shortlist, enquire and run campaigns' },
-  { id: 'finance', label: 'Finance', hint: 'Invoices, transactions and payment methods only' },
+  { id: 'finance', label: 'Finance', hint: 'Pays bookings, manages invoices and payment methods' },
 ];
 
 // Shared bits
@@ -489,14 +489,17 @@ function AccountTab() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Deleting files a request our team reviews; the account stays until it is approved.
   async function handleConfirmDelete() {
     setDeleting(true);
     try {
       await authService.deleteAccount();
-    } catch {
-      // Best-effort - sign out locally even if the request fails, matching
-      // logout()'s own best-effort pattern in AuthContext.
+    } catch (err) {
+      toast.error(err?.message || 'Could not request deletion. Try again.');
+      setDeleting(false);
+      return;
     }
+    toast.success("Deletion requested. We'll email you once it's done; sign in before then to cancel.");
     logout();
     navigate('/');
   }
@@ -549,6 +552,7 @@ function BillingTab({ prefs, setPrefs, onDirty }) {
 // Team tab
 function TeamTab() {
   const { members, isLoading, invite, isInviting, changeRole, remove } = useBrandTeam();
+  const { user } = useAuth();
   return (
     <div className="settings-stack">
       <TeamCard
@@ -559,13 +563,14 @@ function TeamTab() {
         onChangeRole={(id, role) => changeRole({ id, role })}
         onRemove={(id) => remove(id)}
         inviting={isInviting}
-        description="Everyone here signs in with their own email and password. Roles decide what they can change."
+        canManage={['owner', 'admin'].includes(user?.teamRole ?? 'owner')}
+        description="Each teammate signs up with the invited email and works on this brand account with their own password. Roles decide what they can change."
       />
       <div className="info-callout">
         <IconUsers className="icon-md" aria-hidden="true" />
         <div>
           <div className="info-callout-title">Who should be on the team?</div>
-          <p className="info-callout-desc">Add whoever books creators (Member), whoever approves spend (Admin) and whoever reconciles invoices (Finance). Actions in campaigns and billing are logged with the person who made them.</p>
+          <p className="info-callout-desc">Add whoever books creators (Member), whoever runs the account and the team (Admin) and whoever pays bookings and reconciles invoices (Finance). Everyone sees the same campaigns, messages and invoices.</p>
         </div>
       </div>
     </div>
@@ -646,8 +651,8 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
         </div>
       ) : (
         <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
-          This permanently removes your company profile, shortlist, and campaign history.
-          Your data is fully removed within 30 days. This cannot be undone.
+          Our team removes your company profile, shortlist and campaign history once nothing is open on the
+          account. Once deleted, it cannot be undone.
         </p>
       )}
 

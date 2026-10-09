@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { IconMailCheck, IconCircleCheck, IconCircleX, IconLoader2 } from '@tabler/icons-react';
 import { toast } from 'sonner';
@@ -43,8 +43,12 @@ export default function VerifyEmailPage() {
     }
   };
 
+  // A token is single-use: a second request (effect re-run, remount) would report "expired"
+  // for an account that was just verified, so each token is sent once.
+  const sentToken = useRef(null);
   useEffect(() => {
-    if (!token) return;
+    if (!token || sentToken.current === token) return;
+    sentToken.current = token;
     authService
       .verifyEmail(token)
       .then(() => setStatus(STATUS.SUCCESS))

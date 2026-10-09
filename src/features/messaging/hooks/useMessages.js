@@ -18,7 +18,11 @@ export function useMessages(threadId) {
   // an attachmentUrl alongside text isn't documented in the API reference.
   const sendMutation = useMutation({
     mutationFn: (payload) => messageService.sendMessage({ threadId, ...payload }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+    // A creator's first reply moves the enquiry from New to In review, so the list refreshes too.
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: key });
+      queryClient.invalidateQueries({ queryKey: ['enquiries'] });
+    },
   });
 
   const attachMutation = useMutation({

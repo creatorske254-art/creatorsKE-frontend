@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getCreatorStats, getEarningsTimeline } from '@/features/payments/services/payment.service';
 import { getCardHealth } from '@/features/rate-card/services/rate-card.service';
 import { useRateCards } from '@/features/rate-card/hooks/useRateCard';
+import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
 
 const PERIODS = ['7d', '30d', '90d'];
 
@@ -36,6 +37,7 @@ export function useCreatorDashboard() {
   const [healthError, setHealthError] = useState(null);
 
   const { rateCards, isLoading: rateCardsLoading } = useRateCards();
+  const { methods: payoutMethods } = usePayoutMethods();
 
   const [publicUrl, setPublicUrl] = useState('');
 
@@ -88,10 +90,12 @@ export function useCreatorDashboard() {
     const pkgCurrent = primaryCard?.packages?.length ?? 0;
     const pkgMax = PACKAGE_LIMITS[planId] ?? PACKAGE_LIMITS.starter;
 
-    const payCurrent = primaryCard?.paymentMethods?.length ?? 0;
+    // Payout methods live on the account (GET /payments/methods), not on the card.
+    const payCurrent = payoutMethods?.length ?? primaryCard?.paymentMethods?.length ?? 0;
     const payMax = PAYMENT_METHOD_LIMITS[planId] ?? PAYMENT_METHOD_LIMITS.starter;
+    const published = primaryCard?.published ?? primaryCard?.status === 'published';
 
-    const checks = [!!primaryCard, !!primaryCard?.published, pkgCurrent > 0, payCurrent > 0];
+    const checks = [!!primaryCard, !!published, pkgCurrent > 0, payCurrent > 0];
     const completeness = primaryCard
       ? Math.round((checks.filter(Boolean).length / checks.length) * 100)
       : 0;
@@ -101,16 +105,15 @@ export function useCreatorDashboard() {
       packages: { current: pkgCurrent, max: pkgMax },
       paymentMethods: { current: payCurrent, max: payMax },
     };
-  }, [rateCards, user]);
+  }, [rateCards, user, payoutMethods]);
 
   // --- Public URL ---
-  // No API endpoint for this - it's just the creator's own handle, which
-  // already lives on the authenticated user object.
+  // The handle on the rate card is the one served at /c/:handle; the session's copy can be stale
+  // when the creator picked a new handle in the builder after logging in.
+  const handle = rateCards?.[0]?.handle ?? user?.handle;
   useEffect(() => {
-    if (user?.handle) {
-      setPublicUrl(`${window.location.origin}/c/${user.handle}`);
-    }
-  }, [user?.handle]);
+    if (handle) setPublicUrl(`${window.location.origin}/c/${handle}`);
+  }, [handle]);
 
   // --- Quick action handlers ---
   const copyPublicLink = useCallback(async () => {

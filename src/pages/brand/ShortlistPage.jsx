@@ -34,7 +34,7 @@ function formatFollowers(n) {
 // ── Shortlist card ────────────────────────────────────────────────────────
 function ShortlistCard({ creator, index, onRemove, onEnquire }) {
   const [hovered, setHovered] = useState(false);
-  const a = AVAIL_META[creator.avail];
+  const a = AVAIL_META[creator.avail] ?? AVAIL_META.available;
 
   return (
     <div

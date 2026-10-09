@@ -1,4 +1,35 @@
 import api from '@/lib/api';
+import { getInitials } from '@/lib/utils';
+import { platformNames, availabilityKey } from '@/features/rate-card';
+
+// The live API returns the creator row joined with their published rate card. Map it to the card
+// shape the directory renders; entries that already carry `initials` (the documented shape) pass through.
+function toDirectoryCard(entry) {
+  if (!entry || entry.initials) return entry;
+  const name = [entry.firstName, entry.lastName].filter(Boolean).join(' ') || entry.name || entry.handle || '';
+  const card = entry.rateCard?.data ?? {};
+  const prices = (card.packages ?? []).map((p) => Number(p.price)).filter((n) => n > 0);
+  const engagement = card.profile?.engagement ?? card.engagement;
+  return {
+    id: entry.userId ?? entry.id,
+    name,
+    handle: entry.handle ?? '',
+    initials: getInitials(name),
+    niche: entry.niche || card.profile?.niche || (entry.category !== 'other' ? entry.category : '') || '',
+    followers: Number(entry.followers) || 0,
+    eng: engagement ? Number(engagement) : null,
+    rating: Number(entry.rating) || 0,
+    reviews: entry.reviewCount ?? 0,
+    verified: Boolean(entry.isVerified),
+    avail: availabilityKey(card.availability),
+    bg: 'linear-gradient(135deg, var(--purple-100), var(--purple-50))',
+    platforms: platformNames(card.platforms),
+    location: entry.location ?? '',
+    bio: entry.bio ?? '',
+    price: prices.length ? Math.min(...prices) : null,
+    priceUnit: 'per campaign',
+  };
+}
 
 /**
  * Search creators with optional filters.
@@ -16,7 +47,17 @@ export async function searchCreators(filters = {}) {
   if (filters.page)         params.set('page', filters.page);
 
   const response = await api.get(`/directory?${params.toString()}`);
-  return response.data; // { creators: [], total: number, page: number, totalPages: number }
+  const body = response.data;
+  if (Array.isArray(body)) {
+    const p = body.pagination;
+    return {
+      creators: body.map(toDirectoryCard),
+      total: p?.total ?? body.length,
+      page: p?.page ?? 1,
+      totalPages: p?.pages ?? p?.totalPages ?? 1,
+    };
+  }
+  return body; // { creators: [], total: number, page: number, totalPages: number }
 }
 
 /**
@@ -24,7 +65,8 @@ export async function searchCreators(filters = {}) {
  */
 export async function getFilterOptions() {
   const response = await api.get('/directory/filter-options');
-  return response.data; // { niches: string[], platforms: string[] }
+  const body = response.data;
+  return Array.isArray(body) ? { niches: [], platforms: [] } : body; // { niches: string[], platforms: string[] }
 }
 
 /**

@@ -1,5 +1,17 @@
 import api from '@/lib/api';
 
+/**
+ * The creator's portfolio (builder) and the public portfolio page.
+ *
+ * GET    /portfolio/:id
+ * POST   /portfolio
+ * PUT    /portfolio/:id
+ * PATCH  /portfolio/:id/draft
+ * POST   /portfolio/:id/publish
+ * POST   /portfolio/:id/unpublish
+ * GET    /portfolio/:id/analytics
+ * GET    /public/creators/:id/portfolio
+ */
 export const portfolioService = {
   // A creator's own portfolio; the first visit creates an empty one so the builder can save.
   getPortfolio: (creatorId) =>

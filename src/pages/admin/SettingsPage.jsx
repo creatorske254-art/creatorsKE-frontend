@@ -110,7 +110,7 @@ function AccountTab() {
       <div className="info-callout">
         <IconAlertTriangle className="icon-md" aria-hidden="true" />
         <div>
-          <div className="info-callout-title">Admin accounts can't be self-deleted</div>
+          <div className="info-callout-title">Admin accounts can&apos;t be self-deleted</div>
           <p className="info-callout-desc">Ask a super admin to remove you from the team. Your decisions and actions stay in the audit log under your name.</p>
         </div>
       </div>

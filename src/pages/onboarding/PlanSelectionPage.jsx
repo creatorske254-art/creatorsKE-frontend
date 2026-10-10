@@ -216,8 +216,8 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
         />
       </div>
       <p style={{ fontSize: 12, color: 'var(--grey-400)', lineHeight: 1.6, marginBottom: 'var(--space-20)' }}>
-        You'll get a prompt on this number to authorise the payment. Your 7-day trial starts today.
-        you can cancel from Settings before it ends and you won't be charged.
+        You&apos;ll get a prompt on this number to authorise the payment. Your 7-day trial starts today.
+        you can cancel from Settings before it ends and you won&apos;t be charged.
       </p>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-12)' }}>
@@ -279,7 +279,7 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
       <div style={{ textAlign: 'center', maxWidth: 480 }}>
         <div style={{ color: 'var(--status-success-text)', marginBottom: 'var(--space-12)' }}><IconCircleCheck className="icon-xl" aria-hidden="true" /></div>
         <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
-          You're all set, <span>{firstName || 'there'}</span>!
+          You&apos;re all set, <span>{firstName || 'there'}</span>!
         </h1>
         <p style={{ fontSize: 14, color: 'var(--grey-500)', lineHeight: 1.7 }}>
           Your <strong>{PLAN_WELCOME_LABELS[plan] || plan}</strong> account is active.
@@ -362,7 +362,7 @@ export default function PlanSelectionPage({ firstName: firstNameProp, onComplete
             <div className="ps-inner">
               <div className="eyebrow ps-eyebrow">One more step</div>
               <h1 className="hero-title ps-title">Choose your plan</h1>
-              <p className="page-subtitle ps-sub">Start free and upgrade whenever you're ready. You can change this anytime from Settings.</p>
+              <p className="page-subtitle ps-sub">Start free and upgrade whenever you&apos;re ready. You can change this anytime from Settings.</p>
 
               <div className="ps-grid">
                 {PLANS.map(plan => (

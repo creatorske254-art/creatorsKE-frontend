@@ -70,7 +70,7 @@ function RequestResetForm() {
         </div>
         <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-8)' }}>Check your email</div>
         <div className="page-subtitle" style={{ marginBottom: 'var(--space-32)' }}>
-          If an account exists for that email, we've sent a reset link. It expires in 1 hour.
+          If an account exists for that email, we&apos;ve sent a reset link. It expires in 1 hour.
         </div>
         <Link to="/login" style={{ fontSize: '13px', color: 'var(--purple-500)', fontWeight: 500, textDecoration: 'none' }}>
           Back to sign in
@@ -85,7 +85,7 @@ function RequestResetForm() {
         Reset password
       </div>
       <div style={{ fontSize: '14px', color: 'var(--grey-500)', marginBottom: 'var(--space-32)', lineHeight: 1.55 }}>
-        Enter your email and we'll send you a reset link.
+        Enter your email and we&apos;ll send you a reset link.
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>

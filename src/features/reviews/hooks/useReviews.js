@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { reviewService } from '../services/review.service';
 import { adminService } from '@/features/admin/services/admin.service';
 
+/** A creator's reviews and replying to one. */
 export function useReviews(creatorId) {
   const queryClient = useQueryClient();
   const key = ['reviews', creatorId];
@@ -19,7 +20,7 @@ export function useReviews(creatorId) {
       queryClient.invalidateQueries({ queryKey: key });
       toast.success('Review submitted.');
     },
-    onError: () => toast.error('Could not submit review.'),
+    onError: (err) => toast.error(err?.message || 'Could not submit review.'),
   });
 
   const replyMutation = useMutation({

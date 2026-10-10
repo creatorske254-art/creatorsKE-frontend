@@ -125,9 +125,7 @@ export default function MoneyPage() {
     requestPayout, isRequestingPayout,
   } = usePayments({ period })
 
-  // GET /payments/earnings/timeline's response schema is undocumented -
-  // guessed as [{ period/label/date, amount }]. Columns; the latest period is
-  // the emphasised one.
+  // GET /payments/earnings/timeline returns [{ date, amount }]; the latest period is emphasised.
   const timeline = { data: earningsTimeline, isLoading: isTimelineLoading, isError: isTimelineError }
   const chartRows = useMemo(() => {
     const points = Array.isArray(timeline.data) ? timeline.data : []
@@ -152,8 +150,7 @@ export default function MoneyPage() {
     return [...totals].map(([label, amount]) => ({ label, amount })).sort((a, b) => b.amount - a.amount).slice(0, 6)
   }, [byPackage.data])
 
-  // GET /payments/stats' response schema is undocumented - best-effort field
-  // guesses with a "-" fallback rather than fabricated numbers.
+  // Balances from GET /payments/stats.
   const availableBalance = stats?.availableBalance ?? 0
   const pendingBalance = stats?.pendingBalance ?? 0
   const totalEarnedThisPeriod = stats?.totalEarned ?? 0
@@ -424,9 +421,7 @@ export default function MoneyPage() {
                 <p className="section-title">Subscription</p>
                 <span className="tag tag-purple">{currentPlan?.name ?? currentPlan?.id ?? '-'}</span>
               </div>
-              {/* Billing/renewal/usage fields below have no confirmed backend
-                  shape yet (see production plan's backend spec) - shown as
-                  illustrative placeholders, not real numbers. */}
+              {/* From GET /plans/current: name, price, renewsAt, rateCardsUsed / rateCardsMax. */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', fontSize: 12.5 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--grey-400)' }}>Plan</span>
@@ -452,7 +447,7 @@ export default function MoneyPage() {
               )}
               <div style={{ display: 'flex', gap: 'var(--space-8)', marginTop: 'var(--space-12)' }}>
                 <button className="btn btn-secondary btn-sm" onClick={() => navigate('/pricing')}>Manage plan</button>
-                <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOpen(true)}>View invoices</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => setHistoryOpen(true)}>View transactions</button>
               </div>
             </div>
 
@@ -509,7 +504,7 @@ export default function MoneyPage() {
                 </div>
               ) : (
                 <>
-                  <div className="modal-body-text">Confirm how much you'd like to move to your primary payment method.</div>
+                  <div className="modal-body-text">Confirm how much you&apos;d like to move to your primary payment method.</div>
 
                   <div className="amount-field" style={{ marginBottom: 'var(--space-16)' }}>
                     <span style={{ color: 'var(--grey-400)', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700 }}>KES</span>
@@ -522,7 +517,7 @@ export default function MoneyPage() {
                       <span className="kv-value">{primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'No payment method on file'}</span>
                     </div>
                     <div className="kv-row">
-                      <span className="kv-label">You'll receive</span>
+                      <span className="kv-label">You&apos;ll receive</span>
                       <span className="kv-value">{formatCurrency(Number(String(amount).replace(/,/g, '')) || 0)}</span>
                     </div>
                   </div>

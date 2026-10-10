@@ -1,5 +1,32 @@
 import api from '@/lib/api';
 
+/**
+ * Everything a brand account manages: company profile, shortlist, campaigns (bookings) and
+ * escrow payment, billing, payment methods and the brand team. Teammates call the same
+ * endpoints and act on the owning brand.
+ *
+ * GET    /brands/profile
+ * PUT    /brands/profile
+ * GET    /brands/shortlist
+ * POST   /brands/shortlist
+ * DELETE /brands/shortlist/:id
+ * POST   /brands/campaigns
+ * GET    /brands/campaigns
+ * GET    /brands/campaigns/:id
+ * POST   /brands/campaigns/:id/pay
+ * POST   /brands/campaigns/:id/approve
+ * POST   /brands/campaigns/:id/dispute
+ * GET    /brands/billing
+ * GET    /brands/invoices
+ * GET    /brands/transactions
+ * GET    /brands/payment-methods
+ * POST   /brands/payment-methods
+ * DELETE /brands/payment-methods/:id
+ * GET    /brands/team
+ * POST   /brands/team/invite
+ * PATCH  /brands/team/:id
+ * DELETE /brands/team/:id
+ */
 export const brandService = {
   getProfile: () => api.get('/brands/profile').then((r) => r.data),
   updateProfile: (data) => api.put('/brands/profile', data).then((r) => r.data),

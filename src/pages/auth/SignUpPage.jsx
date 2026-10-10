@@ -124,7 +124,7 @@ function StepChooseType({ onContinue }) {
         Join Creatorske
       </h1>
       <p className="page-subtitle" style={{ marginBottom: 'var(--space-24)' }}>
-        Are you a creator or a brand? We'll tailor your setup.
+        Are you a creator or a brand? We&apos;ll tailor your setup.
       </p>
 
       <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)', marginBottom: 'var(--space-24)' }}>
@@ -344,7 +344,7 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
           {invitedEmail ? (
-            <p className="text-hint" style={{ margin: 0 }}>You were invited to a brand team. Sign up with the invited email and you join that brand's account.</p>
+            <p className="text-hint" style={{ margin: 0 }}>You were invited to a brand team. Sign up with the invited email and you join that brand&apos;s account.</p>
           ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
             <label className="field-label">Company name <span style={{ color: 'var(--status-error)' }}>*</span></label>

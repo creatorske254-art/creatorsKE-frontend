@@ -3,6 +3,10 @@ import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { userService } from '../services/auth.service';
 
+/**
+ * The signed-in user's profile (useProfile) and preferences (usePreferences), shared by every
+ * settings page.
+ */
 export const PROFILE_KEY = ['user', 'profile'];
 export const PREFERENCES_KEY = ['user', 'preferences'];
 

@@ -428,10 +428,7 @@ export default function CampaignDetailPage() {
               </div>
             )}
 
-            {/* Messages - one persistent thread per enquiry, keyed by the
-                enquiry's own id (see MessageThread). ASSUMPTION: the
-                campaign response isn't documented; assumed to carry
-                enquiryId, falling back to the campaign's own id. */}
+            {/* Messages: the booking's chat is its enquiry's thread (campaign.enquiryId). */}
             <div className="card card-p-md">
               <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Messages</div>
               <MessageThread threadId={base.enquiryId ?? id} />
@@ -490,7 +487,7 @@ export default function CampaignDetailPage() {
             <div className="card card-p-md">
               <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Need help?</div>
               <p className="text-body-sm" style={{ color: 'var(--grey-600)', marginBottom: 'var(--space-12)' }}>
-                If something doesn't look right, you have {disputeDays} days after delivery to raise a dispute.
+                If something doesn&apos;t look right, you have {disputeDays} days after delivery to raise a dispute.
               </p>
               <a href="mailto:support@creatorske.com" className="btn btn-ghost btn-sm btn-full">
                 <IconMessageCircle className="icon-sm" />

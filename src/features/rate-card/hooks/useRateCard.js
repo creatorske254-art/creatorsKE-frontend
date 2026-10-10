@@ -3,6 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { rateCardService } from '@/features/rate-card/services/rate-card.service';
 
+/**
+ * One rate card (useRateCard), the creator's list of cards (useRateCards) and unpublishing all
+ * of them.
+ */
 const RATE_CARD_KEY = (id) => ['rate-card', id];
 const RATE_CARDS_KEY = ['rate-cards'];
 
@@ -24,7 +28,7 @@ export function useRateCard(id) {
     onSuccess: (updated) => {
       queryClient.setQueryData(RATE_CARD_KEY(id), updated);
     },
-    onError: () => toast.error('Failed to save changes.'),
+    onError: (err) => toast.error(err?.message || 'Failed to save changes.'),
   });
 
   // ── Draft auto-save (debounced 1.5 s) ─────────────────────────────────────
@@ -49,7 +53,7 @@ export function useRateCard(id) {
       queryClient.invalidateQueries({ queryKey: RATE_CARDS_KEY });
       toast.success('Rate card published!');
     },
-    onError: () => toast.error('Could not publish. Please try again.'),
+    onError: (err) => toast.error(err?.message || 'Could not publish. Please try again.'),
   });
 
   // ── Unpublish ──────────────────────────────────────────────────────────────
@@ -60,7 +64,7 @@ export function useRateCard(id) {
       queryClient.invalidateQueries({ queryKey: RATE_CARDS_KEY });
       toast.success('Rate card unpublished.');
     },
-    onError: () => toast.error('Could not unpublish. Please try again.'),
+    onError: (err) => toast.error(err?.message || 'Could not unpublish. Please try again.'),
   });
 
   // ── Reorder (optimistic) ───────────────────────────────────────────────────

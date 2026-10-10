@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationService } from '../services/notification.service';
 
+/**
+ * The notification list and marking items read (the navbar bell count comes from
+ * NotificationContext).
+ */
 const NOTIFICATIONS_KEY = ['notifications'];
 
 // Full notification list + mark-read, for NotificationList.jsx.

@@ -236,7 +236,7 @@ export function SessionsCard() {
     <CollapsibleCard title="Active sessions" description="Devices signed in to this account. Sign out of any you don't recognise." right={isError ? null : <span className="tag tag-default">{sessions.length} {sessions.length === 1 ? 'device' : 'devices'}</span>}>
       <div style={{ marginTop: 'var(--space-8)' }}>
         {isLoading && <Skeleton width="100%" height={56} />}
-        {isError && <p className="field-hint">Couldn't load your sessions.</p>}
+        {isError && <p className="field-hint">Couldn&apos;t load your sessions.</p>}
         {sessions.map((s) => (
           <div key={s.id} className="session-row">
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>

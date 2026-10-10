@@ -72,7 +72,7 @@ export default function EnquiriesPage() {
         <div>
           <h3 className="page-title">Enquiries</h3>
           <p className="page-subtitle">
-            Track enquiries you've sent to creators and chat with them here.
+            Track enquiries you&apos;ve sent to creators and chat with them here.
           </p>
         </div>
       </div>

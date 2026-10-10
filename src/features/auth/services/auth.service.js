@@ -1,12 +1,38 @@
 import api from '@/lib/api';
 
+/**
+ * Sign-up, sign-in (including the 2FA step), email verification, password reset, account
+ * deletion, and the signed-in user's profile, preferences, sessions, 2FA and data export.
+ *
+ * POST   /auth/signup
+ * POST   /auth/login
+ * POST   /auth/login/2fa
+ * POST   /auth/verify-email
+ * POST   /auth/resend-verification
+ * POST   /auth/forgot-password
+ * POST   /auth/reset-password
+ * POST   /auth/logout
+ * DELETE /auth/account
+ * POST   /auth/account/cancel-deletion
+ * GET    /users/profile
+ * PATCH  /users/profile
+ * POST   /users/change-password
+ * GET    /users/preferences
+ * PATCH  /users/preferences
+ * GET    /users/sessions
+ * DELETE /users/sessions/:id
+ * DELETE /users/sessions/others
+ * POST   /users/2fa/setup
+ * POST   /users/2fa/verify
+ * DELETE /users/2fa
+ * POST   /users/export
+ */
 export const authService = {
   signup: (data) => api.post('/auth/signup', data),
   login: (credentials) => api.post('/auth/login', credentials),
   // Second step when the account has two-factor on: the challenge from login plus the app's code.
   loginTwoFactor: (challengeToken, code) => api.post('/auth/login/2fa', { challengeToken, code }),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
-  // Not in the documented API - best-effort path, see BACKEND_API_SPEC.md.
   resendVerification: (email) => api.post('/auth/resend-verification', { email }),
   requestPasswordReset: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, password: newPassword }),

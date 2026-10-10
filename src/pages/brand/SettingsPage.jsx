@@ -388,7 +388,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
         <div>
           <div className="info-callout-title">Funds are held in escrow</div>
           <p className="info-callout-desc">
-            Your payment is held securely until you approve delivery. A 10% platform fee is deducted from the creator's payout. You always pay the full package price.
+            Your payment is held securely until you approve delivery. A 10% platform fee is deducted from the creator&apos;s payout. You always pay the full package price.
           </p>
         </div>
       </div>

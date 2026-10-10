@@ -56,10 +56,7 @@ const FILTERS = [
   { key: 'history', label: 'History', match: (s) => s === 'completed' || s === 'refunded' },
 ]
 
-// Response schema for GET /brands/campaigns is undocumented (see CLAUDE.md) -
-// field names below are best-effort guesses with graceful fallbacks, not
-// confirmed contract. avatarClass is purely decorative (no such field exists
-// on any documented response) so every card uses the same accent.
+// Card text for a GET /brands/campaigns row. Every card uses the same avatar accent.
 function describeDelivery(c) {
   switch (c.status) {
     case 'delivered': return `Marked delivered · ${formatRelativeDate(c.deliveredAt)}`

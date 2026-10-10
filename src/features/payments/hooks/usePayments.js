@@ -10,6 +10,7 @@ import {
   getEarningsTimeline,
 } from '../services/payment.service';
 
+/** Creator money: balances, earnings timeline, transactions and requesting a withdrawal. */
 const STATS_KEY = (period) => ['payments', 'stats', period];
 const TIMELINE_KEY = (period) => ['payments', 'earnings-timeline', period];
 const HISTORY_KEY = ['payments', 'transactions'];
@@ -82,7 +83,7 @@ export function usePayments({ period = '30d' } = {}) {
       startPolling(res?.checkoutRequestId ?? res?.CheckoutRequestID ?? res?.id);
       toast.success('Payment request sent. Check your phone to complete it.');
     },
-    onError: () => toast.error('Could not start the payment. Please try again.'),
+    onError: (err) => toast.error(err?.message || 'Could not start the payment. Please try again.'),
   });
 
   // A payout is a B2C send to the creator - there is no STK push and no PIN to

@@ -392,11 +392,11 @@ export default function RateCardBuilderPage() {
       bio: c.bio ?? '', location: c.location ?? '', niche: c.niche || p.niche, languages: c.languages ?? '',
       followers: c.followers != null ? Number(c.followers).toLocaleString('en-KE') : '',
       engagement: c.eng != null ? String(c.eng) : '',
-      reach: c.followers != null ? Math.round(c.followers * 0.4).toLocaleString('en-KE') : '',
+      reach: '', // the creator's own figure; never derived from followers
       instagram: socials.instagram ?? '', tiktok: socials.tiktok ?? '', youtube: socials.youtube ?? '', twitter: socials.twitter ?? '',
     }));
     if (account.avatar) setPhotoUrl(account.avatar);
-  }, [cardId, account]);
+  }, [cardId, account, setPhotoUrl]);
   const [platforms, setPlatforms] = useState({ instagram: true, tiktok: true, youtube: false, twitter: false, podcast: false });
   const togglePlatform = (key) => setPlatforms((p) => ({ ...p, [key]: !p[key] }));
 
@@ -456,12 +456,10 @@ export default function RateCardBuilderPage() {
     if (rateCard.revisionPolicy) setRevisionPolicy(rateCard.revisionPolicy);
     if (rateCard.showPricing != null) setShowPricing(rateCard.showPricing);
     if (rateCard.published) setPublished(true);
-  }, [cardId, rateCard]);
+  }, [cardId, rateCard, setPhotoUrl]);
 
-  // Best-effort payload shape - POST /rate-cards' request body is documented
-  // for creation but the wizard's fields (payment/edit-card steps) aren't
-  // covered by any documented contract, so this bundles everything the
-  // builder collects rather than guessing which subset the backend expects.
+  // The rate card record sent to POST /rate-cards and PATCH /rate-cards/:id/draft. The backend
+  // stores it as given and copies profile, platforms and package prices to the directory row.
   const buildPayload = () => ({
     profile,
     platforms,
@@ -1045,7 +1043,7 @@ export default function RateCardBuilderPage() {
                     <IconCheck className="icon-xl" color="var(--txt-success)" />
                   </div>
                   <div>
-                    <div className="page-title" style={{ marginBottom: 'var(--space-4)' }}>You're live!</div>
+                    <div className="page-title" style={{ marginBottom: 'var(--space-4)' }}>You&apos;re live!</div>
                     <p style={{ fontSize: 13, color: "var(--txt-secondary)" }}>Your rate card is published and ready to share with brands.</p>
                   </div>
                   <div style={{ display: "flex", gap: 'var(--space-8)', flexWrap: "wrap", justifyContent: "center" }}>

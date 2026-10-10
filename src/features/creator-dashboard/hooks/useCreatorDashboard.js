@@ -5,6 +5,10 @@ import { getCardHealth } from '@/features/rate-card/services/rate-card.service';
 import { useRateCards } from '@/features/rate-card/hooks/useRateCard';
 import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
 
+/**
+ * Everything the creator dashboard shows: stats, earnings and views series, recent enquiries,
+ * rate card health and the public link.
+ */
 const PERIODS = ['7d', '30d', '90d'];
 
 // GET /rate-cards/health is documented as a generic module-up check, not a

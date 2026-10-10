@@ -162,7 +162,7 @@ function EmptyShortlist({ navigate }) {
       </div>
       <h4 style={{ margin: 0 }}>Your shortlist is empty</h4>
       <p className="card-body-text" style={{ maxWidth: 320 }}>
-        Save creators while you browse the directory and they'll show up here so you can compare them side by side before reaching out.
+        Save creators while you browse the directory and they&apos;ll show up here so you can compare them side by side before reaching out.
       </p>
       <button className="btn btn-purple" style={{ marginTop: 'var(--space-8)' }} onClick={() => navigate('/directory')}>
         <IconSearch className="icon-sm" />Browse the directory
@@ -273,7 +273,7 @@ export default function ShortlistPage() {
         <div>
           <h3 className="page-title">Your shortlist</h3>
           <p className="text-body-sm" style={{ color: 'var(--grey-500)', marginTop: 'var(--space-8)', maxWidth: 520 }}>
-            Creators you've saved while browsing. Reach out whenever you're ready to book.
+            Creators you&apos;ve saved while browsing. Reach out whenever you&apos;re ready to book.
           </p>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => navigate('/directory')}>

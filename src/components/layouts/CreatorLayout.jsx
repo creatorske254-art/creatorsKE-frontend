@@ -170,9 +170,7 @@ export default function CreatorLayout() {
               same destination BrandLayout's search uses. */}
           <NavbarSearch placeholder="Search creators…" ariaLabel="Search creators" onSubmit={(q) => navigate(`/directory?q=${encodeURIComponent(q)}`)} />
 
-          {/* Swapped in literal component-library markup here instead of
-              abstracted NotificationBell/Avatar components so the topbar
-              matches the mockup 1:1. */}
+          {/* Bell and avatar use the component-library markup directly. */}
           <div className="navbar-actions">
             <div style={{ position: 'relative' }}>
               <button
@@ -249,9 +247,7 @@ export default function CreatorLayout() {
               </div>
             ))}
 
-            {/* Log out - pinned to the bottom of the sidebar via the
-                divider's margin-top: auto - with the error-red treatment,
-                matching the mockup. */}
+            {/* Log out, pinned to the bottom of the sidebar by the divider's margin-top: auto. */}
             <div className="dashboard-shell__sidebar-divider" style={{ marginTop: 'auto' }} />
             <button
               type="button"

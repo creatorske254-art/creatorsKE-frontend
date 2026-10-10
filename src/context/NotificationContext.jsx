@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth } from './AuthContext'
+import { notificationService } from '@/features/notifications/services/notification.service'
 
 const NotificationContext = createContext(null)
 
@@ -14,10 +15,6 @@ export function NotificationProvider({ children }) {
   const fetchUnreadCount = useCallback(async () => {
     if (!isAuthenticated) return
     try {
-      // Import lazily to avoid circular deps; service is built in Phase 16
-      const { notificationService } = await import(
-        '@/features/notifications/services/notification.service'
-      )
       const count = await notificationService.getUnreadCount()
       setUnreadCount(count ?? 0)
     } catch {

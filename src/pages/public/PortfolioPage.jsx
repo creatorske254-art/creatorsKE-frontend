@@ -83,7 +83,7 @@ export default function PortfolioPage() {
             Portfolio not found
           </div>
           <p className="text-[13px] text-[var(--grey-500)] mb-6">
-            This creator hasn't published their portfolio yet.
+            This creator hasn&apos;t published their portfolio yet.
           </p>
           <Link to="/directory" className="text-[13px] font-medium text-[var(--purple-500)] hover:text-[var(--purple-700)]">
             Browse the directory
@@ -376,9 +376,9 @@ export default function PortfolioPage() {
             {/* CTA banner */}
             {!isLoading && (
               <div className="bg-[var(--grey-50)] rounded-[24px] p-12 text-center">
-                <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-[var(--purple-500)] mb-3">Let's collaborate</div>
+                <div className="text-[10px] font-bold tracking-[0.12em] uppercase text-[var(--purple-500)] mb-3">Let&apos;s collaborate</div>
                 <div className="font-[var(--font-display)] text-[clamp(22px,3vw,32px)] font-semibold text-[var(--black)] mb-3 tracking-[-0.02em]">
-                  Let's create something amazing together
+                  Let&apos;s create something amazing together
                 </div>
                 <p className="text-[14px] text-[var(--grey-600)] mb-7 max-w-[400px] mx-auto">
                   Ready to elevate your brand with authentic, strategic content? View my packages and reach out today.

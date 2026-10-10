@@ -1,7 +1,5 @@
-// Shared enquiry card/detail visual language - lifted out of the original
-// EnquiriesPage.jsx prototype so the creator and brand enquiries pages (and
-// any future embedding, e.g. a shortlist drawer) render identically without
-// copy-pasting the same class definitions. Page-specific layout (bento grid
+// Shared enquiry card and detail styles, so the creator and brand enquiries pages render
+// identically without copying the same class definitions. Page-specific layout (bento grid
 // areas, breakpoints) stays local to each page - this is only the reusable
 // card/detail/pkg/message/meta/actions styling.
 export const ENQUIRY_CSS = `

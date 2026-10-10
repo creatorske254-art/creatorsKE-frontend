@@ -21,14 +21,14 @@ There is no test runner configured in this repo yet.
 
 `.claude/launch.json` configures `npm run dev` (port 5173) for Claude Code's browser-preview tool — it's dev tooling for driving the app in-browser during a session, not part of the app itself.
 
-**`npm run lint` is currently broken as written.** Both an old-style `.eslintrc.cjs` and a flat `eslint.config.js` exist; ESLint 8.57 (the installed version) auto-detects `eslint.config.js` and switches to flat-config mode purely because the file exists — but that file uses `eslint/config`, a subpath that doesn't exist until ESLint 9, so linting crashes with `ERR_PACKAGE_PATH_NOT_EXPORTED` before it reaches `.eslintrc.cjs` at all (the `package.json` script's `--ext` flag then also fails separately, since flat-config mode doesn't support it). To actually lint with the existing `.eslintrc.cjs` rules, force legacy mode: `ESLINT_USE_FLAT_CONFIG=false npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0` (PowerShell: `$env:ESLINT_USE_FLAT_CONFIG='false'; npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0`). Doing so currently surfaces ~66 pre-existing errors (mostly `react/no-unescaped-entities` apostrophes in JSX text and a few genuinely unused imports/vars) scattered across pages — none of that is related to the API-wiring work above.
+**`npm run lint` passes with zero errors and zero warnings; keep it that way.** It uses `.eslintrc.cjs` (ESLint 8) and ignores `dist`, `backend` (the git-ignored mock) and `tmp`. The build configs get a Node environment, and the context/settings modules that export a provider together with its hook are exempt from the fast-refresh rule. Escape apostrophes in JSX text as `&apos;`.
 
 ## Architecture
 
 **Feature-based structure under `src/features/<feature>/`.** Each feature follows the same internal layout (not every feature has every folder — only what it needs):
 - `components/` — feature-specific UI (`.jsx`)
 - `hooks/` — TanStack Query hooks wrapping the service layer (`.js`)
-- `services/` — one object per feature exporting API methods that call `src/lib/api.js` (e.g. `authService.login(...)`, naming is `camelCaseService`)
+- `services/` — one object per feature exporting API methods that call `src/lib/api.js` (e.g. `authService.login(...)`, naming is `camelCaseService`); each file opens with a comment listing the endpoints it calls. Only services call the API client.
 - `constants/` — enums/lookup objects (e.g. status strings)
 - `utils/` — feature-local helpers
 - `index.js` — where a feature has one (`directory`, `enquiry`, `messaging`, `notifications`, `rate-card`), its public export surface; pages otherwise import the module they need directly

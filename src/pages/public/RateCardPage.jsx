@@ -253,7 +253,7 @@ export default function RateCardPage() {
             Rate card not found
           </div>
           <p className="text-[13px] text-[var(--grey-500)] mb-6">
-            This creator hasn't published a rate card yet, or the link is incorrect.
+            This creator hasn&apos;t published a rate card yet, or the link is incorrect.
           </p>
           <Link
             to="/directory"
@@ -512,7 +512,7 @@ export default function RateCardPage() {
               to={`/c/${handle}/portfolio`}
               className="inline-flex items-center gap-1 text-[13px] font-medium text-[var(--purple-500)] hover:text-[var(--purple-700)] transition-colors"
             >
-              View {creator.displayName}'s portfolio <IconArrowRight className="icon-sm" />
+              View {creator.displayName}&apos;s portfolio <IconArrowRight className="icon-sm" />
             </Link>
           </div>
         </>

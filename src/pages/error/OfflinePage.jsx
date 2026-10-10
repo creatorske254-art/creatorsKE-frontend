@@ -26,10 +26,10 @@ export default function OfflinePage() {
       </div>
 
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--black)', marginBottom: 'var(--space-12)' }}>
-        You're offline
+        You&apos;re offline
       </h1>
       <p style={{ fontSize: 14, color: 'var(--grey-500)', maxWidth: 360, lineHeight: 1.7, marginBottom: 'var(--space-32)' }}>
-        Check your internet connection. Creatorske will reconnect automatically once you're back online.
+        Check your internet connection. Creatorske will reconnect automatically once you&apos;re back online.
       </p>
 
       <button

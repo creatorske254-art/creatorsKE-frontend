@@ -2,6 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { brandService } from '../services/brand.service';
 
+/**
+ * Brand account settings data: payment methods (useBrandPaymentMethods) and the team
+ * (useBrandTeam).
+ */
 const METHODS_KEY = ['brand-payment-methods'];
 const TEAM_KEY = ['brand-team'];
 

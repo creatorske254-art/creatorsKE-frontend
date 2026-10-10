@@ -3,6 +3,10 @@ import { useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { portfolioService } from '../services/portfolio.service';
 
+/**
+ * The creator's portfolio in the builder: load (creating it on first visit), autosave, save,
+ * publish and analytics.
+ */
 const PORTFOLIO_KEY = (id) => ['portfolio', id];
 
 export function usePortfolio(creatorId) {

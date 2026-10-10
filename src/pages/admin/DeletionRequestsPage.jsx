@@ -125,7 +125,7 @@ export default function DeletionRequestsPage() {
                         <span className={`tag ${meta.cls}`}>{meta.label}</span>
                       </div>
                       <div style={{ fontSize: 12, color: 'var(--grey-500)', marginTop: 'var(--space-2)' }}>{r.user?.email} · requested {formatDate(r.requestedAt)}</div>
-                      <div style={{ fontSize: 13, color: 'var(--grey-700)', marginTop: 'var(--space-8)' }}>"{r.reason}"</div>
+                      <div style={{ fontSize: 13, color: 'var(--grey-700)', marginTop: 'var(--space-8)' }}>&quot;{r.reason}&quot;</div>
                       {r.status === 'pending' && (
                         <div style={{ display: 'flex', gap: 'var(--space-16)', marginTop: 'var(--space-8)', fontSize: 12, flexWrap: 'wrap' }}>
                           <span style={{ color: left !== null && left <= 3 ? 'var(--status-error-text)' : 'var(--grey-500)' }}>Grace period {left === null ? '-' : left <= 0 ? 'ended' : `ends in ${left} day${left === 1 ? '' : 's'}`}</span>
@@ -166,8 +166,8 @@ export default function DeletionRequestsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--grey-600)' }}>
               {decision.kind === 'approve'
-                ? <>This erases <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong>'s account ({decision.row.user?.email}) now. Their rate cards and portfolio are removed; bookings, messages and reviews shared with other users stay on record. This cannot be undone. Type <strong style={{ color: 'var(--black)' }}>DELETE</strong> to confirm.</>
-                : <>Tell <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong> why the request can't be honoured yet. They receive this by email.</>}
+                ? <>This erases <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong>&apos;s account ({decision.row.user?.email}) now. Their rate cards and portfolio are removed; bookings, messages and reviews shared with other users stay on record. This cannot be undone. Type <strong style={{ color: 'var(--black)' }}>DELETE</strong> to confirm.</>
+                : <>Tell <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong> why the request can&apos;t be honoured yet. They receive this by email.</>}
             </p>
             {decision.kind === 'approve' ? (
               <div>

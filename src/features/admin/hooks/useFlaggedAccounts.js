@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 
+/** Accounts flagged for review, and the warn / suspend / reinstate actions on them. */
 const FLAGGED_KEY = ['admin-flagged-accounts'];
 
 export function useFlaggedAccounts() {
@@ -21,7 +22,7 @@ export function useFlaggedAccounts() {
       queryClient.invalidateQueries({ queryKey: ['admin-accounts'] });
       toast.success('Action applied.');
     },
-    onError: () => toast.error('Could not apply action.'),
+    onError: (err) => toast.error(err?.message || 'Could not apply action.'),
   });
 
   return {

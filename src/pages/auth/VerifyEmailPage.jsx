@@ -96,7 +96,7 @@ export default function VerifyEmailPage() {
               We sent a verification link to your email address. Click it to activate your account.
             </div>
             <div style={{ fontSize: '13px', color: 'var(--grey-400)' }}>
-              Didn't get it?{' '}
+              Didn&apos;t get it?{' '}
               <button
                 type="button"
                 onClick={handleResend}

@@ -1,18 +1,40 @@
 import api from '@/lib/api';
 
+/**
+ * Admin queues and platform controls. Every call needs an admin session; writes are limited by
+ * the admin role on the server.
+ *
+ * GET    /admin/disputes
+ * PATCH  /admin/disputes/:id/resolve
+ * POST   /admin/disputes/:id/reply
+ * GET    /admin/accounts/flagged
+ * POST   /admin/accounts/:id/action
+ * GET    /admin/accounts
+ * POST   /admin/invite
+ * POST   /admin/moderation
+ * GET    /admin/stats
+ * GET    /admin/escrow
+ * POST   /admin/escrow/:id/:id
+ * GET    /admin/deletion-requests
+ * POST   /admin/deletion-requests/:id/:id
+ * GET    /admin/re-engagement
+ * POST   /admin/re-engagement/send
+ * GET    /admin/settings
+ * PUT    /admin/settings
+ * GET    /admin/team
+ * PATCH  /admin/team/:id
+ * DELETE /admin/team/:id
+ */
 export const adminService = {
   listDisputes: (params) => api.get('/admin/disputes', { params }).then((r) => r.data),
   resolveDispute: (id, data) => api.patch(`/admin/disputes/${id}/resolve`, data).then((r) => r.data),
-  // Not yet documented/built on the backend - see the production-readiness
-  // plan's backend spec. Path is a best-effort guess; wired here so the
-  // frontend seam is a one-line swap once the endpoint exists.
+  // Adds a message to the case without deciding it.
   replyToDispute: (id, message) => api.post(`/admin/disputes/${id}/reply`, { message }).then((r) => r.data),
 
   listFlaggedAccounts: () => api.get('/admin/accounts/flagged').then((r) => r.data),
   takeAccountAction: (id, action, reason) =>
     api.post(`/admin/accounts/${id}/action`, { action, reason }).then((r) => r.data),
-  // Not yet documented/built on the backend - see the production-readiness
-  // plan's backend spec.
+  // Every creator and brand account, filterable by ?q=&role=&status=.
   listAccounts: (params) => api.get('/admin/accounts', { params }).then((r) => r.data),
   inviteAdmin: (email, role) => api.post('/admin/invite', { email, role }).then((r) => r.data),
 

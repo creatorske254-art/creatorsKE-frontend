@@ -369,7 +369,7 @@ export default function OverviewPage() {
                     <div style={{ fontSize: 13, fontWeight: 500, color: "var(--black)" }}>{r.creatorName}</div>
                     <Stars n={Math.round(r.stars ?? r.rating ?? 0)} />
                   </div>
-                  <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-8)' }}>"{(r.text ?? r.comment ?? '').slice(0, 90)}"</div>
+                  <div style={{ fontSize: 12, color: "var(--grey-500)", marginBottom: 'var(--space-8)' }}>&quot;{(r.text ?? r.comment ?? '').slice(0, 90)}&quot;</div>
                   <div style={{ fontSize: 11, color: "var(--status-error-text)", marginBottom: 'var(--space-8)', display: "flex", alignItems: "center", gap: 'var(--space-4)' }}><IconFlag3 className="icon-xs" aria-hidden="true" /> {r.flagReason ?? 'Flagged'}</div>
                   <div style={{ display: "flex", gap: 'var(--space-8)' }}>
                     <button className="btn btn-danger btn-xs" onClick={() => navigate('/admin/reviews')}>Remove</button>
@@ -438,7 +438,7 @@ export default function OverviewPage() {
           </div>
           <div style={{ padding: 'var(--space-16)', fontSize: 13.5, lineHeight: 1.7, color: "var(--grey-700)" }}>
             <p>Hi {'{{firstName}}'},</p>
-            <p>You started building your rate card on Creatorske but didn't finish. It's saved exactly where you left it, with {'{{packageCount}}'} package{'{{packageCount === 1 ? "" : "s"}}'} and counting.</p>
+            <p>You started building your rate card on Creatorske but didn&apos;t finish. It&apos;s saved exactly where you left it, with {'{{packageCount}}'} package{'{{packageCount === 1 ? "" : "s"}}'} and counting.</p>
             <p>Creators with a published card get their first brand enquiry within a median of 6 days. Pick up where you left off:</p>
             <p><span className="btn btn-purple btn-sm" style={{ pointerEvents: "none" }}>Finish my rate card</span></p>
             <p style={{ color: "var(--grey-400)", fontSize: 12 }}>Not interested anymore? <u>Delete my draft</u> · <u>Unsubscribe</u></p>

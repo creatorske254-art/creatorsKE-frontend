@@ -121,10 +121,8 @@ const LAYOUT_STYLES = `
 // Sidebar - grouped by workflow stage matching brand journeys in the product spec.
 // Discovery → Campaigns → Payments → Account
 //
-// `disabled` items are stubs for pages not yet built - they keep the sidebar
-// readable without creating dead links.
-// `hasActiveDot` renders a small green dot when the brand has live campaigns
-// (wire to `activeCampaignCount > 0` once useBrandDashboard exists).
+// Only built pages are listed. `hasActiveDot` shows a small green dot while the
+// brand has live campaigns (useBrandDashboard().activeCampaignCount > 0).
 const SIDEBAR_SECTIONS = [
   {
     label: 'Discovery',
@@ -252,20 +250,6 @@ export default function BrandLayout() {
                 </div>
 
                 {section.items.map((item) => {
-
-                  // Disabled stub - inert placeholder for pages not yet built
-                  if (item.disabled) {
-                    return (
-                      <span
-                        key={item.label}
-                        className="sidebar-link disabled"
-                        title="Coming soon"
-                      >
-                        <item.icon className="icon-md" aria-hidden="true" />
-                        {item.label}
-                      </span>
-                    );
-                  }
 
                   const showDot = item.hasActiveDot && activeCampaignCount > 0;
                   const badgeCount = item.badgeKey ? pipelineCounts?.[item.badgeKey] : null;

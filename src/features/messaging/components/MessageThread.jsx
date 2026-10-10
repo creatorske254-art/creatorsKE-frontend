@@ -80,14 +80,11 @@ export default function MessageThread({ threadId }) {
     e.target.value = '';
     if (!file) return;
     try {
-      const result = await uploadAttachment(file);
-      // ASSUMPTION: response shape for the uploaded file's URL isn't documented.
-      const attachmentUrl = result?.url ?? result?.data?.url;
+      const { url: attachmentUrl } = await uploadAttachment(file);
       send({ text: text.trim() || undefined, attachmentUrl });
       setText('');
     } catch {
-      // messageService/api.js already surfaces a toast via the interceptor's
-      // normalized error - nothing further to do here.
+      // The upload mutation shows the error toast.
     }
   };
 
@@ -111,10 +108,10 @@ export default function MessageThread({ threadId }) {
           />
         ) : (
           messages.map((m, i) => {
-            // ASSUMPTION: message shape/field names aren't documented.
-            const isMine = user?.id != null && m.senderId != null
-              ? m.senderId === user.id
-              : m.from === user?.role;
+            // A brand teammate's messages are stored under the brand account, so a brand
+            // compares against the brand it acts for (user.brandId), not its own login.
+            const myId = user?.brandId ?? user?.id;
+            const isMine = myId != null && m.senderId != null ? m.senderId === myId : m.from === user?.role;
 
             return (
               <div key={m.id ?? i} className={`message-thread-row ${isMine ? 'mine' : 'theirs'}`}>

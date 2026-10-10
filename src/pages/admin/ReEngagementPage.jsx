@@ -34,7 +34,7 @@ export default function ReEngagementPage() {
 
   const { query, data, send, isSending, sendingId } = useReengagement();
   const re = { data, isLoading: query.isLoading };
-  const segments = re.data?.segments ?? [];
+  const segments = useMemo(() => re.data?.segments ?? [], [re.data]);
   const history = useMemo(() => [...(re.data?.history ?? [])].sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt)), [re.data]);
   const funnel = re.data?.abandonedByStep ?? [];
 
@@ -173,7 +173,7 @@ export default function ReEngagementPage() {
             <div>
               <label className="field-label" htmlFor="re-preview">Message<span className="field-required">*</span></label>
               <textarea id="re-preview" className="input input-md" rows={5} value={preview} onChange={(e) => setPreview(e.target.value)} placeholder="Short, personal, one clear next step." />
-              <span className="field-hint">The email ends with a button back to the creator's dashboard.</span>
+              <span className="field-hint">The email ends with a button back to the creator&apos;s dashboard.</span>
             </div>
             <div className="card card-p-sm" style={{ background: 'var(--page-bg)' }}>
               <div className="eyebrow" style={{ marginBottom: 'var(--space-8)' }}><IconEye className="icon-xs" aria-hidden="true" /> Preview</div>

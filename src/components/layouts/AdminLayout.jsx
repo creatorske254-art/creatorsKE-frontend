@@ -268,20 +268,6 @@ export default function AdminLayout() {
 
                 {section.items.map((item) => {
 
-                  // Disabled stub - not yet built
-                  if (item.disabled) {
-                    return (
-                      <span
-                        key={item.label}
-                        className="sidebar-link disabled"
-                        title="Coming soon"
-                      >
-                        <item.icon className="icon-md" aria-hidden="true" />
-                        {item.label}
-                      </span>
-                    );
-                  }
-
                   const badgeCount = item.badgeKey ? badgeCounts[item.badgeKey] : null;
                   const showBadge = !!badgeCount;
                   const badgeClass = item.badgeVariant === 'urgent' ? 'badge-red' : 'badge-warning';

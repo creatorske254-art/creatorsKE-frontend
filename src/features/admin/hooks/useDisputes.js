@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { adminService } from '../services/admin.service';
 
+/** Dispute cases for admins: the list, resolving one with a split, and replying on a case. */
 const DISPUTES_KEY = ['admin-disputes'];
 
 export function useDisputes() {
@@ -21,11 +22,10 @@ export function useDisputes() {
       queryClient.invalidateQueries({ queryKey: DISPUTES_KEY });
       toast.success('Dispute resolved.');
     },
-    onError: () => toast.error('Could not resolve dispute.'),
+    onError: (err) => toast.error(err?.message || 'Could not resolve dispute.'),
   });
 
-  // No backend endpoint exists yet (see backend spec) - retry:false avoids
-  // hammering a 404, and the seam is ready to work once it's built.
+  // POST /admin/disputes/:id/reply: a message on the case that keeps it open.
   const replyMutation = useMutation({
     mutationFn: ({ id, message }) => adminService.replyToDispute(id, message),
     onError: (err) => toast.error(err?.message || 'Could not post your reply.'),

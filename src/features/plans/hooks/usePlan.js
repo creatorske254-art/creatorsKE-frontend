@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { planService } from '../services/plan.service';
 import { useAuth } from '@/context/AuthContext';
 
+/** The signed-in creator's plan and switching to another one. */
 const PLAN_KEY = ['plan', 'current'];
 
 export function usePlan() {

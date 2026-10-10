@@ -13,8 +13,7 @@ const LABEL_STYLE = {
   marginBottom: 'var(--space-8)',
 };
 
-// ASSUMPTION: POST /enquiries payload isn't documented - assumed
-// { creatorId, packageId, message }.
+// Sends POST /enquiries { creatorId, packageId, message } as the signed-in brand.
 export default function EnquiryForm({ creatorId, packages = [], initialPackageId, onSuccess, onCancel }) {
   const { mutate: create, isPending: isCreating } = useCreateEnquiry();
   const [packageId, setPackageId] = useState(initialPackageId ?? packages[0]?.id ?? '');

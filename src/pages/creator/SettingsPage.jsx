@@ -281,7 +281,7 @@ function NotificationsTab() {
                 <IconMail className="icon-sm input-icon left" aria-hidden="true" />
                 <input className="input input-md input-icon-left" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
-              <p className="field-hint">We'll also send receipts and important account info here.</p>
+              <p className="field-hint">We&apos;ll also send receipts and important account info here.</p>
             </div>
           </CollapsibleCard>
         </div>

@@ -3,6 +3,10 @@ import { toast } from 'sonner';
 import { enquiryService } from '../services/enquiry.service';
 import { STATUS } from '../constants/enquiry';
 
+/**
+ * Enquiries for the signed-in creator or brand, their pipeline counts, and accept / decline /
+ * send.
+ */
 const ENQUIRIES_KEY = ['enquiries'];
 
 export function useEnquiries() {
@@ -29,7 +33,7 @@ export function useEnquiries() {
       queryClient.invalidateQueries({ queryKey: ['enquiry', id] });
       toast.success('Enquiry accepted.');
     },
-    onError: () => toast.error('Could not accept enquiry.'),
+    onError: (err) => toast.error(err?.message || 'Could not accept enquiry.'),
   });
 
   const declineMutation = useMutation({
@@ -39,7 +43,7 @@ export function useEnquiries() {
       queryClient.invalidateQueries({ queryKey: ['enquiry', id] });
       toast.success('Enquiry declined.');
     },
-    onError: () => toast.error('Could not decline enquiry.'),
+    onError: (err) => toast.error(err?.message || 'Could not decline enquiry.'),
   });
 
   return {
@@ -74,6 +78,6 @@ export function useCreateEnquiry() {
       queryClient.invalidateQueries({ queryKey: ENQUIRIES_KEY });
       toast.success('Enquiry sent!');
     },
-    onError: () => toast.error('Could not send enquiry. Please try again.'),
+    onError: (err) => toast.error(err?.message || 'Could not send enquiry. Please try again.'),
   });
 }

@@ -1,6 +1,24 @@
 import api from '@/lib/api';
 import { getInitials, formatCount } from '@/lib/utils';
 
+/**
+ * Rate cards: the creator's own (create, autosave, publish) and the public card at /c/:handle.
+ *
+ * POST   /rate-cards
+ * GET    /rate-cards/:id
+ * PATCH  /rate-cards/:id
+ * POST   /rate-cards/:id/publish
+ * POST   /rate-cards/:id/unpublish
+ * POST   /rate-cards/:id/reorder
+ * PATCH  /rate-cards/:id/draft
+ * GET    /rate-cards/:id/analytics
+ * GET    /rate-cards
+ * DELETE /rate-cards/:id
+ * GET    /rate-cards/health
+ * GET    /public/creators/:id/rate-card
+ * GET    /public/creators/:id
+ * GET    /reviews
+ */
 export const rateCardService = {
   createRateCard: (data) =>
     api.post('/rate-cards', data).then((r) => r.data),

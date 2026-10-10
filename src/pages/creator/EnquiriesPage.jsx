@@ -7,10 +7,8 @@ import ErrorState from '@/components/shared/ErrorState'
 import { IconInbox } from '@tabler/icons-react';
 
 /**
- * EnquiriesPage - creator side. Layout/visual language kept from the
- * original prototype (bento grid, .enq-* classes); the data source and the
- * detail panel's internals are now real (useEnquiries + EnquiryDetail),
- * replacing the previous hardcoded mock list and static detail panel.
+ * EnquiriesPage, creator side: the pipeline counts, the enquiry list and the selected
+ * enquiry's detail and chat (useEnquiries + EnquiryDetail). Styles are the page's .enq-* set.
  */
 
 const PAGE_CSS = `

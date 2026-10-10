@@ -7,9 +7,8 @@ import { useDisputes } from '@/features/admin/hooks/useDisputes'
 import { formatDate } from '@/lib/utils'
 import { IconBuildingStore, IconCircleCheck, IconClock, IconFileText, IconGavel, IconMessageCircle, IconPaperclip, IconPhoto, IconSearch, IconSwords, IconUser, IconX } from '@tabler/icons-react';
 
-// GET /admin/disputes' response schema is undocumented (see CLAUDE.md) - the
-// rich scope/evidence breakdown below has no confirmed backend counterpart,
-// so it's rendered only when a real dispute object actually carries it.
+// Maps a GET /admin/disputes case to what the page renders. scope, evidence and messages
+// come from the dispute record; sections without data are not drawn.
 function normalizeDispute(d) {
   return {
     id: d.id,

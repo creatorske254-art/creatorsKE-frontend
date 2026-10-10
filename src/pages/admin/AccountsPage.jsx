@@ -353,7 +353,7 @@ export default function AccountsPage() {
               </div>
             </div>
             <div className="card-body" style={{ fontSize: 13, color: 'var(--grey-600)', lineHeight: 1.6 }}>
-              {confirmAction.type === 'suspend' && <>This will immediately block <strong>{confirmAction.account.name}</strong> from sending enquiries, messages, or accessing bookings. They'll be notified by email and asked to provide valid credentials if relevant.</>}
+              {confirmAction.type === 'suspend' && <>This will immediately block <strong>{confirmAction.account.name}</strong> from sending enquiries, messages, or accessing bookings. They&apos;ll be notified by email and asked to provide valid credentials if relevant.</>}
               {confirmAction.type === 'restore' && <>This will restore full platform access for <strong>{confirmAction.account.name}</strong>. Use this once valid credentials or context have been confirmed.</>}
               {confirmAction.type === 'remove' && <>This permanently removes <strong>{confirmAction.account.name}</strong> and their account data. This action cannot be undone.</>}
             </div>

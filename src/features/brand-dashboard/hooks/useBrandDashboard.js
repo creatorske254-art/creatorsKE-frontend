@@ -3,6 +3,10 @@ import { toast } from 'sonner';
 import { brandService } from '../services/brand.service';
 import { useAuth } from '@/context/AuthContext';
 
+/**
+ * Brand campaigns and shortlist (useBrandDashboard), one campaign (useCampaign) and its
+ * approve / dispute actions (useCampaignActions).
+ */
 const CAMPAIGNS_KEY = ['brand-campaigns'];
 const SHORTLIST_KEY = ['brand-shortlist'];
 const PROFILE_KEY = ['brand-profile'];
@@ -38,7 +42,7 @@ export function useBrandDashboard() {
       queryClient.invalidateQueries({ queryKey: SHORTLIST_KEY });
       toast.success('Added to shortlist.');
     },
-    onError: () => toast.error('Could not add to shortlist.'),
+    onError: (err) => toast.error(err?.message || 'Could not add to shortlist.'),
   });
 
   const removeFromShortlistMutation = useMutation({
@@ -47,7 +51,7 @@ export function useBrandDashboard() {
       queryClient.invalidateQueries({ queryKey: SHORTLIST_KEY });
       toast.success('Removed from shortlist.');
     },
-    onError: () => toast.error('Could not remove from shortlist.'),
+    onError: (err) => toast.error(err?.message || 'Could not remove from shortlist.'),
   });
 
   const createCampaignMutation = useMutation({
@@ -56,7 +60,7 @@ export function useBrandDashboard() {
       queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY });
       toast.success('Campaign created.');
     },
-    onError: () => toast.error('Could not create campaign.'),
+    onError: (err) => toast.error(err?.message || 'Could not create campaign.'),
   });
 
   const updateProfileMutation = useMutation({
@@ -66,7 +70,7 @@ export function useBrandDashboard() {
       if (updated?.companyName || updated?.logoUrl !== undefined) updateUser?.({ companyName: updated.companyName, logoUrl: updated.logoUrl ?? null });
       toast.success('Profile updated.');
     },
-    onError: () => toast.error('Could not update profile.'),
+    onError: (err) => toast.error(err?.message || 'Could not update profile.'),
   });
 
   return {
@@ -97,9 +101,8 @@ export function useCampaign(id) {
   });
 }
 
-// Approve/dispute actions for a single campaign, kept separate from
-// useCampaign() since one is a query and these are mutations against a
-// backend contract that isn't documented yet (see production plan's spec).
+// Approve (POST /brands/campaigns/:id/approve, releases escrow) and dispute
+// (POST /brands/campaigns/:id/dispute { evidence }) for one booking.
 export function useCampaignActions(id) {
   const queryClient = useQueryClient();
   const CAMPAIGN_KEY = ['brand-campaign', id];
@@ -111,7 +114,7 @@ export function useCampaignActions(id) {
       queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY });
       toast.success('Delivery approved, payment released.');
     },
-    onError: () => toast.error('Could not approve delivery. Please try again.'),
+    onError: (err) => toast.error(err?.message || 'Could not approve delivery. Please try again.'),
   });
 
   const disputeMutation = useMutation({
@@ -121,7 +124,7 @@ export function useCampaignActions(id) {
       queryClient.invalidateQueries({ queryKey: CAMPAIGNS_KEY });
       toast.success('Dispute submitted.');
     },
-    onError: () => toast.error('Could not submit dispute. Please try again.'),
+    onError: (err) => toast.error(err?.message || 'Could not submit dispute. Please try again.'),
   });
 
   return {

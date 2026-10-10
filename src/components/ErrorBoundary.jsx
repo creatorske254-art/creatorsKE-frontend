@@ -45,7 +45,7 @@ export default class ErrorBoundary extends Component {
           Something went wrong
         </h1>
         <p style={{ fontSize: 14, color: 'var(--grey-500, #808080)', maxWidth: 380, lineHeight: 1.7, marginBottom: 'var(--space-32)' }}>
-          Creatorske hit an unexpected error and couldn't continue. Reloading the page usually fixes this.
+          Creatorske hit an unexpected error and couldn&apos;t continue. Reloading the page usually fixes this.
         </p>
 
         <button

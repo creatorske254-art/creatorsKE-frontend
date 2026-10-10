@@ -103,8 +103,8 @@ const PORTFOLIO_BUILDER_STYLES = `
 .pb-preview-contact-row svg { color: var(--grey-400); }
 `;
 
-/* field set / defaults
-   Phase 4, client-facing portfolio:
+/* The portfolio record the builder saves (PUT /portfolio/:id, autosaved via PATCH .../draft)
+   and the public page reads:
      photoUrl
      name, role, location, bio
      niches: string[]
@@ -260,7 +260,7 @@ export default function PortfolioBuilderPage() {
   usePageMeta('Portfolio Builder', 'Build your portfolio to showcase past work and brand collaborations on Creatorske.');
 
   const { user } = useAuth();
-  const { portfolio, isLoading, autoSave, publish, unpublish, isPublishing, isUnpublishing } =
+  const { portfolio, isLoading, autoSave, update, publish, unpublish, isPublishing, isUnpublishing } =
     usePortfolio(user?.id);
 
   const [nicheInput, setNicheInput] = useState('');
@@ -302,9 +302,9 @@ export default function PortfolioBuilderPage() {
 
   const isPublished = portfolio?.status === 'published';
 
+  // Submitting the form (Enter in a field) saves at once instead of waiting for the autosave.
   function onSave(data) {
-    // Explicit save (not just draft), wire up if you add a save button
-    console.info('Manual save', data);
+    if (portfolio?.id) update({ id: portfolio.id, data });
   }
 
   const { uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({

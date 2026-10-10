@@ -174,7 +174,7 @@ export default function PricingPage() {
           Simple pricing, for every stage
         </h1>
         <p className="text-[15px] text-[var(--grey-500)] leading-[1.6] mb-8">
-          Whether you're a brand booking creators or a creator getting booked, start free and upgrade only when you need to.
+          Whether you&apos;re a brand booking creators or a creator getting booked, start free and upgrade only when you need to.
         </p>
 
         <div className="pr-toggle">

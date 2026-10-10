@@ -4,8 +4,8 @@ import Skeleton from '@/components/ui/Skeleton';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { IconReceipt2 } from '@tabler/icons-react';
 
-// GET /payments/transactions' response schema is undocumented - field names
-// below are best-effort guesses with graceful fallbacks (see CLAUDE.md).
+// Maps a GET /payments/transactions row ({ id, type, description, amount, positive, status,
+// method, date }) to what the list renders. Withdrawals arrive with a negative amount.
 function normalizeTransaction(t) {
   const amount = Number(t.amount ?? 0);
   return {

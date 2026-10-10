@@ -49,7 +49,7 @@ function MarkDeliveredModal({ open, onClose, onSubmit, isSubmitting }) {
   return (
     <Modal open={open} onClose={onClose} title="Mark this campaign as delivered" size="sm">
       <p style={{ fontSize: 13, color: 'var(--grey-600)', lineHeight: 1.6, marginBottom: 'var(--space-16)' }}>
-        Attach the final files (optional) and let the brand know it's ready. Payment is released when they approve the delivery.
+        Attach the final files (optional) and let the brand know it&apos;s ready. Payment is released when they approve the delivery.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>

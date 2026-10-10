@@ -15,7 +15,7 @@ export default function ReviewResponse({ review, canReply = false, onSubmit, isS
     return (
       <div style={{ marginTop: 'var(--space-12)', paddingLeft: 'var(--space-12)', borderLeft: '2px solid var(--purple-200)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--purple-600)', marginBottom: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-          <IconMessageCircle className="icon-xs" /> Creator's reply
+          <IconMessageCircle className="icon-xs" /> Creator&apos;s reply
         </div>
         <p style={{ fontSize: 12.5, color: 'var(--grey-600)', lineHeight: 1.6, margin: 0 }}>{review.reply}</p>
       </div>

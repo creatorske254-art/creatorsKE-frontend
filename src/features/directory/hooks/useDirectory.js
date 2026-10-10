@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchCreators, getFilterOptions } from '../services/directory.service';
 
+/** The public creator directory with its filters and pagination. */
 const DEFAULT_FILTERS = {
   keyword: '',
   niche: '',

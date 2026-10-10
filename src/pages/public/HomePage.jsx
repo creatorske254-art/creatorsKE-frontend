@@ -20,7 +20,7 @@ const IMG = (name) => `/images/marketing/${name}.webp`;
 const COPY = {
   creator: {
     eyebrow: 'For creators',
-    headline: <>Get paid what you're worth,<br />on time, every time.</>,
+    headline: <>Get paid what you&apos;re worth,<br />on time, every time.</>,
     sub: 'Build a rate card brands can book from directly, and get paid straight to M‑Pesa the moment your work is approved.',
     primary: { label: 'Build your rate card', to: '/signup?role=creator' },
     secondary: { label: 'See a live rate card', to: '/c/amara' },
@@ -386,7 +386,7 @@ export default function HomePage() {
               Creatorske<span style={{ color: 'var(--purple-400)' }}>.</span>
             </div>
             <p className="page-subtitle" style={{ maxWidth: 240, margin: '0 0 var(--space-24)' }}>
-              Where Kenya's creators and brands build campaigns - rate cards, verified profiles and M‑Pesa escrow.
+              Where Kenya&apos;s creators and brands build campaigns - rate cards, verified profiles and M‑Pesa escrow.
             </p>
             <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
               {SOCIAL_LINKS.map(({ key, Icon, href, label }) => (

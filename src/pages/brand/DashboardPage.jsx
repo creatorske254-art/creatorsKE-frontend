@@ -73,11 +73,9 @@ function shade(hex, percent) {
   return "#" + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
 }
 
-// Response schema for GET /brands/campaigns and GET /brands/shortlist is
-// undocumented (see CLAUDE.md) - field names below are best-effort guesses
-// with graceful fallbacks. Status vocabulary is shared with CampaignsPage.jsx
-// (in_progress/delivered/disputed/completed/refunded) since both pages read
-// the same underlying campaign resource.
+// Rows from GET /brands/campaigns and GET /brands/shortlist, mapped for the dashboard. The
+// status vocabulary (in_progress / delivered / disputed / completed / refunded) is shared with
+// CampaignsPage.jsx.
 const STATUS_META = {
   in_progress: { label: "In progress",        cls: "tag-purple"  },
   delivered:   { label: "Awaiting approval",  cls: "tag-info"    },
@@ -505,7 +503,7 @@ export default function BrandDashboardPage() {
               {greeting}, {brandName}
             </div>
             <div className="page-subtitle">
-              Here's what's happening with your creator campaigns today.
+              Here&apos;s what&apos;s happening with your creator campaigns today.
             </div>
           </div>
           <button
@@ -706,7 +704,7 @@ export default function BrandDashboardPage() {
           <div className="col-12" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 'var(--space-8)' }}>
             <div>
               <div className="card-title" style={{ marginBottom: 0 }}>Shortlisted creators</div>
-              <div className="page-subtitle">Creators you've saved for comparison</div>
+              <div className="page-subtitle">Creators you&apos;ve saved for comparison</div>
             </div>
           </div>
 

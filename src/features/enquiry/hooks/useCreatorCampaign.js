@@ -2,6 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { campaignService } from '../services/campaign.service';
 
+/**
+ * The creator's side of a booking: the campaign behind an accepted enquiry and marking it
+ * delivered.
+ */
 const ENQUIRIES_KEY = ['enquiries'];
 
 /**

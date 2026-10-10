@@ -9,7 +9,7 @@ import { NotificationList } from '@/features/notifications';
 import NavbarSearch from './NavbarSearch';
 import NavAvatar from './NavAvatar';
 import PageTransition from './PageTransition';
-import { IconBell, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSettings, IconShieldLock, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
+import { IconBell, IconCash, IconChartBar, IconFlag, IconLockDollar, IconLogout, IconMailForward, IconMenu2, IconScale, IconSettings, IconShieldLock, IconUserExclamation, IconUserMinus, IconX } from '@tabler/icons-react';
 
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -157,6 +157,7 @@ const SIDEBAR_SECTIONS = [
   {
     label: 'Operations',
     items: [
+      { to: '/admin/payouts',           label: 'Payouts',           icon: IconCash },
       { to: '/admin/escrow',            label: 'Escrow cases',      icon: IconLockDollar },
       { to: '/admin/deletion-requests', label: 'Deletion requests', icon: IconUserMinus },
       { to: '/admin/re-engagement',     label: 'Re-engagement',     icon: IconMailForward },

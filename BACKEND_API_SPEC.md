@@ -77,6 +77,7 @@ Auth: bearer token in `Authorization` on every call, including invoice and expor
 | GET | `/admin/accounts?q=&role=&status=` -> `{ accounts, total }`, `/admin/accounts/flagged`; POST `/admin/accounts/:id/action` `{ action, reason }` | brand rows use the company name |
 | POST | `/admin/invite` `{ email, role }`, `/admin/moderation` `{ targetId, action: remove|dismiss, reason }` | |
 | GET | `/admin/reviews` -> `{ reviews }` | moderation feed across creators |
+| GET / POST | `/admin/payouts?status=pending\|sent\|rejected\|all` -> `[{ id, status, amount, requestedAt, creator: { name, email }, method: { type, destination }, reference, reason }]`; POST `/admin/payouts/:id/sent` `{ reference }`, `/admin/payouts/:id/reject` `{ reason }` | withdrawals are paid by hand until M-Pesa B2C exists; rejecting returns the amount to the creator's balance; finance and super admins only. Creator transactions carry `reference` / `failureReason` on withdrawals |
 | GET / POST | `/admin/escrow`, `/admin/escrow/:id/release|extend` | `extend` moves the automatic release date back 7 days |
 | POST | `/client-errors` `{ message, stack, source, page, release, userId, userAgent }` -> 204 | crash reports from production builds (`src/lib/errorReporting.js`); written to the server log, rate-limited per IP |
 | GET | `/internal/cron/escrow-release` (Vercel Cron, daily, `Authorization: Bearer $CRON_SECRET`) | releases delivered, paid, undisputed bookings once `escrowReleaseDays` after delivery have passed |

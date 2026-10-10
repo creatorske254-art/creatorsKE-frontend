@@ -57,6 +57,7 @@ const AdminOverviewPage = lazy(() => import('@/pages/admin/OverviewPage'))
 const AdminDisputesPage = lazy(() => import('@/pages/admin/DisputesPage'))
 const AdminAccountsPage = lazy(() => import('@/pages/admin/AccountsPage'))
 const AdminReviewsPage = lazy(() => import('@/pages/admin/ReviewsPage'))
+const AdminPayoutsPage = lazy(() => import('@/pages/admin/PayoutsPage'))
 const AdminEscrowPage = lazy(() => import('@/pages/admin/EscrowPage'))
 const AdminDeletionRequestsPage = lazy(() => import('@/pages/admin/DeletionRequestsPage'))
 const AdminReEngagementPage = lazy(() => import('@/pages/admin/ReEngagementPage'))
@@ -181,6 +182,7 @@ const router = createBrowserRouter([
           { path: 'admin/disputes',     element: page(AdminDisputesPage) },
           { path: 'admin/accounts',     element: page(AdminAccountsPage) },
           { path: 'admin/reviews',      element: page(AdminReviewsPage) },
+          { path: 'admin/payouts',      element: page(AdminPayoutsPage) },
           { path: 'admin/escrow',       element: page(AdminEscrowPage) },
           { path: 'admin/deletion-requests', element: page(AdminDeletionRequestsPage) },
           { path: 'admin/re-engagement', element: page(AdminReEngagementPage) },

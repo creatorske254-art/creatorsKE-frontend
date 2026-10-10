@@ -15,7 +15,22 @@ function normalizeTransaction(t) {
     date: formatDate(t.date ?? t.createdAt),
     amount,
     positive: amount >= 0,
+    // Withdrawals: pending until an admin pays them, then sent (with a reference) or rejected (with a reason).
+    payout: t.type === 'payout' ? { status: t.status === 'completed' ? 'sent' : t.status === 'failed' ? 'rejected' : 'pending', reference: t.reference, reason: t.failureReason } : null,
   };
+}
+
+const PAYOUT_TAG = { pending: ['tag-warning', 'Pending'], sent: ['tag-success', 'Sent'], rejected: ['tag-default', 'Not sent'] };
+function PayoutStatus({ payout }) {
+  if (!payout) return null;
+  const [cls, label] = PAYOUT_TAG[payout.status];
+  return (
+    <div style={{ marginTop: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-8)', flexWrap: 'wrap' }}>
+      <span className={`tag ${cls}`}>{label}</span>
+      {payout.reference && <span className="text-hint" style={{ margin: 0 }}>Ref {payout.reference}</span>}
+      {payout.reason && <span className="text-hint" style={{ margin: 0 }}>{payout.reason}</span>}
+    </div>
+  );
 }
 
 /**
@@ -63,6 +78,7 @@ export default function TransactionHistory({
             <div>
               <div style={{ fontWeight: 500, fontSize: 13 }}>{t.name}</div>
               <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{t.sub}{t.sub ? ' · ' : ''}{t.date}</div>
+              <PayoutStatus payout={t.payout} />
             </div>
             <span style={{ fontSize: 13, fontWeight: 600, color: t.positive ? 'var(--status-success-text)' : 'var(--status-error-text)', flexShrink: 0 }}>
               {t.positive ? '+' : '−'}{formatCurrency(Math.abs(t.amount))}
@@ -88,6 +104,7 @@ export default function TransactionHistory({
             <td>
               <div style={{ fontWeight: 500 }}>{t.name}</div>
               <div style={{ fontSize: 11.5, color: 'var(--grey-400)', marginTop: 'var(--space-2)' }}>{t.sub}</div>
+              <PayoutStatus payout={t.payout} />
             </td>
             <td style={{ fontSize: 12, color: 'var(--grey-400)' }}>{t.date}</td>
             <td style={{ textAlign: 'right' }}>

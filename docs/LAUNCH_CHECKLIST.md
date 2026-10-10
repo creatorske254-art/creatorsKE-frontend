@@ -9,7 +9,7 @@ Status: **Pass** (met), **Fixed** (met by this pass), **Open** (needs action), *
 | Item | Status | Action |
 |---|---|---|
 | Pricing page promises fees and plan limits the system does not apply (Pro 6% / Elite 4% fee, brand plans, deposits, plan gating) and paid plans are never billed | Decision | Bill plans (and end trials), then apply per-plan fees and limits; or change the pricing page to what exists |
-| Creator withdrawals are recorded but never sent | Open | M-Pesa B2C, or an admin payout queue to pay by hand |
+| Creator withdrawals are recorded but never sent | Fixed (needs backend deploy) | Admin > Payouts: pay by hand, record the M-Pesa or bank reference, or reject with a reason (amount returns to the creator). Backend endpoints are on a local branch; M-Pesa B2C would automate it later |
 | Where the app lives (`creatorske.co.ke` serves the landing page) | Decision | Set `VITE_SITE_URL` (frontend), `FRONTEND_URL` and `CORS_ORIGINS` (backend) to that address |
 | Backend branches `fix/emails-escrow-release` and `chore/production-hardening` not merged; `CRON_SECRET` not set | Open | Merge, set `CRON_SECRET`, redeploy |
 | Real M-Pesa sandbox payment never run end to end (only simulated callbacks) | Open | One sandbox STK push through to "paid" on staging |

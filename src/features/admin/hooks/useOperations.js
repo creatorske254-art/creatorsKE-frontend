@@ -18,6 +18,18 @@ export function useEscrowCases(params) {
   return { query, rows: query.data?.cases ?? query.data ?? [], act: action.mutate, isActing: action.isPending, actingId: action.variables?.id };
 }
 
+// Creators' withdrawal requests, paid by hand and recorded with the transaction reference.
+export function usePayoutQueue(status) {
+  const qc = useQueryClient();
+  const query = useQuery({ queryKey: ['admin-payouts', status], queryFn: () => adminService.listPayouts(status) });
+  const action = useMutation({
+    mutationFn: ({ id, action, body }) => adminService.payoutAction(id, action, body),
+    onSuccess: (_d, v) => { toast.success(v.action === 'sent' ? 'Recorded as sent. The creator has been told.' : 'Withdrawal rejected. The creator has been told.'); qc.invalidateQueries({ queryKey: ['admin-payouts'] }); },
+    onError: fail('Could not update that payout.'),
+  });
+  return { query, rows: query.data ?? [], act: action.mutate, isActing: action.isPending, actingId: action.variables?.id };
+}
+
 export function useDeletionRequests(params) {
   const qc = useQueryClient();
   const query = useQuery({ queryKey: ['admin-deletion-requests', params], queryFn: () => adminService.listDeletionRequests(params) });

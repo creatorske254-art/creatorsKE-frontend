@@ -44,6 +44,9 @@ export const adminService = {
   getStats: () => api.get('/admin/stats').then((r) => r.data),
 
   // Operations pages (escrow, deletion requests, re-engagement)
+  // Withdrawal requests paid by hand: ?status=pending|sent|rejected|all; action is 'sent' ({ reference }) or 'reject' ({ reason }).
+  listPayouts: (status) => api.get('/admin/payouts', { params: { status } }).then((r) => r.data),
+  payoutAction: (id, action, body) => api.post(`/admin/payouts/${id}/${action}`, body).then((r) => r.data),
   listEscrow: (params) => api.get('/admin/escrow', { params }).then((r) => r.data),
   escrowAction: (id, action, note) => api.post(`/admin/escrow/${id}/${action}`, { note }).then((r) => r.data),
   listDeletionRequests: (params) => api.get('/admin/deletion-requests', { params }).then((r) => r.data),

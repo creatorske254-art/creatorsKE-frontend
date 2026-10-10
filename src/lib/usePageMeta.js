@@ -24,6 +24,17 @@ export function usePageMeta(title, description = DEFAULT_DESCRIPTION) {
       meta.setAttribute('content', description);
     }
 
+    // Each page is its own canonical URL (path only; query strings such as filters are not
+    // separate pages). index.html has no static canonical, which would mark every page a copy
+    // of the home page.
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `${window.location.origin}${window.location.pathname}`);
+
     return () => {
       document.title = previousTitle;
       if (meta && previousDescription != null) {

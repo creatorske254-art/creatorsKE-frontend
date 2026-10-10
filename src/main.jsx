@@ -13,6 +13,9 @@ import OfflinePage from '@/pages/error/OfflinePage'
 import { useOnlineStatus } from '@/lib/useOnlineStatus'
 
 import '@/index.css'
+import { installGlobalErrorReporting } from '@/lib/errorReporting'
+
+installGlobalErrorReporting()
 
 // After a deploy, a tab that was already open still points at the previous build's page files,
 // which no longer exist. Vite reports that as a preload error; reload once to pick up the new

@@ -78,6 +78,7 @@ Auth: bearer token in `Authorization` on every call, including invoice and expor
 | POST | `/admin/invite` `{ email, role }`, `/admin/moderation` `{ targetId, action: remove|dismiss, reason }` | |
 | GET | `/admin/reviews` -> `{ reviews }` | moderation feed across creators |
 | GET / POST | `/admin/escrow`, `/admin/escrow/:id/release|extend` | `extend` moves the automatic release date back 7 days |
+| POST | `/client-errors` `{ message, stack, source, page, release, userId, userAgent }` -> 204 | crash reports from production builds (`src/lib/errorReporting.js`); written to the server log, rate-limited per IP |
 | GET | `/internal/cron/escrow-release` (Vercel Cron, daily, `Authorization: Bearer $CRON_SECRET`) | releases delivered, paid, undisputed bookings once `escrowReleaseDays` after delivery have passed |
 | GET / POST | `/admin/deletion-requests`, `/admin/deletion-requests/:id/approve|reject` `{ reason }` | approve erases the account at once (blocked while bookings or payouts are open); enquiries, campaigns, messages, reviews and disputes stay for the other party |
 | GET / POST | `/admin/re-engagement` -> `{ segments, history, abandonedByStep, queue }`, `/admin/re-engagement/send` `{ segmentId, subject, preview }` -> `{ id, queued, delivered }` | history rows carry real `opened`/`clicked` (per-recipient tracking pixel and link, `GET /r/:sendId/:userId[/open.gif]`) and `reactivated` (published or messaged after the send) |

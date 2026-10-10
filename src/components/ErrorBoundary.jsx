@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { reportError } from '@/lib/errorReporting';
 
 /**
  * Root-level crash catcher, mounted in main.jsx around the entire provider
@@ -20,6 +21,7 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
+    reportError(error, { source: 'error-boundary', componentStack: info?.componentStack });
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       console.error('[ErrorBoundary] caught:', error, info);

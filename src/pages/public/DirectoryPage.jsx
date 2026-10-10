@@ -57,7 +57,7 @@ function CreatorCard({ creator, index, onOpen, onEnquire, showShortlist, shortli
           </button>
         )}
         {/* niche tag */}
-        <div style={{ position: 'absolute', top: 10, right: 10, fontSize: 9, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: 'var(--space-4) var(--space-8)', borderRadius: 999, background: 'rgba(255,255,255,0.22)', color: '#fff' }}>
+        <div style={{ position: 'absolute', top: 10, right: 10, fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: 'var(--space-4) var(--space-8)', borderRadius: 999, background: 'rgba(255,255,255,0.22)', color: '#fff' }}>
           {creator.niche}
         </div>
 
@@ -74,7 +74,7 @@ function CreatorCard({ creator, index, onOpen, onEnquire, showShortlist, shortli
           </div>
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.2, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>{creator.name}</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{creator.handle}</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>{creator.handle}</div>
           </div>
         </div>
       </div>
@@ -89,14 +89,14 @@ function CreatorCard({ creator, index, onOpen, onEnquire, showShortlist, shortli
                 {val}
                 {lbl === 'rating' && <IconStarFilled className="icon-xs" style={{ color: 'var(--black)' }} />}
               </strong>
-              <span style={{ fontSize: 9, color: 'var(--grey-400)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{lbl}</span>
+              <span style={{ fontSize: 11, color: 'var(--grey-400)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{lbl}</span>
             </div>
           ))}
         </div>
 
         {/* footer row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)', fontSize: 11, color: 'var(--grey-500)' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-4)', fontSize: 12, color: 'var(--grey-500)' }}>
             <span style={{ width: 5, height: 5, borderRadius: '50%', background: a.dot, display: 'inline-block', flexShrink: 0 }} />
             {a.label}
           </div>
@@ -319,7 +319,7 @@ export default function DirectoryPage() {
       <div className="dir-cta-band" style={{ background: 'var(--black)', color: 'var(--white)', padding: 'var(--space-32) var(--gutter-public)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-24)', flexShrink: 0, flexWrap: 'wrap' }}>
         <div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, letterSpacing: '-0.01em' }}>Are you a creator? List your rates for free.</div>
-          <div style={{ fontSize: 13, color: 'var(--grey-400)', marginTop: 'var(--space-4)' }}>Join 2,400+ creators already on Creatorske.</div>
+          <div style={{ fontSize: 13, opacity: 0.75, marginTop: 'var(--space-4)' }}>Set up a rate card in minutes and get booked through M-Pesa escrow.</div>
         </div>
         <button
           onClick={() => navigate('/signup')}

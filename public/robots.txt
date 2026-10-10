@@ -7,3 +7,5 @@ Disallow: /admin/
 Disallow: /onboarding/
 Disallow: /verify-email
 Disallow: /reset-password
+
+Sitemap: https://creatorske.co.ke/sitemap.xml

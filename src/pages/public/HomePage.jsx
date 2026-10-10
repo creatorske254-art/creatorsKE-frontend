@@ -293,12 +293,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="hp-hero__proof">
-              <div style={{ display: 'flex' }}>
-                {['linear-gradient(135deg,#6B5FF4,#3D2FD6)', 'linear-gradient(135deg,#F5A623,#C2410C)', 'linear-gradient(135deg,#5445E8,#2C1FB8)', 'linear-gradient(135deg,#10B981,#047857)'].map((g, i) => (
-                  <div key={i} style={{ width: 30, height: 30, borderRadius: '50%', border: '2px solid #000', marginLeft: i === 0 ? 0 : 'calc(-1 * var(--space-8))', background: g, zIndex: 4 - i }} />
-                ))}
-              </div>
-              <span>{role === 'brand' ? <>Trusted by brands booking <strong style={{ color: '#fff' }}>2,400+</strong> verified creators</> : <>Joined by <strong style={{ color: '#fff' }}>2,400+</strong> creators across East Africa</>}</span>
+              <span>{role === 'brand' ? <>Public prices on every rate card. <strong style={{ color: '#fff' }}>Pay into escrow</strong>, release on approval.</> : <>Free to start. <strong style={{ color: '#fff' }}>Get paid through M-Pesa escrow</strong>, not chasing invoices.</>}</span>
             </div>
           </div>
         </div>
@@ -402,7 +397,7 @@ export default function HomePage() {
           </div>
           {Object.entries(footerLinks).map(([col, links]) => (
             <div key={col}>
-              <div className="eyebrow" style={{ color: 'var(--grey-600)', marginBottom: 'var(--space-16)' }}>{col}</div>
+              <div className="eyebrow" style={{ color: 'var(--grey-400)', marginBottom: 'var(--space-16)' }}>{col}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
                 {links.map((l) => (
                   <button key={l.label} type="button" onClick={l.action} style={{ fontSize: 'var(--text-body-sm-size)', color: 'var(--grey-400)', cursor: 'pointer', transition: 'color .15s', background: 'none', border: 'none', padding: 0, textAlign: 'left', fontFamily: 'inherit' }}
@@ -417,10 +412,10 @@ export default function HomePage() {
           ))}
         </div>
         <div className="footer-bottom-inner" style={{ padding: 'var(--space-20) var(--gutter-public)', borderTop: '0.5px solid var(--grey-800)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-8)' }}>
-          <div className="text-hint" style={{ color: 'var(--grey-600)' }}>© 2026 Creatorske Ltd. Nairobi, Kenya.</div>
+          <div className="text-hint" style={{ color: 'var(--grey-400)' }}>© 2026 Creatorske Ltd. Nairobi, Kenya.</div>
           <div style={{ display: 'flex', gap: 'var(--space-20)' }}>
             {[{ label: 'Privacy policy', path: '/privacy' }, { label: 'Terms of service', path: '/terms' }].map((l) => (
-              <button key={l.label} type="button" onClick={() => navigate(l.path)} className="text-hint" style={{ color: 'var(--grey-600)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: 'inherit' }}>{l.label}</button>
+              <button key={l.label} type="button" onClick={() => navigate(l.path)} className="text-hint" style={{ color: 'var(--grey-400)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, fontFamily: 'inherit' }}>{l.label}</button>
             ))}
           </div>
         </div>

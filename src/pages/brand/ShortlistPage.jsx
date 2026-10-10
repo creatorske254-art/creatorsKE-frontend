@@ -49,7 +49,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
       {/* Cover gradient: niche tag, remove control, and identity row */}
       <div style={{ background: creator.bg, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: 'var(--space-12)', minHeight: 130 }}>
         <div style={{
-          position: 'absolute', top: 10, right: 10, fontSize: 9, fontWeight: 600,
+          position: 'absolute', top: 10, right: 10, fontSize: 10, fontWeight: 600,
           letterSpacing: '0.06em', textTransform: 'uppercase', padding: 'var(--space-4) var(--space-8)',
           borderRadius: 999, background: 'rgba(255,255,255,0.22)', color: '#fff',
         }}>
@@ -104,7 +104,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
                 {val}
                 {lbl === 'rating' && <IconStarFilled className="icon-xs" style={{ color: 'var(--black)' }} />}
               </strong>
-              <span style={{ fontSize: 9, color: 'var(--grey-400)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{lbl}</span>
+              <span style={{ fontSize: 10, color: 'var(--grey-400)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{lbl}</span>
             </div>
           ))}
         </div>

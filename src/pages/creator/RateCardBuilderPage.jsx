@@ -981,7 +981,7 @@ export default function RateCardBuilderPage() {
                         <div className={`rcp-pkg${pkg.feat ? " feat" : ""}`} key={pkg.id}>
                           <div>
                             <div className="rcp-pkg-name">{pkg.name}</div>
-                            <div style={{ fontSize: 9, color: "var(--txt-tertiary)", marginTop: 'var(--space-2)' }}>{pkg.desc}</div>
+                            <div style={{ fontSize: 10, color: "var(--txt-tertiary)", marginTop: 'var(--space-2)' }}>{pkg.desc}</div>
                           </div>
                           <div className="rcp-pkg-price">{showPricing ? `KES ${compact(pkg.price)}` : "On request"}</div>
                         </div>

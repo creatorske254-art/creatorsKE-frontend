@@ -8,6 +8,7 @@ import { IconEye, IconEyeOff, IconLoader2, IconMail, IconLock } from '@tabler/ic
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { authService } from '@/features/auth/services/auth.service';
 import { ROLE_HOME, POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
+import { safeRedirect } from '@/features/auth/utils/safeRedirect';
 import { usePageMeta } from '@/lib/usePageMeta';
 
 const schema = z.object({
@@ -15,15 +16,6 @@ const schema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-
-// Only a path inside this app may be a post-login destination. Anything else (another site,
-// "//host", a backslash trick or a scheme like "javascript:") is dropped, so a crafted
-// ?redirect= link cannot send someone off the site after they sign in.
-const safeRedirect = (value) => {
-  if (typeof value !== 'string' || !value.startsWith('/')) return null;
-  if (value.startsWith('//') || value.includes('\\') || [...value].some((c) => c.charCodeAt(0) < 32)) return null;
-  return value;
-};
 
 const inputStyle = (hasError) => ({
   width: '100%',
@@ -216,10 +208,10 @@ export default function LoginPage() {
                     {...register('password')}
                     style={{ ...inputStyle(errors.password), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
                   />
-                  <button
+                  <button aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}
                     type="button"
                     onClick={() => setShowPassword((p) => !p)}
-                    style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}
+                    style={{ position: 'absolute', right: 'var(--space-4)', top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}
                   >
                     {showPassword ? <IconEyeOff className="icon-sm" /> : <IconEye className="icon-sm" />}
                   </button>

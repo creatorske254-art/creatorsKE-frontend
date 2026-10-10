@@ -203,7 +203,7 @@ function CampaignRow({ c, onSelect }) {
           </div>
           {c.unread > 0 && (
             <span style={{
-              background: C.error, color: C.white, fontSize: 9, fontWeight: 700,
+              background: C.error, color: C.white, fontSize: 10, fontWeight: 700,
               minWidth: 16, height: 16, borderRadius: R.pill, display: "flex",
               alignItems: "center", justifyContent: "center", padding: "0 var(--space-4)", marginLeft: 'var(--space-2)',
             }}>{c.unread}</span>
@@ -744,7 +744,7 @@ export default function BrandDashboardPage() {
               }}>
                 {/* Cover gradient: niche tag + identity row, matching DirectoryPage's CreatorCard */}
                 <div style={{ background: `linear-gradient(135deg, ${c.avatarColor}, ${shade(c.avatarColor, -35)})`, position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 'var(--space-12)', minHeight: 130 }}>
-                  <div style={{ position: "absolute", top: 10, right: 10, fontSize: 9, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "var(--space-4) var(--space-8)", borderRadius: 999, background: "rgba(255,255,255,0.22)", color: "#fff" }}>
+                  <div style={{ position: "absolute", top: 10, right: 10, fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "var(--space-4) var(--space-8)", borderRadius: 999, background: "rgba(255,255,255,0.22)", color: "#fff" }}>
                     {c.niche}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)', position: "relative", zIndex: 1 }}>
@@ -777,7 +777,7 @@ export default function BrandDashboardPage() {
                           {s.value}
                           {s.label === "Rating" && <IconStarFilled className="icon-xs" style={{ color: C.black }} />}
                         </div>
-                        <div style={{ fontSize: 9, color: C.grey400, textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 'var(--space-2)' }}>{s.label}</div>
+                        <div style={{ fontSize: 10, color: C.grey400, textTransform: "uppercase", letterSpacing: "0.04em", marginTop: 'var(--space-2)' }}>{s.label}</div>
                       </div>
                     ))}
                   </div>

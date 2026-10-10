@@ -1,5 +1,7 @@
 import { Link, useRouteError, isRouteErrorResponse } from 'react-router-dom';
 import { IconRefresh, IconHome, IconAlertTriangle } from '@tabler/icons-react';
+import { useEffect } from 'react';
+import { reportError } from '@/lib/errorReporting';
 
 /**
  * Generic crash / unexpected-error fallback. Wired as the `errorElement` on
@@ -11,6 +13,8 @@ import { IconRefresh, IconHome, IconAlertTriangle } from '@tabler/icons-react';
  */
 export default function ServerErrorPage() {
   const error = useRouteError();
+  // A crash inside a route lands here; send it to the server log (404s from the router are not crashes).
+  useEffect(() => { if (!isRouteErrorResponse(error)) reportError(error, { source: 'route' }); }, [error]);
 
   if (import.meta.env.DEV) {
     // eslint-disable-next-line no-console

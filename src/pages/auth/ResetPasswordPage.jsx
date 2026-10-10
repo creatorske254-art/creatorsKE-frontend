@@ -217,7 +217,7 @@ function SetNewPasswordForm({ token }) {
                 {...register('password')}
                 style={{ ...inputStyle(errors.password), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
-              <button type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
+              <button aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} type="button" onClick={() => setShowPassword((p) => !p)} style={{ position: 'absolute', right: 'var(--space-4)', top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showPassword ? <IconEyeOff className="icon-sm" /> : <IconEye className="icon-sm" />}
               </button>
             </div>
@@ -238,7 +238,7 @@ function SetNewPasswordForm({ token }) {
                 {...register('confirmPassword')}
                 style={{ ...inputStyle(errors.confirmPassword), paddingLeft: 'var(--space-40)', paddingRight: 'var(--space-40)' }}
               />
-              <button type="button" onClick={() => setShowConfirm((p) => !p)} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
+              <button aria-label={showConfirm ? 'Hide password' : 'Show password'} aria-pressed={showConfirm} type="button" onClick={() => setShowConfirm((p) => !p)} style={{ position: 'absolute', right: 'var(--space-4)', top: '50%', transform: 'translateY(-50%)', width: 32, height: 32, justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey-400)', display: 'flex', alignItems: 'center' }}>
                 {showConfirm ? <IconEyeOff className="icon-sm" /> : <IconEye className="icon-sm" />}
               </button>
             </div>

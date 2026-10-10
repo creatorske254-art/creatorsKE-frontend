@@ -7,9 +7,10 @@ import ProtectedRoute from './ProtectedRoute'
 import PublicLayout     from '@/components/layouts/PublicLayout'
 import AuthLayout       from '@/components/layouts/AuthLayout'
 import OnboardingLayout from '@/components/layouts/OnboardingLayout'
-import CreatorLayout    from '@/components/layouts/CreatorLayout'
-import BrandLayout      from '@/components/layouts/BrandLayout'
-import AdminLayout      from '@/components/layouts/AdminLayout'
+// Signed-in shells load on demand too: public visitors never download them.
+const CreatorLayout = lazy(() => import('@/components/layouts/CreatorLayout'))
+const BrandLayout = lazy(() => import('@/components/layouts/BrandLayout'))
+const AdminLayout = lazy(() => import('@/components/layouts/AdminLayout'))
 
 // ── Public pages ──────────────────────────────────────────────────────────
 const HomePage = lazy(() => import('@/pages/public/HomePage'))
@@ -131,7 +132,7 @@ const router = createBrowserRouter([
     errorElement: <ServerErrorPage />,
     children: [
       {
-        element: <CreatorLayout />,
+        element: page(CreatorLayout),
         children: [
           { path: 'creator/dashboard',  element: page(CreatorDashboardPage) },
           { path: 'creator/rate-card',          element: page(RateCardBuilderPage) },
@@ -152,7 +153,7 @@ const router = createBrowserRouter([
     errorElement: <ServerErrorPage />,
     children: [
       {
-        element: <BrandLayout />,
+        element: page(BrandLayout),
         children: [
           { path: 'brand/dashboard',    element: page(BrandDashboardPage) },
           { path: 'brand/enquiries',    element: page(BrandEnquiriesPage) },
@@ -174,7 +175,7 @@ const router = createBrowserRouter([
     errorElement: <ServerErrorPage />,
     children: [
       {
-        element: <AdminLayout />,
+        element: page(AdminLayout),
         children: [
           { path: 'admin',              element: page(AdminOverviewPage) },
           { path: 'admin/disputes',     element: page(AdminDisputesPage) },

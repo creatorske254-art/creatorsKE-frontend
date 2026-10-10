@@ -356,7 +356,7 @@ export default function OverviewPage() {
               {escrowLoading ? <div style={{ padding: 'var(--space-20)', fontSize: 12.5, color: 'var(--grey-400)' }}>Loading</div>
                 : overdueEscrow.length === 0 ? <div style={{ padding: 'var(--space-20)', fontSize: 12.5, color: 'var(--grey-400)', textAlign: 'center' }}>Nothing past its release window.</div>
                 : overdueEscrow.map((e, i) => (
-                <div key={e.id} style={{ padding: "var(--space-12) var(--space-20)", borderBottom: i < overdueEscrow.length - 1 ? "0.5px solid var(--grey-100)" : "none", display: "flex", alignItems: "center", gap: 'var(--space-12)', cursor: 'pointer' }} onClick={() => navigate('/admin/escrow')}>
+                <div key={e.id} style={{ padding: "var(--space-12) var(--space-20)", borderBottom: i < overdueEscrow.length - 1 ? "0.5px solid var(--grey-100)" : "none", display: "flex", alignItems: "center", gap: 'var(--space-12)', cursor: 'pointer' }} onClick={() => navigate('/admin/escrow')} role="button" tabIndex={0} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); navigate('/admin/escrow'); } }}>
                   <Initials letters={getInitials(e.creator ?? '?')} color="var(--grey-600)" size={30} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 500, color: "var(--black)" }}>{e.creator}</div>

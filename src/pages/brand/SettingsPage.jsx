@@ -13,7 +13,7 @@ import { usePreferences } from '@/features/auth/hooks/useProfile';
 import Skeleton from '@/components/ui/Skeleton';
 import SmartImage from '@/components/ui/SmartImage';
 import ErrorState from '@/components/shared/ErrorState';
-import { SettingsShell, ToggleRow as SharedToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, TeamCard } from '@/components/settings';
+import { SettingsShell, ToggleRow as SharedToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, PendingDeletionNotice, TeamCard } from '@/components/settings';
 import { useImageUpload } from '@/lib/useImageUpload';
 import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCircleCheck, IconCreditCard, IconDeviceMobile, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconPhone, IconShieldCheck, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
@@ -374,24 +374,10 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
       <CollapsibleCard title="Invoice preferences" collapsible={false}>
         <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
           <ToggleRow
-            label="Receive auto-invoice on booking"
-            hint="Get a PDF invoice emailed immediately when a booking is confirmed."
+            label="Email a receipt when a booking is paid"
+            hint="Sent to your account email with a link to the invoice."
             on={prefs.autoInvoice}
             onChange={() => toggle("autoInvoice")}
-          />
-          <div className="field-divider" />
-          <ToggleRow
-            label="Pay 50% deposit upfront"
-            hint="Pay half the package cost when booking; the remainder releases from escrow on delivery approval."
-            on={prefs.deposit}
-            onChange={() => toggle("deposit")}
-          />
-          <div className="field-divider" />
-          <ToggleRow
-            label="Payment reminders via email"
-            hint="Get a nudge 24 hours before any pending balance is due."
-            on={prefs.payReminder}
-            onChange={() => toggle("payReminder")}
           />
         </div>
       </CollapsibleCard>
@@ -421,25 +407,15 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
     {
       title: "Campaigns",
       items: [
-        { key: "enquiryAccepted", label: "Enquiry accepted", hint: "When a creator accepts and sends a payment link." },
+        { key: "enquiryAccepted", label: "Enquiry answered", hint: "When a creator accepts or declines your enquiry." },
         { key: "deliveryMarked", label: "Delivery marked", hint: "When a creator marks a campaign as delivered." },
-        { key: "approvalReminder", label: "Approval reminder", hint: "Nudge if you haven't approved or disputed after the review window." },
-        { key: "disputeUpdate", label: "Dispute updates", hint: "Admin decisions and evidence request prompts." },
-      ],
-    },
-    {
-      title: "Payments",
-      items: [
-        { key: "paymentConfirmed", label: "Payment confirmed", hint: "When your M-Pesa or bank payment clears." },
-        { key: "escrowTimeout", label: "Escrow timeout warning", hint: "Alert when the grace period for delivery is nearly up." },
-        { key: "invoiceReady", label: "Invoice ready", hint: "When a new invoice PDF is available to download." },
+        { key: "disputeUpdate", label: "Dispute updates", hint: "When an admin decides a dispute." },
       ],
     },
     {
       title: "Messages",
       items: [
         { key: "newMessage", label: "New message from creator", hint: "Email when a creator replies and you're not active on the platform." },
-        { key: "enquiryExpiry", label: "Enquiry expiry warning", hint: "4-day heads-up if a creator hasn't responded to your enquiry." },
       ],
     },
   ];
@@ -466,25 +442,13 @@ function NotificationsTab({ notifPrefs, setNotifPrefs, onDirty }) {
         </CollapsibleCard>
       ))}
 
-      <CollapsibleCard title="Email digest" collapsible={false}>
-        <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
-          Instead of individual emails, get a single daily summary.
-        </p>
-        <ToggleRow
-          label="Daily digest"
-          hint="One email per day covering all activity across your active campaigns."
-          on={notifPrefs.digest}
-          onChange={() => toggle("digest")}
-        />
-      </CollapsibleCard>
     </div>
   );
 }
 
 // Account tab - sign-in, security, region, and the one destructive action.
 function AccountTab() {
-  const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, updateUser } = useAuth();
   const { activeCampaignCount } = useBrandDashboard();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -493,15 +457,15 @@ function AccountTab() {
   async function handleConfirmDelete() {
     setDeleting(true);
     try {
-      await authService.deleteAccount();
+      const res = await authService.deleteAccount();
+      updateUser({ deletionRequest: { requestedAt: res?.data?.requestedAt, graceEndsAt: res?.data?.graceEndsAt } });
+      toast.success('Deletion requested. You can cancel it from this page until an administrator reviews it.');
+      setDeleteOpen(false);
     } catch (err) {
       toast.error(err?.message || 'Could not request deletion. Try again.');
+    } finally {
       setDeleting(false);
-      return;
     }
-    toast.success("Deletion requested. We'll email you once it's done; sign in before then to cancel.");
-    logout();
-    navigate('/');
   }
 
   return (
@@ -512,10 +476,13 @@ function AccountTab() {
         <SessionsCard />
       </div>
       <LanguageRegionCard />
-      <DangerZone title="Delete account" description="Permanently removes your company profile, campaign history and all data. Blocked while any campaign is still active.">
-        <button className="btn btn-danger btn-sm" onClick={() => setDeleteOpen(true)}>
-          <IconTrash className="icon-xs" aria-hidden="true" />Request account deletion
-        </button>
+      <PendingDeletionNotice />
+      <DangerZone title="Delete account" description="Removes your company profile and sign-in. Bookings, messages and reviews stay on record for the creators you worked with. Not possible while a campaign is still active.">
+        {!user?.deletionRequest && (
+          <button className="btn btn-danger btn-sm" onClick={() => setDeleteOpen(true)}>
+            <IconTrash className="icon-xs" aria-hidden="true" />Request account deletion
+          </button>
+        )}
       </DangerZone>
       <DeleteBrandAccountModal open={deleteOpen} activeBookings={activeCampaignCount} deleting={deleting} onClose={() => setDeleteOpen(false)} onConfirm={handleConfirmDelete} />
     </div>
@@ -595,7 +562,7 @@ function PrivacyTab() {
   const { preferences, isLoading, isError, savePreferences, isSaving } = usePreferences();
   const [draft, setDraft] = useState(null);
   const [saved, setSaved] = useState(false);
-  const v = { showToCreators: true, showLogo: true, shareAnalytics: false, marketing: true, ...preferences, ...(draft ?? {}) };
+  const v = { showToCreators: true, shareAnalytics: false, marketing: true, ...preferences, ...(draft ?? {}) };
   const set = (k) => (val) => setDraft((d) => ({ ...(d ?? {}), [k]: val }));
   function handleSave() {
     savePreferences(draft ?? {}, {
@@ -609,9 +576,7 @@ function PrivacyTab() {
       <div className="bento-2">
         <CollapsibleCard title="Visibility to creators" collapsible={false}>
           <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
-            <SharedToggleRow label="Show company name on enquiries" desc="Off = creators see 'A verified brand' until you book." on={!!v.showToCreators} onChange={set('showToCreators')} />
-            <div className="field-divider" />
-            <SharedToggleRow label="Show our logo on completed campaigns" desc="Creators may list your campaign in their portfolio with your logo." on={!!v.showLogo} onChange={set('showLogo')} />
+            <SharedToggleRow label="Show company name on enquiries" desc="Off = creators see 'A verified brand' until they accept your enquiry." on={!!v.showToCreators} onChange={set('showToCreators')} />
           </div>
         </CollapsibleCard>
         <CollapsibleCard title="Data use" collapsible={false}>
@@ -623,7 +588,7 @@ function PrivacyTab() {
         </CollapsibleCard>
       </div>
       <div className="bento-2">
-        <DataExportCard description="Download your company profile, campaigns, messages, invoices and transactions as a ZIP of JSON and CSV files. We email you a link within 24 hours." />
+        <DataExportCard description="Download your company profile, campaigns, messages, invoices and transactions as one JSON file, ready straight away." />
         <LegalCard />
       </div>
       <SaveBar dirty={!!draft} saving={isSaving} saved={saved} onSave={handleSave} />
@@ -651,8 +616,8 @@ function DeleteBrandAccountModal({ open, activeBookings, deleting, onClose, onCo
         </div>
       ) : (
         <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
-          Our team removes your company profile, shortlist and campaign history once nothing is open on the
-          account. Once deleted, it cannot be undone.
+          Our team removes your company profile and shortlist once nothing is open on the account. Bookings,
+          messages and reviews stay on record for the creators you worked with. Once deleted, it cannot be undone.
         </p>
       )}
 
@@ -701,11 +666,9 @@ export default function BrandSettingsPage() {
   return <BrandSettingsForm profile={profile} />;
 }
 
-const DEFAULT_PREFS = { autoInvoice: true, deposit: false, payReminder: true };
-const DEFAULT_NOTIFS = {
-  enquiryAccepted: true, deliveryMarked: true, approvalReminder: true, disputeUpdate: true, paymentConfirmed: true,
-  escrowTimeout: true, invoiceReady: true, newMessage: true, enquiryExpiry: true, digest: false,
-};
+const DEFAULT_PREFS = { autoInvoice: true };
+// Payment emails are the receipt, switched in Billing > Invoice preferences.
+const DEFAULT_NOTIFS = { enquiryAccepted: true, deliveryMarked: true, disputeUpdate: true, newMessage: true };
 
 function BrandSettingsForm({ profile }) {
   const [dirty, setDirty] = useState(false);

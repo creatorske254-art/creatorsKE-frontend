@@ -133,7 +133,7 @@ export function useRateCards() {
       toast.success('Rate card created.');
       return created;
     },
-    onError: () => toast.error('Could not create rate card.'),
+    onError: (err) => toast.error(err?.message || 'Could not create rate card.'),
   });
 
   const deleteMutation = useMutation({
@@ -144,7 +144,7 @@ export function useRateCards() {
       );
       toast.success('Rate card deleted.');
     },
-    onError: () => toast.error('Could not delete rate card.'),
+    onError: (err) => toast.error(err?.message || 'Could not delete rate card.'),
   });
 
   return {

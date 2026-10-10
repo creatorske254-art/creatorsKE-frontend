@@ -10,11 +10,11 @@ Auth: bearer token in `Authorization`, plus `?token=` on GET links that open in 
 |---|---|---|
 | POST | `/auth/signup`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/login`, `/auth/refresh-token`, `/auth/logout`, `/auth/forgot-password`, `/auth/reset-password` | login returns `{ token, refreshToken, user }`, or `{ twoFactorRequired: true, challengeToken }` when the account has 2FA on. Signing up with an address that has a pending admin or brand-team invite opens that account (`?email=` prefills it) |
 | POST | `/auth/login/2fa` `{ challengeToken, code }` | second login step; returns `{ token, refreshToken, user }` |
-| GET | `/auth/me` | current user; admins carry `adminRole`, brands carry `teamRole` (`owner` or their team role) and `brandId` (the brand account they act for) |
+| GET | `/auth/me` | current user; admins carry `adminRole`, brands carry `teamRole` (`owner` or their team role) and `brandId` (the brand account they act for); every user carries `deletionRequest` (`{ requestedAt, graceEndsAt }` while one is pending, else `null`), which Settings shows with a cancel button |
 | DELETE | `/auth/account` `{ reason }` | 202, creates a deletion request with a grace period (an admin approves it); POST `/auth/account/cancel-deletion` withdraws it |
 | GET / PATCH | `/users/profile` | user + `creator` / `brand` sub-object + `preferences`; PATCH accepts `firstName, lastName, email, phone, avatar, title, handle, bio, location, niche, languages, socials` |
 | POST | `/users/change-password` | `{ currentPassword, newPassword }` |
-| GET / PATCH | `/users/preferences` | `{ language, timezone, weekStart, notifications: {...}, notificationEmail, showInDirectory, showBookingCount, shareAnalytics, marketing, currency, autoWithdraw, alerts: {...} }` (merge on PATCH) |
+| GET / PATCH | `/users/preferences` (also `notifications` keys that switch event emails: creators `newEnquiry, paymentReceived, newMessage, reviewReceived`; brands `enquiryAccepted, deliveryMarked, disputeUpdate, newMessage`; message emails are skipped while the person is active; a brand's `showToCreators: false` shows it as "A verified brand" on new enquiries until the creator accepts; `marketing: false` keeps a creator out of re-engagement emails; a brand's `autoInvoice` sends a payment receipt) | `{ language, timezone, weekStart, notifications: {...}, notificationEmail, showInDirectory, showBookingCount, shareAnalytics, marketing, currency, autoWithdraw, alerts: {...} }` (merge on PATCH) |
 | GET | `/users/sessions` | `{ sessions: [{ id, device, location, lastActiveAt, current, mobile }] }` |
 | DELETE | `/users/sessions/others`, `/users/sessions/:id` | 204 |
 | POST | `/users/2fa/setup` -> `{ secret, otpauthUrl }`, `/users/2fa/verify` `{ code }`, DELETE `/users/2fa` | admins cannot disable |
@@ -62,6 +62,7 @@ Auth: bearer token in `Authorization`, plus `?token=` on GET links that open in 
 | GET / POST / PATCH / DELETE | `/brands/shortlist`, `/brands/shortlist/:id` | rows = directory card + `addedOn, note`; DELETE accepts the row id or the creator id |
 | GET / POST | `/brands/campaigns`; GET / PUT `/brands/campaigns/:id` (detail includes `messages`, `enquiryId`, `deliverables`, `deliveredFiles`, `activity`, `review`) | |
 | POST | `/brands/campaigns/:id/pay` `{ phoneNumber }` -> 202 `{ checkoutRequestId }` | M-Pesa STK push for the booking; the callback sets `paidOn`, `paymentMethod`, `mpesaReceipt` and `escrowStatus: held`. The page polls the campaign until `paidOn` appears. The creator can only mark delivered after this |
+| POST | `/creators/campaigns/:id/deliver` `{ fileIds, note }` | `fileIds` are the creator's own upload ids; they become the booking's `deliveredFiles` `[{ id, name, url }]` |
 | POST | `/brands/campaigns/:id/approve` (completes, releases escrow), `/brands/campaigns/:id/dispute` `{ evidence }` | both need a paid, delivered booking |
 | GET | `/brands/billing`, `/brands/invoices`, `/brands/invoices/:id/pdf?token=`, `/brands/transactions?range=` | |
 | GET / POST / DELETE | `/brands/payment-methods`, `/brands/payment-methods/:id` | `{ methods: [{ id, type: card|mpesa|airtel|bank, name, detail, connected, primary }] }` |
@@ -76,7 +77,8 @@ Auth: bearer token in `Authorization`, plus `?token=` on GET links that open in 
 | GET | `/admin/accounts?q=&role=&status=` -> `{ accounts, total }`, `/admin/accounts/flagged`; POST `/admin/accounts/:id/action` `{ action, reason }` | brand rows use the company name |
 | POST | `/admin/invite` `{ email, role }`, `/admin/moderation` `{ targetId, action: remove|dismiss, reason }` | |
 | GET | `/admin/reviews` -> `{ reviews }` | moderation feed across creators |
-| GET / POST | `/admin/escrow`, `/admin/escrow/:id/release|extend` | |
+| GET / POST | `/admin/escrow`, `/admin/escrow/:id/release|extend` | `extend` moves the automatic release date back 7 days |
+| GET | `/internal/cron/escrow-release` (Vercel Cron, daily, `Authorization: Bearer $CRON_SECRET`) | releases delivered, paid, undisputed bookings once `escrowReleaseDays` after delivery have passed |
 | GET / POST | `/admin/deletion-requests`, `/admin/deletion-requests/:id/approve|reject` `{ reason }` | approve erases the account at once (blocked while bookings or payouts are open); enquiries, campaigns, messages, reviews and disputes stay for the other party |
 | GET / POST | `/admin/re-engagement` -> `{ segments, history, abandonedByStep, queue }`, `/admin/re-engagement/send` `{ segmentId, subject, preview }` -> `{ id, queued, delivered }` | history rows carry real `opened`/`clicked` (per-recipient tracking pixel and link, `GET /r/:sendId/:userId[/open.gif]`) and `reactivated` (published or messaged after the send) |
 | GET / PUT | `/admin/settings` | `{ platformFeePct, escrowReleaseDays, disputeWindowDays, deletionGraceDays, draftAbandonDays, inactiveDays, enquiryReplyHours, maintenance, maintenanceMessage }` |

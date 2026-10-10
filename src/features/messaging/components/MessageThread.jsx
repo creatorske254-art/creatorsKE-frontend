@@ -152,10 +152,11 @@ export default function MessageThread({ threadId }) {
           type="button"
           className="btn btn-square btn-icon-style"
           title="Attach file"
+          aria-label="Attach file"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
         >
-          <IconPaperclip className="icon-sm" />
+          <IconPaperclip className="icon-sm" aria-hidden="true" />
         </button>
         <input
           className="input input-md"
@@ -172,8 +173,9 @@ export default function MessageThread({ threadId }) {
           onClick={handleSend}
           disabled={isSending || !text.trim()}
           title="Send"
+          aria-label="Send message"
         >
-          <IconSend className="icon-sm" />
+          <IconSend className="icon-sm" aria-hidden="true" />
         </button>
       </div>
     </div>

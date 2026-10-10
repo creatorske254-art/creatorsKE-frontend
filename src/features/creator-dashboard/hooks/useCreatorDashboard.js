@@ -102,6 +102,7 @@ export function useCreatorDashboard() {
 
     return {
       completeness,
+      published: !!published,
       packages: { current: pkgCurrent, max: pkgMax },
       paymentMethods: { current: payCurrent, max: payMax },
     };

@@ -502,9 +502,9 @@ export default function MoneyPage() {
                   <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--status-success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-success-text)' }}>
                     <IconCheck className="icon-xl" aria-hidden="true" />
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>Withdrawal sent</div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>Withdrawal requested</div>
                   <div style={{ fontSize: 12.5, color: 'var(--grey-500)', lineHeight: 1.6 }}>
-                    {formatCurrency(withdrawnAmount)} is on its way to {primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'your M-Pesa'}. It usually lands within a few minutes.
+                    {formatCurrency(withdrawnAmount)} will be sent to {primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'your M-Pesa'}. It shows as pending in your transactions until it is sent.
                   </div>
                 </div>
               ) : (
@@ -529,7 +529,7 @@ export default function MoneyPage() {
 
                   <div className="alert alert-info">
                     <span className="alert-icon-badge"><IconInfoCircle className="icon-sm" aria-hidden="true" /></span>
-                    <div>Withdrawals to M-Pesa usually land within a few minutes.</div>
+                    <div>Your request is recorded and shows as pending in your transactions until the money is sent to you.</div>
                   </div>
                 </>
               )}

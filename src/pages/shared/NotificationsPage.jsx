@@ -126,7 +126,7 @@ export default function NotificationsPage() {
             const message = n.message || n.body || (!title ? 'Notification' : '');
             const TypeIcon = TYPE_ICON[n.type] || IconBell;
             return (
-              <div key={n.id} className={`notif-row${isUnread(n) ? ' is-unread' : ''}`} onClick={() => handleClick(n)}>
+              <div key={n.id} className={`notif-row${isUnread(n) ? ' is-unread' : ''}`} onClick={() => handleClick(n)} role="button" tabIndex={0} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); handleClick(n); } }}>
                 <div className="notif-row__icon"><TypeIcon className="icon-md" aria-hidden="true" /></div>
                 <div className="notif-row__body">
                   {title && <div className="notif-row__title">{title}</div>}

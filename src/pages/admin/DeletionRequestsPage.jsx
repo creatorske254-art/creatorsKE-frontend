@@ -166,7 +166,7 @@ export default function DeletionRequestsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--grey-600)' }}>
               {decision.kind === 'approve'
-                ? <>This erases <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong>'s account ({decision.row.user?.email}) now. Rate cards, portfolio and messages are removed and it cannot be undone. Type <strong style={{ color: 'var(--black)' }}>DELETE</strong> to confirm.</>
+                ? <>This erases <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong>'s account ({decision.row.user?.email}) now. Their rate cards and portfolio are removed; bookings, messages and reviews shared with other users stay on record. This cannot be undone. Type <strong style={{ color: 'var(--black)' }}>DELETE</strong> to confirm.</>
                 : <>Tell <strong style={{ color: 'var(--black)' }}>{decision.row.user?.name}</strong> why the request can't be honoured yet. They receive this by email.</>}
             </p>
             {decision.kind === 'approve' ? (

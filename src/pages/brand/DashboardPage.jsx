@@ -99,6 +99,7 @@ function normalizeCampaign(c) {
     deliveryDate: formatDate(c.expectedDeliveryAt ?? c.deliveredAt),
     amount: formatCurrency(c.price ?? c.amount),
     rawAmount: Number(c.price ?? c.amount ?? 0),
+    paid: !!c.paidOn,
     at: c.completedAt ?? c.deliveredAt ?? c.createdAt ?? null,
     unread: c.unreadMessageCount ?? 0,
     avatarColor: "#534AB7",
@@ -448,7 +449,8 @@ export default function BrandDashboardPage() {
       const row = key ? months.get(key) : null;
       if (!row) continue;
       if (c.status === 'completed') row.released += c.rawAmount;
-      else if (c.status === 'in_progress' || c.status === 'delivered' || c.status === 'disputed') row.escrow += c.rawAmount;
+      // Only money the brand has actually paid is held; an accepted but unpaid booking is not spend.
+      else if (c.paid && (c.status === 'in_progress' || c.status === 'delivered' || c.status === 'disputed')) row.escrow += c.rawAmount;
     }
     return [...months.values()];
   }, [campaigns]);
@@ -562,7 +564,7 @@ export default function BrandDashboardPage() {
             error={isCampaignsError}
             empty={!spendHasData}
             emptyTitle="No spend yet"
-            emptyDescription="Booked campaigns will chart here month by month."
+            emptyDescription="Paid bookings will chart here month by month."
             height={220}
           >
             <BarChart data={spendRows} series={[{ key: 'released', label: 'Released to creators' }, { key: 'escrow', label: 'Held in escrow' }]} stacked format={kes} height={220} />

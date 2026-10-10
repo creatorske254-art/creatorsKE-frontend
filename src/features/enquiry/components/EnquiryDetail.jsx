@@ -29,7 +29,7 @@ function MarkDeliveredModal({ open, onClose, onSubmit, isSubmitting }) {
     setUploading(true);
     try {
       const uploaded = await Promise.all(picked.map((f) => uploadFile(f)));
-      setFiles((prev) => [...prev, ...uploaded.map((u, i) => ({ name: picked[i].name, url: u.url, size: picked[i].size }))]);
+      setFiles((prev) => [...prev, ...uploaded.map((u, i) => ({ id: u.id, name: picked[i].name, url: u.url, size: picked[i].size }))]);
     } catch (err) {
       toast.error(err?.message || 'Could not upload one of those files.');
     } finally {
@@ -42,7 +42,8 @@ function MarkDeliveredModal({ open, onClose, onSubmit, isSubmitting }) {
   }
 
   function handleSubmit() {
-    onSubmit({ files, note: note.trim() || undefined });
+    // The API attaches uploads by id (it checks each one belongs to the creator); `files` is for the local mock.
+    onSubmit({ files, fileIds: files.map((f) => f.id).filter(Boolean), note: note.trim() || undefined });
   }
 
   return (

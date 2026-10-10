@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/context/AuthContext';
@@ -9,7 +8,7 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import ErrorState from '@/components/shared/ErrorState';
 import Modal from '@/components/ui/Modal';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
-import { SettingsShell, Toggle, ToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard } from '@/components/settings';
+import { SettingsShell, Toggle, ToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, PendingDeletionNotice } from '@/components/settings';
 import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
 import { useProfile, usePreferences } from '@/features/auth/hooks/useProfile';
 import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
@@ -164,7 +163,7 @@ function ProfileForm({ profile }) {
             </div>
           </div>
         </div>
-        <p className="field-hint" style={{ marginTop: 'var(--space-8)' }}>Follower counts and engagement come from your connected platforms and are shown on your public rate card.</p>
+        <p className="field-hint" style={{ marginTop: 'var(--space-8)' }}>Follower counts and engagement are the figures you enter in the rate card builder, shown on your public rate card.</p>
       </div>
 
       {/* Social links */}
@@ -226,7 +225,6 @@ const NOTIF_ROWS = [
 ];
 const MORE_NOTIF_ROWS = [
   ['reviewReceived', 'New review', 'When a brand leaves a review after a campaign'],
-  ['weeklyDigest', 'Weekly performance digest', 'Views, enquiries, and earnings summary every Monday'],
   ['marketingTips', 'Product updates', 'New features and platform announcements'],
 ];
 
@@ -519,8 +517,7 @@ function AppearanceTab() {
 }
 
 function AccountTab() {
-  const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, updateUser } = useAuth();
   const [confirmUnpublish, setConfirmUnpublish] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -544,15 +541,15 @@ function AccountTab() {
   async function handleConfirmDelete() {
     setDeleting(true);
     try {
-      await authService.deleteAccount();
+      const res = await authService.deleteAccount();
+      updateUser({ deletionRequest: { requestedAt: res?.data?.requestedAt, graceEndsAt: res?.data?.graceEndsAt } });
+      toast.success('Deletion requested. You can cancel it from this page until an administrator reviews it.');
+      setConfirmDelete(false);
     } catch (err) {
       toast.error(err?.message || 'Could not request deletion. Try again.');
+    } finally {
       setDeleting(false);
-      return;
     }
-    toast.success("Deletion requested. We'll email you once it's done; sign in before then to cancel.");
-    logout();
-    navigate('/');
   }
 
   return (
@@ -564,13 +561,16 @@ function AccountTab() {
       </div>
       <LanguageRegionCard />
 
+      <PendingDeletionNotice />
       <DangerZone>
         <button className={`btn btn-danger btn-sm${unpublishing || isUnpublishingAll ? " btn-loading" : ""}`} disabled={unpublishing || isUnpublishingAll} onClick={() => setConfirmUnpublish(true)}>
           <IconEyeOff className="icon-xs" aria-hidden="true" />Unpublish all cards
         </button>
-        <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
-          <IconTrash className="icon-xs" aria-hidden="true" />Delete account
-        </button>
+        {!user?.deletionRequest && (
+          <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
+            <IconTrash className="icon-xs" aria-hidden="true" />Delete account
+          </button>
+        )}
       </DangerZone>
 
       <ConfirmDialog
@@ -642,8 +642,9 @@ function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
   return (
     <Modal open={open} onClose={deleting ? () => {} : onCancel} title="Delete your account?" size="sm">
       <p style={{ fontSize: 14, color: "var(--grey-600)", lineHeight: 1.65, marginBottom: 'var(--space-16)' }}>
-        Our team deletes your creator profile, rate cards, portfolio and booking history once nothing is open on
-        the account: bookings in progress and pending payouts must finish first. Once deleted, it cannot be undone.
+        Our team deletes your creator profile, rate cards and portfolio once nothing is open on the account:
+        bookings in progress and pending payouts must finish first. Bookings, messages and reviews stay on record
+        for the brands you worked with. Once deleted, it cannot be undone.
       </p>
       <label className="field-label" style={{ display: "block", marginBottom: 'var(--space-8)' }}>
         Type <strong>DELETE</strong> to confirm

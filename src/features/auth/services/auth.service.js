@@ -14,6 +14,8 @@ export const authService = {
   logout: () => api.post('/auth/logout'),
   getMe: () => api.get('/auth/me').then((r) => r.data),
   deleteAccount: () => api.delete('/auth/account'),
+  // Withdraws a pending deletion request during its grace period.
+  cancelDeletion: () => api.post('/auth/account/cancel-deletion').then((r) => r.data),
 };
 
 // Users & Profiles - no dedicated "users" feature exists, and this is the

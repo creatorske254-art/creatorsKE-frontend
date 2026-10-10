@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toast } from "sonner";
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useRateCard, useRateCards } from '@/features/rate-card/hooks/useRateCard';
@@ -11,7 +12,7 @@ import {
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
   IconBuilding, IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
   IconEye, IconEyeOff, IconPencil, IconPlus, IconLayoutDashboard,
-  IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading, IconWorld
+  IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading, IconWorld, IconLoader2
 } from "@tabler/icons-react";
 import Select from '@/components/ui/Select';
 import SmartImage from '@/components/ui/SmartImage';
@@ -350,8 +351,18 @@ export default function RateCardBuilderPage() {
   const navigate = useNavigate();
   const { id: cardId } = useParams();
   const { rateCard, isLoading: cardLoading } = useRateCard(cardId);
-  const { create: createRateCard, isCreating } = useRateCards();
-  const [step, setStep] = useState(1);
+  const { create: createRateCard, isCreating, rateCards, isLoading: cardsLoading } = useRateCards();
+  const { user } = useAuth();
+  // "Rate cards" in the sidebar opens the creator's existing card; a blank one needs ?new=1.
+  const [searchParams] = useSearchParams();
+  const wantsNew = searchParams.get("new") === "1";
+  const canAddCard = rateCards.length < (user?.plan?.rateCardsMax ?? 1);
+  // The first save moves to /:id/edit, which remounts this page; the step rides along in route state.
+  const location = useLocation();
+  const [step, setStep] = useState(location.state?.step ?? 1);
+  useEffect(() => {
+    if (!cardId && !wantsNew && !cardsLoading && rateCards.length) navigate(`/creator/rate-card/${rateCards[0].id}/edit`, { replace: true });
+  }, [cardId, wantsNew, cardsLoading, rateCards, navigate]);
   const [savingDraft, setSavingDraft] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const queryClient = useQueryClient();
@@ -410,8 +421,6 @@ export default function RateCardBuilderPage() {
   const [bankOpen, setBankOpen] = useState(false);
   const [bankAccount, setBankAccount] = useState("");
   const [bankHolder, setBankHolder] = useState("");
-  const [autoInvoice, setAutoInvoice] = useState(true);
-  const [requireDeposit, setRequireDeposit] = useState(false);
   const connectMpesa = () => addPayoutMethod({ type: 'mpesa', name: 'M-Pesa', detail: `+254 ${mpesaPhone.trim()}`, fields: { phone: `+254 ${mpesaPhone.trim()}`, business: mpesaBusiness.trim() } });
   const connectAirtel = () => addPayoutMethod({ type: 'airtel', name: 'Airtel Money', detail: `+254 ${airtelPhone.trim()}`, fields: { phone: `+254 ${airtelPhone.trim()}` } });
   const connectBank = () => addPayoutMethod({ type: 'bank', name: bankName, detail: `···· ···· ${bankAccount.trim().slice(-4)}`, fields: { bank: bankName, account: bankAccount.trim(), holder: bankHolder.trim() } }, { onSuccess: () => setBankOpen(false) });
@@ -446,10 +455,6 @@ export default function RateCardBuilderPage() {
     if (rateCard.usageNote) setUsageNote(rateCard.usageNote);
     if (rateCard.revisionPolicy) setRevisionPolicy(rateCard.revisionPolicy);
     if (rateCard.showPricing != null) setShowPricing(rateCard.showPricing);
-    if (rateCard.payment) {
-      if (rateCard.payment.autoInvoice != null) setAutoInvoice(!!rateCard.payment.autoInvoice);
-      if (rateCard.payment.requireDeposit != null) setRequireDeposit(!!rateCard.payment.requireDeposit);
-    }
     if (rateCard.published) setPublished(true);
   }, [cardId, rateCard]);
 
@@ -461,7 +466,7 @@ export default function RateCardBuilderPage() {
     profile,
     platforms,
     ...(packages.length ? { packages } : {}),
-    payment: { autoInvoice, requireDeposit },
+    payment: rateCard?.payment ?? {},
     headline,
     pitch,
     leadTime,
@@ -479,11 +484,11 @@ export default function RateCardBuilderPage() {
   // Ensures a rate card exists (creating one on first save if the wizard was
   // opened at /creator/rate-card with no :id yet), then navigates to its
   // edit URL so subsequent saves target the created card.
-  const ensureCardId = async () => {
+  const ensureCardId = async (stepAfter = step) => {
     if (cardId) return cardId;
     const created = await createRateCard(buildPayload());
     const newId = created?.id;
-    if (newId) navigate(`/creator/rate-card/${newId}/edit`, { replace: true });
+    if (newId) navigate(`/creator/rate-card/${newId}/edit`, { replace: true, state: { step: stepAfter } });
     return newId;
   };
 
@@ -526,14 +531,27 @@ export default function RateCardBuilderPage() {
   };
 
   const next = () => setStep((s) => Math.min(5, s + 1));
+  // "Save & continue" keeps the server copy current, so a refresh or a closed tab loses nothing.
+  const saveAndNext = async () => {
+    setSavingDraft(true);
+    try {
+      const id = await ensureCardId(Math.min(5, step + 1));
+      if (id) queryClient.setQueryData(['rate-card', id], await rateCardService.saveDraft(id, buildPayload()));
+      next();
+    } catch (err) {
+      toast.error(err?.message || "Could not save this step. Please try again.");
+    } finally {
+      setSavingDraft(false);
+    }
+  };
   const back = () => setStep((s) => Math.max(1, s - 1));
 
 
-  if (cardId && cardLoading) {
+  if ((cardId && cardLoading) || (!cardId && !wantsNew && (cardsLoading || rateCards.length > 0))) {
     return (
       <div className="rcb" style={{ minHeight: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Tokens />
-        <p className="hint">Loading your rate card…</p>
+        <p className="hint" style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}><IconLoader2 className="icon-sm" style={{ animation: "spin 0.8s linear infinite" }} aria-hidden="true" />Loading your rate card</p>
       </div>
     );
   }
@@ -545,8 +563,13 @@ export default function RateCardBuilderPage() {
         {/* header / stepper */}
         <div className="btop">
           <div className="btop-inner">
-            <div className="page-title">
-              {["Set up your profile", "Your packages", "Payment setup", "Edit rate card", "Preview & publish"][step - 1]}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
+              <div className="page-title">
+                {["Set up your profile", "Your packages", "Payment setup", "Edit rate card", "Preview & publish"][step - 1]}
+              </div>
+              {cardId && canAddCard && (
+                <Link to="/creator/rate-card?new=1" className="btn btn-ghost btn-sm"><IconPlus className="icon-sm" aria-hidden="true" />New rate card</Link>
+              )}
             </div>
             <div className="page-subtitle">
               {[
@@ -721,10 +744,10 @@ export default function RateCardBuilderPage() {
                   ))}
                 </div>
                 <div className="bento">
-                  <div className="card-dash card-p" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 'var(--space-8)', minHeight: 58 }} onClick={addPackage}>
-                    <IconPlus className="icon-md" color="var(--txt-tertiary)" />
+                  <button type="button" className="card-dash card-p" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 'var(--space-8)', minHeight: 58, width: "100%", background: "transparent", font: "inherit", cursor: "pointer" }} onClick={addPackage}>
+                    <IconPlus className="icon-md" style={{ color: "var(--txt-tertiary)" }} aria-hidden="true" />
                     <span style={{ fontSize: 13, fontWeight: 500, color: "var(--txt-secondary)" }}>Add another package</span>
-                  </div>
+                  </button>
                   <div className="alert alert-info">
                     <IconInfoCircle className="icon-md" />
                     <div className="alert-body"><div className="alert-title">Pro tip</div>Brands respond best to 2–4 clear packages. Keep names short and prices specific.</div>
@@ -832,20 +855,6 @@ export default function RateCardBuilderPage() {
               </div>
               ); })()}
 
-              <div className="card card-p">
-                <p className="section-title" style={{ marginBottom: 'var(--space-16)' }}>Invoice preferences</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
-                    <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Auto-send invoice on booking</div><p className="hint">Automatically email invoice when a client books</p></div>
-                    <button className={`toggle${autoInvoice ? " on" : ""}`} onClick={() => setAutoInvoice((v) => !v)} />
-                  </div>
-                  <div className="hr" />
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
-                    <div><div style={{ fontSize: 13.5, fontWeight: 500 }}>Require 50% deposit</div><p className="hint">Client pays half upfront before work begins</p></div>
-                    <button className={`toggle${requireDeposit ? " on" : ""}`} onClick={() => setRequireDeposit((v) => !v)} />
-                  </div>
-                </div>
-              </div>
             </div>
           )}
 
@@ -1064,7 +1073,7 @@ export default function RateCardBuilderPage() {
               {step === 5 ? (
                 <button className={`btn btn-ghost${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={handleSaveDraft}>Save draft</button>
               ) : (
-                <button className="btn btn-primary" onClick={next}>Save &amp; continue<IconArrowRight className="icon-sm" /></button>
+                <button className={`btn btn-primary${savingDraft ? " btn-loading" : ""}`} disabled={savingDraft} onClick={saveAndNext}>Save &amp; continue<IconArrowRight className="icon-sm" aria-hidden="true" /></button>
               )}
             </div>
           </div>

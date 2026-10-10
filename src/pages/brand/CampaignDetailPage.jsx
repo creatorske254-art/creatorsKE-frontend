@@ -130,10 +130,10 @@ function ReviewForm({ onSubmit, isSubmitting }) {
   return (
     <div>
       <div className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Leave a review</div>
-      <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-12)' }}>
+      <div role="radiogroup" aria-label="Rating" style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-12)' }}>
         {[1, 2, 3, 4, 5].map((n) => (
-          <button key={n} type="button" className={`star-btn${n <= rating ? ' filled' : ''}`} onClick={() => setRating(n)}>
-            <IconStar className="icon-lg" fill={n <= rating ? 'currentColor' : 'none'} />
+          <button key={n} type="button" role="radio" aria-checked={rating === n} aria-label={`${n} star${n === 1 ? '' : 's'}`} className={`star-btn${n <= rating ? ' filled' : ''}`} onClick={() => setRating(n)}>
+            <IconStar className="icon-lg" fill={n <= rating ? 'currentColor' : 'none'} aria-hidden="true" />
           </button>
         ))}
       </div>
@@ -141,6 +141,7 @@ function ReviewForm({ onSubmit, isSubmitting }) {
         className="input input-md"
         rows={3}
         placeholder="Optional: how was the collaboration?"
+        aria-label="Review"
         value={text}
         onChange={(e) => setText(e.target.value)}
         style={{ marginBottom: 'var(--space-12)', resize: 'vertical' }}
@@ -154,6 +155,22 @@ function ReviewForm({ onSubmit, isSubmitting }) {
 
 // Booking payment into escrow by M-Pesa STK push. After the prompt goes out the campaign is
 // re-read every few seconds until the payment lands (or two minutes pass).
+// The delivered files stay available after approval: they are what the brand paid for.
+function DeliveredFiles({ files }) {
+  if (!files?.length) return null
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
+      {files.map((f, i) => (
+        <a key={f.id ?? i} className="file-chip" href={f.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <IconFileText className="icon-sm" style={{ color: 'var(--grey-400)' }} aria-hidden="true" />
+          <span style={{ flex: 1 }}>{f.name}</span>
+          <IconDownload className="icon-sm" style={{ color: 'var(--grey-400)' }} aria-hidden="true" />
+        </a>
+      ))}
+    </div>
+  )
+}
+
 function FundEscrowCard({ campaignId, amount, onPaid }) {
   const [phone, setPhone] = useState('')
   const [waitingSince, setWaitingSince] = useState(null)
@@ -247,14 +264,6 @@ export default function CampaignDetailPage() {
     URL.revokeObjectURL(url)
   }
 
-  // ASSUMPTION: no file-storage endpoint is documented - deliveredFiles are
-  // mock filenames with no real content anywhere, so there's nothing to
-  // download. Toast is honest about that rather than faking a file.
-  function handleDownloadFile(file) {
-    if (file?.url) window.open(file.url, '_blank', 'noopener,noreferrer')
-    else toast.error('This file is no longer available.')
-  }
-
   const handleApprove = () => approve()
 
   const handleRaiseDispute = () => {
@@ -343,19 +352,7 @@ export default function CampaignDetailPage() {
                   <IconClock className="icon-sm" />
                   <div>The creator has marked this as delivered. Review the files below, then approve to release payment or raise a dispute within {disputeDays} days of delivery.</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
-                  {(base.deliveredFiles ?? []).map((f, i) => (
-                    <div key={i} className="file-chip">
-                      <IconFileText className="icon-sm" style={{ color: 'var(--grey-400)' }} />
-                      <span style={{ flex: 1 }}>{f.name}</span>
-                      <span style={{ color: 'var(--grey-400)' }}>{f.size}</span>
-                      <IconDownload className="icon-sm"
-            style={{ color: 'var(--grey-400)', cursor: 'pointer' }}
-            onClick={() => handleDownloadFile(f)}
-                      />
-                    </div>
-                  ))}
-                </div>
+                <DeliveredFiles files={base.deliveredFiles} />
 
                 {!showDisputeForm ? (
                   <div style={{ display: 'flex', gap: 'var(--space-8)' }}>
@@ -405,6 +402,7 @@ export default function CampaignDetailPage() {
                   <IconCheck className="icon-sm" />
                   <div>Delivery approved. KES {netPayout.toLocaleString()} released to the creator, net of the platform fee.</div>
                 </div>
+                <DeliveredFiles files={base.deliveredFiles} />
                 {!review ? (
                   <ReviewForm onSubmit={(r) => reviewMutation.mutate(r)} isSubmitting={reviewMutation.isPending} />
                 ) : (

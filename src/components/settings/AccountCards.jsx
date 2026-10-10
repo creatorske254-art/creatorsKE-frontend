@@ -3,9 +3,9 @@ import QRCode from 'qrcode';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
-import { userService } from '@/features/auth/services/auth.service';
+import { authService, userService } from '@/features/auth/services/auth.service';
 import { usePreferences } from '@/features/auth/hooks/useProfile';
-import { formatRelativeDate } from '@/lib/utils';
+import { formatDate, formatRelativeDate } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import Modal from '@/components/ui/Modal';
@@ -21,6 +21,28 @@ import Select from '@/components/ui/Select';
 */
 
 /** Login email (PATCH /users/profile) + change password (POST /users/change-password). */
+/* Shown in the danger zone while a deletion request is waiting for review. */
+export function PendingDeletionNotice() {
+  const { user, updateUser } = useAuth();
+  const cancel = useMutation({
+    mutationFn: authService.cancelDeletion,
+    onSuccess: () => { updateUser({ deletionRequest: null }); toast.success('Deletion request cancelled. Your account stays open.'); },
+    onError: (err) => toast.error(err?.message || 'Could not cancel the request. Try again.'),
+  });
+  if (!user?.deletionRequest) return null;
+  return (
+    <div className="alert alert-warning" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-12)', flexWrap: 'wrap' }}>
+      <div>
+        <strong>Deletion requested.</strong> An administrator will review it.
+        {user.deletionRequest.graceEndsAt && <> You can cancel until {formatDate(user.deletionRequest.graceEndsAt)}.</>}
+      </div>
+      <button className={`btn btn-secondary btn-sm${cancel.isPending ? ' btn-loading' : ''}`} disabled={cancel.isPending} onClick={() => cancel.mutate()}>
+        Cancel deletion request
+      </button>
+    </div>
+  );
+}
+
 export function LoginDetailsCard({ collapsible = true }) {
   const { user, updateUser } = useAuth();
   const [email, setEmail] = useState(user?.email ?? '');

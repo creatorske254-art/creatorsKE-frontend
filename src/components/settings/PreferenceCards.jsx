@@ -82,7 +82,7 @@ export function DataExportCard({ description }) {
     try {
       const res = await userService.requestExport();
       setExportId(res?.id ?? null);
-      toast.success('Your export is ready. We also emailed you the link.');
+      toast.success('Your export is ready to download. We also sent you an email about it.');
     } catch (err) { toast.error(err?.message || 'Could not request your export.'); }
     finally { setBusy(false); }
   }

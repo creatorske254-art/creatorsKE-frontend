@@ -274,7 +274,7 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
 function Navbar({ onLogoClick }) {
   return (
     <nav className="ps-navbar">
-      <div className="ps-logo" onClick={onLogoClick}>Creatorske<span>.</span></div>
+      <div className="ps-logo" onClick={onLogoClick} role="button" tabIndex={0} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onLogoClick(); } }}>Creatorske<span>.</span></div>
     </nav>
   )
 }

@@ -23,7 +23,7 @@ export function useDeletionRequests(params) {
   const query = useQuery({ queryKey: ['admin-deletion-requests', params], queryFn: () => adminService.listDeletionRequests(params) });
   const resolve = useMutation({
     mutationFn: ({ id, decision, reason }) => adminService.resolveDeletionRequest(id, decision, reason),
-    onSuccess: (_d, v) => { toast.success(v.decision === 'approve' ? 'Account scheduled for deletion.' : 'Deletion request rejected.'); qc.invalidateQueries({ queryKey: ['admin-deletion-requests'] }); },
+    onSuccess: (_d, v) => { toast.success(v.decision === 'approve' ? 'Account deleted.' : 'Deletion request rejected.'); qc.invalidateQueries({ queryKey: ['admin-deletion-requests'] }); },
     onError: fail('Could not resolve that request.'),
   });
   return { query, rows: query.data?.requests ?? query.data ?? [], resolve: resolve.mutate, isResolving: resolve.isPending, resolvingId: resolve.variables?.id };
@@ -34,7 +34,7 @@ export function useReengagement() {
   const query = useQuery({ queryKey: ['admin-re-engagement'], queryFn: () => adminService.getReengagement() });
   const send = useMutation({
     mutationFn: ({ segmentId, ...options }) => adminService.sendReengagement(segmentId, options),
-    onSuccess: (_d, v) => { toast.success(`Re-engagement email queued for "${v.label}".`); qc.invalidateQueries({ queryKey: ['admin-re-engagement'] }); },
+    onSuccess: (d, v) => { const n = Number(d?.queued ?? 0); toast.success(n ? `Sent "${v.label}" to ${n} creator${n === 1 ? '' : 's'}.` : `No one is in "${v.label}" right now.`); qc.invalidateQueries({ queryKey: ['admin-re-engagement'] }); },
     onError: fail('Could not queue the email.'),
   });
   return { query, data: query.data, send: send.mutate, isSending: send.isPending, sendingId: send.variables?.segmentId };

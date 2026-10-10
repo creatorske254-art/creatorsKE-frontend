@@ -287,7 +287,7 @@ export default function DashboardPage() {
           loading={views.isLoading}
           empty={viewRows.length === 0}
           emptyTitle="No views yet"
-          emptyDescription="Publish your rate card and share the link to start tracking views."
+          emptyDescription={cardHealth?.published ? "Share your rate card link to start getting views." : "Publish your rate card and share the link to start tracking views."}
           height={160}
         >
           <BarChart data={viewRows} series={[{ key: 'views', label: 'Views' }]} emphasis={(row) => row.views === peakViews} height={160} />

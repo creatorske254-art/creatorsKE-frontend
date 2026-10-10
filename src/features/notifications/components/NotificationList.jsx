@@ -106,7 +106,7 @@ export default function NotificationList({ onClose }) {
             const message = n.message || n.body || (!title ? 'Notification' : '');
             const TypeIcon = TYPE_ICON[n.type] || IconBell;
             return (
-              <div key={n.id} className="notif-item" onClick={() => handleClickNotification(n)}>
+              <div key={n.id} className="notif-item" onClick={() => handleClickNotification(n)} role="button" tabIndex={0} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); handleClickNotification(n); } }}>
                 <div className="notif-item__icon">
                   <TypeIcon className="icon-md" aria-hidden="true" />
                 </div>

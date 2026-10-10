@@ -262,7 +262,7 @@ export default function ReviewsPage() {
           Flagged Reviews
         </h1>
         <p className="page-subtitle">
-          Moderate reviews flagged by creators or auto-detected for policy violations across the platform.
+          Moderate reviews that creators have flagged, across the platform.
         </p>
       </div>
 

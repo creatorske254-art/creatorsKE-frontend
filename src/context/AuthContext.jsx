@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { authService } from '@/features/auth/services/auth.service'
 
 // ─── Context ──────────────────────────────────────────────────────────────
@@ -24,12 +25,18 @@ export function AuthProvider({ children }) {
   const role = user?.role ?? null
 
   // ── login ────────────────────────────────────────────────────────────────
+  // Cached queries belong to whoever was signed in (keys like ['profile'] are not per user), so
+  // they are dropped whenever the account changes; otherwise the next person on a shared
+  // browser could see the previous account's data until it refetched.
+  const queryClient = useQueryClient()
+
   const login = useCallback((newToken, newUser) => {
+    queryClient.clear()
     localStorage.setItem(TOKEN_KEY, newToken)
     localStorage.setItem(USER_KEY, JSON.stringify(newUser))
     setToken(newToken)
     setUser(newUser)
-  }, [])
+  }, [queryClient])
 
   // ── logout ───────────────────────────────────────────────────────────────
   const logout = useCallback(() => {
@@ -40,7 +47,8 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(USER_KEY)
     setToken(null)
     setUser(null)
-  }, [])
+    queryClient.clear()
+  }, [queryClient])
 
   // ── updateUser - for profile edits that don't change the token ───────────
   const updateUser = useCallback((updatedFields) => {

@@ -18,14 +18,6 @@ const AVAIL_META = {
   booked:    { label: 'Fully booked',  dot: 'var(--grey-400)' },
 };
 
-const SORTS = [
-  { value: 'recent',     label: 'Recently added' },
-  { value: 'followers',  label: 'Most followers' },
-  { value: 'engagement', label: 'Highest engagement' },
-  { value: 'rating',     label: 'Highest rated' },
-  { value: 'price_low',  label: 'Price: low to high' },
-];
-
 function formatFollowers(n) {
   if (n >= 1000) return `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}K`;
   return String(n);
@@ -200,7 +192,6 @@ export default function ShortlistPage() {
   const [query, setQuery] = useState('');
   const [activeNiche, setNiche] = useState('All');
   const [availableOnly, setAvailableOnly] = useState(false);
-  const [sortBy, setSortBy] = useState('recent');
   const [toast, setToast] = useState({ visible: false, message: '', action: null });
 
   const showToast = useCallback((message, action = null) => {
@@ -217,15 +208,9 @@ export default function ShortlistPage() {
       const matchQuery = !q || c.name.toLowerCase().includes(q) || c.handle.toLowerCase().includes(q) || c.niche.toLowerCase().includes(q);
       return matchNiche && matchAvail && matchQuery;
     });
-    switch (sortBy) {
-      case 'followers':  list = [...list].sort((a, b) => b.followers - a.followers); break;
-      case 'engagement': list = [...list].sort((a, b) => b.eng - a.eng); break;
-      case 'rating':     list = [...list].sort((a, b) => b.rating - a.rating); break;
-      case 'price_low':  list = [...list].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity)); break;
-      default:           list = [...list].sort((a, b) => new Date(b.addedOn) - new Date(a.addedOn));
-    }
-    return list;
-  }, [creators, query, activeNiche, availableOnly, sortBy]);
+    // Newest additions first.
+    return [...list].sort((a, b) => new Date(b.addedOn) - new Date(a.addedOn));
+  }, [creators, query, activeNiche, availableOnly]);
 
   // Shortlist-wide stats for the summary row, reflects the full
   // saved list, independent of the active search/filter/sort.

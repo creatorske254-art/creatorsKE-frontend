@@ -36,19 +36,6 @@ function Stars({ n }) {
   );
 }
 
-function SectionHead({ title, action, actionLabel }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 'var(--space-16)' }}>
-      <h2 className="section-title">{title}</h2>
-      {action && (
-        <button className="btn btn-ghost btn-xs" onClick={action}>
-          {actionLabel}
-        </button>
-      )}
-    </div>
-  );
-}
-
 // Mini bar chart - bespoke, no canonical equivalent
 // Alert banner - bespoke, no canonical equivalent (closest is .alert in index.css
 // but that's scoped to a different component; kept local, tokens fixed)

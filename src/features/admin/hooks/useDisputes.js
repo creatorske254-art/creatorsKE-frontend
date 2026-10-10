@@ -43,10 +43,3 @@ export function useDisputes() {
   };
 }
 
-export function useDispute(id) {
-  return useQuery({
-    queryKey: ['admin-dispute', id],
-    queryFn: () => adminService.getDispute(id),
-    enabled: !!id,
-  });
-}

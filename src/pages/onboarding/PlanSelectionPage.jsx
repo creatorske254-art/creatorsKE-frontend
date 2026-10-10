@@ -5,7 +5,7 @@ import { usePlan } from '@/features/plans/hooks/usePlan'
 import { useAuth } from '@/context/AuthContext'
 import { CREATOR_PRICING_TIERS } from '@/features/plans/constants/pricingTiers'
 import Modal from '@/components/ui/Modal'
-import { IconArrowRight, IconCheck, IconDeviceMobile, IconPencil } from '@tabler/icons-react';
+import { IconArrowRight, IconCheck, IconCircleCheck, IconDeviceMobile, IconPencil } from '@tabler/icons-react';
 
 // ─── CSS-in-JS tokens (shared subset matching auth.html) ─────────────────────
 const css = `
@@ -102,46 +102,11 @@ const css = `
      no canonical equivalent, so it stays here, scoped to this page. */
   .ps-page .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
 
-  /* Rate card mini preview */
-  .rc-mini {
-    background: var(--white); border: 0.5px solid var(--grey-100); border-radius: var(--radius-xl);
-    overflow: hidden; box-shadow: var(--shadow-sm); width: 100%; max-width: 340px;
-    animation: rcFloat .5s var(--ease-out) both;
-  }
-  @keyframes rcFloat { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
-  .rc-mini-top { padding: var(--space-16) var(--space-16) var(--space-12); border-bottom: 0.5px solid var(--grey-100); display: flex; align-items: center; gap: var(--space-12); }
-  .rc-mini-avatar {
-    width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--white); flex-shrink: 0;
-    background: linear-gradient(135deg, #6B5FF4, #1E1480);
-  }
-  .rc-mini-name { font-family: var(--font-display); font-size: 14px; font-weight: 600; color: var(--black); }
-  .rc-mini-handle { font-size: 11px; color: var(--grey-400); }
-  .rc-mini-stats { display: flex; border-bottom: 0.5px solid var(--grey-100); }
-  .rc-mini-stat { flex: 1; padding: var(--space-8) var(--space-12); text-align: center; border-right: 0.5px solid var(--grey-100); }
-  .rc-mini-stat:last-child { border-right: none; }
-  .rc-mini-num { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--black); }
-  .rc-mini-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--grey-400); margin-top: var(--space-2); }
-  .rc-mini-footer { padding: var(--space-12) var(--space-16); display: flex; align-items: center; justify-content: space-between; }
-  .rc-avail { display: inline-flex; align-items: center; gap: var(--space-4); font-size: 11px; color: var(--grey-500); }
-  .rc-avail-dot { width: 5px; height: 5px; border-radius: 50%; background: #639922; }
-  .rc-mini-cta { font-size: 11px; font-weight: 600; color: var(--purple-600); cursor: pointer; display: inline-flex; align-items: center; gap: var(--space-2); }
-
   /* Welcome / complete screen */
   .ps-complete-shell {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     gap: var(--space-32); padding: var(--space-64) var(--space-24) var(--space-48); background: var(--page-bg);
   }
-
-  /* Toast */
-  .ps-toast-wrap { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 999; pointer-events: none; }
-  .ps-toast {
-    background: var(--black); color: var(--white); padding: var(--space-12) var(--space-20); border-radius: var(--radius-lg);
-    font-size: 13px; font-weight: 500; box-shadow: var(--shadow-xl);
-    display: flex; align-items: center; gap: var(--space-8); opacity: 0; transform: translateY(10px);
-    transition: all .25s; white-space: nowrap;
-  }
-  .ps-toast.show { opacity: 1; transform: translateY(0); }
 
   @media (max-width: 680px) {
     .ps-grid { grid-template-columns: 1fr; }
@@ -279,19 +244,6 @@ function Navbar({ onLogoClick }) {
   )
 }
 
-// ─── Toast ────────────────────────────────────────────────────────────────────
-
-function Toast({ message }) {
-  return (
-    <div className="ps-toast-wrap">
-      <div className={`ps-toast${message ? ' show' : ''}`}>
-        <IconCheck className="icon-sm" aria-hidden="true" />
-        <span>{message}</span>
-      </div>
-    </div>
-  )
-}
-
 // ─── Plan card ────────────────────────────────────────────────────────────────
 
 function PlanCard({ plan, selected, onSelect }) {
@@ -325,49 +277,14 @@ function OnboardingComplete({ firstName, plan, onStartBuilding }) {
   return (
     <div className="ps-complete-shell">
       <div style={{ textAlign: 'center', maxWidth: 480 }}>
-        <div style={{ fontSize: 32, marginBottom: 'var(--space-12)' }}>🎉</div>
+        <div style={{ color: 'var(--status-success-text)', marginBottom: 'var(--space-12)' }}><IconCircleCheck className="icon-xl" aria-hidden="true" /></div>
         <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
           You're all set, <span>{firstName || 'there'}</span>!
         </h1>
         <p style={{ fontSize: 14, color: 'var(--grey-500)', lineHeight: 1.7 }}>
           Your <strong>{PLAN_WELCOME_LABELS[plan] || plan}</strong> account is active.
-          Here's a preview of what you'll build. Then head into the builder to make it yours.
+          Next, build your rate card: add your packages and a payout method, then publish your link.
         </p>
-      </div>
-
-      {/* Example rate card preview */}
-      <div className="rc-mini">
-        <div className="rc-mini-top">
-          <div className="rc-mini-avatar">AO</div>
-          <div>
-            <div className="rc-mini-name">
-              Amara Osei{' '}
-              <span style={{ fontSize: 10, color: 'var(--grey-400)', fontFamily: 'var(--font-body)', fontWeight: 400 }}>· Example</span>
-            </div>
-            <div className="rc-mini-handle">@amaracreates · Lifestyle</div>
-          </div>
-        </div>
-        <div className="rc-mini-stats">
-          <div className="rc-mini-stat">
-            <div className="rc-mini-num">48K</div>
-            <div className="rc-mini-lbl">Followers</div>
-          </div>
-          <div className="rc-mini-stat">
-            <div className="rc-mini-num">6.2%</div>
-            <div className="rc-mini-lbl">Engagement</div>
-          </div>
-          <div className="rc-mini-stat">
-            <div className="rc-mini-num">4.9★</div>
-            <div className="rc-mini-lbl">Rating</div>
-          </div>
-        </div>
-        <div className="rc-mini-footer">
-          <div className="rc-avail">
-            <span className="rc-avail-dot" />
-            Available now
-          </div>
-          <div className="rc-mini-cta">Enquire <IconArrowRight className="icon-xs" aria-hidden="true" /></div>
-        </div>
       </div>
 
       <button className="btn btn-purple btn-lg" onClick={onStartBuilding}>
@@ -403,12 +320,6 @@ export default function PlanSelectionPage({ firstName: firstNameProp, onComplete
   const [pendingPlan, setPendingPlan] = useState(null) // paid plan awaiting payment details
   const [step, setStep] = useState('select') // 'select' | 'complete'
   const [confirmedPlan, setConfirmedPlan] = useState(null)
-  const [toast, setToast] = useState('')
-
-  const showToast = (msg) => {
-    setToast(msg)
-    setTimeout(() => setToast(''), 2800)
-  }
 
   // Starter is free, so it upgrades straight away. Pro/Elite are paid, so they
   // collect a real payment method first instead of silently sending null.
@@ -498,7 +409,6 @@ export default function PlanSelectionPage({ firstName: firstNameProp, onComplete
           onConfirm={(paymentMethod) => commitPlan(pendingPlan, paymentMethod)}
         />
 
-        <Toast message={toast} />
       </div>
     </>
   )

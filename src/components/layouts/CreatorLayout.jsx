@@ -141,7 +141,7 @@ const SIDEBAR_SECTIONS = [
 ];
 
 export default function CreatorLayout() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const { pipelineCounts } = useEnquiries();
   const { unreadCount } = useNotifications();
   const [drawerOpen, setDrawerOpen] = useState(false);

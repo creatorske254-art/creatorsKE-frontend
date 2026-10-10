@@ -55,16 +55,6 @@ export function formatRelativeDate(dateString) {
 }
 
 /**
- * Truncate a string with ellipsis.
- * @example truncateText('Long title here', 10) → "Long title..."
- */
-export function truncateText(text, maxLength = 60) {
-  if (!text) return ''
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength).trimEnd() + '...'
-}
-
-/**
  * Format a large number with K / M suffix.
  * @example formatCount(25000) → "25K"
  */
@@ -87,14 +77,6 @@ export function getInitials(name) {
     .slice(0, 2)
     .map((word) => word[0].toUpperCase())
     .join('')
-}
-
-/**
- * Delay execution - useful for debouncing or artificial loading states.
- * @example await sleep(300)
- */
-export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 /**

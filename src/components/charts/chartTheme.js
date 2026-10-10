@@ -14,8 +14,6 @@ export const AXIS = 'var(--chart-axis)';
 export const SURFACE = 'var(--chart-surface)';
 
 /* Sequential "more is darker" steps on the brand hue, for heat-style magnitude. */
-export const SEQUENTIAL = ['var(--purple-100)', 'var(--purple-300)', 'var(--purple-500)', 'var(--purple-700)'];
-
 /* Mark specs - fixed across every chart (thin, rounded data-end, square baseline). */
 export const BAR_MAX = 24;          // px - a bar never fills its slot
 export const BAR_RADIUS = 4;        // px - on the data end only

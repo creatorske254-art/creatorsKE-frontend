@@ -93,10 +93,4 @@ export const uploadFile = (file) => {
     .then((r) => r.data)
 }
 
-export const getUpload = (id) => apiClient.get(`/uploads/${id}`).then((r) => r.data)
-export const deleteUpload = (id) => apiClient.delete(`/uploads/${id}`).then((r) => r.data)
-
-// ─── System health check ───────────────────────────────────────────────────
-export const getHealth = () => apiClient.get('/health').then((r) => r.data)
-
 export default apiClient

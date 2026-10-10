@@ -159,7 +159,7 @@ const SIDEBAR_SECTIONS = [
 
 export default function BrandLayout() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const { activeCampaignCount } = useBrandDashboard();
   const { pipelineCounts } = useEnquiries();
   const { unreadCount } = useNotifications();

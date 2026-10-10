@@ -2,7 +2,6 @@ import api from '@/lib/api';
 
 export const adminService = {
   listDisputes: (params) => api.get('/admin/disputes', { params }).then((r) => r.data),
-  getDispute: (id) => api.get(`/admin/disputes/${id}`).then((r) => r.data),
   resolveDispute: (id, data) => api.patch(`/admin/disputes/${id}/resolve`, data).then((r) => r.data),
   // Not yet documented/built on the backend - see the production-readiness
   // plan's backend spec. Path is a best-effort guess; wired here so the
@@ -38,5 +37,4 @@ export const adminService = {
   listTeam: () => api.get('/admin/team').then((r) => r.data),
   updateTeamMember: (id, data) => api.patch(`/admin/team/${id}`, data).then((r) => r.data),
   removeTeamMember: (id) => api.delete(`/admin/team/${id}`).then((r) => r.data),
-  removeAdmin: (id) => api.delete(`/admin/team/${id}`).then((r) => r.data),
 };

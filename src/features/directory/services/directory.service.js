@@ -69,26 +69,3 @@ export async function getFilterOptions() {
   return Array.isArray(body) ? { niches: [], platforms: [] } : body; // { niches: string[], platforms: string[] }
 }
 
-/**
- * Public creator listing (no auth) - used for the public directory browse.
- * @param {Object} params - { page, limit, category, isVerified }
- */
-export async function listCreators(params = {}) {
-  const response = await api.get('/creators', { params });
-  return response.data;
-}
-
-export async function getCreatorById(id) {
-  const response = await api.get(`/creators/${id}`);
-  return response.data;
-}
-
-export async function createCreatorProfile(data) {
-  const response = await api.post('/creators', data);
-  return response.data;
-}
-
-export async function updateCreatorProfile(id, data) {
-  const response = await api.patch(`/creators/${id}`, data);
-  return response.data;
-}

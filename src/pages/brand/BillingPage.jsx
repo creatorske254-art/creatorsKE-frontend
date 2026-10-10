@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useBrandBilling } from '@/features/brand-dashboard/hooks/useBrandBilling';
 import { formatCurrency, formatDate } from '@/lib/utils';
@@ -45,7 +44,7 @@ export default function BillingPage() {
   const [query, setQuery] = useState('');
   const [previewInvoice, setPreviewInvoice] = useState(null);
 
-  const { billing, invoices, invoiceRows, invoicePdfUrl } = useBrandBilling();
+  const { billing, invoices, invoicePdfUrl } = useBrandBilling();
   const billingData = { data: billing.data, isLoading: billing.isLoading };
   const invoiceData = { data: invoices.data, isLoading: invoices.isLoading };
 

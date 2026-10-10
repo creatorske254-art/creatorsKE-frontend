@@ -106,38 +106,6 @@ const inputStyle = (hasError) => ({
   transition: 'border-color .15s, box-shadow .15s',
 });
 
-// Navbar
-function Navbar({ step, onBack }) {
-  return (
-    <nav style={{
-      background: 'color-mix(in srgb, var(--white) 92%, transparent)',
-      backdropFilter: 'blur(14px)',
-      borderBottom: '0.5px solid var(--grey-100)',
-      height: '60px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 var(--gutter-public)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-      flexShrink: 0,
-    }}>
-      <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: 600, color: 'var(--black)', textDecoration: 'none' }}>
-        Creatorske<span style={{ color: 'var(--purple-500)' }}>.</span>
-      </Link>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-12)' }}>
-        <Link
-          to="/login"
-          style={{ padding: 'var(--space-8) var(--space-16)', fontSize: '13px', fontWeight: 500, color: 'var(--grey-600)', border: '0.5px solid var(--grey-200)', borderRadius: 'var(--radius-md)', textDecoration: 'none', transition: 'all .15s' }}
-        >
-          Log in
-        </Link>
-      </div>
-    </nav>
-  );
-}
-
 // Google sign-up intentionally absent until the backend has an OAuth endpoint -
 // a button that can only say "coming soon" is a mockup.
 

@@ -4,7 +4,7 @@ export const portfolioService = {
   // A creator's own portfolio; the first visit creates an empty one so the builder can save.
   getPortfolio: (creatorId) =>
     api.get(`/portfolio/${creatorId}`).then((r) => r.data).catch((err) => {
-      if (err?.status === 404) return api.post('/portfolio', {}).then((r) => r.data);
+      if (err?.status === 404) return portfolioService.createPortfolio({});
       throw err;
     }),
 

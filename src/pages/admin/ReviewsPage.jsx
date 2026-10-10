@@ -30,7 +30,7 @@ function Stars({ count, size = "sm" }) {
   );
 }
 
-function RatingBar({ label, count, total, value }) {
+function RatingBar({ count, total, value }) {
   const pct = total === 0 ? 0 : Math.round((count / total) * 100);
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-12)', marginBottom: 'var(--space-8)' }}>

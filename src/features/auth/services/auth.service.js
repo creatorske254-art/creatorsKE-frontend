@@ -5,14 +5,12 @@ export const authService = {
   login: (credentials) => api.post('/auth/login', credentials),
   // Second step when the account has two-factor on: the challenge from login plus the app's code.
   loginTwoFactor: (challengeToken, code) => api.post('/auth/login/2fa', { challengeToken, code }),
-  refreshToken: (refreshToken) => api.post('/auth/refresh-token', { refreshToken }),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
   // Not in the documented API - best-effort path, see BACKEND_API_SPEC.md.
   resendVerification: (email) => api.post('/auth/resend-verification', { email }),
   requestPasswordReset: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, password: newPassword }),
   logout: () => api.post('/auth/logout'),
-  getMe: () => api.get('/auth/me').then((r) => r.data),
   deleteAccount: () => api.delete('/auth/account'),
   // Withdraws a pending deletion request during its grace period.
   cancelDeletion: () => api.post('/auth/account/cancel-deletion').then((r) => r.data),

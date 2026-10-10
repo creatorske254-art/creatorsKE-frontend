@@ -1,4 +1,4 @@
-import api from '@/lib/api';
+import api, { openAuthenticated } from '@/lib/api';
 
 /**
  * Everything a brand account manages: company profile, shortlist, campaigns (bookings) and
@@ -46,7 +46,8 @@ export const brandService = {
   // Billing & invoices, transaction history
   getBilling: () => api.get('/brands/billing').then((r) => r.data),
   listInvoices: (params) => api.get('/brands/invoices', { params }).then((r) => r.data),
-  getInvoicePdfUrl: (id) => `${api.defaults.baseURL}/brands/invoices/${id}/pdf?token=${encodeURIComponent(localStorage.getItem('creatorske_token') ?? '')}`,
+  // The printable invoice opens in a new tab; the token goes in the header, not the URL.
+  openInvoice: (id) => openAuthenticated(`/brands/invoices/${id}/pdf`),
   listTransactions: (params) => api.get('/brands/transactions', { params }).then((r) => r.data),
 
   // How the brand pays creators at checkout

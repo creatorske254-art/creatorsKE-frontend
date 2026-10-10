@@ -10,7 +10,7 @@ export function useBrandBilling() {
     billing,
     invoices,
     invoiceRows: invoices.data?.invoices ?? invoices.data ?? [],
-    invoicePdfUrl: brandService.getInvoicePdfUrl,
+    openInvoice: brandService.openInvoice,
   };
 }
 

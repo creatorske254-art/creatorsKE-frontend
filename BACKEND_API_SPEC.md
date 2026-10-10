@@ -2,7 +2,7 @@
 
 The frontend is fully wired to a REST API under `VITE_API_BASE_URL` (`http://localhost:5000/api` in development). Every endpoint below is implemented by the local mock backend in `backend/` (Express, seeded in-memory data persisted to `backend/db.json`; not committed, see `backend/README.md`), so the mock is the executable reference for request and response shapes. A real backend needs to match these shapes for the pages to work unchanged; the frontend unwraps list responses as `data?.items ?? data` (e.g. `{ enquiries: [...] }` or a bare array both work) and reads a few documented field aliases.
 
-Auth: bearer token in `Authorization`, plus `?token=` on GET links that open in a new tab (invoice PDFs, data exports). 401 sends the app to `/login`. The real API wraps every body in `{ success, data, message }`; `src/lib/api.js` unwraps it, so the shapes below are the `data` part.
+Auth: bearer token in `Authorization` on every call, including invoice and export downloads (the app fetches those and opens a blob URL). The API still accepts `?token=` on GETs, but the app no longer uses it. 401 sends the app to `/login`. The real API wraps every body in `{ success, data, message }`; `src/lib/api.js` unwraps it, so the shapes below are the `data` part.
 
 ## Auth and account
 
@@ -18,7 +18,7 @@ Auth: bearer token in `Authorization`, plus `?token=` on GET links that open in 
 | GET | `/users/sessions` | `{ sessions: [{ id, device, location, lastActiveAt, current, mobile }] }` |
 | DELETE | `/users/sessions/others`, `/users/sessions/:id` | 204 |
 | POST | `/users/2fa/setup` -> `{ secret, otpauthUrl }`, `/users/2fa/verify` `{ code }`, DELETE `/users/2fa` | admins cannot disable |
-| POST | `/users/export` -> `{ id, requestedAt }`; GET `/users/export/:id?token=` | the download is a JSON file of the account's data, also emailed |
+| POST | `/users/export` -> `{ id, requestedAt }`; GET `/users/export/:id` | the download is a JSON file of the account's data, also emailed |
 
 ## Directory, public profiles, rate cards, portfolio, plans, onboarding
 
@@ -64,7 +64,7 @@ Auth: bearer token in `Authorization`, plus `?token=` on GET links that open in 
 | POST | `/brands/campaigns/:id/pay` `{ phoneNumber }` -> 202 `{ checkoutRequestId }` | M-Pesa STK push for the booking; the callback sets `paidOn`, `paymentMethod`, `mpesaReceipt` and `escrowStatus: held`. The page polls the campaign until `paidOn` appears. The creator can only mark delivered after this |
 | POST | `/creators/campaigns/:id/deliver` `{ fileIds, note }` | `fileIds` are the creator's own upload ids; they become the booking's `deliveredFiles` `[{ id, name, url }]` |
 | POST | `/brands/campaigns/:id/approve` (completes, releases escrow), `/brands/campaigns/:id/dispute` `{ evidence }` | both need a paid, delivered booking |
-| GET | `/brands/billing`, `/brands/invoices`, `/brands/invoices/:id/pdf?token=`, `/brands/transactions?range=` | |
+| GET | `/brands/billing`, `/brands/invoices`, `/brands/invoices/:id/pdf` (printable HTML; ids are `inv_<campaign id>`), `/brands/transactions?range=` | |
 | GET / POST / DELETE | `/brands/payment-methods`, `/brands/payment-methods/:id` | `{ methods: [{ id, type: card|mpesa|airtel|bank, name, detail, connected, primary }] }` |
 | GET / POST / PATCH / DELETE | `/brands/team`, `/brands/team/invite` `{ email, role }`, `/brands/team/:id` `{ role }` | roles `owner | admin | member | finance`. An invitee signs up with the invited email and then acts on the brand's data with their own login. Owner/admin manage the team and profile, member runs shortlist, enquiries and campaigns, finance pays bookings and manages payment methods; everyone can read. Removing someone signs them out |
 

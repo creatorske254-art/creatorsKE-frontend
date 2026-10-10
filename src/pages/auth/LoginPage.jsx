@@ -16,6 +16,15 @@ const schema = z.object({
 });
 
 
+// Only a path inside this app may be a post-login destination. Anything else (another site,
+// "//host", a backslash trick or a scheme like "javascript:") is dropped, so a crafted
+// ?redirect= link cannot send someone off the site after they sign in.
+const safeRedirect = (value) => {
+  if (typeof value !== 'string' || !value.startsWith('/')) return null;
+  if (value.startsWith('//') || value.includes('\\') || [...value].some((c) => c.charCodeAt(0) < 32)) return null;
+  return value;
+};
+
 const inputStyle = (hasError) => ({
   width: '100%',
   fontFamily: 'var(--font-body)',
@@ -51,7 +60,7 @@ export default function LoginPage() {
 
     // ?redirect= covers the common case; sessionStorage is the durable
     // fallback for flows that hop through signup/verify-email first.
-    const redirectTo = searchParams.get('redirect') || sessionStorage.getItem(POST_AUTH_REDIRECT_KEY);
+    const redirectTo = safeRedirect(searchParams.get('redirect')) || safeRedirect(sessionStorage.getItem(POST_AUTH_REDIRECT_KEY));
     sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
 
     // A creator who hasn't chosen a plan yet picks one before their dashboard.

@@ -1,4 +1,6 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import { IconLoader2 } from '@tabler/icons-react'
 import ProtectedRoute from './ProtectedRoute'
 
 // ── Layouts ────────────────────────────────────────────────────────────────
@@ -10,57 +12,73 @@ import BrandLayout      from '@/components/layouts/BrandLayout'
 import AdminLayout      from '@/components/layouts/AdminLayout'
 
 // ── Public pages ──────────────────────────────────────────────────────────
-import HomePage      from '@/pages/public/HomePage'
-import DirectoryPage from '@/pages/public/DirectoryPage'
-import PricingPage   from '@/pages/public/PricingPage'
-import RateCardPage  from '@/pages/public/RateCardPage'
-import PortfolioPage from '@/pages/public/PortfolioPage'
-import TermsPage     from '@/pages/public/TermsPage'
-import PrivacyPage   from '@/pages/public/PrivacyPage'
+const HomePage = lazy(() => import('@/pages/public/HomePage'))
+const DirectoryPage = lazy(() => import('@/pages/public/DirectoryPage'))
+const PricingPage = lazy(() => import('@/pages/public/PricingPage'))
+const RateCardPage = lazy(() => import('@/pages/public/RateCardPage'))
+const PortfolioPage = lazy(() => import('@/pages/public/PortfolioPage'))
+const TermsPage = lazy(() => import('@/pages/public/TermsPage'))
+const PrivacyPage = lazy(() => import('@/pages/public/PrivacyPage'))
 
 // ── Error pages ───────────────────────────────────────────────────────────
 import NotFoundPage   from '@/pages/error/NotFoundPage'
 import ServerErrorPage from '@/pages/error/ServerErrorPage'
 
 // ── Auth pages ────────────────────────────────────────────────────────────
-import LoginPage         from '@/pages/auth/LoginPage'
-import SignUpPage        from '@/pages/auth/SignUpPage'
-import VerifyEmailPage   from '@/pages/auth/VerifyEmailPage'
-import ResetPasswordPage from '@/pages/auth/ResetPasswordPage'
+const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
+const SignUpPage = lazy(() => import('@/pages/auth/SignUpPage'))
+const VerifyEmailPage = lazy(() => import('@/pages/auth/VerifyEmailPage'))
+const ResetPasswordPage = lazy(() => import('@/pages/auth/ResetPasswordPage'))
 
 // ── Onboarding pages ──────────────────────────────────────────────────────
-import PlanSelectionPage from '@/pages/onboarding/PlanSelectionPage'
+const PlanSelectionPage = lazy(() => import('@/pages/onboarding/PlanSelectionPage'))
 
 // ── Creator pages ─────────────────────────────────────────────────────────
-import CreatorDashboardPage      from '@/pages/creator/DashboardPage'
-import RateCardBuilderPage       from '@/pages/creator/RateCardBuilderPage'
-import PortfolioBuilderPage      from '@/pages/creator/PortfolioBuilderPage'
-import CreatorEnquiriesPage      from '@/pages/creator/EnquiriesPage'
-import MoneyPage                 from '@/pages/creator/MoneyPage'
-import CreatorSettingsPage       from '@/pages/creator/SettingsPage'
+const CreatorDashboardPage = lazy(() => import('@/pages/creator/DashboardPage'))
+const RateCardBuilderPage = lazy(() => import('@/pages/creator/RateCardBuilderPage'))
+const PortfolioBuilderPage = lazy(() => import('@/pages/creator/PortfolioBuilderPage'))
+const CreatorEnquiriesPage = lazy(() => import('@/pages/creator/EnquiriesPage'))
+const MoneyPage = lazy(() => import('@/pages/creator/MoneyPage'))
+const CreatorSettingsPage = lazy(() => import('@/pages/creator/SettingsPage'))
 
 // ── Brand pages ───────────────────────────────────────────────────────────
-import BrandDashboardPage   from '@/pages/brand/DashboardPage'
-import CampaignsPage        from '@/pages/brand/CampaignsPage'
-import CampaignDetailPage   from '@/pages/brand/CampaignDetailPage'
-import ShortlistPage        from '@/pages/brand/ShortlistPage'
-import BrandSettingsPage    from '@/pages/brand/SettingsPage'
-import BrandEnquiriesPage   from '@/pages/brand/EnquiriesPage'
-import BrandBillingPage     from '@/pages/brand/BillingPage'
-import BrandTransactionsPage from '@/pages/brand/TransactionsPage'
+const BrandDashboardPage = lazy(() => import('@/pages/brand/DashboardPage'))
+const CampaignsPage = lazy(() => import('@/pages/brand/CampaignsPage'))
+const CampaignDetailPage = lazy(() => import('@/pages/brand/CampaignDetailPage'))
+const ShortlistPage = lazy(() => import('@/pages/brand/ShortlistPage'))
+const BrandSettingsPage = lazy(() => import('@/pages/brand/SettingsPage'))
+const BrandEnquiriesPage = lazy(() => import('@/pages/brand/EnquiriesPage'))
+const BrandBillingPage = lazy(() => import('@/pages/brand/BillingPage'))
+const BrandTransactionsPage = lazy(() => import('@/pages/brand/TransactionsPage'))
 
 // ── Admin pages ───────────────────────────────────────────────────────────
-import AdminOverviewPage  from '@/pages/admin/OverviewPage'
-import AdminDisputesPage  from '@/pages/admin/DisputesPage'
-import AdminAccountsPage  from '@/pages/admin/AccountsPage'
-import AdminReviewsPage   from '@/pages/admin/ReviewsPage'
-import AdminEscrowPage    from '@/pages/admin/EscrowPage'
-import AdminDeletionRequestsPage from '@/pages/admin/DeletionRequestsPage'
-import AdminReEngagementPage from '@/pages/admin/ReEngagementPage'
-import AdminSettingsPage from '@/pages/admin/SettingsPage'
+const AdminOverviewPage = lazy(() => import('@/pages/admin/OverviewPage'))
+const AdminDisputesPage = lazy(() => import('@/pages/admin/DisputesPage'))
+const AdminAccountsPage = lazy(() => import('@/pages/admin/AccountsPage'))
+const AdminReviewsPage = lazy(() => import('@/pages/admin/ReviewsPage'))
+const AdminEscrowPage = lazy(() => import('@/pages/admin/EscrowPage'))
+const AdminDeletionRequestsPage = lazy(() => import('@/pages/admin/DeletionRequestsPage'))
+const AdminReEngagementPage = lazy(() => import('@/pages/admin/ReEngagementPage'))
+const AdminSettingsPage = lazy(() => import('@/pages/admin/SettingsPage'))
 
 // Shared
-import NotificationsPage from '@/pages/shared/NotificationsPage'
+const NotificationsPage = lazy(() => import('@/pages/shared/NotificationsPage'))
+
+// Pages load on demand, so a visitor downloads only the screens they open (the layouts and the
+// error pages stay in the main bundle). This is what shows while a page's code arrives.
+function PageLoading() {
+  return (
+    <div role="status" style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)', color: 'var(--grey-500)', fontSize: 13 }}>
+      <IconLoader2 className="icon-sm" style={{ animation: 'spin 0.8s linear infinite' }} aria-hidden="true" />
+      Loading
+    </div>
+  )
+}
+const page = (Page) => (
+  <Suspense fallback={<PageLoading />}>
+    <Page />
+  </Suspense>
+)
 
 // ─────────────────────────────────────────────────────────────────────────
 const router = createBrowserRouter([
@@ -70,13 +88,13 @@ const router = createBrowserRouter([
     element: <PublicLayout />,
     errorElement: <ServerErrorPage />,
     children: [
-      { index: true,                    element: <HomePage /> },
-      { path: 'directory',              element: <DirectoryPage /> },
-      { path: 'pricing',                element: <PricingPage /> },
-      { path: 'c/:handle',              element: <RateCardPage /> },
-      { path: 'c/:handle/portfolio',    element: <PortfolioPage /> },
-      { path: 'terms',                  element: <TermsPage /> },
-      { path: 'privacy',                element: <PrivacyPage /> },
+      { index: true,                    element: page(HomePage) },
+      { path: 'directory',              element: page(DirectoryPage) },
+      { path: 'pricing',                element: page(PricingPage) },
+      { path: 'c/:handle',              element: page(RateCardPage) },
+      { path: 'c/:handle/portfolio',    element: page(PortfolioPage) },
+      { path: 'terms',                  element: page(TermsPage) },
+      { path: 'privacy',                element: page(PrivacyPage) },
     ],
   },
 
@@ -85,10 +103,10 @@ const router = createBrowserRouter([
     element: <AuthLayout />,
     errorElement: <ServerErrorPage />,
     children: [
-      { path: 'login',                  element: <LoginPage /> },
-      { path: 'signup',                 element: <SignUpPage /> },
-      { path: 'verify-email',           element: <VerifyEmailPage /> },
-      { path: 'reset-password',         element: <ResetPasswordPage /> },
+      { path: 'login',                  element: page(LoginPage) },
+      { path: 'signup',                 element: page(SignUpPage) },
+      { path: 'verify-email',           element: page(VerifyEmailPage) },
+      { path: 'reset-password',         element: page(ResetPasswordPage) },
     ],
   },
 
@@ -101,7 +119,7 @@ const router = createBrowserRouter([
         element: <OnboardingLayout />,
         children: [
           { path: 'onboarding',         element: <Navigate to="/onboarding/plan" replace /> },
-          { path: 'onboarding/plan',    element: <PlanSelectionPage /> },
+          { path: 'onboarding/plan',    element: page(PlanSelectionPage) },
         ],
       },
     ],
@@ -115,14 +133,14 @@ const router = createBrowserRouter([
       {
         element: <CreatorLayout />,
         children: [
-          { path: 'creator/dashboard',  element: <CreatorDashboardPage /> },
-          { path: 'creator/rate-card',          element: <RateCardBuilderPage /> },
-          { path: 'creator/rate-card/:id/edit', element: <RateCardBuilderPage /> },
-          { path: 'creator/portfolio',  element: <PortfolioBuilderPage /> },
-          { path: 'creator/enquiries',  element: <CreatorEnquiriesPage /> },
-          { path: 'creator/money',      element: <MoneyPage /> },
-          { path: 'creator/settings',   element: <CreatorSettingsPage /> },
-          { path: 'creator/notifications', element: <NotificationsPage /> },
+          { path: 'creator/dashboard',  element: page(CreatorDashboardPage) },
+          { path: 'creator/rate-card',          element: page(RateCardBuilderPage) },
+          { path: 'creator/rate-card/:id/edit', element: page(RateCardBuilderPage) },
+          { path: 'creator/portfolio',  element: page(PortfolioBuilderPage) },
+          { path: 'creator/enquiries',  element: page(CreatorEnquiriesPage) },
+          { path: 'creator/money',      element: page(MoneyPage) },
+          { path: 'creator/settings',   element: page(CreatorSettingsPage) },
+          { path: 'creator/notifications', element: page(NotificationsPage) },
         ],
       },
     ],
@@ -136,15 +154,15 @@ const router = createBrowserRouter([
       {
         element: <BrandLayout />,
         children: [
-          { path: 'brand/dashboard',    element: <BrandDashboardPage /> },
-          { path: 'brand/enquiries',    element: <BrandEnquiriesPage /> },
-          { path: 'brand/campaigns',    element: <CampaignsPage /> },
-          { path: 'brand/campaigns/:id',element: <CampaignDetailPage /> },
-          { path: 'brand/shortlist',    element: <ShortlistPage /> },
-          { path: 'brand/settings',     element: <BrandSettingsPage /> },
-          { path: 'brand/billing',      element: <BrandBillingPage /> },
-          { path: 'brand/transactions', element: <BrandTransactionsPage /> },
-          { path: 'brand/notifications', element: <NotificationsPage /> },
+          { path: 'brand/dashboard',    element: page(BrandDashboardPage) },
+          { path: 'brand/enquiries',    element: page(BrandEnquiriesPage) },
+          { path: 'brand/campaigns',    element: page(CampaignsPage) },
+          { path: 'brand/campaigns/:id',element: page(CampaignDetailPage) },
+          { path: 'brand/shortlist',    element: page(ShortlistPage) },
+          { path: 'brand/settings',     element: page(BrandSettingsPage) },
+          { path: 'brand/billing',      element: page(BrandBillingPage) },
+          { path: 'brand/transactions', element: page(BrandTransactionsPage) },
+          { path: 'brand/notifications', element: page(NotificationsPage) },
         ],
       },
     ],
@@ -158,15 +176,15 @@ const router = createBrowserRouter([
       {
         element: <AdminLayout />,
         children: [
-          { path: 'admin',              element: <AdminOverviewPage /> },
-          { path: 'admin/disputes',     element: <AdminDisputesPage /> },
-          { path: 'admin/accounts',     element: <AdminAccountsPage /> },
-          { path: 'admin/reviews',      element: <AdminReviewsPage /> },
-          { path: 'admin/escrow',       element: <AdminEscrowPage /> },
-          { path: 'admin/deletion-requests', element: <AdminDeletionRequestsPage /> },
-          { path: 'admin/re-engagement', element: <AdminReEngagementPage /> },
-          { path: 'admin/settings',     element: <AdminSettingsPage /> },
-          { path: 'admin/notifications', element: <NotificationsPage /> },
+          { path: 'admin',              element: page(AdminOverviewPage) },
+          { path: 'admin/disputes',     element: page(AdminDisputesPage) },
+          { path: 'admin/accounts',     element: page(AdminAccountsPage) },
+          { path: 'admin/reviews',      element: page(AdminReviewsPage) },
+          { path: 'admin/escrow',       element: page(AdminEscrowPage) },
+          { path: 'admin/deletion-requests', element: page(AdminDeletionRequestsPage) },
+          { path: 'admin/re-engagement', element: page(AdminReEngagementPage) },
+          { path: 'admin/settings',     element: page(AdminSettingsPage) },
+          { path: 'admin/notifications', element: page(NotificationsPage) },
         ],
       },
     ],

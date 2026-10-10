@@ -14,6 +14,18 @@ import { useOnlineStatus } from '@/lib/useOnlineStatus'
 
 import '@/index.css'
 
+// After a deploy, a tab that was already open still points at the previous build's page files,
+// which no longer exist. Vite reports that as a preload error; reload once to pick up the new
+// build (the timestamp stops a reload loop if the files are genuinely unreachable).
+window.addEventListener('vite:preloadError', (event) => {
+  const last = Number(sessionStorage.getItem('creatorske_chunk_reload') || 0)
+  if (Date.now() - last > 10_000) {
+    event.preventDefault()
+    sessionStorage.setItem('creatorske_chunk_reload', String(Date.now()))
+    window.location.reload()
+  }
+})
+
 // Shows OfflinePage as a full-screen takeover in front of the whole app the
 // moment the browser loses connectivity, and clears itself the moment it's
 // restored - the app underneath keeps whatever state it had.

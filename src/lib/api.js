@@ -1,8 +1,13 @@
 import axios from 'axios'
 
 // ─── Create axios instance ─────────────────────────────────────────────────
+// The API address is fixed at build time (.env.development / .env.production). Only the dev
+// server falls back to the local mock; a production build without it fails loudly.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '')
+if (!API_BASE_URL) console.error('VITE_API_BASE_URL is not set; API requests will fail.') // eslint-disable-line no-console
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -91,6 +96,50 @@ export const uploadFile = (file) => {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     .then((r) => r.data)
+}
+
+// ─── Authenticated files ──────────────────────────────────────────────────
+// Invoices and data exports need the bearer token, which must never go in a URL (it would end
+// up in browser history and server logs). These fetch the file with the header and hand the
+// browser a temporary blob URL instead.
+
+// Error bodies arrive as a Blob when responseType is 'blob'; read the server's message out of it.
+const blobError = async (err) => {
+  if (err?.data instanceof Blob) {
+    try { const body = JSON.parse(await err.data.text()); return { ...err, message: body?.message || err.message } } catch { /* not JSON */ }
+  }
+  return err
+}
+
+/** Opens an authenticated document (an invoice) in a new tab. Call it from a click handler. */
+export const openAuthenticated = async (path) => {
+  const tab = window.open('', '_blank') // opened during the click so popup blockers allow it
+  try {
+    const res = await apiClient.get(path, { responseType: 'blob' })
+    const url = URL.createObjectURL(res.data)
+    if (tab) { tab.opener = null; tab.location.href = url } else window.location.assign(url)
+    setTimeout(() => URL.revokeObjectURL(url), 60_000)
+  } catch (err) {
+    tab?.close()
+    throw await blobError(err)
+  }
+}
+
+/** Downloads an authenticated file (a data export) under the given name. */
+export const downloadAuthenticated = async (path, filename) => {
+  try {
+    const res = await apiClient.get(path, { responseType: 'blob' })
+    const url = URL.createObjectURL(res.data)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 60_000)
+  } catch (err) {
+    throw await blobError(err)
+  }
 }
 
 export default apiClient

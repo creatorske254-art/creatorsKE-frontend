@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePageMeta } from '@/lib/usePageMeta';
@@ -44,7 +45,7 @@ export default function BillingPage() {
   const [query, setQuery] = useState('');
   const [previewInvoice, setPreviewInvoice] = useState(null);
 
-  const { billing, invoices, invoicePdfUrl } = useBrandBilling();
+  const { billing, invoices, openInvoice } = useBrandBilling();
   const billingData = { data: billing.data, isLoading: billing.isLoading };
   const invoiceData = { data: invoices.data, isLoading: invoices.isLoading };
 
@@ -90,7 +91,7 @@ export default function BillingPage() {
   }, [rows]);
 
   function download(inv) {
-    window.open(invoicePdfUrl(inv.id), '_blank', 'noopener');
+    openInvoice(inv.id).catch((err) => toast.error(err?.message || 'Could not open that invoice.'));
   }
 
   return (

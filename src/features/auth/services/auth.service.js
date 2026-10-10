@@ -1,4 +1,4 @@
-import api from '@/lib/api';
+import api, { downloadAuthenticated } from '@/lib/api';
 
 /**
  * Sign-up, sign-in (including the 2FA step), email verification, password reset, account
@@ -60,8 +60,8 @@ export const userService = {
   setup2fa: () => api.post('/users/2fa/setup').then((r) => r.data),
   verify2fa: (code) => api.post('/users/2fa/verify', { code }).then((r) => r.data),
   disable2fa: () => api.delete('/users/2fa').then((r) => r.data),
-  // Personal data export: ready at once, also emailed. The link opens in a new tab, so it carries
-  // the token as ?token= (the same pattern as invoice PDFs).
+  // Personal data export: ready at once (and emailed). The JSON file downloads with the token
+  // in the header, never in the URL.
   requestExport: () => api.post('/users/export').then((r) => r.data),
-  exportDownloadUrl: (id) => `${api.defaults.baseURL}/users/export/${id}?token=${encodeURIComponent(localStorage.getItem('creatorske_token') ?? '')}`,
+  downloadExport: (id) => downloadAuthenticated(`/users/export/${id}`, `creatorske-data-export-${id}.json`),
 };

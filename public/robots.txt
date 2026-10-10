@@ -1,0 +1,9 @@
+# Public pages (home, directory, pricing, creator rate cards and portfolios) may be indexed.
+# Signed-in areas and one-time links may not.
+User-agent: *
+Disallow: /creator/
+Disallow: /brand/
+Disallow: /admin/
+Disallow: /onboarding/
+Disallow: /verify-email
+Disallow: /reset-password

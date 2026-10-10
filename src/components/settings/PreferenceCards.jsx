@@ -90,9 +90,9 @@ export function DataExportCard({ description }) {
     <CollapsibleCard title="Your data" collapsible={false}>
       <p className="field-hint" style={{ marginBottom: 'var(--space-16)' }}>{description ?? 'Download a copy of your profile, rate cards, messages, bookings and transactions as a JSON file. The link works for 7 days.'}</p>
       {exportId ? (
-        <a className="btn btn-secondary btn-sm" href={userService.exportDownloadUrl(exportId)} target="_blank" rel="noopener noreferrer">
+        <button className="btn btn-secondary btn-sm" onClick={() => userService.downloadExport(exportId).catch((err) => toast.error(err?.message || 'Could not download your data.'))}>
           <IconDownload className="icon-sm" aria-hidden="true" />Download your data
-        </a>
+        </button>
       ) : (
         <button className={`btn btn-secondary btn-sm${busy ? ' btn-loading' : ''}`} disabled={busy} onClick={request}>
           <IconDownload className="icon-sm" aria-hidden="true" />Request a data export

@@ -101,4 +101,23 @@ Styling, typography, spacing, icons, charts, settings pages and the other house 
 
 ## Deployment
 
-`npm run build` produces a static site in `dist/` that is served with a single-page-app fallback (every path serves `index.html`). The build reads `.env.production`, so the API address is fixed at build time.
+`npm run build` produces a static site in `dist/`. Both environment variables are read at build time, so a change to either needs a rebuild:
+
+| Variable | Production value | Purpose |
+|---|---|---|
+| `VITE_API_BASE_URL` | `https://api.creatorske.co.ke/api` | Where the app sends API requests. A production build without it logs an error and every request fails. |
+| `VITE_SITE_URL` | `https://creatorske.co.ke` | The app's own address, used for link previews (`og:image`) and the canonical URL. |
+
+`vercel.json` configures hosting on Vercel:
+
+- **Single-page routing.** Every path serves `index.html`, so deep links such as `/c/<handle>` or an emailed `/verify-email?token=...` open directly.
+- **Caching.** Files in `/assets/` have content hashes in their names and are cached for a year; `index.html` is always revalidated, so a deploy reaches users on their next visit. A tab left open across a deploy reloads itself once when it asks for a page file that no longer exists (`src/main.jsx`).
+- **Security headers.** HSTS, no framing, no MIME sniffing, a strict referrer policy and a Content Security Policy that allows scripts only from this site, fonts from Google Fonts and API calls only to `https://api.creatorske.co.ke`. **If the API moves, update `connect-src` in `vercel.json` along with `VITE_API_BASE_URL`.**
+
+On another host, configure the same three things: serve `index.html` for unknown paths, cache `/assets/` long-term, and send the headers above.
+
+The backend has to know where the app lives: its `FRONTEND_URL` (used in email links) must be this app's address, and its `CORS_ORIGINS` must include it, or the browser blocks every request.
+
+### Performance
+
+Pages load on demand: the first visit downloads the app shell (about 420 KB before compression) and then only the code for the screens opened. The chart library loads only on pages with charts.

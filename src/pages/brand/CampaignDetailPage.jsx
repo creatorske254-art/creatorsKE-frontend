@@ -239,29 +239,9 @@ export default function CampaignDetailPage() {
   const platformFee = useMemo(() => Math.round(price * feePct / 100), [price, feePct])
   const netPayout = price - platformFee
 
+  // The booking's invoice (inv_<campaign id>), issued by the API and marked paid once escrow is funded.
   function handleDownloadInvoice() {
-    const lines = [
-      'CREATORSKE PAYMENT RECEIPT',
-      '',
-      `Campaign: ${base.package}`,
-      `Creator: ${base.creator} (${base.handle})`,
-      `Platform: ${base.platform}`,
-      '',
-      `Amount: KES ${price.toLocaleString()}`,
-      `Platform fee (${feePct}%): KES ${platformFee.toLocaleString()}`,
-      `Net payout to creator: KES ${netPayout.toLocaleString()}`,
-      '',
-      `Paid via: ${base.paymentMethod}`,
-      `Paid on: ${base.paidOn}`,
-      `Invoice ref: ${base.id}`,
-    ].join('\n')
-    const blob = new Blob([lines], { type: 'text/plain;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `creatorske-invoice-${base.id}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+    brandService.openInvoice(`inv_${id}`).catch((err) => toast.error(err?.message || 'Could not open the invoice.'))
   }
 
   const handleApprove = () => approve()

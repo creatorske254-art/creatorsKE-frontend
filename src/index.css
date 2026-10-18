@@ -1,10 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─── Google Fonts ─────────────────────────────────────────────────────────── */
 /* Archivo (display, headings h1–h4) + Inter (body, h5/h6, everything else). */
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ══════════════════════════════════════════════════════════════════════════
    CREATORS KE - DESIGN TOKENS

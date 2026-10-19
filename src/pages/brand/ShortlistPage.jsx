@@ -98,7 +98,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
       <div style={{ padding: 'var(--space-12)', display: 'flex', flexDirection: 'column', gap: 'var(--space-12)', flex: 1, background: 'var(--white)' }}>
         {/* stats */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)', background: 'var(--grey-200)', borderRadius: 8, overflow: 'hidden' }}>
-          {[['followers', formatFollowers(creator.followers)], ['eng.', `${creator.eng}%`], ['rating', creator.rating]].map(([lbl, val]) => (
+          {[['followers', creator.show_followers === false ? '—' : formatFollowers(creator.followers)], ['eng.', `${creator.eng}%`], ['rating', creator.rating]].map(([lbl, val]) => (
             <div key={lbl} style={{ background: 'var(--grey-50)', padding: 'var(--space-8) 0', textAlign: 'center' }}>
               <strong style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-4)', fontSize: 13, fontWeight: 600, color: 'var(--black)', fontFamily: 'var(--font-display)' }}>
                 {val}

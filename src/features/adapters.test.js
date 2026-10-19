@@ -13,7 +13,7 @@ vi.mock('@/lib/api', () => ({
 
 const api = (await import('@/lib/api')).default;
 const { searchCreators } = await import('@/features/directory/services/directory.service');
-const { getPublicPortfolio } = await import('@/features/portfolio/services/portfolio.service');
+const { getPublicPortfolio, portfolioService } = await import('@/features/portfolio/services/portfolio.service');
 const { availabilityKey, platformNames } = await import('@/features/rate-card/services/rate-card.service');
 const { listPayoutMethods, addPayoutMethod } = await import('@/features/payments/services/payment.service');
 
@@ -30,7 +30,8 @@ describe('directory', () => {
     const { creators } = await searchCreators({});
     expect(creators[0]).toMatchObject({
       id: 'u1', name: 'Amani Demo', handle: 'amani', initials: 'AD', niche: 'Food', followers: 24000, eng: 5.1,
-      rating: 4.5, reviews: 3, verified: true, avail: 'booked', platforms: ['Instagram'], price: 6000,
+      rating: 4.5, reviews: 3, verified: true, avail: 'booked', platforms: ['Instagram'], price: null,
+      show_followers: true, show_rates: false,
     });
   });
 });
@@ -49,16 +50,41 @@ describe('public portfolio', () => {
     api.get.mockResolvedValue({
       data: {
         name: 'Amani Demo', role: 'Food creator', bio: 'Nairobi food', photoUrl: 'https://x/p.jpg', niches: ['Food', 'Travel'],
-        socialStats: { igFollowers: '24K', igEngagement: '5.1', ttFollowers: '40K', ttAvgViews: '12K' },
+        socialAccounts: { instagram_username: 'amani', tiktok_username: 'amanitoks' },
+        verifiedSocials: { instagram: true, tiktok: true },
+        socialStats: { igFollowers: 24000, ttFollowers: 40000 },
         contact: { email: 'a@example.com', instagramHandle: 'amani' },
+        show_email: true,
       },
     });
     const page = await getPublicPortfolio('amani');
     expect(page.creator).toMatchObject({ displayName: 'Amani Demo', role: 'Food creator', avatar: 'https://x/p.jpg', initials: 'AD' });
     expect(page.niches).toEqual([{ name: 'Food', description: '' }, { name: 'Travel', description: '' }]);
     expect(page.socialStats.map((s) => s.platform)).toEqual(['Instagram', 'TikTok']);
-    expect(page.socialStats[0].metrics).toEqual([{ label: 'Followers', value: '24K' }, { label: 'Engagement', value: '5.1%' }]);
+    expect(page.socialStats[0].metrics).toEqual([{ label: 'Followers', value: '24K' }]);
     expect(page.contact).toEqual({ email: 'a@example.com', instagram: '@amani', phone: undefined });
+  });
+
+  it('hides private contact details and follower counts unless allowed', async () => {
+    api.get.mockResolvedValue({
+      data: {
+        name: 'Amani Demo',
+        user: { show_email: false, show_phone: false, show_followers: false },
+        socialAccounts: { instagram_username: 'amani' },
+        verifiedSocials: { instagram: true },
+        socialStats: { igFollowers: 24000 },
+        contact: { email: 'a@example.com', phone: '+254700000000', instagramHandle: 'amani' },
+      },
+    });
+    const page = await getPublicPortfolio('amani');
+    expect(page.socialStats).toEqual([{ platform: 'Instagram', handle: '@amani', metrics: [] }]);
+    expect(page.contact).toEqual({ email: undefined, instagram: '@amani', phone: undefined });
+  });
+
+  it('verifies a social username with the expected API payload', async () => {
+    api.post.mockResolvedValue({ data: { verified: true, followers: 82500 } });
+    await portfolioService.verifySocial('instagram', 'amani');
+    expect(api.post).toHaveBeenCalledWith('/creators/verify-social', { platform: 'instagram', username: 'amani' });
   });
 });
 

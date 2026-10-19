@@ -72,7 +72,7 @@ function formatFollowers(n) {
 
 // ─── Package card ─────────────────────────────────────────────────────────────
 
-function PackageCard({ pkg, onEnquire }) {
+function PackageCard({ pkg, onEnquire, showRates }) {
   const dark = pkg.customPricing;
   return (
     <div
@@ -93,7 +93,9 @@ function PackageCard({ pkg, onEnquire }) {
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className={`text-[16px] font-semibold ${dark ? 'text-white' : 'text-[var(--black)]'}`}>{pkg.name}</div>
         <div className="text-right flex-shrink-0">
-          {pkg.customPricing ? (
+          {!showRates ? (
+            <div className={`text-[15px] ${dark ? 'text-white/60' : 'text-[var(--grey-500)]'}`}>Enquire for pricing</div>
+          ) : pkg.customPricing ? (
             <div className="text-[15px] text-white/60">Custom pricing</div>
           ) : (
             <>
@@ -222,6 +224,8 @@ export default function RateCardPage() {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const packages = data?.packages ?? [];
+  const showRates = data?.creator?.show_rates ?? false;
+  const showFollowers = data?.creator?.show_followers ?? true;
 
   function handleSendEnquiryClick(pkg) {
     if (!isAuthenticated) {
@@ -236,14 +240,21 @@ export default function RateCardPage() {
 
   // Reopen the enquiry modal automatically after the auth round-trip.
   useEffect(() => {
-    if (isAuthenticated && searchParams.get('enquire') === '1' && packages.length) {
+    if (searchParams.get('enquire') !== '1' || !packages.length) return;
+    if (!isAuthenticated) {
+      const target = `/c/${handle}?enquire=1`;
+      sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, target);
+      navigate(`/login?redirect=${encodeURIComponent(target)}`);
+      return;
+    }
+    if (isAuthenticated) {
       const pkg = packages.find((p) => String(p.id) === searchParams.get('package')) ?? packages[0];
       setSelectedPackage(pkg);
       setEnquiryOpen(true);
       setSearchParams({}, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, packages.length]);
+  }, [handle, isAuthenticated, navigate, packages.length, searchParams, setSearchParams]);
 
   if (error) {
     return (
@@ -329,7 +340,7 @@ export default function RateCardPage() {
                         return (
                           <div key={p.name} className="flex items-center gap-2 px-3 py-2 rounded-[999px] bg-white/[0.08] border border-[0.5px] border-white/[0.15] text-[12px] font-medium text-white/80">
                             {Icon && <Icon size={14} />}
-                            {p.name}{p.followers ? ` · ${formatFollowers(p.followers)}` : ''}
+                            {p.name}{showFollowers && p.followers ? ` · ${formatFollowers(p.followers)}` : ''}
                           </div>
                         );
                       })}
@@ -376,7 +387,7 @@ export default function RateCardPage() {
               <div className="flex border-t border-white/10 flex-wrap">
                 {[
                   { label: 'Avg. engagement', value: stats.avgEngagement },
-                  { label: 'Total reach', value: stats.totalReach },
+                  { label: 'Total reach', value: showFollowers ? stats.totalReach : null },
                   { label: 'Client rating', value: avgRating > 0 ? avgRating.toFixed(1) : null, icon: avgRating > 0 ? IconStar : null },
                   { label: 'Campaigns done', value: stats.campaignsDone },
                   { label: 'Turnaround', value: stats.turnaroundDays },
@@ -422,7 +433,7 @@ export default function RateCardPage() {
               )}
 
               <div className="font-[var(--font-display)] text-[18px] font-semibold text-[var(--black)] mb-4">
-                Packages &amp; pricing
+                {showRates ? 'Packages & pricing' : 'Packages'}
               </div>
 
               {packages.length === 0 ? (
@@ -435,7 +446,7 @@ export default function RateCardPage() {
               ) : (
                 <div className="flex flex-col gap-3">
                   {packages.map((pkg) => (
-                    <PackageCard key={pkg.id} pkg={pkg} onEnquire={handleSendEnquiryClick} />
+                    <PackageCard key={pkg.id} pkg={pkg} onEnquire={handleSendEnquiryClick} showRates={showRates} />
                   ))}
                 </div>
               )}

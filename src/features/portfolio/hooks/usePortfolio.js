@@ -13,7 +13,7 @@ export function usePortfolio(creatorId) {
   const queryClient = useQueryClient();
   const autoSaveTimer = useRef(null);
 
-  const { data: portfolio, isLoading, error } = useQuery({
+  const { data: portfolio, isLoading, error, refetch } = useQuery({
     queryKey: PORTFOLIO_KEY(creatorId),
     queryFn: () => portfolioService.getPortfolio(creatorId),
     enabled: !!creatorId,
@@ -74,6 +74,7 @@ export function usePortfolio(creatorId) {
     portfolio,
     isLoading,
     error,
+    refetch,
     analytics,
     autoSave,
     update: updateMutation.mutate,

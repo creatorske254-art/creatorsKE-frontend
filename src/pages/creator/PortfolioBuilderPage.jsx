@@ -2,10 +2,15 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '@/context/AuthContext';
 import { usePortfolio } from '@/features/portfolio/hooks/usePortfolio';
+import { portfolioService } from '@/features/portfolio/services/portfolio.service';
+import { useProfile } from '@/features/auth/hooks/useProfile';
+import { authService } from '@/features/auth/services/auth.service';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useImageUpload } from '@/lib/useImageUpload';
 import SmartImage from '@/components/ui/SmartImage';
-import { IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, IconCheck, IconEye, IconEyeOff, IconMail, IconMapPin, IconPhone, IconPlus, IconSend, IconUpload, IconUser, IconUsers, IconX } from '@tabler/icons-react';
+import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
+import { IconBrandFacebook, IconBrandGoogle, IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, IconCheck, IconEye, IconEyeOff, IconMail, IconMapPin, IconPhone, IconPlus, IconSend, IconUpload, IconUser, IconX } from '@tabler/icons-react';
 
 // Component-library chrome (.btn, .card, .tag, .avatar, .input, .badge,
 // .progress-bar-*) lives in index.css, ported 1:1 from the Creatorske
@@ -26,6 +31,15 @@ import { IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, Ic
 const PORTFOLIO_BUILDER_STYLES = `
 .field { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-12); }
 .field .hint { font-size: 12px; color: var(--grey-400); line-height: 1.5; margin-top: var(--space-2); }
+.pb-social-verify { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-8); align-items: center; }
+.pb-social-result { grid-column: 1 / -1; font-size: 12px; color: var(--status-success-text); }
+.pb-social-error { grid-column: 1 / -1; font-size: 12px; color: var(--status-error); }
+.pb-connected-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-12); }
+.pb-connected-item { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); padding: var(--space-12); border: 1px solid var(--grey-100); border-radius: var(--radius-md); }
+.pb-connected-name { display: flex; min-width: 0; align-items: center; gap: var(--space-8); color: var(--black); font-size: 13px; font-weight: 500; }
+.pb-connected-details { min-width: 0; }
+.pb-connected-followers { margin: var(--space-4) 0 0; color: var(--grey-500); font-size: 11px; }
+.pb-connected-status { display: inline-flex; flex-shrink: 0; align-items: center; gap: var(--space-4); color: var(--status-success-text); font-size: 12px; font-weight: 500; }
 .inp {
   width: 100%;
   font-family: var(--font-body);
@@ -71,6 +85,10 @@ const PORTFOLIO_BUILDER_STYLES = `
   .pb-split { grid-template-columns: 1fr; }
   .pb-preview-col { display: none; }
 }
+@media (max-width: 640px) {
+  .pb-g2 { grid-template-columns: 1fr; }
+  .pb-connected-grid { grid-template-columns: 1fr; }
+}
 
 .pb-section-head { margin-bottom: var(--space-16); }
 .pb-section-head.has-hint { margin-bottom: var(--space-4); }
@@ -108,8 +126,9 @@ const PORTFOLIO_BUILDER_STYLES = `
      photoUrl
      name, role, location, bio
      niches: string[]
-     socialStats: { igFollowers, igEngagement, ttFollowers, ttAvgViews, mediumFollowers, audienceAge }
-     contact: { phone, instagramHandle, email }
+     socialAccounts: { instagram_username, tiktok_username, medium_username }
+     socialStats: { igFollowers, ttFollowers, mediumFollowers }
+     verifiedSocials: { instagram, tiktok, medium }
 */
 const DEFAULT_VALUES = {
   photoUrl: '',
@@ -118,13 +137,22 @@ const DEFAULT_VALUES = {
   location: '',
   bio: '',
   niches: [],
+  socialAccounts: {
+    instagram_username: '',
+    tiktok_username: '',
+    medium_username: '',
+  },
   socialStats: {
     igFollowers: '',
-    igEngagement: '',
     ttFollowers: '',
-    ttAvgViews: '',
+    fbFollowers: '',
     mediumFollowers: '',
-    audienceAge: '',
+  },
+  verifiedSocials: {
+    instagram: false,
+    tiktok: false,
+    facebook: false,
+    medium: false,
   },
   contact: {
     phone: '',
@@ -132,6 +160,32 @@ const DEFAULT_VALUES = {
     email: '',
   },
 };
+
+const SOCIAL_ACCOUNTS = [
+  { key: 'instagram', platform: 'instagram', username: 'instagram_username', followers: 'igFollowers', label: 'Instagram', Icon: IconBrandInstagram },
+  { key: 'tiktok', platform: 'tiktok', username: 'tiktok_username', followers: 'ttFollowers', label: 'TikTok', Icon: IconBrandTiktok },
+  { key: 'medium', platform: 'medium', username: 'medium_username', followers: 'mediumFollowers', label: 'Medium', Icon: IconBrandMedium },
+];
+
+const LINKED_ACCOUNTS = [
+  { id: 'google_id', key: 'google', label: 'Google', Icon: IconBrandGoogle },
+  { id: 'tiktok_id', key: 'tiktok', label: 'TikTok', Icon: IconBrandTiktok, followers: 'ttFollowers' },
+  { id: 'instagram_id', key: 'instagram', label: 'Instagram', Icon: IconBrandInstagram, followers: 'igFollowers' },
+  { id: 'facebook_id', key: 'facebook', label: 'Facebook', Icon: IconBrandFacebook, followers: 'fbFollowers' },
+];
+
+const OAUTH_BASE_URL = (import.meta.env.VITE_API_BASE_URL
+  || (import.meta.env.DEV ? 'http://localhost:5000/api' : ''))
+  .replace(/\/api\/?$/i, '')
+  .replace(/\/+$/, '');
+
+function formatFollowerCount(value) {
+  const count = Number(value);
+  if (!Number.isFinite(count)) return value || 'Not verified yet';
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(count);
+}
 
 function getInitials(name) {
   return (
@@ -180,15 +234,15 @@ function LivePreview({ values, creatorName, handle }) {
   const bio = values.bio?.trim();
 
   const heroStats = [
-    { label: 'IG eng.', value: values.socialStats?.igEngagement || '–' },
-    { label: 'TikTok views', value: values.socialStats?.ttAvgViews || '–' },
-    { label: 'Phone', value: values.contact?.phone || '–' },
+    { label: 'Instagram', value: values.verifiedSocials?.instagram ? formatFollowerCount(values.socialStats?.igFollowers) : '–' },
+    { label: 'TikTok', value: values.verifiedSocials?.tiktok ? formatFollowerCount(values.socialStats?.ttFollowers) : '–' },
+    { label: 'Medium', value: values.verifiedSocials?.medium ? formatFollowerCount(values.socialStats?.mediumFollowers) : '–' },
   ];
 
   const followerStats = [
-    { label: 'Instagram', value: values.socialStats?.igFollowers || '–' },
-    { label: 'TikTok', value: values.socialStats?.ttFollowers || '–' },
-    { label: 'Medium', value: values.socialStats?.mediumFollowers || '–' },
+    { label: 'Instagram', value: values.socialAccounts?.instagram_username || handle },
+    { label: 'TikTok', value: values.socialAccounts?.tiktok_username || 'Not connected' },
+    { label: 'Medium', value: values.socialAccounts?.medium_username || 'Not connected' },
   ];
 
   return (
@@ -245,9 +299,9 @@ function LivePreview({ values, creatorName, handle }) {
         </div>
 
         <div className="pb-preview-contact">
-          <div className="pb-preview-contact-row"><IconPhone className="icon-sm" aria-hidden="true" />{values.contact?.phone || 'No phone yet'}</div>
-          <div className="pb-preview-contact-row"><IconBrandInstagram className="icon-sm" aria-hidden="true" />{values.contact?.instagramHandle || handle}</div>
-          <div className="pb-preview-contact-row"><IconMail className="icon-sm" aria-hidden="true" />{values.contact?.email || 'No email yet'}</div>
+          <div className="pb-preview-contact-row"><IconBrandInstagram className="icon-sm" aria-hidden="true" />{values.socialAccounts?.instagram_username || handle}</div>
+          <div className="pb-preview-contact-row"><IconBrandTiktok className="icon-sm" aria-hidden="true" />{values.socialAccounts?.tiktok_username || 'TikTok username'}</div>
+          <div className="pb-preview-contact-row"><IconBrandMedium className="icon-sm" aria-hidden="true" />{values.socialAccounts?.medium_username || 'Medium username'}</div>
         </div>
       </div>
     </div>
@@ -259,11 +313,15 @@ function LivePreview({ values, creatorName, handle }) {
 export default function PortfolioBuilderPage() {
   usePageMeta('Portfolio Builder', 'Build your portfolio to showcase past work and brand collaborations on Creatorske.');
 
-  const { user } = useAuth();
-  const { portfolio, isLoading, autoSave, update, publish, unpublish, isPublishing, isUnpublishing } =
+  const { user, updateUser } = useAuth();
+  const { profile, refetch: refetchProfile } = useProfile();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { portfolio, isLoading, autoSave, update, publish, unpublish, refetch: refetchPortfolio, isPublishing, isUnpublishing } =
     usePortfolio(user?.id);
 
   const [nicheInput, setNicheInput] = useState('');
+  const [verifying, setVerifying] = useState({});
+  const [verificationErrors, setVerificationErrors] = useState({});
 
   const {
     register,
@@ -285,11 +343,59 @@ export default function PortfolioBuilderPage() {
         bio: portfolio.bio ?? '',
         niches: portfolio.niches ?? [],
         socialStats: { ...DEFAULT_VALUES.socialStats, ...portfolio.socialStats },
+        socialAccounts: {
+          ...DEFAULT_VALUES.socialAccounts,
+          ...portfolio.socialAccounts,
+          instagram_username: portfolio.socialAccounts?.instagram_username ?? portfolio.contact?.instagramHandle ?? '',
+        },
+        verifiedSocials: { ...DEFAULT_VALUES.verifiedSocials, ...portfolio.verifiedSocials },
         contact: { ...DEFAULT_VALUES.contact, ...portfolio.contact },
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [portfolio, reset]);
+
+  useEffect(() => {
+    const verified = searchParams.get('verified');
+    const platform = SOCIAL_ACCOUNTS.find((social) => social.key === verified);
+    if (!platform) return;
+
+    toast.success(`${platform.label} account verified.`);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('verified');
+    setSearchParams(nextParams, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    const linked = searchParams.get('linked');
+    const account = LINKED_ACCOUNTS.find((item) => item.key === linked);
+    if (!account) return undefined;
+    let cancelled = false;
+
+    async function refreshLinkedAccount() {
+      try {
+        const [currentUser] = await Promise.all([
+          authService.getCurrentUser(localStorage.getItem('creatorske_token')),
+          refetchProfile({ throwOnError: true }),
+          refetchPortfolio({ throwOnError: true }),
+        ]);
+        if (cancelled) return;
+        if (currentUser) updateUser(currentUser);
+        toast.success(`${account.label} connected.`);
+      } catch (error) {
+        if (!cancelled) toast.error(error?.message || `Could not refresh your ${account.label} connection.`);
+      } finally {
+        if (!cancelled) {
+          const nextParams = new URLSearchParams(searchParams);
+          nextParams.delete('linked');
+          setSearchParams(nextParams, { replace: true });
+        }
+      }
+    }
+
+    refreshLinkedAccount();
+    return () => { cancelled = true; };
+  }, [searchParams, setSearchParams, refetchProfile, refetchPortfolio, updateUser]);
 
   // Auto-save on every change
   const formValues = watch();
@@ -325,16 +431,56 @@ export default function PortfolioBuilderPage() {
     setValue('niches', next, { shouldDirty: true });
   }
 
+  function updateSocialUsername(social, username) {
+    setValue(`socialAccounts.${social.username}`, username, { shouldDirty: true });
+    setValue(`socialStats.${social.followers}`, '', { shouldDirty: true });
+    setValue(`verifiedSocials.${social.key}`, false, { shouldDirty: true });
+    setVerificationErrors((errors) => ({ ...errors, [social.key]: '' }));
+  }
+
+  function connectAccount(account) {
+    if (!OAUTH_BASE_URL) {
+      toast.error('Account linking is unavailable because the API URL is not configured.');
+      return;
+    }
+    window.location.assign(`${OAUTH_BASE_URL}/auth/${account.key}/link`);
+  }
+
+  async function verifySocialAccount(social) {
+    const username = (formValues.socialAccounts?.[social.username] ?? '').trim().replace(/^@/, '');
+    if (!username) {
+      setVerificationErrors((errors) => ({ ...errors, [social.key]: 'Could not verify username, check spelling' }));
+      return;
+    }
+
+    setVerifying((state) => ({ ...state, [social.key]: true }));
+    setVerificationErrors((errors) => ({ ...errors, [social.key]: '' }));
+    try {
+      const result = await portfolioService.verifySocial(social.platform, username);
+      if (!result?.verified || result.followers === null || result.followers === undefined) {
+        setVerificationErrors((errors) => ({ ...errors, [social.key]: 'Could not verify username, check spelling' }));
+        return;
+      }
+      setValue(`socialStats.${social.followers}`, result.followers, { shouldDirty: true });
+      setValue(`verifiedSocials.${social.key}`, true, { shouldDirty: true });
+    } catch {
+      setVerificationErrors((errors) => ({ ...errors, [social.key]: 'Could not verify username, check spelling' }));
+    } finally {
+      setVerifying((state) => ({ ...state, [social.key]: false }));
+    }
+  }
+
   // Completion tracking for the progress bar
   const completion = {
     photo: !!formValues.photoUrl,
     identity: !!(formValues.name && formValues.role && (formValues.bio?.trim().length ?? 0) > 10),
-    stats: !!(formValues.socialStats?.igFollowers && formValues.socialStats?.ttFollowers),
+    stats: Object.values(formValues.verifiedSocials ?? {}).some(Boolean),
     niches: (formValues.niches?.length ?? 0) > 0,
     contact: !!(formValues.contact?.phone || formValues.contact?.email),
   };
   const completedCount = Object.values(completion).filter(Boolean).length;
   const progressPct = Math.round((completedCount / 5) * 100);
+  const connectedAccountUser = { ...user, ...(profile?.user ?? {}), ...profile };
 
   if (isLoading) {
     return (
@@ -460,47 +606,92 @@ export default function PortfolioBuilderPage() {
               </Field>
             </SectionCard>
 
-            {/* 3. Social stats */}
-            <SectionCard title="Social stats" hint="Shown on your portfolio to build trust with brands">
-              <div className="pb-g2" style={{ marginBottom: 'var(--space-12)' }}>
-                <Field label="Instagram followers">
-                  <div className="inp-wrap">
-                    <span className="inp-icon l"><IconBrandInstagram className="icon-sm" style={{ color: '#E1306C' }} aria-hidden="true" /></span>
-                    <input className="inp inp-icon-l" placeholder="e.g. 82.5K" {...register('socialStats.igFollowers')} />
-                  </div>
-                </Field>
-                <Field label="Engagement rate">
-                  <div className="inp-wrap">
-                    <input className="inp inp-icon-r" placeholder="e.g. 5.25" {...register('socialStats.igEngagement')} />
-                    <span className="inp-icon r" style={{ fontSize: 12, fontWeight: 600 }}>%</span>
-                  </div>
-                </Field>
-              </div>
-              <div className="pb-g2" style={{ marginBottom: 'var(--space-12)' }}>
-                <Field label="TikTok followers">
-                  <div className="inp-wrap">
-                    <span className="inp-icon l"><IconBrandTiktok className="icon-sm" aria-hidden="true" /></span>
-                    <input className="inp inp-icon-l" placeholder="e.g. 73.1K" {...register('socialStats.ttFollowers')} />
-                  </div>
-                </Field>
-                <Field label="Avg. views/video">
-                  <div className="inp-wrap"><span className="inp-icon l"><IconEye className="icon-sm" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 6,400" {...register('socialStats.ttAvgViews')} /></div>
-                </Field>
-              </div>
-              <div className="pb-g2">
-                <Field label="Medium followers">
-                  <div className="inp-wrap">
-                    <span className="inp-icon l"><IconBrandMedium className="icon-sm" aria-hidden="true" /></span>
-                    <input className="inp inp-icon-l" placeholder="e.g. 259" {...register('socialStats.mediumFollowers')} />
-                  </div>
-                </Field>
-                <Field label="Core audience age">
-                  <div className="inp-wrap"><span className="inp-icon l"><IconUsers className="icon-sm" aria-hidden="true" /></span><input className="inp inp-icon-l" placeholder="e.g. 18-30" {...register('socialStats.audienceAge')} /></div>
-                </Field>
+            {/* 3. Connected accounts */}
+            <SectionCard title="Connected Accounts" hint="Link social accounts to verify your identity and refresh audience stats">
+              <div className="pb-connected-grid">
+                {LINKED_ACCOUNTS.map((account) => {
+                  const Icon = account.Icon;
+                  const connected = Boolean(connectedAccountUser?.[account.id]);
+                  const followerCount = account.followers && formValues.verifiedSocials?.[account.key]
+                    ? formValues.socialStats?.[account.followers]
+                    : undefined;
+                  return (
+                    <div className="pb-connected-item" key={account.key}>
+                      <div className="pb-connected-details">
+                        <div className="pb-connected-name">
+                          <Icon className="icon-md" aria-hidden="true" />
+                          <span>{account.label}</span>
+                        </div>
+                        {followerCount !== undefined && followerCount !== null && followerCount !== '' && (
+                          <p className="pb-connected-followers">
+                            Verified: {formatFollowerCount(followerCount)} followers
+                          </p>
+                        )}
+                      </div>
+                      {connected ? (
+                        <span className="pb-connected-status">
+                          <IconCheck className="icon-xs" aria-hidden="true" /> Connected
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => connectAccount(account)}
+                        >
+                          Connect {account.label}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </SectionCard>
 
-            {/* 4. Niches */}
+            {/* 4. Social accounts */}
+            <SectionCard title="Social stats" hint="Verify your username to show an automatically refreshed follower count">
+              <div className="pb-g2">
+                {SOCIAL_ACCOUNTS.map((social) => {
+                  const Icon = social.Icon;
+                  const verified = formValues.verifiedSocials?.[social.key];
+                  return (
+                    <Field key={social.key} label={`${social.label} username`}>
+                      <div className="pb-social-verify">
+                        <div className="inp-wrap">
+                          <span className="inp-icon l"><Icon className="icon-sm" aria-hidden="true" /></span>
+                          <input
+                            className="inp inp-icon-l"
+                            placeholder={`Your ${social.label} username`}
+                            aria-label={`${social.label} username`}
+                            value={formValues.socialAccounts?.[social.username] ?? ''}
+                            disabled={!!verifying[social.key]}
+                            onChange={(event) => updateSocialUsername(social, event.target.value)}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          disabled={!!verifying[social.key]}
+                          onClick={() => verifySocialAccount(social)}
+                        >
+                          {verifying[social.key] ? 'Verifying…' : 'Verify'}
+                        </button>
+                        {verificationErrors[social.key] ? (
+                          <span className="pb-social-error" role="alert">{verificationErrors[social.key]}</span>
+                        ) : verified ? (
+                          <output className="pb-social-result" aria-live="polite">
+                            <IconCheck className="icon-xs" aria-hidden="true" /> Verified: {formatFollowerCount(formValues.socialStats?.[social.followers])} followers (auto-updates daily)
+                          </output>
+                        ) : (
+                          <output className="text-hint" aria-live="polite">Not verified yet</output>
+                        )}
+                      </div>
+                    </Field>
+                  );
+                })}
+              </div>
+            </SectionCard>
+
+            {/* 5. Niches */}
             <SectionCard
              
               title="Niche & focus areas"
@@ -545,12 +736,6 @@ export default function PortfolioBuilderPage() {
                 <div className="inp-wrap">
                   <span className="inp-icon l"><IconPhone className="icon-sm" aria-hidden="true" /></span>
                   <input className="inp inp-icon-l" placeholder="+254..." {...register('contact.phone')} />
-                </div>
-              </Field>
-              <Field label="Instagram handle">
-                <div className="inp-wrap">
-                  <span className="inp-pre">@</span>
-                  <input className="inp" style={{ paddingLeft: 'var(--space-20)' }} placeholder="e.g. amaracreates" {...register('contact.instagramHandle')} />
                 </div>
               </Field>
               <Field label="Email">

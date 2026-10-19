@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
 import { SettingsShell, Toggle, ToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, PendingDeletionNotice } from '@/components/settings';
 import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
-import { useProfile, usePreferences } from '@/features/auth/hooks/useProfile';
+import { useProfile, usePreferences, usePrivacySettings } from '@/features/auth/hooks/useProfile';
 import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
 import { getInitials, formatCount } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
@@ -588,10 +588,21 @@ function AccountTab() {
 }
 
 function PrivacyTab() {
-  const { preferences, isLoading, isError, savePreferences, isSaving } = usePreferences();
+  const { preferences, isLoading: preferencesLoading, isError: preferencesError, savePreferences, isSaving } = usePreferences();
+  const { privacy, isLoading: privacyLoading, isError: privacyError, savePrivacy, isSaving: isSavingPrivacy } = usePrivacySettings();
   const [draft, setDraft] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [visibilityDraft, setVisibilityDraft] = useState(null);
+  const [visibilitySaved, setVisibilitySaved] = useState(false);
   const v = { showInDirectory: true, showBookingCount: false, shareAnalytics: false, marketing: true, ...preferences, ...(draft ?? {}) };
+  const visibility = {
+    show_email: false,
+    show_phone: false,
+    show_followers: true,
+    show_rates: false,
+    ...privacy,
+    ...(visibilityDraft ?? {}),
+  };
   const set = (k) => (val) => setDraft((d) => ({ ...(d ?? {}), [k]: val }));
 
   function handleSave() {
@@ -600,11 +611,54 @@ function PrivacyTab() {
     });
   }
 
-  if (isLoading) return <div className="settings-stack"><Skeleton width="100%" height={200} /></div>;
-  if (isError) return <ErrorState title="Couldn't load your privacy settings" />;
+  function setVisibility(key) {
+    return (value) => {
+      setVisibilitySaved(false);
+      setVisibilityDraft((current) => ({ ...visibility, ...(current ?? {}), [key]: value }));
+    };
+  }
+
+  function handleSaveVisibility() {
+    savePrivacy({
+      show_email: !!visibility.show_email,
+      show_phone: !!visibility.show_phone,
+      show_followers: !!visibility.show_followers,
+      show_rates: !!visibility.show_rates,
+    }, {
+      onSuccess: () => {
+        setVisibilityDraft(null);
+        setVisibilitySaved(true);
+        setTimeout(() => setVisibilitySaved(false), 2000);
+      },
+    });
+  }
+
+  if (preferencesLoading || privacyLoading) return <div className="settings-stack"><Skeleton width="100%" height={200} /></div>;
+  if (preferencesError || privacyError) return <ErrorState title="Couldn't load your privacy settings" />;
 
   return (
     <div className="settings-stack">
+      <CollapsibleCard title="Public profile visibility" collapsible={false}>
+        <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
+          <ToggleRow label="Show my email to brands" on={!!visibility.show_email} onChange={setVisibility('show_email')} />
+          <div className="field-divider" />
+          <ToggleRow label="Show my phone number to brands" on={!!visibility.show_phone} onChange={setVisibility('show_phone')} />
+          <div className="field-divider" />
+          <ToggleRow label="Show my follower count" on={!!visibility.show_followers} onChange={setVisibility('show_followers')} />
+          <div className="field-divider" />
+          <ToggleRow label="Show my rates" on={!!visibility.show_rates} onChange={setVisibility('show_rates')} />
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="btn btn-purple btn-sm"
+              onClick={handleSaveVisibility}
+              disabled={!visibilityDraft || isSavingPrivacy}
+            >
+              {isSavingPrivacy ? 'Saving…' : visibilitySaved ? 'Saved' : 'Save'}
+            </button>
+          </div>
+        </div>
+      </CollapsibleCard>
       <div className="bento-2">
         <CollapsibleCard title="Visibility" collapsible={false}>
           <div className="settings-stack" style={{ gap: 'var(--space-12)', marginTop: 'var(--space-16)' }}>
@@ -669,7 +723,7 @@ function DeleteAccountDialog({ open, deleting, onConfirm, onCancel }) {
 
 // Main component
 
-export default function SettingsPage() {
+export default function SettingsPage({ defaultTab }) {
   usePageMeta('Settings', 'Manage your Creatorske account, profile, and payment settings.');
   const panels = {
     profile: () => <ProfileTab />,
@@ -679,5 +733,5 @@ export default function SettingsPage() {
     appearance: () => <AppearanceTab />,
     privacy: () => <PrivacyTab />,
   };
-  return <SettingsShell subtitle="Your profile, sign-in, notifications, payouts and preferences." tabs={TABS} panels={panels} />;
+  return <SettingsShell defaultTab={defaultTab} subtitle="Your profile, sign-in, notifications, payouts and preferences." tabs={TABS} panels={panels} />;
 }

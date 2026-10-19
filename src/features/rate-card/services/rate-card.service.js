@@ -76,11 +76,27 @@ export const platformNames = (platforms) => {
 // creator and their reviews from separate endpoints, so they are combined here.
 export const getPublicRateCard = async (handle) => {
   const body = (await api.get(`/public/creators/${handle}/rate-card`)).data;
-  if (body?.creator) return body;
+  const bodyUser = body?.user ?? body?.creator?.user ?? {};
+  const bodyPrivacy = body?.privacy ?? bodyUser;
+  const bodyCreator = body?.creator ?? {};
+  if (body?.creator) {
+    return {
+      ...body,
+      creator: {
+        ...bodyCreator,
+        show_followers: bodyPrivacy.show_followers ?? body?.show_followers ?? bodyCreator.show_followers ?? true,
+        show_rates: bodyPrivacy.show_rates ?? body?.show_rates ?? bodyCreator.show_rates ?? false,
+      },
+    };
+  }
 
   const card = body?.data ?? body ?? {};
   const profile = card.profile ?? {};
   const entry = await api.get(`/public/creators/${handle}`).then((r) => r.data).catch(() => null);
+  const entryUser = entry?.user ?? {};
+  const entryPrivacy = entry?.privacy ?? entryUser;
+  const showFollowers = entryPrivacy.show_followers ?? entry?.show_followers ?? true;
+  const showRates = entryPrivacy.show_rates ?? entry?.show_rates ?? false;
   const creatorId = entry?.userId ?? body?.ownerId;
   const reviews = creatorId
     ? await api.get('/reviews', { params: { creatorId } }).then((r) => r.data ?? []).catch(() => [])
@@ -106,6 +122,8 @@ export const getPublicRateCard = async (handle) => {
       languages: profile.languages,
       availability: card.availability,
       platforms: platformNames(card.platforms).map((name) => ({ name })),
+      show_followers: showFollowers,
+      show_rates: showRates,
     },
     niches: [entry?.niche || profile.niche].filter(Boolean),
     stats: {

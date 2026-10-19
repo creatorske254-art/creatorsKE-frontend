@@ -41,6 +41,7 @@ const PortfolioBuilderPage = lazy(() => import('@/pages/creator/PortfolioBuilder
 const CreatorEnquiriesPage = lazy(() => import('@/pages/creator/EnquiriesPage'))
 const MoneyPage = lazy(() => import('@/pages/creator/MoneyPage'))
 const CreatorSettingsPage = lazy(() => import('@/pages/creator/SettingsPage'))
+const CreatorPrivacySettingsPage = lazy(() => import('@/pages/creator/PrivacySettingsPage'))
 
 // ── Brand pages ───────────────────────────────────────────────────────────
 const BrandDashboardPage = lazy(() => import('@/pages/brand/DashboardPage'))
@@ -142,6 +143,7 @@ const router = createBrowserRouter([
           { path: 'creator/enquiries',  element: page(CreatorEnquiriesPage) },
           { path: 'creator/money',      element: page(MoneyPage) },
           { path: 'creator/settings',   element: page(CreatorSettingsPage) },
+          { path: 'creator/settings/privacy', element: page(CreatorPrivacySettingsPage) },
           { path: 'creator/notifications', element: page(NotificationsPage) },
         ],
       },

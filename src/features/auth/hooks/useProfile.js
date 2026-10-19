@@ -9,6 +9,7 @@ import { userService } from '../services/auth.service';
  */
 export const PROFILE_KEY = ['user', 'profile'];
 export const PREFERENCES_KEY = ['user', 'preferences'];
+export const PRIVACY_KEY = ['user', 'privacy'];
 
 /**
  * The signed-in account's full profile (GET /users/profile) and a save
@@ -67,6 +68,31 @@ export function usePreferences() {
     isError: query.isError,
     savePreferences: save.mutate,
     savePreferencesAsync: save.mutateAsync,
+    isSaving: save.isPending,
+  };
+}
+
+export function usePrivacySettings() {
+  const queryClient = useQueryClient();
+  const query = useQuery({ queryKey: PRIVACY_KEY, queryFn: userService.getPrivacy });
+
+  const save = useMutation({
+    mutationFn: (data) => userService.updatePrivacy(data),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(PRIVACY_KEY, updated);
+      queryClient.invalidateQueries({ queryKey: ['public-portfolio'] });
+      queryClient.invalidateQueries({ queryKey: ['public-rate-card'] });
+      queryClient.invalidateQueries({ queryKey: ['directory'] });
+      toast.success('Privacy settings saved.');
+    },
+    onError: (err) => toast.error(err?.message || 'Could not save your privacy settings.'),
+  });
+
+  return {
+    privacy: query.data ?? {},
+    isLoading: query.isLoading,
+    isError: query.isError,
+    savePrivacy: save.mutate,
     isSaving: save.isPending,
   };
 }

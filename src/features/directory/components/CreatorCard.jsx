@@ -33,6 +33,8 @@ export default function CreatorCard({ creator }) {
     location,
   } = creator;
 
+  const showFollowers = creator.show_followers ?? true;
+  const showRates = creator.show_rates ?? false;
   const primaryPlatform = platforms[0];
   const otherPlatforms  = platforms.slice(1, 3);
 
@@ -72,7 +74,7 @@ export default function CreatorCard({ creator }) {
         </div>
 
         {/* Primary platform stat */}
-        {primaryPlatform && (
+        {showFollowers && primaryPlatform && (
           <div className="bg-[var(--grey-50)] rounded-[8px] px-3 py-3 flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 text-[12px] text-[var(--grey-600)]">
               {(() => {
@@ -88,7 +90,7 @@ export default function CreatorCard({ creator }) {
         )}
 
         {/* Other platforms */}
-        {otherPlatforms.length > 0 && (
+        {showFollowers && otherPlatforms.length > 0 && (
           <div className="flex gap-2 mb-4">
             {otherPlatforms.map((p) => {
               const Icon = PLATFORM_ICONS[p.name];
@@ -109,10 +111,10 @@ export default function CreatorCard({ creator }) {
         <div className="flex items-center justify-between pt-4 border-t border-[var(--grey-100)]">
           <div>
             <div className="text-[10px] uppercase tracking-[0.08em] text-[var(--grey-400)] font-medium mb-0.5">
-              Starting from
+              {showRates ? 'Starting from' : 'Pricing'}
             </div>
             <div className="font-[var(--font-display)] text-[16px] font-semibold text-[var(--black)]">
-              {startingPrice ? `KES ${startingPrice.toLocaleString()}` : 'View card'}
+              {showRates && startingPrice ? `KES ${startingPrice.toLocaleString()}` : 'View card'}
             </div>
           </div>
           <Link

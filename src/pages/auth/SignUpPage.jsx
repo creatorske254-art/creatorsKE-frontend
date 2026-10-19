@@ -19,6 +19,7 @@ import {
 import { authService } from '@/features/auth/services/auth.service';
 import { ROLES } from '@/features/auth/constants/roles';
 import { usePageMeta } from '@/lib/usePageMeta';
+import SocialLoginButtons from '@/components/SocialLoginButtons';
 
 // Schemas
 const creatorSchema = z.object({
@@ -105,9 +106,6 @@ const inputStyle = (hasError) => ({
   outline: 'none',
   transition: 'border-color .15s, box-shadow .15s',
 });
-
-// Google sign-up intentionally absent until the backend has an OAuth endpoint -
-// a button that can only say "coming soon" is a mockup.
 
 // Step 1: Choose type
 function StepChooseType({ onContinue }) {
@@ -232,6 +230,7 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
         Build your rate card and start getting booked.
       </p>
 
+      <div style={{ marginBottom: 'var(--space-20)' }}><SocialLoginButtons /></div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
           <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)' }}>
@@ -341,6 +340,7 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
         Find and book creators for your next campaign.
       </p>
 
+      <div style={{ marginBottom: 'var(--space-20)' }}><SocialLoginButtons /></div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
           {invitedEmail ? (

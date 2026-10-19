@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandX,
-  IconCurrencyDollar, IconShare, IconUser,
+  IconCurrencyDollar, IconShare, IconUser, IconSend,
   IconSparkles, IconVideo, IconCalendarEvent, IconPencil,
   IconMoodSmile, IconPlane, IconPhone, IconMail,
   IconEdit,
@@ -335,8 +335,19 @@ export default function PortfolioPage() {
             )}
 
             {/* Contact strip */}
-            {(contact.phone || contact.instagram || contact.email) && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 bg-[var(--grey-50)] rounded-[16px] overflow-hidden mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-[var(--grey-50)] rounded-[16px] overflow-hidden mb-10">
+                <Link
+                  to={`/c/${handle}?enquire=1`}
+                  className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors"
+                >
+                  <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
+                    <IconSend className="text-[var(--purple-500)] icon-md" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">Contact</div>
+                    <div className="text-[13px] font-medium text-[var(--black)]">Contact via Creatorske</div>
+                  </div>
+                </Link>
                 {contact.phone && (
                   <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
                     <div className="w-[38px] h-[38px] rounded-[8px] bg-[var(--purple-50)] flex items-center justify-center flex-shrink-0">
@@ -346,7 +357,7 @@ export default function PortfolioPage() {
                       <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">Phone</div>
                       <div className="text-[13px] font-medium text-[var(--black)] truncate">{contact.phone}</div>
                     </div>
-                  </div>
+                </div>
                 )}
                 {contact.instagram && (
                   <div className="flex items-center gap-4 p-5 hover:bg-[var(--purple-50)] transition-colors">
@@ -356,7 +367,7 @@ export default function PortfolioPage() {
                     <div className="min-w-0">
                       <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">Instagram</div>
                       <div className="text-[13px] font-medium text-[var(--black)] truncate">{contact.instagram}</div>
-                    </div>
+                  </div>
                   </div>
                 )}
                 {contact.email && (
@@ -367,11 +378,10 @@ export default function PortfolioPage() {
                     <div className="min-w-0">
                       <div className="text-[10px] font-semibold uppercase tracking-[0.07em] text-[var(--grey-400)]">Email</div>
                       <div className="text-[13px] font-medium text-[var(--black)] truncate">{contact.email}</div>
-                    </div>
+                  </div>
                   </div>
                 )}
               </div>
-            )}
 
             {/* CTA banner */}
             {!isLoading && (

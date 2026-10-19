@@ -5,7 +5,12 @@ import { platformNames, availabilityKey } from '@/features/rate-card';
 // The live API returns the creator row joined with their published rate card. Map it to the card
 // shape the directory renders; entries that already carry `initials` (the documented shape) pass through.
 function toDirectoryCard(entry) {
-  if (!entry || entry.initials) return entry;
+  if (!entry) return entry;
+  const user = entry.user ?? {};
+  const privacy = entry.privacy ?? user;
+  const showFollowers = privacy.show_followers ?? entry.show_followers ?? true;
+  const showRates = privacy.show_rates ?? entry.show_rates ?? false;
+  if (entry.initials) return { ...entry, show_followers: showFollowers, show_rates: showRates };
   const name = [entry.firstName, entry.lastName].filter(Boolean).join(' ') || entry.name || entry.handle || '';
   const card = entry.rateCard?.data ?? {};
   const prices = (card.packages ?? []).map((p) => Number(p.price)).filter((n) => n > 0);
@@ -16,7 +21,9 @@ function toDirectoryCard(entry) {
     handle: entry.handle ?? '',
     initials: getInitials(name),
     niche: entry.niche || card.profile?.niche || (entry.category !== 'other' ? entry.category : '') || '',
-    followers: Number(entry.followers) || 0,
+    followers: showFollowers ? Number(entry.followers) || 0 : null,
+    show_followers: showFollowers,
+    show_rates: showRates,
     eng: engagement ? Number(engagement) : null,
     rating: Number(entry.rating) || 0,
     reviews: entry.reviewCount ?? 0,
@@ -26,7 +33,7 @@ function toDirectoryCard(entry) {
     platforms: platformNames(card.platforms),
     location: entry.location ?? '',
     bio: entry.bio ?? '',
-    price: prices.length ? Math.min(...prices) : null,
+    price: showRates && prices.length ? Math.min(...prices) : null,
     priceUnit: 'per campaign',
   };
 }
@@ -57,7 +64,10 @@ export async function searchCreators(filters = {}) {
       totalPages: p?.pages ?? p?.totalPages ?? 1,
     };
   }
-  return body; // { creators: [], total: number, page: number, totalPages: number }
+  return {
+    ...body,
+    creators: (body.creators ?? []).map(toDirectoryCard),
+  };
 }
 
 /**
@@ -68,4 +78,3 @@ export async function getFilterOptions() {
   const body = response.data;
   return Array.isArray(body) ? { niches: [], platforms: [] } : body; // { niches: string[], platforms: string[] }
 }
-

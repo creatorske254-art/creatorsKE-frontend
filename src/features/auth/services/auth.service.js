@@ -19,6 +19,8 @@ import api, { downloadAuthenticated } from '@/lib/api';
  * POST   /users/change-password
  * GET    /users/preferences
  * PATCH  /users/preferences
+ * GET    /users/me/privacy
+ * PUT    /users/me/privacy
  * GET    /users/sessions
  * DELETE /users/sessions/:id
  * DELETE /users/sessions/others
@@ -26,10 +28,14 @@ import api, { downloadAuthenticated } from '@/lib/api';
  * POST   /users/2fa/verify
  * DELETE /users/2fa
  * POST   /users/export
+ * GET    /auth/me
  */
 export const authService = {
   signup: (data) => api.post('/auth/signup', data),
   login: (credentials) => api.post('/auth/login', credentials),
+  getCurrentUser: (token) =>
+    api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.data?.user ?? r.data),
   // Second step when the account has two-factor on: the challenge from login plus the app's code.
   loginTwoFactor: (challengeToken, code) => api.post('/auth/login/2fa', { challengeToken, code }),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
@@ -52,6 +58,8 @@ export const userService = {
   // Notification / privacy / locale preferences, one object per user
   getPreferences: () => api.get('/users/preferences').then((r) => r.data),
   updatePreferences: (data) => api.patch('/users/preferences', data).then((r) => r.data),
+  getPrivacy: () => api.get('/users/me/privacy').then((r) => r.data?.privacy ?? r.data),
+  updatePrivacy: (data) => api.put('/users/me/privacy', data).then((r) => r.data?.privacy ?? r.data),
   // Signed-in devices
   listSessions: () => api.get('/users/sessions').then((r) => r.data?.sessions ?? r.data ?? []),
   revokeSession: (id) => api.delete(`/users/sessions/${id}`).then((r) => r.data),

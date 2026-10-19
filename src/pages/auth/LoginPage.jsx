@@ -10,6 +10,7 @@ import { authService } from '@/features/auth/services/auth.service';
 import { ROLE_HOME, POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
 import { safeRedirect } from '@/features/auth/utils/safeRedirect';
 import { usePageMeta } from '@/lib/usePageMeta';
+import SocialLoginButtons from '@/components/SocialLoginButtons';
 
 const schema = z.object({
   email:    z.string().email('Enter a valid email address'),
@@ -175,8 +176,7 @@ export default function LoginPage() {
             </form>
           )}
 
-          {/* Google sign-in intentionally absent until the backend has an OAuth
-              endpoint - a button that can only say "coming soon" is a mockup. */}
+          {!challenge && <div className="mb-5"><SocialLoginButtons /></div>}
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} style={challenge ? { display: 'none' } : undefined}>

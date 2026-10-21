@@ -12,32 +12,17 @@ import { toast } from 'sonner';
 import { useSearchParams } from 'react-router-dom';
 import { IconBrandFacebook, IconBrandGoogle, IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, IconCheck, IconEye, IconEyeOff, IconMail, IconMapPin, IconPhone, IconPlus, IconSend, IconUpload, IconUser, IconX } from '@tabler/icons-react';
 
-// Component-library chrome (.btn, .card, .tag, .avatar, .input, .badge,
-// .progress-bar-*) lives in index.css, ported 1:1 from the Creatorske
-// Component Library, reused as-is below, nothing reinvented.
-//
-// `.field` / `.label` / `.hint` / `.inp` / `.inp-wrap` / `.inp-icon` /
-// `.inp-pre` / `.ta` mirror the input-form styling used in
-// RateCardBuilderPage.jsx (icon-prefixed inputs, uppercase micro-labels,
-// grey-on-white focus states) so the two builder flows feel identical,
-//
-// Everything else in this block (`.pb-*`) is this page's own layout: the
-// split form/preview panel, the section-card icon header, and the live
-// preview mock-up. None of it is shared elsewhere, so, again mirroring
-// CreatorLayout.jsx's reasoning, it stays scoped here instead of
-// polluting the global stylesheet, while still only ever referencing the
-// shared color/type/radius/space tokens (never a hardcoded hex or px value
-// that isn't already a token).
 const PORTFOLIO_BUILDER_STYLES = `
 .field { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-12); }
 .field .hint { font-size: 12px; color: var(--grey-400); line-height: 1.5; margin-top: var(--space-2); }
-.pb-social-verify { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-8); align-items: center; }
+.pb-social-verify { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-8); align-items: center; width: 100%; }
+.pb-social-verify .inp-wrap { min-width: 0; width: 100%; }
 .pb-social-result { grid-column: 1 / -1; font-size: 12px; color: var(--status-success-text); }
 .pb-social-error { grid-column: 1 / -1; font-size: 12px; color: var(--status-error); }
 .pb-connected-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-12); }
-.pb-connected-item { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--space-12); padding: var(--space-12); border: 1px solid var(--grey-100); border-radius: var(--radius-md); }
+.pb-connected-item { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); padding: var(--space-12); border: 0.5px solid var(--grey-100); border-radius: var(--radius-md); background: var(--white); }
 .pb-connected-name { display: flex; min-width: 0; align-items: center; gap: var(--space-8); color: var(--black); font-size: 13px; font-weight: 500; }
-.pb-connected-details { min-width: 0; }
+.pb-connected-details { min-width: 0; flex: 1; }
 .pb-connected-followers { margin: var(--space-4) 0 0; color: var(--grey-500); font-size: 11px; }
 .pb-connected-status { display: inline-flex; flex-shrink: 0; align-items: center; gap: var(--space-4); color: var(--status-success-text); font-size: 12px; font-weight: 500; }
 .inp {
@@ -121,15 +106,6 @@ const PORTFOLIO_BUILDER_STYLES = `
 .pb-preview-contact-row svg { color: var(--grey-400); }
 `;
 
-/* The portfolio record the builder saves (PUT /portfolio/:id, autosaved via PATCH .../draft)
-   and the public page reads:
-     photoUrl
-     name, role, location, bio
-     niches: string[]
-     socialAccounts: { instagram_username, tiktok_username, medium_username }
-     socialStats: { igFollowers, ttFollowers, mediumFollowers }
-     verifiedSocials: { instagram, tiktok, medium }
-*/
 const DEFAULT_VALUES = {
   photoUrl: '',
   name: '',
@@ -199,8 +175,6 @@ function getInitials(name) {
   );
 }
 
-/* shared field bits */
-
 function SectionCard({ title, hint, children }) {
   return (
     <div className="card card-p-md">
@@ -223,11 +197,6 @@ function Field({ label, required, hint, children }) {
   );
 }
 
-/* live preview
-   A compact mock-up of the published portfolio, built entirely from
-   component-library primitives (.card / .avatar / .tag) plus the
-   .pb-preview-* layout classes above.
-*/
 function LivePreview({ values, creatorName, handle }) {
   const name = values.name || creatorName || 'Your Name';
   const initials = getInitials(name);
@@ -247,7 +216,6 @@ function LivePreview({ values, creatorName, handle }) {
 
   return (
     <div className="card" style={{ overflow: 'hidden' }}>
-      {/* Hero */}
       <div className="pb-preview-hero">
         <div className="pb-preview-top">
           <div className="avatar avatar-lg avatar-purple" style={{ overflow: 'hidden' }}>
@@ -274,7 +242,6 @@ function LivePreview({ values, creatorName, handle }) {
         </div>
       </div>
 
-      {/* Body */}
       <div className="pb-preview-body">
         <div>
           <div className="pb-preview-section-l">Niche &amp; focus</div>
@@ -308,8 +275,6 @@ function LivePreview({ values, creatorName, handle }) {
   );
 }
 
-/* page */
-
 export default function PortfolioBuilderPage() {
   usePageMeta('Portfolio Builder', 'Build your portfolio to showcase past work and brand collaborations on Creatorske.');
 
@@ -332,7 +297,6 @@ export default function PortfolioBuilderPage() {
     formState: { isDirty },
   } = useForm({ defaultValues: DEFAULT_VALUES });
 
-  // Populate form once data loads
   useEffect(() => {
     if (portfolio) {
       reset({
@@ -352,8 +316,7 @@ export default function PortfolioBuilderPage() {
         contact: { ...DEFAULT_VALUES.contact, ...portfolio.contact },
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [portfolio, reset]);
+  }, [portfolio, reset, user?.name]);
 
   useEffect(() => {
     const verified = searchParams.get('verified');
@@ -397,18 +360,15 @@ export default function PortfolioBuilderPage() {
     return () => { cancelled = true; };
   }, [searchParams, setSearchParams, refetchProfile, refetchPortfolio, updateUser]);
 
-  // Auto-save on every change
   const formValues = watch();
   useEffect(() => {
     if (portfolio?.id && isDirty) {
       autoSave(portfolio.id, formValues);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(formValues), isDirty]);
+  }, [JSON.stringify(formValues), isDirty, portfolio?.id, autoSave]);
 
   const isPublished = portfolio?.status === 'published';
 
-  // Submitting the form (Enter in a field) saves at once instead of waiting for the autosave.
   function onSave(data) {
     if (portfolio?.id) update({ id: portfolio.id, data });
   }
@@ -470,7 +430,6 @@ export default function PortfolioBuilderPage() {
     }
   }
 
-  // Completion tracking for the progress bar
   const completion = {
     photo: !!formValues.photoUrl,
     identity: !!(formValues.name && formValues.role && (formValues.bio?.trim().length ?? 0) > 10),
@@ -540,7 +499,6 @@ export default function PortfolioBuilderPage() {
       <div className="pb-split">
         {/* LEFT: form */}
         <div className="pb-form-col">
-          {/* Header + progress */}
           <div>
             <h4 className="page-title" style={{ marginBottom: 'var(--space-4)' }}>Build your portfolio</h4>
             <div className="text-body-sm" style={{ color: 'var(--grey-400)', marginBottom: 'var(--space-16)' }}>
@@ -619,8 +577,8 @@ export default function PortfolioBuilderPage() {
                     <div className="pb-connected-item" key={account.key}>
                       <div className="pb-connected-details">
                         <div className="pb-connected-name">
-                          <Icon className="icon-md" aria-hidden="true" />
-                          <span>{account.label}</span>
+                          <Icon className="icon-md" aria-hidden="true" style={{ flexShrink: 0 }} />
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{account.label}</span>
                         </div>
                         {followerCount !== undefined && followerCount !== null && followerCount !== '' && (
                           <p className="pb-connected-followers">
@@ -636,6 +594,7 @@ export default function PortfolioBuilderPage() {
                         <button
                           type="button"
                           className="btn btn-secondary btn-sm"
+                          style={{ flexShrink: 0 }}
                           onClick={() => connectAccount(account)}
                         >
                           Connect {account.label}
@@ -693,7 +652,6 @@ export default function PortfolioBuilderPage() {
 
             {/* 5. Niches */}
             <SectionCard
-             
               title="Niche & focus areas"
               hint="Press Enter or tap + to add. Tap a tag to remove it."
             >
@@ -724,31 +682,11 @@ export default function PortfolioBuilderPage() {
                     }
                   }}
                 />
-                <button type="button" className="btn btn-purple btn-square" onClick={addNiche} aria-label="Add niche">
+                <button type="button" className="btn btn-secondary btn-sm" onClick={addNiche}>
                   <IconPlus className="icon-sm" aria-hidden="true" />
+                  Add
                 </button>
               </div>
-            </SectionCard>
-
-            {/* 5. Contact */}
-            <SectionCard title="Contact details">
-              <Field label="Phone">
-                <div className="inp-wrap">
-                  <span className="inp-icon l"><IconPhone className="icon-sm" aria-hidden="true" /></span>
-                  <input className="inp inp-icon-l" placeholder="+254..." {...register('contact.phone')} />
-                </div>
-              </Field>
-              <Field label="Email">
-                <div className="inp-wrap">
-                  <span className="inp-icon l"><IconMail className="icon-sm" aria-hidden="true" /></span>
-                  <input
-                    className="inp inp-icon-l"
-                    type="email"
-                    placeholder="you@email.com"
-                    {...register('contact.email')}
-                  />
-                </div>
-              </Field>
             </SectionCard>
           </form>
         </div>
@@ -757,18 +695,9 @@ export default function PortfolioBuilderPage() {
         <div className="pb-preview-col">
           <div className="pb-preview-label">
             <IconEye className="icon-xs" aria-hidden="true" />
-            Live preview
+            Live Preview
           </div>
-          <div style={{ position: 'sticky', top: 0 }}>
-            <LivePreview
-              values={formValues}
-              creatorName={user?.name}
-              handle={user?.handle ? `@${user.handle}` : '@yourhandle'}
-            />
-            <p className="hint" style={{ textAlign: 'center', marginTop: 'var(--space-12)' }}>
-              Updates as you type
-            </p>
-          </div>
+          <LivePreview values={formValues} creatorName={user?.name} handle={user?.handle} />
         </div>
       </div>
     </div>

@@ -12,12 +12,17 @@ import {
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
   IconBuilding, IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
   IconEye, IconEyeOff, IconPencil, IconPlus, IconLayoutDashboard,
-  IconUser, IconUsers, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading, IconWorld, IconLoader2
+  IconUser, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading, IconWorld, IconLoader2
 } from "@tabler/icons-react";
 import Select from '@/components/ui/Select';
 import SmartImage from '@/components/ui/SmartImage';
 import { useQueryClient } from '@tanstack/react-query';
 import { rateCardService } from '@/features/rate-card/services/rate-card.service';
+
+const OAUTH_BASE_URL = (import.meta.env.VITE_API_BASE_URL
+  || (import.meta.env.DEV ? 'http://localhost:5000/api' : ''))
+  .replace(/\/api\/?$/i, '')
+  .replace(/\/+$/, '');
 
 /* design tokens (scoped)
    These are intentionally kept as local custom-property *names* (--txt-primary,
@@ -372,9 +377,13 @@ export default function RateCardBuilderPage() {
   // or from the saved rate card's own profile block when editing.
   const { profile: account } = useProfile();
   const [profile, setProfile] = useState({
-    name: "", handle: "", bio: "", location: "", followers: "", engagement: "", reach: "", niche: "Lifestyle", languages: "",
+    name: "", handle: "", bio: "", location: "", niche: "Lifestyle", languages: "",
     instagram: "", tiktok: "", youtube: "", twitter: "",
   });
+  const instagramFollowers = Number(account?.instagram_followers ?? user?.instagram_followers) || 0;
+  const tiktokFollowers = Number(account?.tiktok_followers ?? user?.tiktok_followers) || 0;
+  const totalFollowers = instagramFollowers + tiktokFollowers;
+  const audienceProfile = { ...profile, followers: totalFollowers, engagement: '', reach: '' };
   const { url: photoUrl, setUrl: setPhotoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
     successMessage: "Profile photo updated.",
     onUploaded: ({ url, id }) => setProfile((p) => ({ ...p, photoUrl: url, photoUploadId: id })),
@@ -390,9 +399,6 @@ export default function RateCardBuilderPage() {
       name: account.name ?? `${account.firstName ?? ''} ${account.lastName ?? ''}`.trim(),
       handle: account.handle ?? '',
       bio: c.bio ?? '', location: c.location ?? '', niche: c.niche || p.niche, languages: c.languages ?? '',
-      followers: c.followers != null ? Number(c.followers).toLocaleString('en-KE') : '',
-      engagement: c.eng != null ? String(c.eng) : '',
-      reach: '', // the creator's own figure; never derived from followers
       instagram: socials.instagram ?? '', tiktok: socials.tiktok ?? '', youtube: socials.youtube ?? '', twitter: socials.twitter ?? '',
     }));
     if (account.avatar) setPhotoUrl(account.avatar);
@@ -440,7 +446,7 @@ export default function RateCardBuilderPage() {
   useEffect(() => {
     if (!cardId || !rateCard || hydrated.current) return;
     hydrated.current = true;
-    if (rateCard.profile) setProfile((p) => ({ ...p, ...rateCard.profile }));
+    if (rateCard.profile) setProfile((p) => ({ ...p, ...rateCard.profile, followers: '', engagement: '', reach: '' }));
     if (rateCard.profile?.photoUrl) setPhotoUrl(rateCard.profile.photoUrl);
     if (Array.isArray(rateCard.platforms)) {
       // Public/list shapes send platforms as an array of ids or names; the wizard keeps an on/off map.
@@ -461,7 +467,7 @@ export default function RateCardBuilderPage() {
   // The rate card record sent to POST /rate-cards and PATCH /rate-cards/:id/draft. The backend
   // stores it as given and copies profile, platforms and package prices to the directory row.
   const buildPayload = () => ({
-    profile,
+    profile: audienceProfile,
     platforms,
     ...(packages.length ? { packages } : {}),
     payment: rateCard?.payment ?? {},
@@ -655,21 +661,29 @@ export default function RateCardBuilderPage() {
                 <div className="card card-p span2">
                   <p className="section-title">Audience stats</p>
                   <p className="hint" style={{ margin: "var(--space-4) 0 var(--space-16)" }}>Shown on your rate card to build trust with brands</p>
+                  <div className="field-row" style={{ marginBottom: 'var(--space-16)' }}>
+                    <a className="btn btn-secondary btn-sm" href={`${OAUTH_BASE_URL}/auth/facebook/link`}>
+                      {user?.instagram_id ? 'Instagram connected' : 'Connect Instagram via Facebook'}
+                    </a>
+                    <a className="btn btn-secondary btn-sm" href={`${OAUTH_BASE_URL}/auth/tiktok/link`}>
+                      {user?.tiktok_id ? 'TikTok connected' : 'Connect TikTok'}
+                    </a>
+                  </div>
                   <div className="g3">
                     <div className="field">
                       <label className="field-label">Total followers</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconUsers className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.followers} onChange={(e) => setProfile({ ...profile, followers: e.target.value })} /></div>
-                    </div>
-                    <div className="field">
-                      <label className="field-label">Avg engagement</label>
-                      <div className="inp-wrap">
-                        <input className="inp inp-icon-r" value={profile.engagement} onChange={(e) => setProfile({ ...profile, engagement: e.target.value })} />
-                        <span className="inp-icon r" style={{ fontSize: 12, fontWeight: 600 }}>%</span>
+                      <div className="inp" aria-live="polite">
+                        {totalFollowers.toLocaleString('en-KE')}
+                        {totalFollowers > 0 && <span className="tag tag-success" style={{ marginLeft: 'var(--space-8)' }}><IconCheck className="icon-xs" aria-hidden="true" />Verified</span>}
                       </div>
                     </div>
                     <div className="field">
+                      <label className="field-label">Avg engagement</label>
+                      <div className="inp">Auto after verification</div>
+                    </div>
+                    <div className="field">
                       <label className="field-label">Monthly reach</label>
-                      <div className="inp-wrap"><span className="inp-icon l"><IconEye className="icon-sm" /></span><input className="inp inp-icon-l" value={profile.reach} onChange={(e) => setProfile({ ...profile, reach: e.target.value })} /></div>
+                      <div className="inp">Auto after verification</div>
                     </div>
                   </div>
                 </div>
@@ -694,7 +708,7 @@ export default function RateCardBuilderPage() {
 
               <div className="rcp-preview-col">
                 <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Live preview</p>
-                <RateCardPreview profile={profile} platforms={platforms} packages={packages} />
+                <RateCardPreview profile={audienceProfile} platforms={platforms} packages={packages} />
                 <p className="hint" style={{ marginTop: 'var(--space-8)', textAlign: "center" }}>Updates as you type</p>
               </div>
             </div>
@@ -755,7 +769,7 @@ export default function RateCardBuilderPage() {
 
               <div className="rcp-preview-col">
                 <p className="section-title" style={{ marginBottom: 'var(--space-12)' }}>Live preview</p>
-                <RateCardPreview profile={profile} platforms={platforms} packages={packages} />
+                <RateCardPreview profile={audienceProfile} platforms={platforms} packages={packages} />
               </div>
             </div>
           )}
@@ -969,9 +983,9 @@ export default function RateCardBuilderPage() {
                     </div>
                   </div>
                   <div className="rcp-stats">
-                    <div className="rcp-stat"><div className="rcp-stat-n">{compact(profile.followers)}</div><div className="rcp-stat-l">Followers</div></div>
-                    <div className="rcp-stat"><div className="rcp-stat-n">{profile.engagement}%</div><div className="rcp-stat-l">Engagement</div></div>
-                    <div className="rcp-stat"><div className="rcp-stat-n">{compact(profile.reach)}</div><div className="rcp-stat-l">Avg reach</div></div>
+                    <div className="rcp-stat"><div className="rcp-stat-n">{compact(audienceProfile.followers)}</div><div className="rcp-stat-l">Followers</div></div>
+                    <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Engagement</div></div>
+                    <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Avg reach</div></div>
                   </div>
                   <div className="rcp-bio">{profile.bio}</div>
                   <div className="rcp-pkgs">

@@ -578,7 +578,7 @@ export default function PortfolioBuilderPage() {
                       <div className="pb-connected-details">
                         <div className="pb-connected-name">
                           <Icon className="icon-md" aria-hidden="true" style={{ flexShrink: 0 }} />
-                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{account.label}</span>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{account.label}</span>
                         </div>
                         {followerCount !== undefined && followerCount !== null && followerCount !== '' && (
                           <p className="pb-connected-followers">
@@ -594,10 +594,10 @@ export default function PortfolioBuilderPage() {
                         <button
                           type="button"
                           className="btn btn-secondary btn-sm"
-                          style={{ flexShrink: 0 }}
+                          style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
                           onClick={() => connectAccount(account)}
                         >
-                          Connect {account.label}
+                          Connect
                         </button>
                       )}
                     </div>

@@ -42,11 +42,11 @@ const css = `
     background: var(--white); cursor: pointer; transition: all .2s; position: relative;
   }
   .ps-card:hover { border-color: var(--purple-300); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .ps-card.selected { border-color: var(--purple-500); box-shadow: 0 0 0 3px rgba(84,69,232,.12), var(--shadow-md); }
+  .ps-card.selected { border-color: var(--purple-500); box-shadow: 0 0 0 3px rgba(var(--purple-rgb),.12), var(--shadow-md); }
 
   .ps-card-pro { background: var(--purple-50); border-color: var(--purple-200); }
   .ps-card-pro:hover { border-color: var(--purple-400); }
-  .ps-card-pro.selected { border-color: var(--purple-600); box-shadow: 0 0 0 3px rgba(84,69,232,.15), var(--shadow-lg); }
+  .ps-card-pro.selected { border-color: var(--purple-600); box-shadow: 0 0 0 3px rgba(var(--purple-rgb),.15), var(--shadow-lg); }
 
   .ps-card-business { background: var(--black); border-color: var(--grey-700); }
   .ps-card-business:hover { border-color: var(--grey-500); transform: translateY(-2px); box-shadow: var(--shadow-md); }

@@ -137,7 +137,7 @@ export default function LoginPage() {
           border: '0.5px solid var(--grey-200)',
           borderRadius: 'var(--radius-xl)',
           padding: 'var(--space-40) var(--space-40) var(--space-40)',
-          boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
+          boxShadow: '0 8px 40px rgba(var(--purple-rgb),.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
           <h1 className="hero-title" style={{ marginBottom: 'var(--space-8)' }}>
             {challenge ? 'Two-factor check' : 'Welcome back'}

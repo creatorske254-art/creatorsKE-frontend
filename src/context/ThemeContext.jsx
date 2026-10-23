@@ -10,7 +10,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 const THEME_KEY = 'creatorske_theme';
 const ACCENT_KEY = 'creatorske_accent';
 
-const DEFAULT_ACCENT = '#534AB7'; // --purple-600, the stylesheet's own default
+const DEFAULT_ACCENT = '#7C3AED'; // --purple-600, the stylesheet's default
 
 const ThemeContext = createContext(null);
 
@@ -34,6 +34,11 @@ function shiftHex(hex, percent) {
   return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
 }
 
+function hexToRgb(hex) {
+  const value = hex.replace('#', '');
+  return `${parseInt(value.slice(0, 2), 16)}, ${parseInt(value.slice(2, 4), 16)}, ${parseInt(value.slice(4, 6), 16)}`;
+}
+
 export function applyTheme(theme) {
   const root = document.documentElement;
   const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
@@ -46,7 +51,7 @@ export function applyAccent(hex) {
   if (!hex || hex === DEFAULT_ACCENT) {
     // Clear the overrides so index.css's own tokens (including the different
     // dark-mode accent) take over again.
-    ['--purple-500', '--purple-600', '--purple-700', '--ring'].forEach((token) =>
+    ['--purple-500', '--purple-600', '--purple-700', '--purple-rgb', '--ring'].forEach((token) =>
       root.style.removeProperty(token)
     );
     return;
@@ -54,12 +59,16 @@ export function applyAccent(hex) {
   root.style.setProperty('--purple-500', shiftHex(hex, 8));
   root.style.setProperty('--purple-600', hex);
   root.style.setProperty('--purple-700', shiftHex(hex, -10));
+  root.style.setProperty('--purple-rgb', hexToRgb(hex));
   root.style.setProperty('--ring', hex);
 }
 
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState(() => readStored(THEME_KEY, 'light'));
-  const [accent, setAccentState] = useState(() => readStored(ACCENT_KEY, DEFAULT_ACCENT));
+  const [accent, setAccentState] = useState(() => {
+    const storedAccent = readStored(ACCENT_KEY, DEFAULT_ACCENT);
+    return storedAccent === '#534AB7' ? DEFAULT_ACCENT : storedAccent;
+  });
 
   useEffect(() => {
     applyTheme(theme);

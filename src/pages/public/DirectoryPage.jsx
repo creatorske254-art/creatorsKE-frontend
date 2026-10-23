@@ -188,7 +188,7 @@ export default function DirectoryPage() {
         .dir-chip:hover { border-color:var(--grey-400); color:var(--black); }
         .dir-chip.active { background:var(--black); color:var(--white); border-color:var(--black); }
         .dir-search-input { width:100%; padding:var(--space-8) var(--space-16) var(--space-8) var(--space-40); border:0.5px solid var(--grey-200); border-radius:999px; font-family:var(--font-body); font-size:14px; color:var(--black); background:var(--white); outline:none; transition:all .15s; }
-        .dir-search-input:focus { border-color:var(--purple-400); box-shadow:0 0 0 3px rgba(84,69,232,0.08); }
+        .dir-search-input:focus { border-color:var(--purple-400); box-shadow:0 0 0 3px rgba(var(--purple-rgb),0.08); }
         .dir-search-input::placeholder { color:var(--grey-300); }
         .dir-btn-ghost { background:transparent; color:var(--grey-600); border-radius:8px; font-size:13px; padding:var(--space-8) var(--space-16); border:0.5px solid var(--grey-200); cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; }
         .dir-btn-ghost:hover { color:var(--black); border-color:var(--grey-400); background:var(--grey-50); }

@@ -12,7 +12,7 @@ import { IconFlag3, IconMessage2, IconShieldCheck, IconStar, IconStarFilled } fr
 
 // Brand avatars take a stable colour from the brand name so the same brand
 // always reads the same across the feed.
-const BRAND_COLORS = ['#5445E8', '#00B96B', '#F59E0B', '#E11D48', '#0EA5E9', '#8B5CF6'];
+const BRAND_COLORS = ['var(--purple-500)', '#00B96B', '#F59E0B', '#E11D48', '#0EA5E9', '#8B5CF6'];
 function brandColor(name = '') {
   let h = 0;
   for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;

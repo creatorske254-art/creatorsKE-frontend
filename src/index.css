@@ -11,45 +11,49 @@
    Source of truth: Creators KE Color Theory doc.
 
    Rules encoded here:
-   1. Structure is neutral - every background/border/body text color comes
-      from the true achromatic grey ramp (R = G = B, zero hue).
-   2. Purple is the accent - reserved for interactive/brand moments
-      (buttons, links, active states, focus rings). Never a surface fill.
+   1. Structure uses a restrained plum-neutral ramp inspired by the brand
+      artwork, with light surfaces staying subtle and dark surfaces matching
+      the artwork's charcoal-plum background.
+   2. Violet is the accent - reserved for interactive/brand moments
+      (buttons, links, active states, focus rings), with pale tints for
+      selected surfaces.
    3. Status colors only ever communicate feedback (success/warning/error/info).
    ══════════════════════════════════════════════════════════════════════════ */
 :root {
   /* ─── Base (light mode) ──────────────────────────────────────────────── */
   --white:      #FFFFFF; /* navbar, sidebar, cards */
-  --black:      #000000; /* primary text */
+  --black:      #17161F; /* primary text */
 
   /* Content area sits one step darker than nav/sidebar/cards - never the
      other way round. This relationship is mirrored (not repeated) in dark
      mode below. */
   --page-bg:    var(--grey-50);
 
-  /* ─── Purple scale - accent only, never used as a surface fill ─────────── */
-  --purple-50:  #EEEDFE;
-  --purple-100: #CECBF6;
-  --purple-200: #AFA9EC;
-  --purple-300: #948CE3; /* interpolated, light-mode disabled/mid accent */
-  --purple-400: #7F77DD;
-  --purple-500: #665DC7; /* interpolated, mid-scale */
-  --purple-600: #534AB7; /* default accent - buttons, links, active icons */
-  --purple-700: #463D9E; /* interpolated, between 600/800 */
-  --purple-800: #3C3489; /* hover state */
-  --purple-900: #26215C; /* active/pressed state; dark-mode active bg */
+  /* ─── Violet scale - sampled from the brand artwork (#8B5CF6) ──────────── */
+  --purple-50:  #F5F0FF;
+  --purple-100: #EDE3FF;
+  --purple-200: #DCCBFF;
+  --purple-300: #C4A8FF;
+  --purple-400: #A982FF;
+  --purple-500: #8B5CF6; /* artwork accent */
+  --purple-600: #7C3AED; /* accessible default for buttons and links */
+  --purple-700: #6D28D9;
+  --purple-800: #5B21B6;
+  --purple-900: #3B1C70;
+  --purple-rgb: 124, 58, 237;
+  --purple-foreground: #FFFFFF;
 
   /* ─── Grey scale - true achromatic, R = G = B, zero color cast ─────────── */
-  --grey-50:  #F2F2F2; /* content area background (light mode) */
-  --grey-100: #E5E5E5; /* borders, dividers */
-  --grey-200: #CCCCCC; /* disabled borders */
-  --grey-300: #B3B3B3; /* disabled text */
-  --grey-400: #6B6B6B; /* placeholder and tertiary text: 4.8:1 on the page background, 5.3:1 on white (WCAG AA) */
-  --grey-500: #616161; /* inactive icons, helper text: 5.4:1 on the page background */
-  --grey-600: #575757; /* secondary text: 6.4:1 on the page background */
-  --grey-700: #4D4D4D;
-  --grey-800: #262626; /* dark-mode surfaces - nav, cards, content bg base */
-  --grey-900: #1A1A1A; /* dark-mode content area background */
+  --grey-50:  #F8F7FB; /* content area background (light mode) */
+  --grey-100: #ECEAF1; /* borders, dividers */
+  --grey-200: #D8D5E0; /* disabled borders */
+  --grey-300: #C0BCCB; /* disabled text */
+  --grey-400: #777284; /* placeholder and tertiary text */
+  --grey-500: #666171; /* inactive icons, helper text */
+  --grey-600: #514D5B; /* secondary text */
+  --grey-700: #3B3844;
+  --grey-800: #292631; /* dark-mode surfaces */
+  --grey-900: #1B1922; /* dark-mode content area background */
 
   /* ─── Status colors - feedback only, never branding/structure ──────────── */
   --status-success:      #10B981;
@@ -257,9 +261,9 @@
    ══════════════════════════════════════════════════════════════════════════ */
 .dark {
   /* Surfaces */
-  --white:   #262626; /* stands in for "lightest surface" in dark mode: nav, sidebar, cards */
-  --black:   #FFFFFF; /* primary text */
-  --page-bg: #141414; /* content area - darkest surface, sits behind nav/cards */
+  --white:   #24222F; /* stands in for "lightest surface" in dark mode: nav, sidebar, cards */
+  --black:   #F8F7FB; /* primary text */
+  --page-bg: #17161F; /* artwork's charcoal-plum background */
 
   /* The grey ramp inverts, exactly like --white/--black above: grey-50 is
      "the subtlest surface above the page background" and grey-900 is "the
@@ -268,29 +272,34 @@
      input backgrounds, hover states, dividers - renders near-white on a dark
      page. Mid-tones stay near-neutral since they're used for muted text in
      both modes. */
-  --grey-50:  #1F1F1F;
-  --grey-100: #2B2B2B;
-  --grey-200: #3A3A3A;
-  --grey-300: #4D4D4D;
-  --grey-400: #8A8A8A;
-  --grey-500: #A0A0A0;
-  --grey-600: #B8B8B8;
-  --grey-700: #D4D4D4;
-  --grey-800: #E8E8E8;
-  --grey-900: #F5F5F5;
+  --grey-50:  #201E29;
+  --grey-100: #302D3A;
+  --grey-200: #403B4D;
+  --grey-300: #575265;
+  --grey-400: #A19AAF;
+  --grey-500: #B8B2C3;
+  --grey-600: #CEC9D7;
+  --grey-700: #DDD9E5;
+  --grey-800: #ECE9F1;
+  --grey-900: #F8F7FB;
 
-  /* Purple accent shifts one step lighter for readability against dark surfaces */
-  --purple-600: #7F77DD; /* default accent in dark mode */
-  --purple-700: #8A82E0; /* text on purple tints (tab counts, selected states) */
-  --purple-800: #948CE3; /* hover, lighter than default */
-  --purple-900: #26215C; /* used as active-state background tint, not text */
+  /* Brighter text steps retain contrast against the dark plum surfaces. */
+  --purple-400: #7C3AED;
+  --purple-500: #8B5CF6;
+  --purple-600: #A78BFA;
+  --purple-700: #C4B5FD;
+  --purple-800: #DDD0FF;
+  --purple-900: #3B1C70;
+  --purple-rgb: 167, 139, 250;
+  --purple-foreground: #17161F;
 
   /* Light purple washes (featured cards, selected rows, .pay-row.connected)
-     become deep indigo tints - the same inversion --status-*-bg gets below.
+     become deep plum tints - the same inversion --status-*-bg gets below.
      Left as-is they'd stay pale lavender under text that has flipped to white. */
-  --purple-50:  #201C4F;
-  --purple-100: #2B2568;
-  --purple-200: #3A338A;
+  --purple-50:  #292333;
+  --purple-100: #362D47;
+  --purple-200: #4A3A63;
+  --purple-300: #69518F;
 
   /* Status colors keep their base hues (they're already saturated enough to
      read on dark surfaces); only their soft-fill/text pairs invert */
@@ -306,8 +315,8 @@
   --status-info-bg:      #042C36;
   --status-info-text:    #22D3EE;
 
-  /* Charts - same four hues re-stepped for the dark card surface (#262626) */
-  --chart-1: var(--purple-600); /* #7F77DD in dark */
+  /* Charts - same four hues re-stepped for the dark card surface (#24222F) */
+  --chart-1: var(--purple-600);
   --chart-2: #D95926;
   --chart-3: #199E70;
   --chart-4: #C98500;
@@ -326,19 +335,19 @@
   --popover:                var(--white);
   --popover-foreground:     var(--black);
   --primary:                var(--purple-600);
-  --primary-foreground:     #FFFFFF;
+  --primary-foreground:     var(--purple-foreground);
   /* Literal dark values: the grey ramp above now reads light-side-up, so
      these can't reference grey-800 the way they did before the inversion. */
-  --secondary:              #2B2B2B;
+  --secondary:              var(--grey-100);
   --secondary-foreground:   var(--black);
-  --muted:                  #2B2B2B;
+  --muted:                  var(--grey-100);
   --muted-foreground:       var(--grey-500);
   --accent:                 var(--purple-900);
-  --accent-foreground:      var(--purple-400);
+  --accent-foreground:      var(--purple-700);
   --destructive:            var(--status-error);
   --destructive-foreground: var(--white);
-  --border:                 #333333;
-  --input:                  #333333;
+  --border:                 var(--grey-200);
+  --input:                  var(--grey-200);
   --ring:                   var(--purple-600);
 
   /* Shadows are barely visible on dark surfaces - soften them */
@@ -355,25 +364,26 @@
    of flipping to light-grey-on-white when the rest of the page goes dark. */
 .theme-fixed-dark {
   --white: #FFFFFF;
-  --black: #000000;
-  --grey-50:  #F2F2F2;
-  --grey-100: #E5E5E5;
-  --grey-200: #CCCCCC;
-  --grey-300: #B3B3B3;
-  --grey-400: #999999;
-  --grey-500: #808080;
-  --grey-600: #666666;
-  --grey-700: #4D4D4D;
-  --grey-800: #262626;
-  --grey-900: #1A1A1A;
+  --black: #17161F;
+  --grey-50:  #F8F7FB;
+  --grey-100: #ECEAF1;
+  --grey-200: #D8D5E0;
+  --grey-300: #C0BCCB;
+  --grey-400: #777284;
+  --grey-500: #666171;
+  --grey-600: #514D5B;
+  --grey-700: #3B3844;
+  --grey-800: #292631;
+  --grey-900: #1B1922;
 }
 /* The inverse: a block that stays light on a dark-by-design surface (the
    marketing hero's sample rate cards). */
 .theme-fixed-light {
-  --white: #FFFFFF; --black: #0D0D0D; --page-bg: #F2F2F2;
-  --grey-50: #F2F2F2; --grey-100: #E5E5E5; --grey-200: #CCCCCC; --grey-300: #B3B3B3; --grey-400: #6B6B6B;
-  --grey-500: #616161; --grey-600: #575757; --grey-700: #4D4D4D; --grey-800: #262626; --grey-900: #1A1A1A;
-  --purple-600: #534AB7;
+  --white: #FFFFFF; --black: #17161F; --page-bg: #F8F7FB;
+  --grey-50: #F8F7FB; --grey-100: #ECEAF1; --grey-200: #D8D5E0; --grey-300: #C0BCCB; --grey-400: #777284;
+  --grey-500: #666171; --grey-600: #514D5B; --grey-700: #3B3844; --grey-800: #292631; --grey-900: #1B1922;
+  --purple-600: #7C3AED;
+  --purple-foreground: #FFFFFF;
   color: var(--black);
 }
 
@@ -593,7 +603,7 @@
   }
   .search-input:focus {
     border-color: var(--purple-400);
-    box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.08);
+    box-shadow: 0 0 0 3px rgba(var(--purple-rgb), 0.08);
   }
 
   /* ── Navbar ───────────────────────────────────────────────────────────── */
@@ -766,12 +776,12 @@
 
   .btn-purple {
     background: var(--purple-600);
-    color: #fff; /* literal: purple is a fixed hue, so its label must not flip with the theme */
+    color: var(--purple-foreground);
     border-radius: var(--radius-md);
     font-size: var(--text-body-size);
     padding: var(--space-12) var(--space-24);
   }
-  .btn-purple:hover { background: var(--purple-800); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(83, 74, 183, 0.3); }
+  .btn-purple:hover { background: var(--purple-700); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(var(--purple-rgb), 0.3); }
 
   .btn-ghost {
     background: transparent;
@@ -1155,7 +1165,7 @@
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   }
   .input::placeholder { color: var(--grey-300); }
-  .input:focus { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1); }
+  .input:focus { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(var(--purple-rgb), 0.1); }
   .input-sm { padding: var(--space-8) var(--space-12); border-radius: var(--radius-sm); font-size: var(--text-body-sm-size); }
   .input-md { padding: var(--space-12) var(--space-16); border-radius: var(--radius-md); }
   /* ── Dropdowns (components/ui/Select) ─────────────────────────────────
@@ -1173,7 +1183,7 @@
   .select-trigger__value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .select-trigger__chevron { color: var(--grey-400); transition: transform var(--transition-fast); }
   .select-trigger[aria-expanded="true"] .select-trigger__chevron { transform: rotate(180deg); }
-  .select-trigger[aria-expanded="true"].input { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(83, 74, 183, 0.1); }
+  .select-trigger[aria-expanded="true"].input { border-color: var(--purple-400); box-shadow: 0 0 0 3px rgba(var(--purple-rgb), 0.1); }
   .select-trigger:disabled { opacity: 0.55; cursor: not-allowed; }
   /* Filter-chip variant: pill, compact, used in filter rows. */
   .select-trigger--pill {

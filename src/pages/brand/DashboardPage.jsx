@@ -100,7 +100,7 @@ function normalizeCampaign(c) {
     paid: !!c.paidOn,
     at: c.completedAt ?? c.deliveredAt ?? c.createdAt ?? null,
     unread: c.unreadMessageCount ?? 0,
-    avatarColor: "#534AB7",
+    avatarColor: "var(--purple-600)",
   };
 }
 
@@ -117,7 +117,7 @@ function normalizeShortlistEntry(s) {
     engagement: s.engagementRate != null ? `${s.engagementRate}%` : "-",
     rating: s.rating ?? "-",
     availability: s.availability ?? "Open",
-    avatarColor: "#534AB7",
+    avatarColor: "var(--purple-600)",
   };
 }
 

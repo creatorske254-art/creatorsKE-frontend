@@ -173,9 +173,9 @@ export default function HomePage() {
         .hp-btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,.12); }
         .hp-btn-primary.on-dark { background:#fff; color:#0D0D0D; }
         .hp-btn-primary .nudge { animation: arrowNudge 1.6s ease-in-out infinite; }
-        .hp-btn-purple { background:var(--purple-600); color:#fff; border-radius:8px; font-size:var(--text-body-size); padding:var(--space-12) var(--space-24); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
+        .hp-btn-purple { background:var(--purple-600); color:var(--purple-foreground); border-radius:8px; font-size:var(--text-body-size); padding:var(--space-12) var(--space-24); border:none; cursor:pointer; font-family:var(--font-body); font-weight:500; transition:all .15s; display:inline-flex; align-items:center; gap:var(--space-8); }
         .hp-btn-purple.sm { font-size:var(--text-body-sm-size); padding:var(--space-8) var(--space-16); }
-        .hp-btn-purple:hover { background:var(--purple-700); transform:translateY(-1px); box-shadow:0 4px 16px rgba(84,69,232,.3); }
+        .hp-btn-purple:hover { background:var(--purple-700); transform:translateY(-1px); box-shadow:0 4px 16px rgba(var(--purple-rgb),.3); }
 
         /* role switch */
         .hp-role { display:inline-flex; gap:var(--space-4); padding:var(--space-4); border-radius:var(--radius-pill); background:var(--grey-50); border:0.5px solid var(--grey-100); }
@@ -186,10 +186,10 @@ export default function HomePage() {
         .hp-role--dark .hp-role__btn.active { background:#fff; color:#0D0D0D; }
 
         /* hero: black with brand-purple streaks (from the waitlist page) */
-        .hp-hero { position:relative; overflow:hidden; background:#000; color:#fff; }
+        .hp-hero { position:relative; overflow:hidden; background:#17161F; color:#fff; }
         .hp-hero__bg { position:absolute; inset:0; pointer-events:none; }
-        .hp-hero__base { position:absolute; inset:0; background:radial-gradient(100% 100% at 0% 0%, #2E2E2E 0%, #000 100%); -webkit-mask:radial-gradient(125% 100% at 0% 0%, #000 0%, rgba(0,0,0,.22) 88%, transparent 100%); mask:radial-gradient(125% 100% at 0% 0%, #000 0%, rgba(0,0,0,.22) 88%, transparent 100%); }
-        .hp-streak { position:absolute; inset:0; opacity:.22; transform:skewX(45deg); background:linear-gradient(#7C3AED 0%, rgba(124,58,237,0) 100%); }
+        .hp-hero__base { position:absolute; inset:0; background:radial-gradient(100% 100% at 0% 0%, #37295A 0%, #17161F 100%); -webkit-mask:radial-gradient(125% 100% at 0% 0%, #000 0%, rgba(0,0,0,.22) 88%, transparent 100%); mask:radial-gradient(125% 100% at 0% 0%, #000 0%, rgba(0,0,0,.22) 88%, transparent 100%); }
+        .hp-streak { position:absolute; inset:0; opacity:.22; transform:skewX(45deg); background:linear-gradient(#8B5CF6 0%, rgba(139,92,246,0) 100%); }
         .hp-streak-1 { -webkit-mask:linear-gradient(90deg, transparent 0%, #000 20%, transparent 36%, #000 55%, rgba(0,0,0,.13) 67%, #000 78%, transparent 97%); mask:linear-gradient(90deg, transparent 0%, #000 20%, transparent 36%, #000 55%, rgba(0,0,0,.13) 67%, #000 78%, transparent 97%); }
         .hp-streak-2 { -webkit-mask:linear-gradient(90deg, transparent 11%, #000 25%, rgba(0,0,0,.55) 41%, rgba(0,0,0,.13) 67%, #000 78%, transparent 97%); mask:linear-gradient(90deg, transparent 11%, #000 25%, rgba(0,0,0,.55) 41%, rgba(0,0,0,.13) 67%, #000 78%, transparent 97%); }
         .hp-streak-3 { -webkit-mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); mask:linear-gradient(90deg, transparent 9%, #000 20%, rgba(0,0,0,.55) 28%, rgba(0,0,0,.42) 40%, #000 48%, rgba(0,0,0,.27) 54%, rgba(0,0,0,.13) 78%, #000 88%, transparent 97%); }

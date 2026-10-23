@@ -138,7 +138,7 @@ function StepChooseType({ onContinue }) {
                 borderRadius: 'var(--radius-lg)',
                 border: active ? '1.5px solid var(--purple-500)' : '1.5px solid var(--grey-200)',
                 background: active ? 'var(--purple-50)' : 'var(--white)',
-                boxShadow: active ? '0 0 0 3px rgba(84,69,232,.1)' : 'none',
+                boxShadow: active ? '0 0 0 3px rgba(var(--purple-rgb),.1)' : 'none',
                 cursor: 'pointer',
                 textAlign: 'left',
                 transition: 'all .15s',
@@ -485,7 +485,7 @@ export default function SignUpPage() {
           border: '0.5px solid var(--grey-200)',
           borderRadius: 'var(--radius-xl)',
           padding: 'var(--space-40) var(--space-40) var(--space-40)',
-          boxShadow: '0 8px 40px rgba(84,69,232,.07), 0 2px 8px rgba(0,0,0,.04)',
+          boxShadow: '0 8px 40px rgba(var(--purple-rgb),.07), 0 2px 8px rgba(0,0,0,.04)',
         }}>
           {step === 1 && <StepChooseType onContinue={handleContinue} />}
           {step === 2 && role === ROLES.CREATOR && <CreatorSignUpForm onBack={handleBack} loading={loading} setLoading={setLoading} />}

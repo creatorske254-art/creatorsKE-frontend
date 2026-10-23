@@ -338,7 +338,7 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
 
 /* confetti */
 function launchConfetti() {
-  const cols = ["#534AB7", "#5DCAA5", "#EF9F27", "#E24B4A", "#D4537E", "#378ADD"];
+  const cols = ["var(--purple-500)", "#5DCAA5", "#EF9F27", "#E24B4A", "#D4537E", "#378ADD"];
   for (let i = 0; i < 40; i++) {
     const p = document.createElement("div");
     p.className = "confetti-piece";

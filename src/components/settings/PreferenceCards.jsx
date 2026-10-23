@@ -9,7 +9,7 @@ import { IconDeviceLaptop, IconDownload, IconExternalLink, IconMoon, IconSun } f
 /* Appearance and Privacy & data cards, shared by every role. */
 
 export const ACCENT_COLORS = [
-  { hex: '#534AB7', label: 'Purple' },
+  { hex: '#7C3AED', label: 'Purple' },
   { hex: '#0D0D0C', label: 'Ink' },
   { hex: '#0F6E56', label: 'Forest' },
   { hex: '#854F0B', label: 'Amber' },

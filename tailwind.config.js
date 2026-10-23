@@ -88,9 +88,9 @@ export default {
         lg: '0 8px 32px rgba(0,0,0,0.10)',
         xl: '0 16px 48px rgba(0,0,0,0.12)',
         // Purple glow for purple button hover
-        'purple-glow': '0 4px 16px rgba(84,69,232,0.30)',
+        'purple-glow': '0 4px 16px rgba(124,58,237,0.30)',
         // Focus ring
-        'focus-purple': '0 0 0 3px rgba(84,69,232,0.10)',
+        'focus-purple': '0 0 0 3px rgba(124,58,237,0.10)',
       },
 
       // Spacing: Tailwind's default 4px scale is the app's spacing scale

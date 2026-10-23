@@ -277,7 +277,7 @@ export default function MoneyPage() {
         .money-page .history-row:last-child{border-bottom:none}
 
         .money-page .amount-field{display:flex;align-items:center;gap:var(--space-8);border:0.5px solid var(--grey-300);border-radius:var(--radius-md);padding:var(--space-12) var(--space-16);background:var(--white)}
-        .money-page .amount-field:focus-within{border-color:var(--purple-400);box-shadow:0 0 0 3px rgba(83,74,183,.1)}
+        .money-page .amount-field:focus-within{border-color:var(--purple-400);box-shadow:0 0 0 3px rgba(var(--purple-rgb),.1)}
         .money-page .amount-field input{border:none;outline:none;font-family:var(--font-display);font-size:20px;font-weight:700;width:100%;color:var(--black);background:transparent}
 
         @media(max-width:600px){.money-page .mp-main{padding:var(--space-16) var(--space-12)}}

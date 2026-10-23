@@ -117,7 +117,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
           </div>
           <button
             onClick={() => onEnquire(creator)}
-            style={{ padding: 'var(--space-8) var(--space-16)', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 500, background: 'var(--purple-600)', color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
+            style={{ padding: 'var(--space-8) var(--space-16)', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 500, background: 'var(--purple-600)', color: 'var(--purple-foreground)', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--purple-700)'}
             onMouseLeave={e => e.currentTarget.style.background = 'var(--purple-600)'}
           >

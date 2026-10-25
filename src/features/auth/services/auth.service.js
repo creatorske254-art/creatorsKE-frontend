@@ -5,6 +5,7 @@ import api, { downloadAuthenticated } from '@/lib/api';
  * deletion, and the signed-in user's profile, preferences, sessions, 2FA and data export.
  *
  * POST   /auth/signup
+ * GET    /check-username?username=:username
  * POST   /auth/login
  * POST   /auth/login/2fa
  * POST   /auth/verify-email
@@ -32,6 +33,8 @@ import api, { downloadAuthenticated } from '@/lib/api';
  */
 export const authService = {
   signup: (data) => api.post('/auth/signup', data),
+  checkUsername: (username, signal) =>
+    api.get('/check-username', { params: { username }, signal }).then((r) => r.data),
   login: (credentials) => api.post('/auth/login', credentials),
   getCurrentUser: (token) =>
     api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })

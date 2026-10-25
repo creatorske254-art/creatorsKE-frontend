@@ -5,12 +5,16 @@ import api, { uploadFile } from '@/lib/api';
  *
  * POST /messages                 { threadId, text, attachmentUrl? }
  * GET  /messages/threads/:id     -> { messages: [{ id, senderId, from, senderName, text, attachmentUrl, createdAt }] }
+ * PUT  /messages/:id             { text }
  */
 export const messageService = {
   sendMessage: (data) => api.post('/messages', data).then((r) => r.data),
 
   getThreadMessages: (threadId) =>
     api.get(`/messages/threads/${threadId}`).then((r) => r.data),
+
+  editMessage: (messageId, text) =>
+    api.put(`/messages/${messageId}`, { text }).then((r) => r.data),
 
   // Attachments go through the shared upload endpoint; its public url is then sent as attachmentUrl.
   uploadAttachment: (file) => uploadFile(file),

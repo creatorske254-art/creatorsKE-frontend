@@ -17,12 +17,14 @@ import {
   IconLock,
 } from '@tabler/icons-react';
 import { authService } from '@/features/auth/services/auth.service';
+import { useUsernameAvailability } from '@/features/auth/hooks/useUsernameAvailability';
 import { ROLES } from '@/features/auth/constants/roles';
 import { usePageMeta } from '@/lib/usePageMeta';
 import SocialLoginButtons from '@/components/SocialLoginButtons';
 
 // Schemas
 const creatorSchema = z.object({
+  username:  z.string().trim().min(1, 'Username is required'),
   firstName: z.string().min(1, 'First name is required'),
   lastName:  z.string().min(1, 'Last name is required'),
   email:     z.string().email('Enter a valid email address'),
@@ -36,6 +38,7 @@ const creatorSchema = z.object({
 });
 
 const brandSchema = z.object({
+  username:    z.string().trim().min(1, 'Username is required'),
   companyName: z.string().min(1, 'Company name is required'),
   firstName:   z.string().min(1, 'First name is required'),
   lastName:    z.string().min(1, 'Last name is required'),
@@ -106,6 +109,42 @@ const inputStyle = (hasError) => ({
   outline: 'none',
   transition: 'border-color .15s, box-shadow .15s',
 });
+
+function UsernameAvailability({ username, error, checking, availability, retry }) {
+  if (!username.trim()) return null;
+
+  let message;
+  let color = 'var(--grey-500)';
+
+  if (error) {
+    message = 'Could not check this username.';
+    color = 'var(--status-error)';
+  } else if (checking) {
+    message = 'Checking username availability…';
+  } else if (availability?.available) {
+    message = 'Username available';
+    color = 'var(--status-success-text)';
+  } else if (availability?.available === false) {
+    message = 'Username is already taken';
+    color = 'var(--status-error)';
+  }
+
+  if (!message) return null;
+
+  return (
+    <span className={`field-hint${error ? ' error' : ''}`} style={{ color }} role={error ? 'alert' : 'status'}>
+      {message}
+      {error && (
+        <>
+          {' '}
+          <button type="button" onClick={() => retry()} style={{ color: 'inherit', textDecoration: 'underline', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+            Try again
+          </button>
+        </>
+      )}
+    </span>
+  );
+}
 
 // Step 1: Choose type
 function StepChooseType({ onContinue }) {
@@ -199,10 +238,13 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
 
   // Invite emails link here with ?email= so the invited address is the one that signs up.
   const [searchParams] = useSearchParams();
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: zodResolver(creatorSchema),
     defaultValues: { email: searchParams.get('email') ?? '' },
   });
+  const username = watch('username', '');
+  const { availability, error: usernameCheckError, isChecking: isCheckingUsername, retry: retryUsernameCheck } =
+    useUsernameAvailability(username);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -233,6 +275,13 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
       <div style={{ marginBottom: 'var(--space-20)' }}><SocialLoginButtons /></div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
+            <label className="field-label">Username <span style={{ color: 'var(--status-error)' }}>*</span></label>
+            <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input type="text" autoComplete="username" placeholder="e.g. amara.creates" {...register('username')} style={{ ...inputStyle(errors.username), paddingLeft: 'var(--space-40)' }} /></div>
+            {errors.username && <span className="field-hint error">{errors.username.message}</span>}
+            <UsernameAvailability username={username} error={usernameCheckError} checking={isCheckingUsername} availability={availability} retry={retryUsernameCheck} />
+          </div>
+
           <div className="signup-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-12)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
               <label className="field-label">First name <span style={{ color: 'var(--status-error)' }}>*</span></label>
@@ -272,7 +321,7 @@ function CreatorSignUpForm({ onBack, loading, setLoading }) {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || isCheckingUsername || availability?.available === false || Boolean(usernameCheckError)}
           style={{ width: '100%', padding: 'var(--space-16) var(--space-32)', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--purple-300)' : 'var(--purple-600)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)' }}
         >
           {loading && <IconLoader2 className="icon-md" style={{ animation: 'spin 0.8s linear infinite' }} />}
@@ -309,10 +358,13 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
 
   const [searchParams] = useSearchParams();
   const invitedEmail = searchParams.get('email') ?? '';
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm({
     resolver: zodResolver(invitedEmail ? teammateSchema : brandSchema),
     defaultValues: { email: invitedEmail },
   });
+  const username = watch('username', '');
+  const { availability, error: usernameCheckError, isChecking: isCheckingUsername, retry: retryUsernameCheck } =
+    useUsernameAvailability(username);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -343,6 +395,13 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
       <div style={{ marginBottom: 'var(--space-20)' }}><SocialLoginButtons /></div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)', marginBottom: 'var(--space-20)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)' }}>
+            <label className="field-label">Username <span style={{ color: 'var(--status-error)' }}>*</span></label>
+            <div className="input-wrapper"><IconUser className="icon-sm input-icon left" aria-hidden="true" /><input type="text" autoComplete="username" placeholder="e.g. acme.creates" {...register('username')} style={{ ...inputStyle(errors.username), paddingLeft: 'var(--space-40)' }} /></div>
+            {errors.username && <span className="field-hint error">{errors.username.message}</span>}
+            <UsernameAvailability username={username} error={usernameCheckError} checking={isCheckingUsername} availability={availability} retry={retryUsernameCheck} />
+          </div>
+
           {invitedEmail ? (
             <p className="text-hint" style={{ margin: 0 }}>You were invited to a brand team. Sign up with the invited email and you join that brand&apos;s account.</p>
           ) : (
@@ -395,7 +454,7 @@ function BrandSignUpForm({ onBack, loading, setLoading }) {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || isCheckingUsername || availability?.available === false || Boolean(usernameCheckError)}
           style={{ width: '100%', padding: 'var(--space-16) var(--space-32)', fontSize: '15px', fontFamily: 'var(--font-body)', fontWeight: 500, background: loading ? 'var(--purple-300)' : 'var(--purple-600)', color: 'var(--white)', border: 'none', borderRadius: 'var(--radius-md)', cursor: loading ? 'not-allowed' : 'pointer', transition: 'all .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-8)' }}
         >
           {loading && <IconLoader2 className="icon-md" style={{ animation: 'spin 0.8s linear infinite' }} />}

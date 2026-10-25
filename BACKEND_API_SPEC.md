@@ -8,7 +8,8 @@ Auth: bearer token in `Authorization` on every call, including invoice and expor
 
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/auth/signup`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/login`, `/auth/refresh-token`, `/auth/logout`, `/auth/forgot-password`, `/auth/reset-password` | login returns `{ token, refreshToken, user }`, or `{ twoFactorRequired: true, challengeToken }` when the account has 2FA on. Signing up with an address that has a pending admin or brand-team invite opens that account (`?email=` prefills it) |
+| POST | `/auth/signup`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/login`, `/auth/refresh-token`, `/auth/logout`, `/auth/forgot-password`, `/auth/reset-password` | Signup accepts a `username`; login returns `{ token, refreshToken, user }`, or `{ twoFactorRequired: true, challengeToken }` when the account has 2FA on. Signing up with an address that has a pending admin or brand-team invite opens that account (`?email=` prefills it) |
+| GET | `/check-username?username=:username` | Returns `{ username, available, source, bloom_result, db_checked, message }`. A definite Bloom-filter miss is returned as available with `source: "bloom"` and `db_checked: false`; possible hits are checked against the database before returning the final availability. |
 | POST | `/auth/login/2fa` `{ challengeToken, code }` | second login step; returns `{ token, refreshToken, user }` |
 | GET | `/auth/google`, `/auth/facebook`, `/auth/tiktok` | OAuth redirects; on success redirect to the frontend `/creator/portfolio?verified=<platform>&token=<access-token>`. The frontend validates the bearer token with `GET /auth/me` before establishing its local session |
 | GET | `/auth/google/link`, `/auth/tiktok/link`, `/auth/instagram/link`, `/auth/facebook/link` | Authenticated, cookie-session OAuth linking (does not create a new Creatorske account). On success, redirect back to `/creator/portfolio?linked=<provider>`; linking refreshes the matching provider ID on `/auth/me` and `/users/profile` |
@@ -48,7 +49,7 @@ Auth: bearer token in `Authorization` on every call, including invoice and expor
 |---|---|---|
 | GET / POST | `/enquiries` | role-scoped `{ enquiries }`; POST `{ creatorId, packageId, message }` |
 | GET | `/enquiries/:id`; POST `/enquiries/:id/accept` (creates the campaign unpaid: `paidOn: null, escrowStatus: awaiting_payment`, plus the `platformFeePct` and `disputeWindowDays` in force at booking; disputes are refused once that window after `deliveredAt` has passed), `/decline`, `/expire` | status `NEW | IN_REVIEW | BOOKED | COMPLETED | EXPIRED` |
-| GET | `/messages/threads/:id` -> `{ messages }`; POST `/messages` `{ threadId, text, attachmentUrl }` | thread id = enquiry id |
+| GET | `/messages/threads/:id` -> `{ messages }`; POST `/messages` `{ threadId, text, attachmentUrl }`; PUT `/messages/:id` `{ text }` | thread id = enquiry id; message rows may carry `status: sent|delivered|seen` and `is_edited` |
 | GET | `/notifications`, `/notifications/unread-count`; PATCH `/notifications/mark-read` `{ ids }` | |
 | GET | `/payments/stats` | `{ availableBalance, pendingBalance, totalEarned, earningsDelta, profileViews, enquiries: { total, new }, cardCtr, recentEnquiries }` |
 | GET | `/payments/earnings/timeline?period=7d|30d|90d|3m|6m|1y` | `[{ date|label, amount }]` |
@@ -57,6 +58,8 @@ Auth: bearer token in `Authorization` on every call, including invoice and expor
 | POST | `/payments/stk-push`, `/payments/mpesa/verify-pin`, `/payments/payout` `{ amount, methodId }`; GET `/payments/status/:id` | status settles after a few seconds |
 | GET / POST | `/reviews` (`?creatorId`, `?flagged=true`; admins see all), POST `{ campaignId, creatorId, rating, comment }`, POST `/reviews/:id/reply` `{ reply }` | |
 | POST / GET / DELETE | `/uploads/upload` (multipart `file`) -> `{ id, url }`, `/uploads/:id` | `url` is absolute and public (`/uploads/:id/file` on the real API, stored in the database because Vercel's disk is not kept) |
+
+Chat Socket.IO events use the authenticated user's JWT in `handshake.auth.token` and the API host's default `/socket.io` path. The frontend emits `message-delivered` and `message-seen` with a message id; the backend emits `message-status-updated` with `{ id, status }` when a message's delivery status changes.
 
 ## Brand
 

@@ -32,6 +32,12 @@ export function useMessages(threadId) {
     onError: (err) => toast.error(err?.message || 'Could not upload that file.'),
   });
 
+  const editMutation = useMutation({
+    mutationFn: ({ id, text }) => messageService.editMessage(id, text),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+    onError: (err) => toast.error(err?.message || 'Your message was not updated. Try again.'),
+  });
+
   return {
     messages: query.data?.messages ?? query.data ?? [],
     isLoading: query.isLoading,
@@ -39,5 +45,7 @@ export function useMessages(threadId) {
     isSending: sendMutation.isPending,
     uploadAttachment: attachMutation.mutateAsync,
     isUploading: attachMutation.isPending,
+    editMessage: editMutation.mutate,
+    isEditing: editMutation.isPending,
   };
 }

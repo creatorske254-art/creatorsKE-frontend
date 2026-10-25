@@ -8,9 +8,11 @@ import { connectSocket, socket } from '@/lib/socket';
 import Skeleton from '@/components/ui/Skeleton';
 import EmptyState from '@/components/shared/EmptyState';
 import { toast } from 'sonner';
+import ErrorState from '@/components/shared/ErrorState';
 
 const THREAD_CSS = `
   .message-thread { display: flex; flex-direction: column; gap: var(--space-12); }
+  .message-thread--expanded { height: 100%; min-height: 0; }
   .message-thread-list {
     display: flex;
     flex-direction: column;
@@ -19,6 +21,7 @@ const THREAD_CSS = `
     overflow-y: auto;
     padding-right: var(--space-4);
   }
+  .message-thread--expanded .message-thread-list { flex: 1; max-height: none; min-height: 0; }
   .message-thread-row { display: flex; flex-direction: column; max-width: 78%; position: relative; }
   .message-thread-row.mine { align-self: flex-end; align-items: flex-end; }
   .message-thread-row.theirs { align-self: flex-start; align-items: flex-start; }
@@ -84,10 +87,10 @@ function updateMessageStatus(cache, messageId, status) {
  * thread for its whole lifecycle - threadId is the enquiry's own id.
  * @param {string|number} threadId
  */
-export default function MessageThread({ threadId }) {
+export default function MessageThread({ threadId, expanded = false }) {
   const { user, token } = useAuth();
   const queryClient = useQueryClient();
-  const { messages, isLoading, send, isSending, uploadAttachment, isUploading, editMessage, isEditing } =
+  const { messages, isLoading, error, refetch, send, isSending, uploadAttachment, isUploading, editMessage, isEditing } =
     useMessages(threadId);
 
   const [text, setText] = useState('');
@@ -192,7 +195,7 @@ export default function MessageThread({ threadId }) {
   };
 
   return (
-    <div className="message-thread">
+    <div className={`message-thread${expanded ? ' message-thread--expanded' : ''}`}>
       <style>{THREAD_CSS}</style>
 
       <div className="message-thread-list" ref={listRef}>
@@ -202,6 +205,13 @@ export default function MessageThread({ threadId }) {
             <div className="message-thread-row mine"><Skeleton width={120} height={30} style={{ borderRadius: 'var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg)' }} /></div>
             <div className="message-thread-row theirs"><Skeleton width={190} height={44} style={{ borderRadius: 'var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm)' }} /></div>
           </>
+        ) : error && messages.length === 0 ? (
+          <ErrorState
+            size="sm"
+            title="Couldn't load messages"
+            description={error.message || 'The conversation could not be loaded. Try again.'}
+            onRetry={refetch}
+          />
         ) : messages.length === 0 ? (
           <EmptyState
             size="sm"
@@ -214,7 +224,9 @@ export default function MessageThread({ threadId }) {
             // A brand teammate's messages are stored under the brand account, so a brand
             // compares against the brand it acts for (user.brandId), not its own login.
             const myId = user?.brandId ?? user?.id;
-            const isMine = myId != null && m.senderId != null ? m.senderId === myId : m.from === user?.role;
+            const isMine = myId != null && m.senderId != null
+              ? String(m.senderId) === String(myId)
+              : m.from === user?.role;
             const status = String(m.status ?? '').toLowerCase();
             const isEditingMessage = editingId === m.id;
 

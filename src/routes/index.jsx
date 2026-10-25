@@ -39,6 +39,7 @@ const CreatorDashboardPage = lazy(() => import('@/pages/creator/DashboardPage'))
 const RateCardBuilderPage = lazy(() => import('@/pages/creator/RateCardBuilderPage'))
 const PortfolioBuilderPage = lazy(() => import('@/pages/creator/PortfolioBuilderPage'))
 const CreatorEnquiriesPage = lazy(() => import('@/pages/creator/EnquiriesPage'))
+const MessagesPage = lazy(() => import('@/pages/shared/MessagesPage'))
 const MoneyPage = lazy(() => import('@/pages/creator/MoneyPage'))
 const CreatorSettingsPage = lazy(() => import('@/pages/creator/SettingsPage'))
 const CreatorPrivacySettingsPage = lazy(() => import('@/pages/creator/PrivacySettingsPage'))
@@ -141,6 +142,7 @@ const router = createBrowserRouter([
           { path: 'creator/rate-card/:id/edit', element: page(RateCardBuilderPage) },
           { path: 'creator/portfolio',  element: page(PortfolioBuilderPage) },
           { path: 'creator/enquiries',  element: page(CreatorEnquiriesPage) },
+          { path: 'creator/messages',   element: page(MessagesPage) },
           { path: 'creator/money',      element: page(MoneyPage) },
           { path: 'creator/settings',   element: page(CreatorSettingsPage) },
           { path: 'creator/settings/privacy', element: page(CreatorPrivacySettingsPage) },
@@ -160,6 +162,7 @@ const router = createBrowserRouter([
         children: [
           { path: 'brand/dashboard',    element: page(BrandDashboardPage) },
           { path: 'brand/enquiries',    element: page(BrandEnquiriesPage) },
+          { path: 'brand/messages',     element: page(MessagesPage) },
           { path: 'brand/campaigns',    element: page(CampaignsPage) },
           { path: 'brand/campaigns/:id',element: page(CampaignDetailPage) },
           { path: 'brand/shortlist',    element: page(ShortlistPage) },

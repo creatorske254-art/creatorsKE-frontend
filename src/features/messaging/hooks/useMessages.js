@@ -41,6 +41,8 @@ export function useMessages(threadId) {
   return {
     messages: query.data?.messages ?? query.data ?? [],
     isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
     send: sendMutation.mutate,
     isSending: sendMutation.isPending,
     uploadAttachment: attachMutation.mutateAsync,

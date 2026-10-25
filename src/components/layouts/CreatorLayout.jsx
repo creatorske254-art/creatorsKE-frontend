@@ -7,7 +7,7 @@ import { NotificationList } from '@/features/notifications';
 import NavbarSearch from './NavbarSearch';
 import NavAvatar from './NavAvatar';
 import PageTransition from './PageTransition';
-import { IconBell, IconIdBadge, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconSettings, IconUserCircle, IconWallet, IconX } from '@tabler/icons-react';
+import { IconBell, IconIdBadge, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconMessageCircle, IconSettings, IconUserCircle, IconWallet, IconX } from '@tabler/icons-react';
 
 
 // Component-library chrome (.navbar, .sidebar, .nav-link, .sidebar-link, ...)
@@ -124,6 +124,7 @@ const SIDEBAR_SECTIONS = [
     label: 'Clients',
     items: [
       { to: '/creator/enquiries', label: 'Enquiries', icon: IconInbox, badgeKey: 'new' },
+      { to: '/creator/messages', label: 'Messages', icon: IconMessageCircle },
     ],
   },
   {

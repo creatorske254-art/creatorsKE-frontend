@@ -8,7 +8,7 @@ import { NotificationList } from '@/features/notifications';
 import NavbarSearch from './NavbarSearch';
 import NavAvatar from './NavAvatar';
 import PageTransition from './PageTransition';
-import { IconBell, IconBookmark, IconClockHour4, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconReceipt2, IconReportMoney, IconRocket, IconSettings, IconWorldSearch, IconX } from '@tabler/icons-react';
+import { IconBell, IconBookmark, IconClockHour4, IconInbox, IconLayoutDashboard, IconLogout, IconMenu2, IconMessageCircle, IconReceipt2, IconReportMoney, IconRocket, IconSettings, IconWorldSearch, IconX } from '@tabler/icons-react';
 
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -136,6 +136,7 @@ const SIDEBAR_SECTIONS = [
     label: 'Campaigns',
     items: [
       { to: '/brand/enquiries',         label: 'Enquiries',          icon: IconInbox,         badgeKey: 'new' },
+      { to: '/brand/messages',          label: 'Messages',           icon: IconMessageCircle },
       { to: '/brand/campaigns',         label: 'Active campaigns',   icon: IconRocket,        hasActiveDot: true },
       { to: '/brand/campaigns?filter=history', label: 'Campaign history', icon: IconClockHour4 },
     ],

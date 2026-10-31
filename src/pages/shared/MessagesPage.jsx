@@ -201,7 +201,11 @@ export default function MessagesPage() {
                 </div>
               </header>
               <div className="messages-page__chat-body">
-                <MessageThread threadId={selectedEnquiry.id} expanded />
+                <MessageThread
+                  threadId={selectedEnquiry.id}
+                  clientId={selectedEnquiry.brandId ?? selectedEnquiry.brand?.id ?? selectedEnquiry.clientId ?? selectedEnquiry.client?.id}
+                  expanded
+                />
               </div>
             </>
           ) : (

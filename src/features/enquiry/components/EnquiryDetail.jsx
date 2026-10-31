@@ -309,7 +309,10 @@ export default function EnquiryDetail({
         }}
       >
         <div className="enq-eyebrow">Messages</div>
-        <MessageThread threadId={enquiry.id} />
+        <MessageThread
+          threadId={enquiry.id}
+          clientId={enquiry.brandId ?? enquiry.brand?.id ?? enquiry.clientId ?? enquiry.client?.id}
+        />
       </div>
     </div>
   );

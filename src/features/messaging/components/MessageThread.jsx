@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { IconCheck, IconDotsVertical, IconEdit, IconMessageCircle, IconPaperclip, IconSend, IconX } from '@tabler/icons-react';
+import { IconCheck, IconDotsVertical, IconEdit, IconFileInvoice, IconMessageCircle, IconPaperclip, IconSend, IconX } from '@tabler/icons-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
 import { formatRelativeDate } from '@/lib/utils';
 import { connectSocket, socket } from '@/lib/socket';
 import Skeleton from '@/components/ui/Skeleton';
+import InvoiceCard from '@/components/chat/InvoiceCard';
+import SendInvoiceModal from '@/components/chat/SendInvoiceModal';
 import EmptyState from '@/components/shared/EmptyState';
 import { toast } from 'sonner';
 import ErrorState from '@/components/shared/ErrorState';
@@ -87,7 +89,7 @@ function updateMessageStatus(cache, messageId, status) {
  * thread for its whole lifecycle - threadId is the enquiry's own id.
  * @param {string|number} threadId
  */
-export default function MessageThread({ threadId, expanded = false }) {
+export default function MessageThread({ threadId, clientId, expanded = false }) {
   const { user, token } = useAuth();
   const queryClient = useQueryClient();
   const { messages, isLoading, error, refetch, send, isSending, uploadAttachment, isUploading, editMessage, isEditing } =
@@ -97,6 +99,7 @@ export default function MessageThread({ threadId, expanded = false }) {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState('');
   const [menuMessageId, setMenuMessageId] = useState(null);
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const fileInputRef = useRef(null);
   const listRef = useRef(null);
   const handledIncomingIds = useRef(new Set());
@@ -181,6 +184,29 @@ export default function MessageThread({ threadId, expanded = false }) {
     setText('');
   };
 
+  const handleInvoiceCreated = (invoice) => {
+    const invoiceId = invoice.id ?? invoice.invoiceId;
+    const newMessage = {
+      id: `invoice-${invoiceId}`,
+      senderId: user?.brandId ?? user?.id,
+      from: user?.role,
+      type: 'invoice',
+      invoiceId,
+      invoice,
+      status: 'sent',
+      createdAt: new Date().toISOString(),
+    };
+    queryClient.setQueryData(['messages', threadId], (cache) => {
+      const list = Array.isArray(cache) ? cache : cache?.messages;
+      const exists = list?.some((message) =>
+        String(message.invoiceId ?? message.invoice?.id ?? message.invoice?.invoiceId) === String(invoiceId)
+      );
+      if (exists) return cache;
+      const updated = [...(list ?? []), newMessage];
+      return Array.isArray(cache) || cache == null ? updated : { ...cache, messages: updated };
+    });
+  };
+
   const handleAttach = async (e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -229,10 +255,16 @@ export default function MessageThread({ threadId, expanded = false }) {
               : m.from === user?.role;
             const status = String(m.status ?? '').toLowerCase();
             const isEditingMessage = editingId === m.id;
+            const isInvoiceMessage = m.type === 'invoice' || m.invoiceId != null;
+            const invoice = m.invoice ?? {
+              ...m,
+              status: m.invoiceStatus ?? m.paymentStatus
+                ?? (['sent', 'delivered', 'seen'].includes(status) ? 'pending' : status || 'pending'),
+            };
 
             return (
               <div key={m.id ?? i} className={`message-thread-row ${isMine ? 'mine' : 'theirs'}`}>
-                {isMine && (
+                {isMine && !isInvoiceMessage && (
                   <div className="message-thread-actions">
                     <button
                       type="button"
@@ -261,7 +293,13 @@ export default function MessageThread({ threadId, expanded = false }) {
                     )}
                   </div>
                 )}
-                <div className="message-thread-bubble">
+                {isInvoiceMessage ? (
+                  <InvoiceCard
+                    invoice={invoice}
+                    invoiceId={m.invoiceId}
+                    isClient={user?.role === 'brand'}
+                  />
+                ) : <div className="message-thread-bubble">
                   {isEditingMessage ? (
                     <form
                       className="message-thread-edit-form"
@@ -300,7 +338,7 @@ export default function MessageThread({ threadId, expanded = false }) {
                       <IconPaperclip className="icon-xs" /> Attachment
                     </a>
                   )}
-                </div>
+                </div>}
                 <div className="message-thread-meta">
                   <span className="message-thread-time">{formatRelativeDate(m.createdAt ?? m.timestamp ?? m.sentAt)}</span>
                   {(m.is_edited || m.isEdited) && <span className="message-thread-edited">(edited)</span>}
@@ -324,6 +362,17 @@ export default function MessageThread({ threadId, expanded = false }) {
       </div>
 
       <div className="message-thread-composer">
+        {user?.role === 'creator' && (
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={() => setInvoiceModalOpen(true)}
+            title={clientId == null ? 'Client details are unavailable for this conversation' : 'Send an invoice'}
+          >
+            <IconFileInvoice className="icon-sm" aria-hidden="true" />
+            <span>Send invoice</span>
+          </button>
+        )}
         <input
           ref={fileInputRef}
           type="file"
@@ -360,6 +409,13 @@ export default function MessageThread({ threadId, expanded = false }) {
           <IconSend className="icon-sm" aria-hidden="true" />
         </button>
       </div>
+      <SendInvoiceModal
+        open={invoiceModalOpen}
+        onClose={() => setInvoiceModalOpen(false)}
+        clientId={clientId}
+        chatId={threadId}
+        onInvoiceCreated={handleInvoiceCreated}
+      />
     </div>
   );
 }

@@ -20,6 +20,7 @@ const RateCardPage = lazy(() => import('@/pages/public/RateCardPage'))
 const PortfolioPage = lazy(() => import('@/pages/public/PortfolioPage'))
 const TermsPage = lazy(() => import('@/pages/public/TermsPage'))
 const PrivacyPage = lazy(() => import('@/pages/public/PrivacyPage'))
+const PayInvoicePage = lazy(() => import('@/pages/PayInvoice'))
 
 // ── Error pages ───────────────────────────────────────────────────────────
 import NotFoundPage   from '@/pages/error/NotFoundPage'
@@ -99,6 +100,7 @@ const router = createBrowserRouter([
       { path: 'c/:handle/portfolio',    element: page(PortfolioPage) },
       { path: 'terms',                  element: page(TermsPage) },
       { path: 'privacy',                element: page(PrivacyPage) },
+      { path: 'pay/:invoiceId',           element: page(PayInvoicePage) },
     ],
   },
 

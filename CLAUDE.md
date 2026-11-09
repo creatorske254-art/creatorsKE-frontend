@@ -101,4 +101,4 @@ The public rate card (`/c/:handle`) is where a brand starts an enquiry, but `POS
 
 **Rate-card completeness** is computed client-side in `useCreatorDashboard()` from `listRateCards()` (package count and payout methods against the plan limits); `GET /rate-cards/health` is only a module health check and is never read as a score.
       hey   made by barakanewton
-      
+      the one and only newton

@@ -15,8 +15,6 @@ import { getPublicRateCard } from '@/features/rate-card/services/rate-card.servi
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
-import Modal from '@/components/ui/Modal';
-import { EnquiryForm } from '@/features/enquiry';
 import EmptyState from '@/components/shared/EmptyState';
 
 async function shareRateCard(name) {
@@ -139,7 +137,7 @@ function PackageCard({ pkg, onEnquire, showRates }) {
               : 'bg-[var(--purple-500)] text-on-accent hover:opacity-90'
           }`}
         >
-          <IconSend className="icon-xs" /> Enquire about this
+          <IconSend className="icon-xs" /> Message Creator
         </button>
       )}
     </div>
@@ -221,40 +219,76 @@ export default function RateCardPage() {
     data?.creator?.bio || "View this creator's packages, pricing, and portfolio on Creatorske."
   );
 
-  const [enquiryOpen, setEnquiryOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const packages = data?.packages ?? [];
   const showRates = data?.creator?.show_rates ?? false;
   const showFollowers = data?.creator?.show_followers ?? true;
 
   function handleSendEnquiryClick(pkg) {
+    if (!pkg) return;
     if (!isAuthenticated) {
-      const target = `/c/${handle}?enquire=1&package=${pkg.id}`;
+      const target = `/c/${handle}?message=1&package=${pkg.id}`;
       sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, target);
       navigate(`/login?redirect=${encodeURIComponent(target)}`);
       return;
     }
     setSelectedPackage(pkg);
-    setEnquiryOpen(true);
+    openCreatorChat(pkg);
   }
 
-  // Reopen the enquiry modal automatically after the auth round-trip.
+  function openCreatorChat(pkg) {
+    const creatorId = creator.id ?? handle;
+    const rateCard = {
+      creatorName: creator.displayName,
+      selectedPackageId: pkg.id,
+      packages: packages.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        description: item.description,
+      })),
+    };
+    const chatId = `${user?.id ?? 'brand'}-${creatorId}-${pkg.id ?? 'rate-card'}`;
+    navigate(`/chat/${encodeURIComponent(chatId)}`, {
+      state: {
+        creator: {
+          id: String(creatorId),
+          name: creator.displayName,
+          handle: creator.handle ?? handle,
+          avatar: creator.initials,
+          online: true,
+        },
+        brand: {
+          id: user?.brandId ?? user?.id,
+          name: user?.companyName ?? user?.name,
+        },
+        rateCard,
+      },
+    });
+  }
+
+  // Resume the selected rate-card chat after login.
   useEffect(() => {
-    if (searchParams.get('enquire') !== '1' || !packages.length) return;
+    if (searchParams.get('message') !== '1' || !packages.length) return;
     if (!isAuthenticated) {
-      const target = `/c/${handle}?enquire=1`;
+      const target = `/c/${handle}?message=1&package=${searchParams.get('package') ?? ''}`;
       sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, target);
       navigate(`/login?redirect=${encodeURIComponent(target)}`);
       return;
     }
     if (isAuthenticated) {
-      const pkg = packages.find((p) => String(p.id) === searchParams.get('package')) ?? packages[0];
+      const pkg = packages.find((item) => String(item.id) === searchParams.get('package')) ?? packages[0];
       setSelectedPackage(pkg);
-      setEnquiryOpen(true);
-      setSearchParams({}, { replace: true });
+      openCreatorChat(pkg);
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current);
+        next.delete('message');
+        next.delete('package');
+        return next;
+      }, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handle, isAuthenticated, navigate, packages.length, searchParams, setSearchParams]);
+  }, [handle, isAuthenticated, navigate, packages.length, searchParams, setSearchParams, user?.id]);
 
   if (error) {
     return (
@@ -355,7 +389,7 @@ export default function RateCardPage() {
                     disabled={!packages.length}
                     className="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[13px] font-medium hover:opacity-90 hover:-translate-y-px transition-all whitespace-nowrap disabled:opacity-50"
                   >
-                    <IconSend className="icon-sm" /> Send enquiry
+                    <IconSend className="icon-sm" /> Message Creator
                   </button>
                   <button
                     onClick={() => shareRateCard(creator.displayName)}
@@ -473,7 +507,7 @@ export default function RateCardPage() {
                 <div className="font-[var(--font-display)] text-[16px] font-semibold text-[var(--black)] mb-1">
                   Book {creator.displayName}
                 </div>
-                <div className="text-[12px] text-[var(--grey-400)] mb-4">Choose a package above, then send an enquiry</div>
+                <div className="text-[12px] text-[var(--grey-400)] mb-4">Choose a package above to start a chat</div>
 
                 <button
                   type="button"
@@ -481,7 +515,7 @@ export default function RateCardPage() {
                   disabled={!packages.length}
                   className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-[8px] bg-[var(--purple-500)] text-on-accent text-[14px] font-medium hover:opacity-90 transition-all disabled:opacity-50"
                 >
-                  <IconSend className="icon-sm" /> Send enquiry
+                  <IconSend className="icon-sm" /> Message Creator
                 </button>
                 <div className="flex items-center gap-3 mt-4 pt-4 border-t border-[var(--grey-100)]">
                   <span className="flex items-center gap-1 text-[11px] text-[var(--grey-400)]"><IconShieldCheck className="text-[var(--status-success)] icon-sm" /> Secure</span>
@@ -539,15 +573,6 @@ export default function RateCardPage() {
         </div>
       </footer>
 
-      <Modal open={enquiryOpen} onClose={() => setEnquiryOpen(false)} title="Send an enquiry">
-        <EnquiryForm
-          creatorId={creator.id ?? handle}
-          packages={packages}
-          initialPackageId={selectedPackage?.id}
-          onSuccess={() => setEnquiryOpen(false)}
-          onCancel={() => setEnquiryOpen(false)}
-        />
-      </Modal>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useChatInvoice } from '@/features/invoices/hooks/useChatInvoice';
 import {
@@ -27,7 +27,7 @@ import {
 import DisputeModal from './DisputeModal';
 
 const CARD_CSS = `
-  .inv-card {
+  .inv-cimport { useEffect, useState } from 'react';ard {
     background: var(--white);
     border: 0.5px solid var(--grey-100);
     border-radius: var(--radius-xl);

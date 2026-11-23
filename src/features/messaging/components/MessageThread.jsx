@@ -288,6 +288,7 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
             const messageType = String(m.type ?? (m.invoiceId != null ? 'invoice' : 'text')).toLowerCase();
             const isCardMessage = messageType !== 'text';
 
+            console.log('MESSAGE:', m);
             return (
               <div
                 key={m.id ?? i}

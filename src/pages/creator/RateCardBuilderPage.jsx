@@ -350,7 +350,7 @@ export default function RateCardBuilderPage() {
   usePageMeta('Rate Card Builder', 'Build and publish your rate card on Creatorske.');
   const navigate = useNavigate();
   const { id: cardId } = useParams();
-  const { rateCard, isLoading: cardLoading } = useRateCard(cardId);
+  const { rateCard, isLoading: cardLoading, isError: cardError } = useRateCard(cardId);
   const { create: createRateCard, isCreating, rateCards, isLoading: cardsLoading } = useRateCards();
   const { user } = useAuth();
   // "Rate cards" in the sidebar opens the creator's existing card; a blank one needs ?new=1.
@@ -375,10 +375,7 @@ export default function RateCardBuilderPage() {
     name: "", handle: "", bio: "", location: "", niche: "Lifestyle", languages: "",
     instagram: "", tiktok: "", youtube: "", twitter: "",
   });
-  const instagramFollowers = Number(account?.instagram_followers ?? user?.instagram_followers) || 0;
-  const tiktokFollowers = Number(account?.tiktok_followers ?? user?.tiktok_followers) || 0;
-  const totalFollowers = instagramFollowers + tiktokFollowers;
-  const audienceProfile = { ...profile, followers: totalFollowers, engagement: '', reach: '' };
+  const audienceProfile = { ...profile, followers: '', engagement: '', reach: '' };
   const { url: photoUrl, setUrl: setPhotoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
     successMessage: "Profile photo updated.",
     onUploaded: ({ url, id }) => setProfile((p) => ({ ...p, photoUrl: url, photoUploadId: id })),
@@ -465,6 +462,17 @@ export default function RateCardBuilderPage() {
     usageNote,
     revisionPolicy,
     showPricing,
+    // Fields the user actually edits on this card (kept flat for the API).
+    displayName: profile.name,
+    bio: profile.bio,
+    niche: profile.niche,
+    languages: profile.languages,
+    location: profile.location,
+    socialLinks: { instagram: profile.instagram, tiktok: profile.tiktok, youtube: profile.youtube, twitter: profile.twitter },
+    instagram: profile.instagram,
+    tiktok: profile.tiktok,
+    youtube: profile.youtube,
+    twitter: profile.twitter,
   });
 
   // publish (step 5)
@@ -537,6 +545,15 @@ export default function RateCardBuilderPage() {
   };
   const back = () => setStep((s) => Math.max(1, s - 1));
 
+
+  if (cardId && cardError) {
+    return (
+      <div className="rcb" style={{ minHeight: "100%", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Tokens />
+        <p className="hint">Couldn&apos;t load rate card. Please try again.</p>
+      </div>
+    );
+  }
 
   if ((cardId && cardLoading) || (!cardId && !wantsNew && (cardsLoading || rateCards.length > 0))) {
     return (
@@ -646,18 +663,17 @@ export default function RateCardBuilderPage() {
                 </div>
 
                 <div className="card card-p span2">
-                  <p className="section-title">Audience stats</p>
+                  <p className="section-title">Social Accounts</p>
                   <p className="hint" style={{ margin: "var(--space-4) 0 var(--space-16)" }}>Shown on your rate card to build trust with brands</p>
                   <p className="hint" style={{ marginBottom: 'var(--space-16)' }}>
-                    Instagram, Facebook and TikTok sign-in is still being worked on. Please continue with Google or your email and password.
+                    Instagram, Facebook and TikTok verification is still being worked on, so follower counts cannot be set automatically yet.
                   </p>
                   <div className="g3">
                     <div className="field">
                       <label className="field-label">Total followers</label>
                       <div className="inp" aria-live="polite">
-                        {totalFollowers.toLocaleString('en-KE')}
+                        Not available yet
                       </div>
-                      <p className="hint">Follower counts are still being worked on and cannot be set yet.</p>
                     </div>
                     <div className="field">
                       <label className="field-label">Avg engagement</label>

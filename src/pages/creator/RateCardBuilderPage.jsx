@@ -429,7 +429,12 @@ export default function RateCardBuilderPage() {
   const buildPayload = () => ({
     profile: audienceProfile,
     platforms,
-    ...(packages.length ? { packages } : {}),
+    ...(packages.length ? { 
+      packages: packages.map(pkg => ({
+        ...pkg,
+        price: pkg.price === "" ? 0 : Number(pkg.price)
+      })) 
+    } : {}),
     payment: rateCard?.payment ?? {},
     headline,
     pitch,

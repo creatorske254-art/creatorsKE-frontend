@@ -15,7 +15,7 @@ import SmartImage from '@/components/ui/SmartImage';
 import ErrorState from '@/components/shared/ErrorState';
 import { SettingsShell, ToggleRow as SharedToggleRow, SaveBar, DangerZone, LoginDetailsCard, TwoFactorCard, SessionsCard, LanguageRegionCard, ThemeCard, AccentCard, DisplayCard, DataExportCard, LegalCard, PendingDeletionNotice, TeamCard } from '@/components/settings';
 import { useImageUpload } from '@/lib/useImageUpload';
-import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCircleCheck, IconCreditCard, IconDeviceMobile, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconPhone, IconShieldCheck, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
+import { IconBell, IconBriefcase, IconBuilding, IconBuildingBank, IconBuildingStore, IconCircleCheck, IconCreditCard, IconDeviceMobile, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconPhone, IconShieldCheck, IconShieldLock, IconStar, IconTrash, IconUpload, IconUser, IconUsers, IconWorld } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
 
 // Nav tabs - same order as every other role's settings (see SettingsShell).
@@ -214,30 +214,6 @@ const PAY_PROVIDERS = [
     summary: (v) => v.phone,
   },
   {
-    id: "airtel",
-    name: "Airtel Money",
-    sub: "Airtel mobile money · wallet-to-wallet",
-    iconBg: "#E40000",
-    icon: IconDeviceMobile,
-    connected: false,
-    fields: [{ key: "phone", label: "Airtel phone number", placeholder: "+254 7XX XXX XXX", required: true }],
-    summary: (v) => v.phone,
-  },
-  {
-    id: "bank",
-    name: "Bank transfer",
-    sub: "Local & international wire · 1–2 day clearing",
-    iconBg: "var(--grey-100)",
-    iconColor: "var(--grey-600)",
-    icon: IconBuildingBank,
-    connected: false,
-    fields: [
-      { key: "bank", label: "Bank name", placeholder: "e.g. Equity Bank", required: true },
-      { key: "account", label: "Account number", placeholder: "0123456789", required: true },
-    ],
-    summary: (v) => `${v.bank} ····${String(v.account).slice(-4)}`,
-  },
-  {
     id: "card",
     name: "Visa / Mastercard",
     sub: "Company card · charged at checkout",
@@ -254,7 +230,7 @@ const PAY_PROVIDERS = [
 ];
 
 // Leading icon inside each dynamic input, keyed by what the field collects.
-const FIELD_ICON = { phone: IconDeviceMobile, till: IconHash, email: IconMail, bank: IconBuildingBank, account: IconHash, holder: IconUser };
+const FIELD_ICON = { phone: IconDeviceMobile };
 function ConnectMethodModal({ method, onClose, onConnect, busy }) {
   const [values, setValues] = useState({});
   if (!method) return null;
@@ -287,7 +263,7 @@ function ConnectMethodModal({ method, onClose, onConnect, busy }) {
         <button
           className={`btn btn-primary btn-sm${busy ? ' btn-loading' : ''}`}
           disabled={missing || busy}
-          onClick={() => onConnect({ type: method.id, name: method.id === 'bank' ? values.bank : method.name, detail: method.summary(values), ...values })}
+          onClick={() => onConnect({ type: method.id, name: method.name, detail: method.summary(values), ...values })}
         >
           Connect {method.name}
         </button>
@@ -301,6 +277,9 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
   const [connecting, setConnecting] = useState(null);
   const [disconnecting, setDisconnecting] = useState(null);
   const connectedFor = (providerId) => methods.find((m) => m.type === providerId && m.connected !== false);
+  // Methods saved before Airtel and bank transfer were removed still show with their stored
+  // label so they can be disconnected; they are not offered for a new payment.
+  const legacyMethods = methods.filter((m) => !PAY_PROVIDERS.some((p) => p.id === m.type));
 
   function toggle(key) {
     setPrefs((p) => ({ ...p, [key]: !p[key] }));
@@ -321,7 +300,7 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
       {/* Payment methods */}
       <CollapsibleCard title="Payment methods" collapsible={false}>
         <p className="card-body-text" style={{ marginTop: 'calc(-1 * var(--space-2))', marginBottom: 'var(--space-16)' }}>
-          How you pay creators. These are used at checkout when a booking is confirmed.
+          How you pay creators. These are used at checkout when a booking is confirmed - pay with M-Pesa or your company card.
         </p>
         <div className="settings-stack" style={{ gap: 'var(--space-12)' }}>
           {isLoading && <Skeleton width="100%" height={64} />}
@@ -350,6 +329,21 @@ function PaymentsTab({ prefs, setPrefs, onDirty }) {
             </div>
             );
           })}
+          {legacyMethods.map((m) => (
+            <div key={m.id ?? m.type} className="pay-row">
+              <div className="pay-icon" style={{ background: "var(--grey-100)", color: "var(--grey-600)" }}>
+                <IconBuildingBank className="icon-md" aria-hidden="true" />
+              </div>
+              <div className="pay-info">
+                <div className="pay-name">{m.name ?? m.label}</div>
+                <div className="pay-desc">{m.detail ?? 'No longer available at checkout'}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 'var(--space-8)' }}>
+                <span className="tag tag-grey">Not available</span>
+                <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(m)}>Disconnect</button>
+              </div>
+            </div>
+          ))}
         </div>
       </CollapsibleCard>
 

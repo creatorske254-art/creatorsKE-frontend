@@ -10,19 +10,14 @@ import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
 import {
   IconArrowLeft, IconArrowRight, IconUpload, IconMapPin, IconBrandInstagram, IconBrandYoutube, IconBrandTiktok,
   IconBrandX, IconMicrophone, IconMessageCircle, IconLanguage, IconShieldCheck, IconDeviceMobile,
-  IconBuilding, IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
+  IconInfoCircle, IconCheck, IconRocket, IconLink, IconCopy, IconGripVertical, IconTrash,
   IconEye, IconEyeOff, IconPencil, IconPlus, IconLayoutDashboard,
-  IconUser, IconPackage, IconAlignLeft, IconBuildingStore, IconHash, IconHeading, IconWorld, IconLoader2
+  IconUser, IconPackage, IconAlignLeft, IconHeading, IconWorld, IconLoader2
 } from "@tabler/icons-react";
 import Select from '@/components/ui/Select';
 import SmartImage from '@/components/ui/SmartImage';
 import { useQueryClient } from '@tanstack/react-query';
 import { rateCardService } from '@/features/rate-card/services/rate-card.service';
-
-const OAUTH_BASE_URL = (import.meta.env.VITE_API_BASE_URL
-  || (import.meta.env.DEV ? 'http://localhost:5000/api' : ''))
-  .replace(/\/api\/?$/i, '')
-  .replace(/\/+$/, '');
 
 /* design tokens (scoped)
    These are intentionally kept as local custom-property *names* (--txt-primary,
@@ -420,16 +415,8 @@ export default function RateCardBuilderPage() {
   // invoice preferences are saved with the rate card.
   const { methods: payoutMethods, addMethod: addPayoutMethod, isAdding: addingPayout, removeMethod: removePayoutMethod } = usePayoutMethods();
   const methodOf = (type) => payoutMethods.find((m) => m.type === type);
-  const [bankName, setBankName] = useState("");
   const [mpesaPhone, setMpesaPhone] = useState("");
-  const [mpesaBusiness, setMpesaBusiness] = useState("");
-  const [airtelPhone, setAirtelPhone] = useState("");
-  const [bankOpen, setBankOpen] = useState(false);
-  const [bankAccount, setBankAccount] = useState("");
-  const [bankHolder, setBankHolder] = useState("");
-  const connectMpesa = () => addPayoutMethod({ type: 'mpesa', name: 'M-Pesa', detail: `+254 ${mpesaPhone.trim()}`, fields: { phone: `+254 ${mpesaPhone.trim()}`, business: mpesaBusiness.trim() } });
-  const connectAirtel = () => addPayoutMethod({ type: 'airtel', name: 'Airtel Money', detail: `+254 ${airtelPhone.trim()}`, fields: { phone: `+254 ${airtelPhone.trim()}` } });
-  const connectBank = () => addPayoutMethod({ type: 'bank', name: bankName, detail: `···· ···· ${bankAccount.trim().slice(-4)}`, fields: { bank: bankName, account: bankAccount.trim(), holder: bankHolder.trim() } }, { onSuccess: () => setBankOpen(false) });
+  const connectMpesa = () => addPayoutMethod({ type: 'mpesa', name: 'M-Pesa', detail: `+254 ${mpesaPhone.trim()}`, fields: { phone: `+254 ${mpesaPhone.trim()}` } });
 
   // edit card (step 4)
   const [headline, setHeadline] = useState("");
@@ -661,29 +648,24 @@ export default function RateCardBuilderPage() {
                 <div className="card card-p span2">
                   <p className="section-title">Audience stats</p>
                   <p className="hint" style={{ margin: "var(--space-4) 0 var(--space-16)" }}>Shown on your rate card to build trust with brands</p>
-                  <div className="field-row" style={{ marginBottom: 'var(--space-16)' }}>
-                    <a className="btn btn-secondary btn-sm" href={`${OAUTH_BASE_URL}/auth/facebook/link`}>
-                      {user?.instagram_id ? 'Instagram connected' : 'Connect Instagram via Facebook'}
-                    </a>
-                    <a className="btn btn-secondary btn-sm" href={`${OAUTH_BASE_URL}/auth/tiktok/link`}>
-                      {user?.tiktok_id ? 'TikTok connected' : 'Connect TikTok'}
-                    </a>
-                  </div>
+                  <p className="hint" style={{ marginBottom: 'var(--space-16)' }}>
+                    Instagram, Facebook and TikTok sign-in is still being worked on. Please continue with Google or your email and password.
+                  </p>
                   <div className="g3">
                     <div className="field">
                       <label className="field-label">Total followers</label>
                       <div className="inp" aria-live="polite">
                         {totalFollowers.toLocaleString('en-KE')}
-                        {totalFollowers > 0 && <span className="tag tag-success" style={{ marginLeft: 'var(--space-8)' }}><IconCheck className="icon-xs" aria-hidden="true" />Verified</span>}
                       </div>
+                      <p className="hint">Follower counts are still being worked on and cannot be set yet.</p>
                     </div>
                     <div className="field">
                       <label className="field-label">Avg engagement</label>
-                      <div className="inp">Auto after verification</div>
+                      <div className="inp">Not available yet</div>
                     </div>
                     <div className="field">
                       <label className="field-label">Monthly reach</label>
-                      <div className="inp">Auto after verification</div>
+                      <div className="inp">Not available yet</div>
                     </div>
                   </div>
                 </div>
@@ -802,71 +784,12 @@ export default function RateCardBuilderPage() {
                     <label className="field-label field-required">M-Pesa phone number</label>
                     <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} value={mpesaPhone} onChange={(e) => setMpesaPhone(e.target.value)} placeholder="7XX XXX XXX" /></div>
                   </div>
-                  <div className="field">
-                    <label className="field-label">Business name on M-Pesa</label>
-                    <div className="inp-wrap"><span className="inp-icon l"><IconBuildingStore className="icon-sm" /></span><input className="inp inp-icon-l" value={mpesaBusiness} onChange={(e) => setMpesaBusiness(e.target.value)} placeholder={profile.name || 'Your name'} /></div>
-                    <p className="hint">Displayed to clients when they pay</p>
-                  </div>
                 </div>
                 )}
               </div>
               ); })()}
 
-              {(() => { const m = methodOf('airtel'); return (
-              <div className={`pay-method${m ? " active-method" : ""}`}>
-                <div className="pay-method-header">
-                  <div className="pay-icon" style={{ background: "#e40000" }}><IconDeviceMobile className="icon-md" color="#fff" /></div>
-                  <div style={{ flex: 1 }}><div className="section-title">Airtel Money</div><p className="hint">{m ? m.detail : 'Airtel mobile money'}</p></div>
-                  {m ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                      <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
-                      <button className="btn btn-ghost btn-sm" onClick={() => removePayoutMethod(m.id)}>Disconnect</button>
-                    </div>
-                  ) : (
-                    <button className={`btn btn-ghost btn-sm${addingPayout ? " btn-loading" : ""}`} disabled={addingPayout || airtelPhone.trim().length < 9} onClick={connectAirtel}>Connect</button>
-                  )}
-                </div>
-                {!m && (
-                <div className="field">
-                  <label className="field-label">Airtel phone number</label>
-                  <div className="inp-wrap"><span className="inp-pre">+254</span><input className="inp" style={{ paddingLeft: 'var(--space-48)' }} placeholder="7XX XXX XXX" value={airtelPhone} onChange={(e) => setAirtelPhone(e.target.value)} /></div>
-                </div>
-                )}
-              </div>
-              ); })()}
-
-              {(() => { const m = methodOf('bank'); return (
-              <div className={`pay-method${m ? " active-method" : ""}`}>
-                <div className="pay-method-header">
-                  <div className="pay-icon" style={{ background: "var(--bg-secondary)" }}><IconBuilding className="icon-md" color="var(--txt-secondary)" /></div>
-                  <div style={{ flex: 1 }}><div className="section-title">Bank transfer</div><p className="hint">{m ? `${m.name} ${m.detail}` : 'Local & international wire'}</p></div>
-                  {m ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
-                      <span className="tag tag-success"><span className="sdot" style={{ background: "var(--green-400)" }} />Connected</span>
-                      <button className="btn btn-ghost btn-sm" onClick={() => removePayoutMethod(m.id)}>Disconnect</button>
-                    </div>
-                  ) : (
-                    <button className="btn btn-ghost btn-sm" onClick={() => setBankOpen((o) => !o)}>{bankOpen ? "Hide" : "Add details"}</button>
-                  )}
-                </div>
-                {!m && bankOpen && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
-                    <div className="g2">
-                      <div className="field">
-                        <label className="field-label">Bank name</label>
-                        <Select className="inp" aria-label="Bank" value={bankName} onChange={setBankName} placeholder="Select bank" options={["Equity Bank", "KCB Bank", "Co-operative Bank", "NCBA", "Stanbic Bank", "Other"].map((b) => ({ value: b, label: b }))} />
-                      </div>
-                      <div className="field"><label className="field-label">Account number</label><div className="inp-wrap"><span className="inp-icon l"><IconHash className="icon-sm" /></span><input className="inp inp-icon-l" placeholder="e.g. 0123456789" value={bankAccount} onChange={(e) => setBankAccount(e.target.value)} /></div></div>
-                    </div>
-                    <div className="field"><label className="field-label">Account name</label><div className="inp-wrap"><span className="inp-icon l"><IconUser className="icon-sm" /></span><input className="inp inp-icon-l" placeholder={profile.name || 'Account holder'} value={bankHolder} onChange={(e) => setBankHolder(e.target.value)} /></div></div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <button className={`btn btn-primary btn-sm${addingPayout ? " btn-loading" : ""}`} disabled={addingPayout || !bankName || bankAccount.trim().length < 6} onClick={connectBank}>Save bank details</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-              ); })()}
-
+              <p className="hint">Payouts are sent to your M-Pesa number.</p>
             </div>
           )}
 

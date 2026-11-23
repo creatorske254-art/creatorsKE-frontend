@@ -95,8 +95,8 @@ describe('payout methods', () => {
   });
 
   it('sends the API field names and drops empty ones', async () => {
-    api.post.mockResolvedValue({ data: { id: 'm2', label: 'Equity', isPrimary: false } });
-    await addPayoutMethod({ type: 'bank', name: 'Equity', fields: { bank: 'Equity Bank', account: '0123456789', holder: 'Amani Demo', phone: '' } });
-    expect(api.post).toHaveBeenCalledWith('/payments/methods', { type: 'bank', label: 'Equity', bankName: 'Equity Bank', accountNumber: '0123456789', accountName: 'Amani Demo' });
+    api.post.mockResolvedValue({ data: { id: 'm2', label: 'Personal M-Pesa', isPrimary: false } });
+    await addPayoutMethod({ type: 'mpesa', name: 'Personal M-Pesa', fields: { phone: '0712 345 678', label: 'Personal M-Pesa' } });
+    expect(api.post).toHaveBeenCalledWith('/payments/methods', { type: 'mpesa', label: 'Personal M-Pesa', phoneNumber: '0712345678' });
   });
 });

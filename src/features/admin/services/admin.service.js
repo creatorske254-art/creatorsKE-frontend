@@ -7,6 +7,10 @@ import api from '@/lib/api';
  * GET    /admin/disputes
  * POST   /admin/disputes/:id/resolve  { resolution: PAY_CREATOR | REFUND_BRAND }
  * POST   /admin/disputes/:id/reply
+ * GET    /admin/disputes/marketplace            (campaign disputes - separate list)
+ * GET    /admin/disputes/marketplace/:id
+ * POST   /admin/disputes/marketplace/:id/reply  { message }
+ * PATCH  /admin/disputes/marketplace/:id/resolve { outcome, creatorShare, note }
  * GET    /admin/accounts/flagged
  * POST   /admin/accounts/:id/action
  * GET    /admin/accounts
@@ -35,6 +39,15 @@ export const adminService = {
   },
   // Adds a message to the case without deciding it.
   replyToDispute: (id, message) => api.post(`/admin/disputes/${id}/reply`, { message }).then((r) => r.data),
+
+  // Marketplace (campaign) disputes are a separate queue with their own fields and resolve payload.
+  listMarketplaceDisputes: (params) => api.get('/admin/disputes/marketplace', { params }).then((r) => r.data),
+  getMarketplaceDispute: (id) => api.get(`/admin/disputes/marketplace/${id}`).then((r) => r.data),
+  replyToMarketplaceDispute: (id, message) =>
+    api.post(`/admin/disputes/marketplace/${id}/reply`, { message }).then((r) => r.data),
+  // outcome is full_approval | full_refund | partial; creatorShare is the creator's percentage.
+  resolveMarketplaceDispute: (id, { outcome, creatorShare, note }) =>
+    api.patch(`/admin/disputes/marketplace/${id}/resolve`, { outcome, creatorShare, note }).then((r) => r.data),
 
   listFlaggedAccounts: () => api.get('/admin/accounts/flagged').then((r) => r.data),
   takeAccountAction: (id, action, reason) =>

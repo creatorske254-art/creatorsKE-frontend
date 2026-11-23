@@ -32,7 +32,7 @@ const COPY = {
     ],
     features: [
       { icon: IconLayoutCards, title: 'Beautiful rate cards', desc: 'Curated designs that look professional from day one - no design skills needed.' },
-      { icon: IconDeviceMobileDollar, title: 'M‑Pesa & Airtel Money', desc: 'Built for East Africa. Payouts land on M‑Pesa, Airtel Money or your bank.' },
+      { icon: IconDeviceMobileDollar, title: 'Paid straight to M‑Pesa', desc: 'Built for East Africa. Payouts land on your M‑Pesa number, no bank forms.' },
       { icon: IconBell, title: 'Instant alerts', desc: 'Get notified in the app the moment a brand enquires or a payment lands.' },
     ],
     faq: [

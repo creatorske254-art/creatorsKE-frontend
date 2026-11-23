@@ -1,13 +1,13 @@
 import { toast } from 'sonner';
-import { IconBrandFacebook, IconBrandGoogle, IconBrandTiktok } from '@tabler/icons-react';
+import { IconBrandGoogle } from '@tabler/icons-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
   || (import.meta.env.DEV ? 'http://localhost:5000/api' : '');
 
+// Instagram, Facebook and TikTok sign-in are paused on the backend (they answer 503), so only
+// Google is offered until those integrations are finished.
 const PROVIDERS = [
   { id: 'google', label: 'Continue with Google', Icon: IconBrandGoogle },
-  { id: 'facebook', label: 'Continue with Facebook (for Instagram)', Icon: IconBrandFacebook },
-  { id: 'tiktok', label: 'Continue with TikTok', Icon: IconBrandTiktok },
 ];
 
 export default function SocialLoginButtons() {
@@ -33,6 +33,9 @@ export default function SocialLoginButtons() {
           {label}
         </button>
       ))}
+      <p className="text-[11.5px] leading-relaxed text-[var(--grey-400)]">
+        Instagram, Facebook and TikTok sign-in is still being worked on. Please continue with Google or your email and password.
+      </p>
       <div className="flex items-center gap-3 py-1 text-[11px] text-[var(--grey-400)]" aria-hidden="true">
         <span className="h-px flex-1 bg-[var(--grey-200)]" />
         or continue with email

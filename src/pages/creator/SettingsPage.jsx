@@ -12,10 +12,11 @@ import { SettingsShell, Toggle, ToggleRow, SaveBar, DangerZone, LoginDetailsCard
 import { useUnpublishAllRateCards } from '@/features/rate-card/hooks/useRateCard';
 import { useProfile, usePreferences, usePrivacySettings } from '@/features/auth/hooks/useProfile';
 import { usePayoutMethods } from '@/features/payments/hooks/usePayoutMethods';
+import { isWithdrawableMethod } from '@/features/payments/services/payment.service';
 import { getInitials, formatCount } from '@/lib/utils';
 import Skeleton from '@/components/ui/Skeleton';
 import SmartImage from '@/components/ui/SmartImage';
-import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandYoutube, IconBuildingBank, IconDeviceMobile, IconEyeOff, IconHash, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
+import { IconBell, IconBrandInstagram, IconBrandTiktok, IconBrandTwitter, IconBrandYoutube, IconBuildingBank, IconDeviceMobile, IconEyeOff, IconLockAccess, IconMail, IconMapPin, IconPalette, IconPencil, IconShieldLock, IconTrash, IconUpload, IconUser, IconWallet } from '@tabler/icons-react';
 import Select from '@/components/ui/Select';
 
 const TABS = [
@@ -163,11 +164,12 @@ function ProfileForm({ profile }) {
             </div>
           </div>
         </div>
-        <p className="field-hint" style={{ marginTop: 'var(--space-8)' }}>Follower counts and engagement are the figures you enter in the rate card builder, shown on your public rate card.</p>
+        <p className="field-hint" style={{ marginTop: 'var(--space-8)' }}>Follower counts are still being worked on and cannot be set yet.</p>
       </div>
 
       {/* Social links */}
-      <CollapsibleCard title="Social platforms" description="The handles shown on your rate card and used for follower counts.">
+      <CollapsibleCard title="Social platforms" description="The handles shown on your rate card.">
+        <p className="field-hint" style={{ marginTop: 'var(--space-12)' }}>Instagram, Facebook and TikTok sign-in is still being worked on. Please continue with Google or your email and password.</p>
         <div className="settings-stack" style={{ gap: 'var(--space-16)', marginTop: 'var(--space-16)' }}>
           <div className="field">
             <label className="field-label">Instagram</label>
@@ -292,46 +294,25 @@ function NotificationsTab() {
   );
 }
 
-// Field sets for each payout provider's connect modal. Connecting posts to
-// /payments/methods; the provider key is the method `type` the API stores.
+// Field set for the one payout provider we can pay out to. Connecting posts to /payments/methods.
+// The method is always M-Pesa; only the number and an optional label are collected.
+const MPESA_PHONE = /^(?:0|\+?254)7\d{8}$/;
 const PAY_PROVIDERS = {
   mpesa: {
     name: "M-Pesa",
     icon: IconDeviceMobile,
     iconStyle: { background: "var(--tint-green-bg)", color: "var(--tint-green-text)" },
-    blurb: "Connect your M-Pesa number, till or paybill",
+    blurb: "Withdraw to your M-Pesa number",
     fields: [
-      { key: "phone", label: "M-Pesa phone number", placeholder: "+254 7XX XXX XXX", required: true },
-      { key: "till", label: "Till / paybill number", placeholder: "e.g. 123456" },
+      { key: "phone", label: "M-Pesa phone number", placeholder: "07XX XXX XXX", required: true, pattern: MPESA_PHONE, patternHint: "Enter 07XXXXXXXX, 2547XXXXXXXX or +2547XXXXXXXX." },
+      { key: "label", label: "Label (optional)", placeholder: "e.g. Personal M-Pesa" },
     ],
-    summary: (v) => [v.phone, v.till && `Till ${v.till}`].filter(Boolean).join(" · "),
-  },
-  airtel: {
-    name: "Airtel Money",
-    icon: IconDeviceMobile,
-    iconStyle: { background: "var(--status-error-bg)", color: "var(--status-error-text)" },
-    blurb: "Withdraw to an Airtel Money number",
-    fields: [
-      { key: "phone", label: "Airtel Money number", placeholder: "+254 7XX XXX XXX", required: true },
-    ],
-    summary: (v) => v.phone,
-  },
-  bank: {
-    name: "Bank transfer",
-    icon: IconBuildingBank,
-    iconStyle: { background: "var(--page-bg)", color: "var(--grey-600)" },
-    blurb: "Local bank account (KES)",
-    fields: [
-      { key: "bank", label: "Bank name", placeholder: "e.g. Equity Bank", required: true },
-      { key: "account", label: "Account number", placeholder: "0123456789", required: true },
-      { key: "holder", label: "Account holder name", placeholder: "Full name as on the account" },
-    ],
-    summary: (v) => `${v.bank} · ****${String(v.account).slice(-4)}`,
+    summary: (v) => v.label?.trim() || v.phone,
   },
 };
 
 // Leading icon inside each dynamic input, keyed by what the field collects.
-const FIELD_ICON = { phone: IconDeviceMobile, till: IconHash, email: IconMail, bank: IconBuildingBank, account: IconHash, holder: IconUser };
+const FIELD_ICON = { phone: IconDeviceMobile, label: IconPencil };
 function ConnectPayoutModal({ providerKey, onClose, onConnect, busy }) {
   const provider = providerKey ? PAY_PROVIDERS[providerKey] : null;
   const [values, setValues] = useState({});
@@ -339,6 +320,7 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect, busy }) {
   if (!provider) return null;
 
   const missing = provider.fields.some((f) => f.required && !String(values[f.key] ?? "").trim());
+  const invalid = provider.fields.find((f) => f.pattern && String(values[f.key] ?? "").trim() && !f.pattern.test(String(values[f.key]).replace(/\s+/g, "")));
 
   return (
     <Modal open onClose={onClose} title={`Connect ${provider.name}`} size="sm">
@@ -359,6 +341,7 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect, busy }) {
                 onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
               />
             </div>
+            {invalid?.key === f.key && <p className="field-hint">{f.patternHint}</p>}
           </div>
         ))}
       </div>
@@ -366,8 +349,8 @@ function ConnectPayoutModal({ providerKey, onClose, onConnect, busy }) {
         <button className="btn btn-secondary btn-sm" onClick={onClose} disabled={busy}>Cancel</button>
         <button
           className={`btn btn-primary btn-sm${busy ? ' btn-loading' : ''}`}
-          disabled={missing || busy}
-          onClick={() => onConnect({ type: providerKey, name: providerKey === 'bank' ? values.bank : provider.name, detail: provider.summary(values), fields: values })}
+          disabled={missing || !!invalid || busy}
+          onClick={() => onConnect({ type: providerKey, name: provider.name, detail: provider.summary(values), fields: values })}
         >
           Connect {provider.name}
         </button>
@@ -383,6 +366,9 @@ function PaymentsTab() {
   const [disconnecting, setDisconnecting] = useState(null); // method
 
   const byType = Object.fromEntries(methods.map((m) => [m.type, m]));
+  // Methods saved before Airtel and bank were removed still show (with their stored label) so
+  // they can be disconnected, but nothing new is sent to them.
+  const legacyMethods = methods.filter((m) => !PAY_PROVIDERS[m.type]);
   const currency = preferences.currency ?? 'KES';
   const autoWithdraw = preferences.autoWithdraw ?? false;
 
@@ -427,6 +413,21 @@ function PaymentsTab() {
               </div>
             );
           })}
+          {legacyMethods.map((method) => (
+            <div key={method.id} className="pay-row">
+              <div className="pay-icon" style={{ background: "var(--grey-100)", color: "var(--grey-600)" }}>
+                <IconBuildingBank className="icon-md" aria-hidden="true" />
+              </div>
+              <div className="pay-info">
+                <div className="pay-name">{method.name}</div>
+                <div className="pay-desc">{method.detail ?? 'No longer available for new withdrawals'}</div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)' }}>
+                <span className="tag tag-grey">Not available</span>
+                <button className="btn btn-ghost btn-sm" onClick={() => setDisconnecting(method)}>Remove</button>
+              </div>
+            </div>
+          ))}
         </div>
       </CollapsibleCard>
 
@@ -453,7 +454,7 @@ function PaymentsTab() {
             <div className="field">
               <label className="field-label">Default payout method</label>
               <div>
-                <Select aria-label="Default payout method" disabled={methods.length === 0} placeholder="No methods connected yet" value={primaryMethod?.id ?? ''} onChange={(id) => setPrimary(id)} options={methods.map((m) => ({ value: m.id, label: m.name, hint: m.detail }))} />
+                <Select aria-label="Default payout method" disabled={methods.length === 0} placeholder="No methods connected yet" value={primaryMethod?.id ?? ''} onChange={(id) => setPrimary(id)} options={methods.filter((m) => isWithdrawableMethod(m)).map((m) => ({ value: m.id, label: m.name, hint: m.detail }))} />
               </div>
               {methods.length === 0 && (
                 <p className="field-hint">Connect a payout method above to choose a default.</p>

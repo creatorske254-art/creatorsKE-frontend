@@ -10,7 +10,7 @@ import { useImageUpload } from '@/lib/useImageUpload';
 import SmartImage from '@/components/ui/SmartImage';
 import { toast } from 'sonner';
 import { useSearchParams } from 'react-router-dom';
-import { IconBrandFacebook, IconBrandGoogle, IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, IconCheck, IconEye, IconEyeOff, IconMail, IconMapPin, IconPhone, IconPlus, IconSend, IconUpload, IconUser, IconX } from '@tabler/icons-react';
+import { IconBrandGoogle, IconBrandInstagram, IconBrandMedium, IconBrandTiktok, IconBriefcase, IconCheck, IconEye, IconEyeOff, IconMapPin, IconPlus, IconSend, IconUpload, IconUser, IconX } from '@tabler/icons-react';
 
 const PORTFOLIO_BUILDER_STYLES = `
 .field { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-12); }
@@ -137,17 +137,14 @@ const DEFAULT_VALUES = {
   },
 };
 
+// Instagram, Facebook and TikTok verification is paused on the backend, so only Medium is still
+// verified here. Their accounts can still be linked through Google.
 const SOCIAL_ACCOUNTS = [
-  { key: 'instagram', platform: 'instagram', username: 'instagram_username', followers: 'igFollowers', label: 'Instagram', Icon: IconBrandInstagram },
-  { key: 'tiktok', platform: 'tiktok', username: 'tiktok_username', followers: 'ttFollowers', label: 'TikTok', Icon: IconBrandTiktok },
   { key: 'medium', platform: 'medium', username: 'medium_username', followers: 'mediumFollowers', label: 'Medium', Icon: IconBrandMedium },
 ];
 
 const LINKED_ACCOUNTS = [
   { id: 'google_id', key: 'google', label: 'Google', Icon: IconBrandGoogle },
-  { id: 'tiktok_id', key: 'tiktok', label: 'TikTok', Icon: IconBrandTiktok, followers: 'ttFollowers' },
-  { id: 'instagram_id', key: 'instagram', label: 'Instagram', Icon: IconBrandInstagram, followers: 'igFollowers' },
-  { id: 'facebook_id', key: 'facebook', label: 'Facebook', Icon: IconBrandFacebook, followers: 'fbFollowers' },
 ];
 
 const OAUTH_BASE_URL = (import.meta.env.VITE_API_BASE_URL
@@ -266,8 +263,14 @@ function LivePreview({ values, creatorName, handle }) {
         </div>
 
         <div className="pb-preview-contact">
-          <div className="pb-preview-contact-row"><IconBrandInstagram className="icon-sm" aria-hidden="true" />{values.socialAccounts?.instagram_username || handle}</div>
-          <div className="pb-preview-contact-row"><IconBrandTiktok className="icon-sm" aria-hidden="true" />{values.socialAccounts?.tiktok_username || 'TikTok username'}</div>
+          {/* Only handles already saved on the portfolio are previewed; the Instagram/TikTok
+              forms themselves are paused until those integrations are finished. */}
+          {values.socialAccounts?.instagram_username && (
+            <div className="pb-preview-contact-row"><IconBrandInstagram className="icon-sm" aria-hidden="true" />{values.socialAccounts.instagram_username}</div>
+          )}
+          {values.socialAccounts?.tiktok_username && (
+            <div className="pb-preview-contact-row"><IconBrandTiktok className="icon-sm" aria-hidden="true" />{values.socialAccounts.tiktok_username}</div>
+          )}
           <div className="pb-preview-contact-row"><IconBrandMedium className="icon-sm" aria-hidden="true" />{values.socialAccounts?.medium_username || 'Medium username'}</div>
         </div>
       </div>
@@ -361,11 +364,14 @@ export default function PortfolioBuilderPage() {
   }, [searchParams, setSearchParams, refetchProfile, refetchPortfolio, updateUser]);
 
   const formValues = watch();
+  // The debounced auto-save only needs the shape of the form, not a new object identity each render.
+  const formSnapshot = JSON.stringify(formValues);
   useEffect(() => {
     if (portfolio?.id && isDirty) {
       autoSave(portfolio.id, formValues);
     }
-  }, [JSON.stringify(formValues), isDirty, portfolio?.id, autoSave]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formSnapshot, isDirty, portfolio?.id, autoSave]);
 
   const isPublished = portfolio?.status === 'published';
 
@@ -565,7 +571,10 @@ export default function PortfolioBuilderPage() {
             </SectionCard>
 
             {/* 3. Connected accounts */}
-            <SectionCard title="Connected Accounts" hint="Link social accounts to verify your identity and refresh audience stats">
+            <SectionCard title="Connected Accounts" hint="Link your Google account to sign in">
+              <p className="hint" style={{ marginBottom: 'var(--space-12)' }}>
+                Instagram, Facebook and TikTok sign-in is still being worked on. Please continue with Google or your email and password.
+              </p>
               <div className="pb-connected-grid">
                 {LINKED_ACCOUNTS.map((account) => {
                   const Icon = account.Icon;
@@ -607,7 +616,10 @@ export default function PortfolioBuilderPage() {
             </SectionCard>
 
             {/* 4. Social accounts */}
-            <SectionCard title="Social stats" hint="Verify your username to show an automatically refreshed follower count">
+            <SectionCard title="Social stats" hint="Follower counts are still being worked on and cannot be set yet.">
+              <p className="hint" style={{ marginBottom: 'var(--space-12)' }}>
+                Follower counts are still being worked on and cannot be set yet.
+              </p>
               <div className="pb-g2">
                 {SOCIAL_ACCOUNTS.map((social) => {
                   const Icon = social.Icon;

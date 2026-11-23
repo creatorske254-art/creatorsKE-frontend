@@ -7,7 +7,7 @@ import {
   removePayoutMethod,
 } from '../services/payment.service';
 
-/** The creator's payout methods (M-Pesa, Airtel Money, bank): list, add, make primary, remove. */
+/** The creator's payout methods (M-Pesa only goes forward; older saved ones still list): list, add, make primary, remove. */
 export const PAYOUT_METHODS_KEY = ['payments', 'methods'];
 
 /** The creator's saved payout destinations, plus add / set-primary / remove. */

@@ -156,7 +156,8 @@ const PLAN_WELCOME_LABELS = {
  * no longer silently upgrade with `null`.
  */
 function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
-  const [provider, setProvider] = useState('mpesa')
+  // M-Pesa is the only payment provider offered for subscriptions.
+  const provider = 'mpesa'
   const [phone, setPhone] = useState('')
 
   if (!plan) return null
@@ -180,24 +181,8 @@ function PaymentDetailsModal({ plan, isSubmitting, onCancel, onConfirm }) {
       <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--grey-600)', marginBottom: 'var(--space-8)' }}>
         Pay with
       </label>
-      <div style={{ display: 'flex', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
-        {[{ key: 'mpesa', label: 'M-Pesa' }, { key: 'airtel', label: 'Airtel Money' }].map((p) => (
-          <button
-            key={p.key}
-            type="button"
-            onClick={() => setProvider(p.key)}
-            aria-pressed={provider === p.key}
-            style={{
-              flex: 1, padding: 'var(--space-12) var(--space-8)', borderRadius: 'var(--radius-md)', cursor: 'pointer',
-              background: provider === p.key ? 'var(--purple-50)' : 'var(--white)',
-              border: `1px solid ${provider === p.key ? 'var(--purple-400)' : 'var(--grey-200)'}`,
-              color: provider === p.key ? 'var(--purple-700)' : 'var(--grey-600)',
-              fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
-            }}
-          >
-            {p.label}
-          </button>
-        ))}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)', padding: 'var(--space-12) var(--space-16)', background: 'var(--purple-50)', border: '1px solid var(--purple-400)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-16)', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500, color: 'var(--purple-700)' }}>
+        Pay with M-Pesa
       </div>
 
       <label style={{ display: 'block', fontSize: 12, color: 'var(--grey-600)', marginBottom: 'var(--space-8)' }}>

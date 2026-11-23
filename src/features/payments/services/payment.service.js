@@ -20,23 +20,24 @@ export const getCreatorStats = (params) =>
 export const getEarningsTimeline = (params) =>
   api.get('/payments/earnings/timeline', { params }).then((r) => r.data);
 
-// Payout methods (M-Pesa / Airtel / bank) the creator withdraws to. The pages work with
-// { name, detail, primary, fields }; the API takes { phoneNumber, bankName, ... } and returns
+// Payout methods the creator withdraws to. Only M-Pesa is accepted now; the pages work with
+// { name, detail, primary, fields } and the API takes { phoneNumber, label } and returns
 // { label, isPrimary }, so both directions are mapped here.
 const fromApiMethod = (m) => (m ? { ...m, name: m.name ?? m.label, primary: m.primary ?? m.isPrimary ?? false } : m);
 
 const toApiMethod = ({ type, name, fields = {}, makePrimary }) => {
   const body = {
     type,
-    label: name,
+    label: fields.label || name,
     phoneNumber: fields.phone ? String(fields.phone).replace(/\s+/g, '') : undefined,
-    bankName: fields.bank,
-    accountNumber: fields.account,
-    accountName: fields.holder,
     makePrimary,
   };
   return Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined && v !== ''));
 };
+
+// Saved methods from before the change (Airtel, bank) can still be listed and removed, but no
+// new transaction is offered for them.
+export const isWithdrawableMethod = (method) => method?.type === 'mpesa';
 
 export const listPayoutMethods = () =>
   api.get('/payments/methods').then((r) => (r.data?.methods ?? r.data ?? []).map(fromApiMethod));

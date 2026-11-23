@@ -11,7 +11,7 @@ import { IconCash, IconCopy, IconCheck, IconX } from '@tabler/icons-react';
 
 /*
    Payouts (admin). Creators' withdrawal requests, paid by hand until M-Pesa B2C is set up:
-   send the money from the business M-Pesa or bank account, then record the transaction
+   send the money from the business M-Pesa account, then record the transaction
    reference here. Rejecting needs a reason; the creator is told and the amount returns to their
    balance. Backed by GET /admin/payouts?status= and POST /admin/payouts/:id/{sent|reject}.
    Finance and super admins can act; everyone else can read.
@@ -52,7 +52,7 @@ export default function PayoutsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-24)' }}>
       <div>
         <h1 className="page-title">Payouts</h1>
-        <p className="page-subtitle">Send each withdrawal from the business M-Pesa or bank account, then record its transaction reference. The creator is notified either way.</p>
+        <p className="page-subtitle">Send each withdrawal from the business M-Pesa account, then record its transaction reference. The creator is notified either way.</p>
       </div>
 
       {filter === 'pending' && (
@@ -128,7 +128,7 @@ export default function PayoutsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-16)' }}>
             <p className="modal-body-text" style={{ margin: 0 }}>
               {dialog.kind === 'sent'
-                ? <>Send <strong>{formatCurrency(dialog.row.amount)}</strong> to {dialog.row.creator.name} ({dialog.row.method.destination}), then enter the transaction reference from the M-Pesa or bank confirmation.</>
+                ? <>Send <strong>{formatCurrency(dialog.row.amount)}</strong> to {dialog.row.creator.name} ({dialog.row.method.destination}), then enter the transaction reference from the M-Pesa confirmation.</>
                 : <>{dialog.row.creator.name} is told your reason and {formatCurrency(dialog.row.amount)} goes back to their balance.</>}
             </p>
             <div className="field">

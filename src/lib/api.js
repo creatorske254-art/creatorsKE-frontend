@@ -69,6 +69,13 @@ apiClient.interceptors.response.use(
       || error.message
       || 'Something went wrong'
 
+    // Paused integrations (Instagram, Facebook, TikTok) answer 503 with a code of their own. That
+    // is a status update, not a failure: show it neutrally and mark it so nothing offers a retry.
+    const code = body?.code ?? null
+    if (code === 'PROVIDER_COMING_SOON') {
+      import('sonner').then(({ toast }) => toast(message)).catch(() => {})
+    }
+
     // 401 - token expired or invalid; clear storage and redirect to login
     if (status === 401) {
       localStorage.removeItem('creatorske_token')
@@ -82,6 +89,9 @@ apiClient.interceptors.response.use(
     // Throw a normalised error object all hooks can rely on
     return Promise.reject({
       status,
+      code,
+      // Already surfaced to the user in a neutral toast; callers must not add a failure toast.
+      isNeutral: code === 'PROVIDER_COMING_SOON',
       message,
       data: body ?? null,
     })

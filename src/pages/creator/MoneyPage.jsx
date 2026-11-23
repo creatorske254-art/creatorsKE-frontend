@@ -21,12 +21,11 @@ import Skeleton from '@/components/ui/Skeleton'
    shell, and only individual cards get a --white fill.
 */
 
-const METHOD_TYPES = [
-  { key: 'mpesa', label: 'M-Pesa', icon: IconDeviceMobile, field: 'M-Pesa phone number', placeholder: '+254 7XX XXX XXX' },
-  { key: 'airtel', label: 'Airtel Money', icon: IconDeviceMobile, field: 'Airtel phone number', placeholder: '+254 7XX XXX XXX' },
-  { key: 'bank', label: 'Bank account', icon: IconBuildingBank, field: 'Account number', placeholder: '0123456789' },
-]
+// M-Pesa is the only payout method: the form collects a number and an optional label.
+const MPESA_PHONE = /^(?:0|\+?254)7\d{8}$/
 
+// Saved methods from before Airtel and bank were removed stay visible (with their stored label)
+// but are never offered for a new payout.
 const METHOD_LOOK = {
   mpesa:  { icon: IconDeviceMobile, iconBg: '#00A651' },
   airtel: { icon: IconDeviceMobile, iconBg: '#E40000' },
@@ -34,61 +33,36 @@ const METHOD_LOOK = {
 }
 
 function AddPaymentMethodModal({ open, onClose, onAdd, isAdding }) {
-  const [type, setType] = useState('mpesa')
-  const [detail, setDetail] = useState('')
-  const [bankName, setBankName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [label, setLabel] = useState('')
   const [makePrimary, setMakePrimary] = useState(false)
 
-  const selected = METHOD_TYPES.find((m) => m.key === type)
-  const valid = detail.trim() && (type !== 'bank' || bankName.trim())
+  const valid = MPESA_PHONE.test(phone.replace(/\s+/g, ''))
 
   function submit() {
     onAdd({
-      type,
-      name: type === 'bank' ? bankName.trim() : selected.label,
-      detail: type === 'bank' ? `···· ···· ${detail.trim().slice(-4)}` : detail.trim(),
+      type: 'mpesa',
+      name: label.trim() || 'M-Pesa',
+      detail: phone.trim(),
+      fields: { phone: phone.trim(), label: label.trim() },
       makePrimary,
     })
-    setDetail(''); setBankName(''); setMakePrimary(false); setType('mpesa')
+    setPhone(''); setLabel(''); setMakePrimary(false)
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add payment method" size="sm">
-      <label className="field-label" style={{ display: 'block', marginBottom: 'var(--space-8)', fontSize: 11, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--grey-600)' }}>
-        Method type
-      </label>
-      <div style={{ display: 'flex', gap: 'var(--space-8)', marginBottom: 'var(--space-16)' }}>
-        {METHOD_TYPES.map((m) => (
-          <button
-            key={m.key}
-            type="button"
-            onClick={() => setType(m.key)}
-            aria-pressed={type === m.key}
-            style={{
-              flex: 1, padding: 'var(--space-12) var(--space-8)', borderRadius: 'var(--radius-md)', cursor: 'pointer',
-              background: type === m.key ? 'var(--purple-50)' : 'var(--white)',
-              border: `1px solid ${type === m.key ? 'var(--purple-400)' : 'var(--grey-200)'}`,
-              color: type === m.key ? 'var(--purple-700)' : 'var(--grey-600)',
-              fontFamily: 'var(--font-body)', fontSize: 12.5, fontWeight: 500,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-4)',
-            }}
-          >
-            <m.icon className="icon-md" aria-hidden="true" />
-            {m.label}
-          </button>
-        ))}
-      </div>
-
-      {type === 'bank' && (
-        <div style={{ marginBottom: 'var(--space-16)' }}>
-          <label className="field-label" style={{ display: 'block', marginBottom: 'var(--space-8)', fontSize: 12, color: 'var(--grey-600)' }}>Bank name</label>
-          <div className="input-wrapper"><IconBuildingBank className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. Equity Bank" style={{ width: '100%' }} /></div>
-        </div>
-      )}
+    <Modal open={open} onClose={onClose} title="Add payout method" size="sm">
+      <div className="modal-body-text">Withdrawals are paid to M-Pesa.</div>
 
       <div style={{ marginBottom: 'var(--space-16)' }}>
-        <label className="field-label" style={{ display: 'block', marginBottom: 'var(--space-8)', fontSize: 12, color: 'var(--grey-600)' }}>{selected.field}</label>
-        <div className="input-wrapper"><selected.icon className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder={selected.placeholder} style={{ width: '100%' }} /></div>
+        <label className="field-label" style={{ display: 'block', marginBottom: 'var(--space-8)', fontSize: 12, color: 'var(--grey-600)' }}>M-Pesa phone number</label>
+        <div className="input-wrapper"><IconDeviceMobile className="icon-sm input-icon left" aria-hidden="true" /><input className="input input-md input-icon-left" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="07XX XXX XXX" inputMode="tel" style={{ width: '100%' }} /></div>
+        <p className="field-hint">Enter 07XXXXXXXX, 2547XXXXXXXX or +2547XXXXXXXX.</p>
+      </div>
+
+      <div style={{ marginBottom: 'var(--space-16)' }}>
+        <label className="field-label" style={{ display: 'block', marginBottom: 'var(--space-8)', fontSize: 12, color: 'var(--grey-600)' }}>Label (optional)</label>
+        <div className="input-wrapper"><input className="input input-md" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. Personal M-Pesa" style={{ width: '100%' }} /></div>
       </div>
 
       <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-8)', fontSize: 13, color: 'var(--grey-600)', marginBottom: 'var(--space-20)', cursor: 'pointer' }}>
@@ -115,7 +89,11 @@ export default function MoneyPage() {
   const [historyOpen, setHistoryOpen] = useState(false)
   const [addMethodOpen, setAddMethodOpen] = useState(false)
   const [amount, setAmount] = useState('')
-  const { methods: paymentMethods, primaryMethod, isLoading: isMethodsLoading, addMethod, isAdding, setPrimary, removeMethod } = usePayoutMethods()
+  const { methods: paymentMethods, isLoading: isMethodsLoading, addMethod, isAdding, setPrimary, removeMethod } = usePayoutMethods()
+  // Only an M-Pesa method can receive a payout; a saved Airtel/bank method is not offered.
+  const withdrawMethod = paymentMethods.find((m) => m.type === 'mpesa' && m.primary)
+    ?? paymentMethods.find((m) => m.type === 'mpesa')
+    ?? null
 
   const { currentPlan } = usePlan()
   const {
@@ -186,9 +164,9 @@ export default function MoneyPage() {
 
   function confirmWithdraw() {
     const numericAmount = Number(String(amount).replace(/,/g, '')) || 0
-    if (!numericAmount || !primaryMethod) return
+    if (!numericAmount || !withdrawMethod) return
     requestPayout(
-      { amount: numericAmount, methodId: primaryMethod.id, method: primaryMethod.type },
+      { amount: numericAmount, methodId: withdrawMethod.id, method: withdrawMethod.type },
       { onSuccess: () => { setWithdrawnAmount(numericAmount); setWithdrawDone(true) } }
     )
   }
@@ -375,7 +353,7 @@ export default function MoneyPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
                 {isMethodsLoading && <Skeleton width="100%" height={56} />}
                 {!isMethodsLoading && paymentMethods.length === 0 && (
-                  <p className="text-hint" style={{ margin: 0 }}>No payout method yet. Add one to withdraw your earnings.</p>
+                  <p className="text-hint" style={{ margin: 0 }}>No payout method yet. Add your M-Pesa number to withdraw your earnings.</p>
                 )}
                 {paymentMethods.map((m) => {
                   const look = METHOD_LOOK[m.type] ?? METHOD_LOOK.bank
@@ -410,7 +388,7 @@ export default function MoneyPage() {
                   )
                 })}
                 <button className="btn btn-secondary btn-full btn-sm" style={{ marginTop: 'var(--space-2)' }} onClick={() => setAddMethodOpen(true)}>
-                  <IconPlus className="icon-sm" aria-hidden="true" />Add payment method
+                  <IconPlus className="icon-sm" aria-hidden="true" />Add M-Pesa number
                 </button>
               </div>
             </div>
@@ -499,12 +477,12 @@ export default function MoneyPage() {
                   </div>
                   <div style={{ fontWeight: 600, fontSize: 14 }}>Withdrawal requested</div>
                   <div style={{ fontSize: 12.5, color: 'var(--grey-500)', lineHeight: 1.6 }}>
-                    {formatCurrency(withdrawnAmount)} will be sent to {primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'your M-Pesa'}. It shows as pending in your transactions until it is sent.
+                    {formatCurrency(withdrawnAmount)} will be sent to {withdrawMethod ? `${withdrawMethod.name} · ${withdrawMethod.detail}` : 'your M-Pesa'}. It shows as pending in your transactions until it is sent.
                   </div>
                 </div>
               ) : (
                 <>
-                  <div className="modal-body-text">Confirm how much you&apos;d like to move to your primary payment method.</div>
+                  <div className="modal-body-text">Confirm how much you&apos;d like to withdraw to M-Pesa.</div>
 
                   <div className="amount-field" style={{ marginBottom: 'var(--space-16)' }}>
                     <span style={{ color: 'var(--grey-400)', fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700 }}>KES</span>
@@ -514,7 +492,7 @@ export default function MoneyPage() {
                   <div style={{ marginBottom: 'var(--space-16)' }}>
                     <div className="kv-row">
                       <span className="kv-label">To</span>
-                      <span className="kv-value">{primaryMethod ? `${primaryMethod.name} · ${primaryMethod.detail}` : 'No payment method on file'}</span>
+                      <span className="kv-value">{withdrawMethod ? `${withdrawMethod.name} · ${withdrawMethod.detail}` : 'No M-Pesa number on file'}</span>
                     </div>
                     <div className="kv-row">
                       <span className="kv-label">You&apos;ll receive</span>
@@ -538,7 +516,7 @@ export default function MoneyPage() {
                 <button className="btn btn-ghost" onClick={closeWithdraw} disabled={isRequestingPayout}>Cancel</button>
                 <button
                   className={`btn btn-purple${isRequestingPayout ? ' btn-loading' : ''}`}
-                  disabled={isRequestingPayout || !primaryMethod}
+                  disabled={isRequestingPayout || !withdrawMethod}
                   onClick={confirmWithdraw}
                 >
                   Confirm withdrawal

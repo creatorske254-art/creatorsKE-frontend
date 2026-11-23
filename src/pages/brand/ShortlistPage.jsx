@@ -4,6 +4,7 @@ import { usePageMeta } from '@/lib/usePageMeta';
 import { useBrandDashboard } from '@/features/brand-dashboard/hooks/useBrandDashboard';
 import Skeleton from '@/components/ui/Skeleton';
 import ErrorState from '@/components/shared/ErrorState';
+import { isVerifiedCreator } from '@/lib/verification';
 import {
   IconSearch, IconCheck, IconBookmark, IconBookmarkFilled,
   IconFilterOff, IconStarFilled,
@@ -81,7 +82,7 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
             flexShrink: 0, position: 'relative',
           }}>
             {creator.initials}
-            {creator.verified && (
+            {isVerifiedCreator(creator) && (
               <div style={{ position: 'absolute', bottom: 0, right: 0, width: 13, height: 13, background: 'var(--status-success)', borderRadius: '50%', border: '1.5px solid transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <IconCheck className="icon-xs" color="#fff" />
               </div>
@@ -90,6 +91,9 @@ function ShortlistCard({ creator, index, onRemove, onEnquire }) {
           <div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.2, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>{creator.name}</div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)' }}>{creator.handle}</div>
+            {!isVerifiedCreator(creator) && (
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>Pending verification</div>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import api from '@/lib/api';
 import { getInitials } from '@/lib/utils';
 import { platformNames, availabilityKey } from '@/features/rate-card';
+import { verificationStatusOf } from '@/lib/verification';
 
 // The live API returns the creator row joined with their published rate card. Map it to the card
 // shape the directory renders; entries that already carry `initials` (the documented shape) pass through.
@@ -10,7 +11,15 @@ function toDirectoryCard(entry) {
   const privacy = entry.privacy ?? user;
   const showFollowers = privacy.show_followers ?? entry.show_followers ?? true;
   const showRates = privacy.show_rates ?? entry.show_rates ?? false;
-  if (entry.initials) return { ...entry, show_followers: showFollowers, show_rates: showRates };
+  if (entry.initials) {
+    return {
+      ...entry,
+      show_followers: showFollowers,
+      show_rates: showRates,
+      verificationStatus: verificationStatusOf(entry),
+      verified: verificationStatusOf(entry) === 'VERIFIED',
+    };
+  }
   const name = [entry.firstName, entry.lastName].filter(Boolean).join(' ') || entry.name || entry.handle || '';
   const card = entry.rateCard?.data ?? {};
   const prices = (card.packages ?? []).map((p) => Number(p.price)).filter((n) => n > 0);
@@ -27,7 +36,9 @@ function toDirectoryCard(entry) {
     eng: engagement ? Number(engagement) : null,
     rating: Number(entry.rating) || 0,
     reviews: entry.reviewCount ?? 0,
-    verified: Boolean(entry.isVerified),
+    // The badge is the account's own status from the API; an absent field stays PENDING.
+    verificationStatus: verificationStatusOf(entry),
+    verified: verificationStatusOf(entry) === 'VERIFIED',
     avail: availabilityKey(card.availability),
     bg: 'linear-gradient(135deg, var(--purple-100), var(--purple-50))',
     platforms: platformNames(card.platforms),

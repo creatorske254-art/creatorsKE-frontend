@@ -1,5 +1,6 @@
 import api from '@/lib/api';
 import { getInitials, formatCount } from '@/lib/utils';
+import { verificationStatusOf } from '@/lib/verification';
 
 /**
  * Rate cards: the creator's own (create, autosave, publish) and the public card at /c/:handle.
@@ -84,6 +85,7 @@ export const getPublicRateCard = async (handle) => {
       ...body,
       creator: {
         ...bodyCreator,
+        verificationStatus: verificationStatusOf(bodyCreator, body),
         show_followers: bodyPrivacy.show_followers ?? body?.show_followers ?? bodyCreator.show_followers ?? true,
         show_rates: bodyPrivacy.show_rates ?? body?.show_rates ?? bodyCreator.show_rates ?? false,
       },
@@ -117,6 +119,7 @@ export const getPublicRateCard = async (handle) => {
       handle: body?.handle ?? handle,
       displayName,
       initials: getInitials(displayName),
+      verificationStatus: verificationStatusOf(entry, body),
       bio: entry?.bio || profile.bio || entry?.description,
       location: entry?.location || profile.location,
       languages: profile.languages,

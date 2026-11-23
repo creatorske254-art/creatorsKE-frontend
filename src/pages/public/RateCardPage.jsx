@@ -17,6 +17,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
 import { chatService } from '@/features/messaging/services/chat.service';
 import EmptyState from '@/components/shared/EmptyState';
+import { isVerifiedCreator } from '@/lib/verification';
 
 async function shareRateCard(name) {
   const url = window.location.href;
@@ -319,6 +320,7 @@ export default function RateCardPage() {
   }
 
   const creator = data?.creator ?? {};
+  const isVerified = isVerifiedCreator(creator);
   const niches = data?.niches ?? [];
   const stats = data?.stats ?? {};
   const reviews = data?.reviews ?? [];
@@ -361,7 +363,7 @@ export default function RateCardPage() {
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[var(--purple-400)] to-[var(--purple-800)] flex items-center justify-center text-[28px] font-semibold text-on-accent border-[2.5px] border-white/20">
                     {creator.initials}
                   </div>
-                  <div className="absolute bottom-0 right-0 w-[22px] h-[22px] rounded-full bg-[var(--status-success)] border-2 border-[var(--black)] flex items-center justify-center">
+                  <div className={isVerified ? 'absolute bottom-0 right-0 w-[22px] h-[22px] rounded-full bg-[var(--status-success)] border-2 border-[var(--black)] flex items-center justify-center' : 'hidden'}>
                     <IconCheck className="text-on-accent icon-xs" />
                   </div>
                 </div>
@@ -370,7 +372,12 @@ export default function RateCardPage() {
                   <div className="font-[var(--font-display)] text-[28px] font-semibold tracking-[-0.02em] leading-[1.1] text-white mb-1">
                     {creator.displayName}
                   </div>
-                  <div className="text-[14px] text-white/50 mb-3">@{creator.handle}</div>
+                  <div className='flex items-center gap-2 mb-3'>
+                    <div className='text-[14px] text-white/50'>@{creator.handle}</div>
+                    {!isVerified && (
+                      <span className='text-[10px] font-semibold uppercase tracking-[0.07em] px-2 py-1 rounded-[999px] bg-white/[0.1] text-white/60'>Pending verification</span>
+                    )}
+                  </div>
                   {creator.bio && (
                     <p className="text-[14px] text-white/70 leading-[1.6] max-w-[520px] mb-4">{creator.bio}</p>
                   )}

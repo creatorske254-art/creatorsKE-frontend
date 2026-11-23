@@ -1,4 +1,5 @@
 import api from '@/lib/api';
+import { verificationStatusOf } from '@/lib/verification';
 
 /**
  * The creator's portfolio (builder) and the public portfolio page.
@@ -103,6 +104,7 @@ export const getPublicPortfolio = async (handle) => {
       location: creator.location ?? p.location,
       avatar: creator.avatar ?? p.photoUrl ?? null,
       initials: creator.initials ?? initialsOf(name),
+      verificationStatus: verificationStatusOf(creator, p),
       show_email: !!showEmail,
       show_phone: !!showPhone,
       show_followers: !!showFollowers,

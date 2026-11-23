@@ -23,17 +23,27 @@ describe('directory', () => {
   it('maps an API creator row to a directory card', async () => {
     api.get.mockResolvedValue({
       data: [{
-        userId: 'u1', firstName: 'Amani', lastName: 'Demo', handle: 'amani', followers: '24000', rating: '4.5', reviewCount: 3, isVerified: true, location: 'Nairobi', category: 'other',
+        userId: 'u1', firstName: 'Amani', lastName: 'Demo', handle: 'amani', followers: '24000', rating: '4.5', reviewCount: 3, verificationStatus: 'VERIFIED', location: 'Nairobi', category: 'other',
         rateCard: { data: { availability: 'Fully booked', platforms: { instagram: true, tiktok: false }, profile: { niche: 'Food', engagement: '5.1' }, packages: [{ price: 9000 }, { price: 6000 }] } },
       }],
     });
     const { creators } = await searchCreators({});
     expect(creators[0]).toMatchObject({
       id: 'u1', name: 'Amani Demo', handle: 'amani', initials: 'AD', niche: 'Food', followers: 24000, eng: 5.1,
-      rating: 4.5, reviews: 3, verified: true, avail: 'booked', platforms: ['Instagram'], price: null,
+      rating: 4.5, reviews: 3, verified: true, verificationStatus: 'VERIFIED', avail: 'booked', platforms: ['Instagram'], price: null,
       show_followers: true, show_rates: false,
     });
   });
+
+  it.each([['PENDING'], [undefined], [null]])(
+    'treats verificationStatus %s as unverified',
+    async (verificationStatus) => {
+      api.get.mockResolvedValue({ data: [{ userId: 'u2', firstName: 'Pending', lastName: 'Creator', handle: 'pending', verificationStatus }] });
+      const { creators } = await searchCreators({});
+      expect(creators[0].verified).toBe(false);
+      expect(creators[0].verificationStatus).toBe('PENDING');
+    },
+  );
 });
 
 describe('rate card helpers', () => {

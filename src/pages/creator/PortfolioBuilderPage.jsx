@@ -429,8 +429,12 @@ export default function PortfolioBuilderPage() {
       }
       setValue(`socialStats.${social.followers}`, result.followers, { shouldDirty: true });
       setValue(`verifiedSocials.${social.key}`, true, { shouldDirty: true });
-    } catch {
-      setVerificationErrors((errors) => ({ ...errors, [social.key]: 'Could not verify username, check spelling' }));
+    } catch (err) {
+      // A paused provider answers 503 PROVIDER_COMING_SOON, which is already explained in a
+      // neutral toast. Leave the account unverified instead of showing a retry-style failure.
+      if (!err?.isNeutral) {
+        setVerificationErrors((errors) => ({ ...errors, [social.key]: 'Could not verify username, check spelling' }));
+      }
     } finally {
       setVerifying((state) => ({ ...state, [social.key]: false }));
     }

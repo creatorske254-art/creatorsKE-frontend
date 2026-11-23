@@ -5,7 +5,7 @@ import api from '@/lib/api';
  * the admin role on the server.
  *
  * GET    /admin/disputes
- * PATCH  /admin/disputes/:id/resolve
+ * POST   /admin/disputes/:id/resolve  { resolution: PAY_CREATOR | REFUND_BRAND }
  * POST   /admin/disputes/:id/reply
  * GET    /admin/accounts/flagged
  * POST   /admin/accounts/:id/action
@@ -27,7 +27,12 @@ import api from '@/lib/api';
  */
 export const adminService = {
   listDisputes: (params) => api.get('/admin/disputes', { params }).then((r) => r.data),
-  resolveDispute: (id, data) => api.patch(`/admin/disputes/${id}/resolve`, data).then((r) => r.data),
+  // The admin ruling is final: PAY_CREATOR releases escrow, REFUND_BRAND returns it to the brand.
+  resolveDispute: (id, data = {}) => {
+    const resolution = data.resolution
+      ?? (data.outcome === 'full_refund' ? 'REFUND_BRAND' : 'PAY_CREATOR');
+    return api.post(`/admin/disputes/${id}/resolve`, { resolution }).then((r) => r.data);
+  },
   // Adds a message to the case without deciding it.
   replyToDispute: (id, message) => api.post(`/admin/disputes/${id}/reply`, { message }).then((r) => r.data),
 

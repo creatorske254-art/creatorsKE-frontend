@@ -15,6 +15,7 @@ import { getPublicRateCard } from '@/features/rate-card/services/rate-card.servi
 import { usePageMeta } from '@/lib/usePageMeta';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { POST_AUTH_REDIRECT_KEY } from '@/features/auth/constants/roles';
+import { chatService } from '@/features/messaging/services/chat.service';
 import EmptyState from '@/components/shared/EmptyState';
 
 async function shareRateCard(name) {
@@ -236,7 +237,7 @@ export default function RateCardPage() {
     openCreatorChat(pkg);
   }
 
-  function openCreatorChat(pkg) {
+  async function openCreatorChat(pkg) {
     const creatorId = creator.id ?? handle;
     const rateCard = {
       creatorName: creator.displayName,
@@ -248,23 +249,29 @@ export default function RateCardPage() {
         description: item.description,
       })),
     };
-    const chatId = `${user?.id ?? 'brand'}-${creatorId}-${pkg.id ?? 'rate-card'}`;
-    navigate(`/chat/${encodeURIComponent(chatId)}`, {
-      state: {
-        creator: {
-          id: String(creatorId),
-          name: creator.displayName,
-          handle: creator.handle ?? handle,
-          avatar: creator.initials,
-          online: true,
+    try {
+      // Brand-only and idempotent: the backend returns the existing thread if one is open,
+      // and posts the rate-card message as the first message of a new one.
+      const { chatId } = await chatService.createFromRateCard(creatorId);
+      navigate(`/chat/${encodeURIComponent(chatId)}`, {
+        state: {
+          creator: {
+            id: String(creatorId),
+            name: creator.displayName,
+            handle: creator.handle ?? handle,
+            avatar: creator.initials,
+            online: true,
+          },
+          brand: {
+            id: user?.brandId ?? user?.id,
+            name: user?.companyName ?? user?.name,
+          },
+          rateCard,
         },
-        brand: {
-          id: user?.brandId ?? user?.id,
-          name: user?.companyName ?? user?.name,
-        },
-        rateCard,
-      },
-    });
+      });
+    } catch (err) {
+      toast.error(err?.message || 'Could not open a chat with this creator.');
+    }
   }
 
   // Resume the selected rate-card chat after login.

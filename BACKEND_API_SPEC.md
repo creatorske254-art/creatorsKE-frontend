@@ -49,8 +49,17 @@ Auth: bearer token in `Authorization` on every call, including invoice and expor
 |---|---|---|
 | GET / POST | `/enquiries` | role-scoped `{ enquiries }`; POST `{ creatorId, packageId, message }` |
 | GET | `/enquiries/:id`; POST `/enquiries/:id/accept` (creates the campaign unpaid: `paidOn: null, escrowStatus: awaiting_payment`, plus the `platformFeePct` and `disputeWindowDays` in force at booking; disputes are refused once that window after `deliveredAt` has passed), `/decline`, `/expire` | status `NEW | IN_REVIEW | BOOKED | COMPLETED | EXPIRED` |
-| GET | `/messages/threads/:id` -> `{ messages }`; POST `/messages` `{ threadId, text, attachmentUrl }`; PUT `/messages/:id` `{ text }` | thread id = enquiry id; message rows may carry `status: sent|delivered|seen` and `is_edited` |
-| POST / GET | `/invoices` `{ clientId, chatId, amount, title, description, dueDate? }`; `/invoices/:invoiceId` | Invoice creation returns the invoice and adds an invoice message to the chat; public invoice lookup returns `{ id, invoiceNumber, creatorId, creator, title, amount, description, dueDate, status, paymentLink }` |
+| GET | `/messages/threads/:id` -> `{ messages, threadId }`; POST `/messages` `{ threadId, text }`; PUT `/messages/:id` `{ text }` | thread id = chat id; rows carry `type: text\|ratecard\|invoice\|delivery` and may carry `status: sent|delivered|seen`, `is_edited` |
+| GET | `/ratecards/:creatorId` | Published rate card + its services |
+| POST | `/chats/from-ratecard` `{ creatorId }` -> `{ chatId, rateCardId }` | Brand only, idempotent: returns the existing chat when one is already open and posts the rate-card message as the first message |
+| POST | `/invoices/create` `{ chatId, brandId, serviceTitle, price, serviceDescription }` | Creator only. Returns the invoice and adds an `invoice` message to the chat. |
+| PATCH | `/invoices/:id` `{ price?, serviceDescription? }` | Creator only and only while `PENDING`. Returns the updated invoice and posts an `invoice` message "Invoice updated: KES <amount> - <description>". Price is locked for good once the invoice leaves `PENDING`. |
+| POST | `/invoices/:id/accept-pay` -> `{ invoice, checkoutRequestId }` | Brand only, `PENDING` only. Starts the M-Pesa STK push; the push result arrives out of band on the server callback (`POST /mpesa/callback`, never called by the browser) and the invoice moves to `HELD` on socket `invoiceUpdated`. A failed or cancelled push releases the claim so the brand can call this again. |
+| POST | `/invoices/:id/deliver` `{ contentLink }` | Creator only, `HELD` only. Moves to `DELIVERED` and records the link. |
+| POST | `/invoices/:id/approve` | Brand only, `DELIVERED` only. Releases escrow to the creator (`COMPLETED`). |
+| POST | `/invoices/:id/dispute` `{ reason, details }` | Brand while funds are held or delivered; creator only while `disputeEligible` is true (24h after delivery). Moves to `DISPUTED`. |
+| GET | `/admin/disputes` | Escrow disputes, with `reason`, `details`, amounts and both parties |
+| POST | `/admin/disputes/:id/resolve` `{ resolution: "PAY_CREATOR" \| "REFUND_BRAND" }` | Admin ruling, final: `RESOLVED` (paid out) or `REFUNDED`. |
 | POST / GET | `/payments/mpesa/initiate` `{ amount, phoneNumber, creatorId, invoiceId }`; `/payments/mpesa/verify-pin` `{ paymentId }`; GET `/payments/mpesa/:paymentId/status` | Initiates an M-Pesa phone prompt; the customer enters their PIN on their phone, never in the web app. Status settles with `paid`, `failed`, `cancelled` or `expired` |
 | GET | `/notifications`, `/notifications/unread-count`; PATCH `/notifications/mark-read` `{ ids }` | |
 | GET | `/payments/stats` | `{ availableBalance, pendingBalance, totalEarned, earningsDelta, profileViews, enquiries: { total, new }, cardCtr, recentEnquiries }` |

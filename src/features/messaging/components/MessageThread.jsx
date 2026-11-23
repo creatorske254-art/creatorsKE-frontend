@@ -7,10 +7,13 @@ import { formatRelativeDate } from '@/lib/utils';
 import { connectSocket, socket } from '@/lib/socket';
 import Skeleton from '@/components/ui/Skeleton';
 import InvoiceCard from '@/components/chat/InvoiceCard';
+import RateCardMessage from '@/components/chat/RateCardMessage';
+import DeliveryMessage from '@/components/chat/DeliveryMessage';
 import SendInvoiceModal from '@/components/chat/SendInvoiceModal';
 import EmptyState from '@/components/shared/EmptyState';
-import { toast } from 'sonner';
 import ErrorState from '@/components/shared/ErrorState';
+import { appendMessageToCache, patchInvoiceInMessages } from '@/features/invoices/hooks/useChatInvoice';
+import { toast } from 'sonner';
 
 const THREAD_CSS = `
   .message-thread { display: flex; flex-direction: column; gap: var(--space-12); }
@@ -27,6 +30,7 @@ const THREAD_CSS = `
   .message-thread-row { display: flex; flex-direction: column; max-width: 78%; position: relative; }
   .message-thread-row.mine { align-self: flex-end; align-items: flex-end; }
   .message-thread-row.theirs { align-self: flex-start; align-items: flex-start; }
+  .message-thread-row--card { max-width: 92%; }
   .message-thread-bubble {
     position: relative;
     font-size: var(--text-body-sm-size);
@@ -85,8 +89,8 @@ function updateMessageStatus(cache, messageId, status) {
 }
 
 /**
- * Real-time-ish chat thread (15s poll, per useMessages). One enquiry = one
- * thread for its whole lifecycle - threadId is the enquiry's own id.
+ * Chat thread for one enquiry. Socket contract: the open thread joins `chat:<threadId>`
+ * via `join-chat`, receives `new-message` and `invoiceUpdated`, and leaves with `leave-chat`.
  * @param {string|number} threadId
  */
 export default function MessageThread({ threadId, clientId, expanded = false }) {
@@ -122,7 +126,29 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
         updateMessageStatus(cache, messageId, status)
       );
     };
-    const handleConnect = () => { socketErrorShown.current = false; };
+
+    const handleNewMessage = (payload) => {
+      const message = payload?.message ?? payload;
+      if (!message?.id) return;
+      queryClient.setQueryData(['messages', threadId], (cache) =>
+        appendMessageToCache(cache, message)
+      );
+    };
+
+    // An invoice card is patched in place - the thread is never refetched for a state change.
+    const handleInvoiceUpdated = (payload) => {
+      const invoice = payload?.invoice ?? payload;
+      if (!invoice?.id) return;
+      queryClient.setQueryData(['messages', threadId], (cache) =>
+        patchInvoiceInMessages(cache, invoice)
+      );
+    };
+
+    const joinChat = () => socket.emit('join-chat', threadId);
+    const handleConnect = () => {
+      socketErrorShown.current = false;
+      joinChat();
+    };
     const handleConnectError = () => {
       if (socketErrorShown.current) return;
       socketErrorShown.current = true;
@@ -130,17 +156,27 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
     };
 
     socket.on('message-status-updated', handleStatusUpdated);
+    socket.on('new-message', handleNewMessage);
+    socket.on('invoiceUpdated', handleInvoiceUpdated);
     socket.on('connect', handleConnect);
     socket.on('connect_error', handleConnectError);
+
     if (!connectSocket(token)) {
       socket.off('message-status-updated', handleStatusUpdated);
+      socket.off('new-message', handleNewMessage);
+      socket.off('invoiceUpdated', handleInvoiceUpdated);
       socket.off('connect', handleConnect);
       socket.off('connect_error', handleConnectError);
       return undefined;
     }
 
+    joinChat();
+
     return () => {
+      socket.emit('leave-chat', threadId);
       socket.off('message-status-updated', handleStatusUpdated);
+      socket.off('new-message', handleNewMessage);
+      socket.off('invoiceUpdated', handleInvoiceUpdated);
       socket.off('connect', handleConnect);
       socket.off('connect_error', handleConnectError);
       socket.disconnect();
@@ -184,8 +220,10 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
     setText('');
   };
 
+  // The backend posts the invoice message itself; show it straight away for this client.
   const handleInvoiceCreated = (invoice) => {
-    const invoiceId = invoice.id ?? invoice.invoiceId;
+    const invoiceId = invoice?.id ?? invoice?.invoiceId;
+    if (invoiceId == null) return;
     const newMessage = {
       id: `invoice-${invoiceId}`,
       senderId: user?.brandId ?? user?.id,
@@ -196,15 +234,7 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
       status: 'sent',
       createdAt: new Date().toISOString(),
     };
-    queryClient.setQueryData(['messages', threadId], (cache) => {
-      const list = Array.isArray(cache) ? cache : cache?.messages;
-      const exists = list?.some((message) =>
-        String(message.invoiceId ?? message.invoice?.id ?? message.invoice?.invoiceId) === String(invoiceId)
-      );
-      if (exists) return cache;
-      const updated = [...(list ?? []), newMessage];
-      return Array.isArray(cache) || cache == null ? updated : { ...cache, messages: updated };
-    });
+    queryClient.setQueryData(['messages', threadId], (cache) => appendMessageToCache(cache, newMessage));
   };
 
   const handleAttach = async (e) => {
@@ -255,16 +285,15 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
               : m.from === user?.role;
             const status = String(m.status ?? '').toLowerCase();
             const isEditingMessage = editingId === m.id;
-            const isInvoiceMessage = m.type === 'invoice' || m.invoiceId != null;
-            const invoice = m.invoice ?? {
-              ...m,
-              status: m.invoiceStatus ?? m.paymentStatus
-                ?? (['sent', 'delivered', 'seen'].includes(status) ? 'pending' : status || 'pending'),
-            };
+            const messageType = String(m.type ?? (m.invoiceId != null ? 'invoice' : 'text')).toLowerCase();
+            const isCardMessage = messageType !== 'text';
 
             return (
-              <div key={m.id ?? i} className={`message-thread-row ${isMine ? 'mine' : 'theirs'}`}>
-                {isMine && !isInvoiceMessage && (
+              <div
+                key={m.id ?? i}
+                className={`message-thread-row ${isMine ? 'mine' : 'theirs'}${isCardMessage ? ' message-thread-row--card' : ''}`}
+              >
+                {isMine && !isCardMessage && (
                   <div className="message-thread-actions">
                     <button
                       type="button"
@@ -293,12 +322,17 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
                     )}
                   </div>
                 )}
-                {isInvoiceMessage ? (
+                {messageType === 'invoice' ? (
                   <InvoiceCard
-                    invoice={invoice}
-                    invoiceId={m.invoiceId}
-                    isClient={user?.role === 'brand'}
+                    invoice={m.invoice ?? { id: m.invoiceId, status: m.invoiceStatus }}
+                    threadId={threadId}
+                    isCreator={user?.role === 'creator'}
+                    isBrand={user?.role === 'brand'}
                   />
+                ) : messageType === 'ratecard' ? (
+                  <RateCardMessage message={m} />
+                ) : messageType === 'delivery' ? (
+                  <DeliveryMessage message={m} />
                 ) : <div className="message-thread-bubble">
                   {isEditingMessage ? (
                     <form
@@ -367,10 +401,10 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
             type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => setInvoiceModalOpen(true)}
-            title={clientId == null ? 'Client details are unavailable for this conversation' : 'Send an invoice'}
+            title={clientId == null ? 'Client details are unavailable for this conversation' : 'Issue an invoice'}
           >
             <IconFileInvoice className="icon-sm" aria-hidden="true" />
-            <span>Send invoice</span>
+            <span>Invoice</span>
           </button>
         )}
         <input
@@ -412,9 +446,9 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
       <SendInvoiceModal
         open={invoiceModalOpen}
         onClose={() => setInvoiceModalOpen(false)}
-        clientId={clientId}
         chatId={threadId}
-        onInvoiceCreated={handleInvoiceCreated}
+        brandId={clientId}
+        onCreated={handleInvoiceCreated}
       />
     </div>
   );

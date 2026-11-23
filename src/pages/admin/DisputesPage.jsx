@@ -369,9 +369,8 @@ export default function DisputesPage() {
                     <>
                       <div className="pill-toggle">
                         {[
-                          { key: 'full_approval', label: 'Full approval' },
-                          { key: 'partial', label: 'Partial release' },
-                          { key: 'full_refund', label: 'Full refund' },
+                          { key: 'full_approval', label: 'Pay creator' },
+                          { key: 'full_refund', label: 'Refund brand' },
                         ].map(o => (
                           <div
                             key={o.key}

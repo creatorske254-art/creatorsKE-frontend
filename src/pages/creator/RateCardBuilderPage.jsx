@@ -19,21 +19,7 @@ import SmartImage from '@/components/ui/SmartImage';
 import { useQueryClient } from '@tanstack/react-query';
 import { rateCardService } from '@/features/rate-card/services/rate-card.service';
 
-/* design tokens (scoped)
-   These are intentionally kept as local custom-property *names* (--txt-primary,
-   --bg-info, --r-md, --f-head, etc.) because ~800 lines of CSS below and
-   inline styles throughout this file already reference them. Rather than
-   touch every rule, each one is aliased straight into the shared system in
-   index.css, so color, typography, and radius now come from one source of
-   truth, and any future change to index.css's tokens flows through here
-   automatically.
-   Note: no --bg-* is applied to the .rcb wrapper itself, the content area
-   already owns that background (matches DashboardPage / EnquiriesPage).
-   Also note: payment-provider brand marks (M-Pesa green, Airtel red)
-   intentionally stay hardcoded, those represent third-party brand
-   identities, not our own admin chrome, so they're outside this system
-   on purpose.
-*/
+/* design tokens (scoped) */
 const Tokens = () => (
   <style>{`
   .rcb{
@@ -127,7 +113,7 @@ const Tokens = () => (
   .rcb .btn:disabled{pointer-events:none;opacity:.6}
 
   .rcb .field{display:flex;flex-direction:column;gap:var(--space-4)}
-    .rcb .hint{font-size:12px;color:var(--txt-tertiary);line-height:1.5}
+  .rcb .hint{font-size:12px;color:var(--txt-tertiary);line-height:1.5}
   .rcb .inp{width:100%;font-family:var(--f-body);font-size:13.5px;color:var(--txt-primary);background:var(--bg-secondary);border:0.5px solid var(--bdr-tertiary);outline:none;transition:border-color .12s,background-color .12s,box-shadow .12s;padding:var(--space-8) var(--space-12);border-radius:var(--r-md)}
   .rcb .inp::placeholder{color:var(--txt-tertiary)}
   .rcb .inp:hover{border-color:var(--bdr-secondary)}
@@ -270,8 +256,6 @@ function Stepper({ current }) {
   );
 }
 
-/* The preview card's CTAs mirror what brands will see; clicking them in the
-   builder gets a clear answer instead of silently doing nothing. */
 const previewOnly = () =>
   toast.info("This is a preview. Brands will use these buttons on your published rate card.");
 
@@ -303,9 +287,9 @@ function RateCardPreview({ profile, platforms, packages, headline, pitch, leadTi
         </div>
       </div>
       <div className="rcp-stats">
-        <div className="rcp-stat"><div className="rcp-stat-n">{compact(profile.followers)}</div><div className="rcp-stat-l">Followers</div></div>
-        <div className="rcp-stat"><div className="rcp-stat-n">{profile.engagement}%</div><div className="rcp-stat-l">Engagement</div></div>
-        <div className="rcp-stat"><div className="rcp-stat-n">{compact(profile.reach)}</div><div className="rcp-stat-l">Avg reach</div></div>
+        <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Followers</div></div>
+        <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Engagement</div></div>
+        <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Avg reach</div></div>
       </div>
       <div className="rcp-bio">{profile.bio}</div>
       <div className="rcp-pkgs">
@@ -353,33 +337,35 @@ export default function RateCardBuilderPage() {
   const { rateCard, isLoading: cardLoading, isError: cardError } = useRateCard(cardId);
   const { create: createRateCard, isCreating, rateCards, isLoading: cardsLoading } = useRateCards();
   const { user } = useAuth();
-  // "Rate cards" in the sidebar opens the creator's existing card; a blank one needs ?new=1.
   const [searchParams] = useSearchParams();
   const wantsNew = searchParams.get("new") === "1";
   const canAddCard = rateCards.length < (user?.plan?.rateCardsMax ?? 1);
-  // The first save moves to /:id/edit, which remounts this page; the step rides along in route state.
   const location = useLocation();
   const [step, setStep] = useState(location.state?.step ?? 1);
+  
   useEffect(() => {
     if (!cardId && !wantsNew && !cardsLoading && rateCards.length) navigate(`/creator/rate-card/${rateCards[0].id}/edit`, { replace: true });
   }, [cardId, wantsNew, cardsLoading, rateCards, navigate]);
+  
   const [savingDraft, setSavingDraft] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const queryClient = useQueryClient();
   const hydrated = useRef(false);
 
-  // profile (step 1) - starts from the account profile for a brand-new card,
-  // or from the saved rate card's own profile block when editing.
   const { profile: account } = useProfile();
   const [profile, setProfile] = useState({
     name: "", handle: "", bio: "", location: "", niche: "Lifestyle", languages: "",
     instagram: "", tiktok: "", youtube: "", twitter: "",
   });
-  const audienceProfile = { ...profile, followers: '', engagement: '', reach: '' };
+
+  // audienceProfile strictly omits followers, engagement, and reach to prevent server validation errors
+  const audienceProfile = { ...profile };
+
   const { url: photoUrl, setUrl: setPhotoUrl, uploading: photoUploading, onChange: handlePhotoChange } = useImageUpload({
     successMessage: "Profile photo updated.",
     onUploaded: ({ url, id }) => setProfile((p) => ({ ...p, photoUrl: url, photoUploadId: id })),
   });
+  
   const seededFromAccount = useRef(false);
   useEffect(() => {
     if (cardId || !account || seededFromAccount.current) return;
@@ -395,11 +381,10 @@ export default function RateCardBuilderPage() {
     }));
     if (account.avatar) setPhotoUrl(account.avatar);
   }, [cardId, account, setPhotoUrl]);
+  
   const [platforms, setPlatforms] = useState({ instagram: true, tiktok: true, youtube: false, twitter: false, podcast: false });
   const togglePlatform = (key) => setPlatforms((p) => ({ ...p, [key]: !p[key] }));
 
-
-  // packages (step 2)
   const [packages, setPackages] = useState([]);
   const addPackage = () => {
     if (packages.length >= 5) return;
@@ -408,14 +393,11 @@ export default function RateCardBuilderPage() {
   const removePackage = (id) => setPackages((p) => p.filter((pkg) => pkg.id !== id));
   const updatePackage = (id, field, value) => setPackages((p) => p.map((pkg) => (pkg.id === id ? { ...pkg, [field]: value } : pkg)));
 
-  // payment (step 3) - payout methods live on the account (/payments/methods);
-  // invoice preferences are saved with the rate card.
   const { methods: payoutMethods, addMethod: addPayoutMethod, isAdding: addingPayout, removeMethod: removePayoutMethod } = usePayoutMethods();
   const methodOf = (type) => payoutMethods.find((m) => m.type === type);
   const [mpesaPhone, setMpesaPhone] = useState("");
   const connectMpesa = () => addPayoutMethod({ type: 'mpesa', name: 'M-Pesa', detail: `+254 ${mpesaPhone.trim()}`, fields: { phone: `+254 ${mpesaPhone.trim()}` } });
 
-  // edit card (step 4)
   const [headline, setHeadline] = useState("");
   const [pitch, setPitch] = useState("");
   const [leadTime, setLeadTime] = useState("3-5 business days");
@@ -424,16 +406,12 @@ export default function RateCardBuilderPage() {
   const [revisionPolicy, setRevisionPolicy] = useState("1 round of revisions included");
   const [showPricing, setShowPricing] = useState(true);
 
-  // Hydrate the wizard from a real rate card on edit (GET /rate-cards/:id has
-  // no documented response schema, so every field below falls back to the
-  // wizard's own default rather than assuming a shape and crashing).
   useEffect(() => {
     if (!cardId || !rateCard || hydrated.current) return;
     hydrated.current = true;
-    if (rateCard.profile) setProfile((p) => ({ ...p, ...rateCard.profile, followers: '', engagement: '', reach: '' }));
+    if (rateCard.profile) setProfile((p) => ({ ...p, ...rateCard.profile }));
     if (rateCard.profile?.photoUrl) setPhotoUrl(rateCard.profile.photoUrl);
     if (Array.isArray(rateCard.platforms)) {
-      // Public/list shapes send platforms as an array of ids or names; the wizard keeps an on/off map.
       const on = new Set(rateCard.platforms.map((x) => String(x?.id ?? x?.name ?? x).toLowerCase().replace(/\s*\/\s*x$/, '').replace('twitter/x', 'twitter')));
       setPlatforms((p) => Object.fromEntries(Object.keys(p).map((k) => [k, on.has(k)])));
     } else if (rateCard.platforms && typeof rateCard.platforms === 'object') setPlatforms((p) => ({ ...p, ...rateCard.platforms }));
@@ -448,8 +426,6 @@ export default function RateCardBuilderPage() {
     if (rateCard.published) setPublished(true);
   }, [cardId, rateCard, setPhotoUrl]);
 
-  // The rate card record sent to POST /rate-cards and PATCH /rate-cards/:id/draft. The backend
-  // stores it as given and copies profile, platforms and package prices to the directory row.
   const buildPayload = () => ({
     profile: audienceProfile,
     platforms,
@@ -462,7 +438,6 @@ export default function RateCardBuilderPage() {
     usageNote,
     revisionPolicy,
     showPricing,
-    // Fields the user actually edits on this card (kept flat for the API).
     displayName: profile.name,
     bio: profile.bio,
     niche: profile.niche,
@@ -475,14 +450,10 @@ export default function RateCardBuilderPage() {
     twitter: profile.twitter,
   });
 
-  // publish (step 5)
   const [published, setPublished] = useState(false);
   const [copied, setCopied] = useState(false);
   const slug = `${window.location.host}/c/${profile.handle.toLowerCase().replace(/\s/g, "")}`;
 
-  // Ensures a rate card exists (creating one on first save if the wizard was
-  // opened at /creator/rate-card with no :id yet), then navigates to its
-  // edit URL so subsequent saves target the created card.
   const ensureCardId = async (stepAfter = step) => {
     if (cardId) return cardId;
     const created = await createRateCard(buildPayload());
@@ -508,11 +479,13 @@ export default function RateCardBuilderPage() {
       setPublishing(false);
     }
   };
+
   const copyLink = () => {
     navigator.clipboard?.writeText(`${window.location.protocol}//${slug}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };
+
   const handleSaveDraft = async () => {
     setSavingDraft(true);
     try {
@@ -530,7 +503,6 @@ export default function RateCardBuilderPage() {
   };
 
   const next = () => setStep((s) => Math.min(5, s + 1));
-  // "Save & continue" keeps the server copy current, so a refresh or a closed tab loses nothing.
   const saveAndNext = async () => {
     setSavingDraft(true);
     try {
@@ -544,7 +516,6 @@ export default function RateCardBuilderPage() {
     }
   };
   const back = () => setStep((s) => Math.max(1, s - 1));
-
 
   if (cardId && cardError) {
     return (
@@ -568,7 +539,6 @@ export default function RateCardBuilderPage() {
     <div className="rcb" style={{ minHeight: "100%", width: "100%", display: "flex", flexDirection: "column" }}>
       <Tokens />
       <div className="bs">
-        {/* header / stepper */}
         <div className="btop">
           <div className="btop-inner">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 'var(--space-12)' }}>
@@ -593,9 +563,7 @@ export default function RateCardBuilderPage() {
           </div>
         </div>
 
-        {/* body */}
         <div className="bbody">
-          {/* STEP 1: PROFILE */}
           {step === 1 && (
             <div className="bsplit">
               <div className="bento">
@@ -671,9 +639,7 @@ export default function RateCardBuilderPage() {
                   <div className="g3">
                     <div className="field">
                       <label className="field-label">Total followers</label>
-                      <div className="inp" aria-live="polite">
-                        Not available yet
-                      </div>
+                      <div className="inp" aria-live="polite">Not available yet</div>
                     </div>
                     <div className="field">
                       <label className="field-label">Avg engagement</label>
@@ -712,7 +678,6 @@ export default function RateCardBuilderPage() {
             </div>
           )}
 
-          {/* STEP 2: PACKAGES */}
           {step === 2 && (
             <div className="bsplit">
               <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
@@ -772,7 +737,6 @@ export default function RateCardBuilderPage() {
             </div>
           )}
 
-          {/* STEP 3: PAYMENT */}
           {step === 3 && (
             <div style={{ maxWidth: 700, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 'var(--space-12)' }}>
               <div className="alert alert-info">
@@ -809,7 +773,6 @@ export default function RateCardBuilderPage() {
             </div>
           )}
 
-          {/* STEP 4: EDIT CARD */}
           {step === 4 && (
             <div className="bsplit">
               <div style={{ display: "flex", flexDirection: "column", gap: 'var(--space-16)' }}>
@@ -922,7 +885,7 @@ export default function RateCardBuilderPage() {
                     </div>
                   </div>
                   <div className="rcp-stats">
-                    <div className="rcp-stat"><div className="rcp-stat-n">{compact(audienceProfile.followers)}</div><div className="rcp-stat-l">Followers</div></div>
+                    <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Followers</div></div>
                     <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Engagement</div></div>
                     <div className="rcp-stat"><div className="rcp-stat-n">—</div><div className="rcp-stat-l">Avg reach</div></div>
                   </div>
@@ -957,7 +920,6 @@ export default function RateCardBuilderPage() {
             </div>
           )}
 
-          {/* STEP 5: PUBLISH */}
           {step === 5 && (
             <div style={{ maxWidth: 720, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 'var(--space-16)' }}>
               <div className="card card-p">
@@ -1013,7 +975,6 @@ export default function RateCardBuilderPage() {
           )}
         </div>
 
-        {/* footer */}
         <div className="bfooter">
           <div className="bfooter-inner">
             {step > 1 ? (

@@ -428,7 +428,9 @@ export default function RateCardBuilderPage() {
 
   const buildPayload = () => ({
     profile: audienceProfile,
-    platforms,
+    platforms: Object.entries(platforms)
+      .filter(([, active]) => active)
+      .map(([key]) => key),
     ...(packages.length ? { 
       packages: packages.map(pkg => ({
         ...pkg,

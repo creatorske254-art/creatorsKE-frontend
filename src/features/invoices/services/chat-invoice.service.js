@@ -4,6 +4,7 @@ import api from '@/lib/api';
  * In-chat invoice escrow. There is no standalone invoice route: an invoice is a chat
  * message and every state change is broadcast on the `invoiceUpdated` socket event.
  *
+ * GET    /invoices/:id              the full invoice (the thread may only carry id + status)
  * POST   /invoices/create           { chatId, brandId, serviceTitle, price, serviceDescription }
  *                                   creator only; the backend also posts an invoice message
  * PATCH  /invoices/:id              { price?, serviceDescription? }   creator only, PENDING only
@@ -15,6 +16,8 @@ import api from '@/lib/api';
  * POST   /invoices/:id/dispute      { reason, details }
  */
 export const chatInvoiceService = {
+  getById: (invoiceId) => api.get(`/invoices/${invoiceId}`).then((response) => response.data),
+
   create: (data) => api.post('/invoices/create', data).then((response) => response.data),
 
   update: (invoiceId, data) =>

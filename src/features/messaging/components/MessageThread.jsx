@@ -288,7 +288,6 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
             const messageType = String(m.type ?? (m.invoiceId != null ? 'invoice' : 'text')).toLowerCase();
             const isCardMessage = messageType !== 'text';
 
-            console.log('MESSAGE:', m);
             return (
               <div
                 key={m.id ?? i}
@@ -325,7 +324,20 @@ export default function MessageThread({ threadId, clientId, expanded = false }) 
                 )}
                 {messageType === 'invoice' ? (
                   <InvoiceCard
-                    invoice={m.invoice ?? { id: m.invoiceId, status: m.invoiceStatus }}
+                    invoice={
+                      m.invoice ?? {
+                        id: m.invoiceId,
+                        status: m.invoiceStatus,
+                        price: m.price ?? m.amount ?? m.invoiceAmount,
+                        serviceTitle: m.serviceTitle ?? m.title ?? m.invoiceTitle,
+                        serviceDescription:
+                          m.serviceDescription ?? m.description ?? m.invoiceDescription,
+                        contentLink: m.contentLink ?? m.deliveredContentLink,
+                        disputeEligible: m.disputeEligible,
+                        disputeReason: m.disputeReason,
+                        disputeDetails: m.disputeDetails,
+                      }
+                    }
                     threadId={threadId}
                     isCreator={user?.role === 'creator'}
                     isBrand={user?.role === 'brand'}

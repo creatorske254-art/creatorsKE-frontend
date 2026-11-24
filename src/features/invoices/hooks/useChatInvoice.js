@@ -12,7 +12,11 @@ export function patchInvoiceInMessages(cache, invoice) {
     messages.map((message) => {
       const messageInvoiceId = message?.invoiceId ?? message?.invoice?.id;
       if (!sameId(messageInvoiceId, invoice.id)) return message;
-      return { ...message, invoice: { ...(message.invoice ?? {}), ...invoice } };
+      return {
+        ...message,
+        invoiceStatus: invoice.status ?? message.invoiceStatus,
+        invoice: { ...(message.invoice ?? {}), ...invoice },
+      };
     });
 
   if (Array.isArray(cache)) return patchList(cache);

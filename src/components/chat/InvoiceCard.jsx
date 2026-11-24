@@ -1,6 +1,7 @@
-
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useChatInvoice } from '@/features/invoices/hooks/useChatInvoice';
+import { useInvoiceById } from '@/features/invoices/hooks/useInvoiceById';
 import {
   INVOICE_STATUS,
   disputeReasonLabel,
@@ -27,7 +28,7 @@ import {
 import DisputeModal from './DisputeModal';
 
 const CARD_CSS = `
-  .inv-cimport { useEffect, useState } from 'react';ard {
+  .inv-card {
     background: var(--white);
     border: 0.5px solid var(--grey-100);
     border-radius: var(--radius-xl);
@@ -136,10 +137,21 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
   const viewerIsBrand = isBrand ?? user?.role === 'brand';
   const viewerIsCreator = isCreator ?? (Boolean(user) && !viewerIsBrand);
 
-  const status = normalizeStatus(invoice?.status);
-  const amount = invoiceAmount(invoice);
-  const title = invoiceTitle(invoice);
-  const description = invoiceDescription(invoice);
+  // A message may only carry { id, status }. Fetch the rest so the card never shows KES 0
+  // and keeps its Pay button.
+  const needsInvoiceFetch = Boolean(invoice?.id) && invoiceAmount(invoice) <= 0;
+  const { invoice: fetchedInvoice, isLoading: isLoadingInvoice } = useInvoiceById(
+    needsInvoiceFetch ? invoice.id : null,
+  );
+  // Field by field: the message copy always wins, so a socket patch shows up immediately.
+  const source = fetchedInvoice ? { ...fetchedInvoice, ...invoice } : invoice;
+
+  const status = normalizeStatus(source?.status);
+  const amount = invoiceAmount(source);
+  const title = invoiceTitle(source);
+  const description = invoiceDescription(source);
+  const invoiceId = source?.id ?? invoice?.id;
+  const loadingAmount = needsInvoiceFetch && isLoadingInvoice && amount <= 0;
 
   const {
     updateInvoice,
@@ -208,7 +220,7 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
     run(
       async () => {
         await updateInvoice({
-          invoiceId: invoice.id,
+          invoiceId,
           price: nextPrice,
           serviceDescription: draftDescription.trim() || undefined,
         });
@@ -224,7 +236,7 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
     run(async () => {
       setAwaitingPayment(true);
       try {
-        await acceptPay(invoice.id);
+        await acceptPay(invoiceId);
       } catch (err) {
         // A failed push leaves nothing outstanding, so the retry is available immediately.
         setAwaitingPayment(false);
@@ -235,15 +247,15 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
 
   const handleDeliver = () =>
     run(async () => {
-      await deliver({ invoiceId: invoice.id, contentLink: contentLink.trim() });
+      await deliver({ invoiceId, contentLink: contentLink.trim() });
       setContentLink('');
     }, 'Could not mark the work as delivered.');
 
-  const handleApprove = () => run(() => approve(invoice.id), 'Could not approve the delivery.');
+  const handleApprove = () => run(() => approve(invoiceId), 'Could not approve the delivery.');
 
   const handleDispute = ({ reason, details }) =>
     run(async () => {
-      await dispute({ invoiceId: invoice.id, reason, details });
+      await dispute({ invoiceId, reason, details });
       setDisputeOpen(false);
     }, 'Could not raise the dispute.');
 
@@ -254,18 +266,18 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
   const brandCanDispute =
     viewerIsBrand && (status === INVOICE_STATUS.HELD || status === INVOICE_STATUS.DELIVERED);
   // The creator only gets the flag the backend sets (24h window after delivery).
-  const canDispute = status === INVOICE_STATUS.DELIVERED && isDisputeEligible(invoice);
+  const canDispute = status === INVOICE_STATUS.DELIVERED && isDisputeEligible(source);
   const disputeAllowed = brandCanDispute || (viewerIsCreator && canDispute);
   const disabledReason = reasonFor({
     isCreator: viewerIsCreator,
     isBrand: viewerIsBrand,
     status,
-    invoice,
+    invoice: source,
     awaitingPayment,
     editing,
   });
 
-  const deliveredLink = invoice?.contentLink ?? invoice?.deliveredContentLink ?? null;
+  const deliveredLink = source?.contentLink ?? source?.deliveredContentLink ?? null;
   const payDisabled = !viewerIsBrand || awaitingPayment || isPaying || isUpdating;
 
   return (
@@ -281,17 +293,19 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
 
       <div className="inv-card__amount-row">
         <span className="inv-card__amount-label">Amount</span>
-        <span className="inv-card__amount">{formatCurrency(amount)}</span>
+        <span className="inv-card__amount">
+          {loadingAmount ? 'Loading…' : formatCurrency(amount)}
+        </span>
       </div>
 
       {editing ? (
         <div className="inv-card__edit">
-          <label className="field-label" htmlFor={`price-${invoice.id}`}>
+          <label className="field-label" htmlFor={`price-${invoiceId}`}>
             New price (KES)
           </label>
           <div className="inv-card__edit-grid">
             <input
-              id={`price-${invoice.id}`}
+              id={`price-${invoiceId}`}
               type="number"
               inputMode="numeric"
               min="1"
@@ -300,11 +314,11 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
               onChange={(event) => setDraftPrice(event.target.value)}
             />
           </div>
-          <label className="field-label" htmlFor={`desc-${invoice.id}`}>
+          <label className="field-label" htmlFor={`desc-${invoiceId}`}>
             Description
           </label>
           <textarea
-            id={`desc-${invoice.id}`}
+            id={`desc-${invoiceId}`}
             className="inv-card__textarea"
             value={draftDescription}
             onChange={(event) => setDraftDescription(event.target.value)}
@@ -358,29 +372,31 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
                 Edit price
               </button>
             )}
-            <button
-              type="button"
-              className="inv-card__btn inv-card__btn--success"
-              onClick={handlePay}
-              disabled={payDisabled}
-              title={
-                payDisabled
-                  ? disabledReason || 'Waiting for the M-Pesa result'
-                  : 'Pay with M-Pesa - funds are held in escrow'
-              }
-            >
-              {awaitingPayment ? (
-                <>
-                  <IconHourglassEmpty className="icon-sm" aria-hidden="true" />
-                  Waiting for M-Pesa…
-                </>
-              ) : (
-                <>
-                  <IconPhone className="icon-sm" aria-hidden="true" />
-                  Pay {formatCurrency(amount)}
-                </>
-              )}
-            </button>
+            {!loadingAmount && amount > 0 && (
+              <button
+                type="button"
+                className="inv-card__btn inv-card__btn--success"
+                onClick={handlePay}
+                disabled={payDisabled}
+                title={
+                  payDisabled
+                    ? disabledReason || 'Waiting for the M-Pesa result'
+                    : 'Pay with M-Pesa - funds are held in escrow'
+                }
+              >
+                {awaitingPayment ? (
+                  <>
+                    <IconHourglassEmpty className="icon-sm" aria-hidden="true" />
+                    Waiting for M-Pesa…
+                  </>
+                ) : (
+                  <>
+                    <IconPhone className="icon-sm" aria-hidden="true" />
+                    Pay {formatCurrency(amount)}
+                  </>
+                )}
+              </button>
+            )}
             {viewerIsCreator && (
               <p className="inv-card__hint">Price stays editable until the brand pays.</p>
             )}
@@ -506,10 +522,10 @@ export default function InvoiceCard({ invoice, threadId, isCreator, isBrand }) {
               <IconClockHour4 className="icon-sm" aria-hidden="true" />
               Under admin review
             </div>
-            {invoice?.disputeReason && (
+            {source?.disputeReason && (
               <p className="inv-card__hint">
-                Reason: {disputeReasonLabel(invoice.disputeReason)}
-                {invoice?.disputeDetails ? ` — ${invoice.disputeDetails}` : ''}
+                Reason: {disputeReasonLabel(source.disputeReason)}
+                {source?.disputeDetails ? ` — ${source.disputeDetails}` : ''}
               </p>
             )}
             <p className="inv-card__hint">
